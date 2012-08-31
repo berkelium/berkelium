@@ -1,3 +1,12 @@
+// Copyright (c) 2012 The Berkelium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This File is a copy of https://src.chromium.org/chrome/branches/1180/src/chrome/app/chrome_main.cc
+
+#include "MemoryRenderViewHostFactory.hpp"
+
+#if 1 // BERKELIUM: start of chrome_main.cc
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -29,6 +38,11 @@ DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
 #elif defined(OS_POSIX)
 int ChromeMain(int argc, const char** argv) {
   ChromeMainDelegate chrome_main_delegate;
+#if 1 // BERKELIUM PATCH: added
+  Berkelium::MemoryRenderViewHostFactory factory(argc, argv);
+#endif // BERKELIUM PATCH: end
   return content::ContentMain(argc, argv, &chrome_main_delegate);
 #endif
 }
+
+#endif // BERKELIUM: end of chrome_main.cc
