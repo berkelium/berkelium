@@ -1,0 +1,7 @@
+.gclient_entries
+*.*.*.*
+build
+chromeos
+commit-queue/
+depot_tools
+src
