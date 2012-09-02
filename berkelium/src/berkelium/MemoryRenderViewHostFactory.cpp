@@ -4,7 +4,7 @@
 
 #include "Berkelium.hpp"
 #include "MemoryRenderViewHostFactory.hpp"
-#include "WindowDelegate.hpp"
+#include "WindowSender.hpp"
 
 #include "base/utf_string_conversions.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -17,8 +17,7 @@ namespace Berkelium {
 
 class MemoryRenderViewHost : public content::RenderViewHostImpl {
 private:
-	scoped_ptr<Window> window;
-	WindowDelegate window_delegate;
+	scoped_ptr<WindowSender> window;
 
 	content::SiteInstance* instance;
 	content::RenderViewHostDelegate* delegate;
@@ -36,7 +35,7 @@ public:
 		bool swapped_out,
 		content::SessionStorageNamespace* session_storage_namespace)
 	: content::RenderViewHostImpl(instance, delegate, widget_delegate, routing_id, swapped_out, session_storage_namespace),
-	window(new Window()),
+	window(new WindowSender()),
 	instance(instance),
 	delegate(delegate),
 	widget_delegate(widget_delegate),
