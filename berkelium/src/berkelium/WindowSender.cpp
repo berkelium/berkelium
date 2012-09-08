@@ -5,11 +5,14 @@
 #include "WindowSender.hpp"
 #include "Berkelium.hpp"
 
+#include "base/utf_string_conversions.h"
+#include "content/public/browser/render_process_host.h"
+
 #include <stdio.h>
 
 namespace Berkelium {
 
-WindowSender::WindowSender() {
+WindowSender::WindowSender(content::RenderProcessHost* process) : process(process) {
 	Berkelium::send("new Window");
 }
 
@@ -30,11 +33,12 @@ bool WindowSender::OnMessageReceived(const IPC::Message& msg) {
 
 void WindowSender::OnMsgUpdateRect(const ViewHostMsg_UpdateRect_Params& params) {
 	Berkelium::send("OnMsgUpdateRect");
-	//window_delegate.onPaint(NULL, NULL, Rect(), 0, NULL, 0, 0, Rect());
 }
 
 void WindowSender::OnMsgUpdateTitle(int32 page_id, string16 title, WebKit::WebTextDirection) {
 	Berkelium::send("OnMsgUpdateTitle");
+	std::string t = UTF16ToUTF8(title);
+	Berkelium::send(t.c_str());
 	//window_delegate.onTitleChanged((Window*)this, UTF16ToUTF8(title));
 }
 

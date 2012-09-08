@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BERKELIUM_H_
-#define BERKELIUM_H_
+#ifndef BERKELIUM_HPP_
+#define BERKELIUM_HPP_
 #pragma once
 
 #include <string>
@@ -14,11 +14,15 @@ class Berkelium {
 public:
 	static void init();
 
+	static void lasyInit();
+
 	static void destory();
+
+	static bool isActive();
 
 	static void send(std::string msg);
 };
 
 } // namespace Berkelium
 
-#endif // BERKELIUM_H_
+#endif // BERKELIUM_HPP_

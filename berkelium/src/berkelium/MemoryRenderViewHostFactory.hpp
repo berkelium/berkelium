@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEMORY_RENDER_VIEW_HOST_FACTORY_H_
-#define MEMORY_RENDER_VIEW_HOST_FACTORY_H_
+#ifndef MEMORY_RENDER_VIEW_HOST_FACTORY_HPP_
+#define MEMORY_RENDER_VIEW_HOST_FACTORY_HPP_
 #pragma once
 
 #include "content/browser/renderer_host/render_view_host_factory.h"
@@ -39,4 +39,4 @@ private:
 
 } // namespace Berkelium
 
-#endif // MEMORY_RENDER_VIEW_HOST_FACTORY_H_
+#endif // MEMORY_RENDER_VIEW_HOST_FACTORY_HPP_

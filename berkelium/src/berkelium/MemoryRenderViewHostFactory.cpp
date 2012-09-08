@@ -35,7 +35,7 @@ public:
 		bool swapped_out,
 		content::SessionStorageNamespace* session_storage_namespace)
 	: content::RenderViewHostImpl(instance, delegate, widget_delegate, routing_id, swapped_out, session_storage_namespace),
-	window(new WindowSender()),
+	window(new WindowSender(GetProcess())),
 	instance(instance),
 	delegate(delegate),
 	widget_delegate(widget_delegate),
@@ -73,8 +73,7 @@ bool doRegister(int argc, const char** argv) {
 MemoryRenderViewHostFactory::MemoryRenderViewHostFactory(int argc, const char** argv)
 : registered(doRegister(argc, argv)) {
 	if(registered) {
-		// do not call Berkelium::init() here,
-		// Chromium is not yet correctly initialised
+		Berkelium::init();
 		RenderViewHostFactory::RegisterFactory(this);
 	}
 }
@@ -94,8 +93,7 @@ content::RenderViewHost* MemoryRenderViewHostFactory::CreateRenderViewHost(
 	bool swapped_out,
 	content::SessionStorageNamespace* session_storage) {
 
-	// lasy init berkelium here
-	Berkelium::init();
+	Berkelium::lasyInit();
 
 	return new MemoryRenderViewHost(instance, delegate, widget_delegate, routing_id,
 			swapped_out, session_storage);

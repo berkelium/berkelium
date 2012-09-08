@@ -8,11 +8,15 @@
 
 #include "content/common/view_messages.h"
 
+namespace content {
+class RenderProcessHost;
+}
+
 namespace Berkelium {
 
 class WindowSender {
 public:
-	WindowSender();
+	WindowSender(content::RenderProcessHost*);
 	virtual ~WindowSender();
 
 	virtual bool OnMessageReceived(const IPC::Message& msg);
@@ -23,6 +27,7 @@ protected:
 	void OnMsgContextMenu(const content::ContextMenuParams& params);
 
 private:
+	content::RenderProcessHost* process;
 	WindowSender(const WindowSender&);
 	void operator=(const WindowSender&);
 };
