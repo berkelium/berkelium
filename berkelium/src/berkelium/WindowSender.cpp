@@ -4,6 +4,10 @@
 
 #include "WindowSender.hpp"
 #include "Berkelium.hpp"
+#include "ChromiumPacketWriter.hpp"
+
+#include "../include/IpcConstants.hpp"
+#include "../include/PacketWriter.hpp"
 
 #include "base/utf_string_conversions.h"
 #include "content/public/browser/render_process_host.h"
@@ -33,6 +37,10 @@ bool WindowSender::OnMessageReceived(const IPC::Message& msg) {
 
 void WindowSender::OnMsgUpdateRect(const ViewHostMsg_UpdateRect_Params& params) {
 	Berkelium::send("OnMsgUpdateRect");
+	PacketWriter w(this, IpcConstants::Delegate::onPaint);
+	for (std::vector<gfx::Rect>::const_iterator it = params.copy_rects.begin(); it != params.copy_rects.end(); ++it) {
+		ChromiumPacketWriter::write(w, *it);
+	}
 }
 
 void WindowSender::OnMsgUpdateTitle(int32 page_id, string16 title, WebKit::WebTextDirection) {
