@@ -1,7 +1,6 @@
 .gclient_entries
-*.*.*.*
+deps
 build
-chromeos
 commit-queue/
 depot_tools
 src
