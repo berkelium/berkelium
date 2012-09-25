@@ -42,7 +42,7 @@ out/Debug/obj.target/net/libnet.so \
 out/Debug/obj.target/third_party/icu/libicui18n.so \
 out/Debug/obj.target/third_party/icu/libicuuc.so \
 out/Debug/obj.target/net/third_party/nss/libssl.a \
-out/Debug/obj.target/third_party/zlib/libzlib.a \
+out/Debug/obj.target/third_party/zlib/libchrome_zlib.a \
 out/Debug/obj.target/chrome/libmetrics_proto.a \
 out/Debug/obj.target/third_party/protobuf/libprotobuf_lite.a \
 out/Debug/obj.target/base/libbase_i18n.so \
@@ -63,6 +63,7 @@ out/Debug/obj.target/remoting/libremoting_client_plugin.a \
 out/Debug/obj.target/remoting/libremoting_base.a \
 out/Debug/obj.target/ui/libui.so \
 out/Debug/obj.target/third_party/libvpx/libvpx.a \
+out/Debug/obj.target/third_party/libvpx/libvpx_asm_offsets.a \
 out/Debug/obj.target/media/libyuv_convert.a \
 out/Debug/obj.target/media/libyuv_convert_simd_x86.a \
 out/Debug/obj.target/remoting/libremoting_jingle_glue.a \
@@ -81,11 +82,15 @@ out/Debug/obj.target/sync/protocol/libsync_proto.a \
 out/Debug/obj.target/net/libhttp_server.a \
 out/Debug/obj.target/third_party/leveldatabase/libleveldatabase.a \
 out/Debug/obj.target/chrome/libin_memory_url_index_cache_proto.a \
+out/Debug/obj.target/sync/libsync_notifier.a \
+out/Debug/obj.target/third_party/cacheinvalidation/libcacheinvalidation.a \
+out/Debug/obj.target/third_party/cacheinvalidation/libcacheinvalidation_proto_cpp.a \
+out/Debug/obj.target/sync/libsync.a \
+out/Debug/obj.target/sql/libsql.so \
 out/Debug/obj.target/third_party/libusb/libusb.a \
 out/Debug/obj.target/webkit/support/libappcache.so \
 out/Debug/obj.target/webkit/support/libblob.so \
 out/Debug/obj.target/webkit/support/libdatabase.a \
-out/Debug/obj.target/sql/libsql.so \
 out/Debug/obj.target/webkit/support/libquota.a \
 out/Debug/obj.target/webkit/support/libfileapi.so \
 out/Debug/obj.target/webkit/support/libwebkit_user_agent.a \
@@ -97,17 +102,15 @@ out/Debug/obj.target/chrome/libsafe_browsing_proto.a \
 out/Debug/obj.target/chrome/libsafe_browsing_report_proto.a \
 out/Debug/obj.target/chrome/libfeedback_proto.a \
 out/Debug/obj.target/chrome/libgdata_proto.a \
+out/Debug/obj.target/chrome/libcontacts_proto.a \
 out/Debug/obj.target/chrome/libvariations_seed_proto.a \
 out/Debug/obj.target/ppapi/libppapi_proxy.so \
-out/Debug/obj.target/sync/libsync_notifier.a \
-out/Debug/obj.target/third_party/cacheinvalidation/libcacheinvalidation.a \
-out/Debug/obj.target/third_party/cacheinvalidation/libcacheinvalidation_proto_cpp.a \
-out/Debug/obj.target/sync/libsync.a \
 out/Debug/obj.target/sync/libsyncapi_service.a \
 out/Debug/obj.target/third_party/cld/libcld.a \
 out/Debug/obj.target/third_party/hunspell/libhunspell.a \
 out/Debug/obj.target/third_party/libphonenumber/libphonenumber.a \
 out/Debug/obj.target/third_party/libphonenumber/libphonenumber_without_metadata.a \
+out/Debug/obj.target/third_party/re2/libre2.a \
 out/Debug/obj.target/ui/surface/libsurface.so \
 out/Debug/obj.target/ui/web_dialogs/libweb_dialogs.so \
 out/Debug/obj.target/v8/tools/gyp/libv8.so \
@@ -130,6 +133,7 @@ out/Debug/obj.target/native_client/src/trusted/perf_counter/libnacl_perf_counter
 out/Debug/obj.target/native_client/src/trusted/manifest_name_service_proxy/libmanifest_proxy.a \
 out/Debug/obj.target/native_client/src/trusted/threading/libthread_interface.a \
 out/Debug/obj.target/native_client/src/trusted/simple_service/libsimple_service.a \
+out/Debug/obj.target/native_client/src/trusted/validator/libvalidators.a \
 out/Debug/obj.target/native_client/src/trusted/service_runtime/arch/x86/libservice_runtime_x86_common.a \
 out/Debug/obj.target/native_client/src/trusted/validator/x86/64/libncvalidate_x86_64.a \
 out/Debug/obj.target/native_client/src/trusted/validator/x86/ncval_reg_sfi/libncval_reg_sfi_x86_64.a \
@@ -138,6 +142,7 @@ out/Debug/obj.target/native_client/src/trusted/validator/x86/libncval_base_x86_6
 out/Debug/obj.target/native_client/src/trusted/validator/x86/decoder/libnc_decoder_x86_64.a \
 out/Debug/obj.target/native_client/src/trusted/validator/x86/decoder/libnc_opcode_modeling_x86_64.a \
 out/Debug/obj.target/native_client/src/trusted/service_runtime/arch/x86_64/libservice_runtime_x86_64.a \
+out/Debug/obj.target/ppapi/libppapi_host.so \
 out/Debug/obj.target/ppapi/libppapi_shared.so \
 out/Debug/obj.target/third_party/smhasher/libmurmurhash3.a \
 out/Debug/obj.target/third_party/WebKit/Source/WebKit/chromium/libwebkit.so \
@@ -150,7 +155,9 @@ out/Debug/obj.target/ui/gl/libgl_wrapper.so \
 out/Debug/obj.target/webkit/support/libwebkit_media.a \
 out/Debug/obj.target/chrome/libnacl.a \
 out/Debug/obj.target/native_client/src/trusted/platform_qualify/libplatform_qual_lib.a \
-out/Debug/obj.target/seccompsandbox/libseccomp_sandbox.a
+out/Debug/obj.target/sandbox/libsuid_sandbox_client.a \
+out/Debug/obj.target/sandbox/linux/seccomp-legacy/libseccomp_sandbox.a \
+out/Debug/obj.target/sandbox/libseccomp_bpf.a
 
 LINK_LIBS_SYS = \
 -lX11 \
@@ -183,7 +190,6 @@ LINK_LIBS_SYS = \
 -lplc4 \
 -lnspr4 \
 -lpthread \
--lz \
 -lXcomposite \
 -lcups \
 -lgssapi_krb5 \
@@ -192,6 +198,7 @@ LINK_LIBS_SYS = \
 -lcom_err \
 -lgnutls \
 -lgcrypt \
+-lz \
 -lcrypt \
 -lm \
 -lbz2 \
