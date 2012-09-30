@@ -8,6 +8,8 @@
 
 #include "ui/gfx/rect.h"
 
+#include <vector>
+
 namespace Berkelium {
 
 class PacketWriter;
@@ -15,6 +17,7 @@ class PacketWriter;
 class ChromiumPacketWriter {
 public:
 	static void write(PacketWriter&, const gfx::Rect&);
+	static void write(PacketWriter&, std::vector<gfx::Rect>);
 
 private:
 	ChromiumPacketWriter();

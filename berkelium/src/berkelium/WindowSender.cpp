@@ -10,18 +10,20 @@
 #include "../include/PacketWriter.hpp"
 
 #include "base/utf_string_conversions.h"
+#include "ui/surface/transport_dib.h"
 #include "content/public/browser/render_process_host.h"
 
 #include <stdio.h>
 
 namespace Berkelium {
 
-WindowSender::WindowSender(content::RenderProcessHost* process) : process(process) {
-	Berkelium::send("new Window");
+WindowSender::WindowSender(content::RenderProcessHost* process) :
+	process(process),
+	channelId(-1)
+{
 }
 
 WindowSender::~WindowSender() {
-	Berkelium::send("delete Window");
 }
 
 bool WindowSender::OnMessageReceived(const IPC::Message& msg) {
@@ -36,22 +38,31 @@ bool WindowSender::OnMessageReceived(const IPC::Message& msg) {
 }
 
 void WindowSender::OnMsgUpdateRect(const ViewHostMsg_UpdateRect_Params& params) {
-	Berkelium::send("OnMsgUpdateRect");
-	PacketWriter w(this, IpcConstants::Delegate::onPaint);
-	for (std::vector<gfx::Rect>::const_iterator it = params.copy_rects.begin(); it != params.copy_rects.end(); ++it) {
-		ChromiumPacketWriter::write(w, *it);
-	}
+	TransportDIB* dib = process->GetTransportDIB(params.bitmap);
+	PacketWriter* pw = Berkelium::getPacketWriter();
+	pw->add_16(IpcConstants::Delegate::onPaint);
+	/*
+	w.add(params.copy_rects .sourceBuffer);
+	*/
+	ChromiumPacketWriter::write(*pw, params.copy_rects);
+	/*
+	w.add(sourceBufferRect);
+	w.add(params.copy_rects);
+	w.add16(dx);
+	w.add16(dy);
+	w.add(scrollRect);
+	*/
+	pw->send();
 }
 
 void WindowSender::OnMsgUpdateTitle(int32 page_id, string16 title, WebKit::WebTextDirection) {
-	Berkelium::send("OnMsgUpdateTitle");
-	std::string t = UTF16ToUTF8(title);
-	Berkelium::send(t.c_str());
-	//window_delegate.onTitleChanged((Window*)this, UTF16ToUTF8(title));
+	PacketWriter* pw = Berkelium::getPacketWriter();
+	pw->add_16(IpcConstants::Delegate::onTitleChanged);
+	pw->add_str(UTF16ToUTF8(title));
+	pw->send();
 }
 
 void WindowSender::OnMsgContextMenu(const content::ContextMenuParams& params) {
-	Berkelium::send("OnMsgContextMenu");
 }
 
 } // namespace Berkelium

@@ -12,7 +12,11 @@ namespace content {
 class RenderProcessHost;
 }
 
+#include "../include/PacketWriter.hpp"
+
 namespace Berkelium {
+
+class IpcSender;
 
 class WindowSender {
 public:
@@ -28,6 +32,8 @@ protected:
 
 private:
 	content::RenderProcessHost* process;
+	int channelId;
+
 	WindowSender(const WindowSender&);
 	void operator=(const WindowSender&);
 };

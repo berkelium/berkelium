@@ -10,9 +10,12 @@
 
 namespace Berkelium {
 
+class PacketWriter;
+class IpcSender;
+
 class Berkelium {
 public:
-	static void init();
+	static void init(const std::string&, const std::string&,const std::string&);
 
 	static void lasyInit();
 
@@ -20,7 +23,7 @@ public:
 
 	static bool isActive();
 
-	static void send(std::string msg);
+	static PacketWriter* getPacketWriter();
 };
 
 } // namespace Berkelium

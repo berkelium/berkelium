@@ -101,7 +101,7 @@ private:
 	virtual void UserChangedTheme() {X;}
 	virtual int GetExtraRenderViewHeight() const {X;return 0;}
 	virtual void WebContentsFocused(content::WebContents*) {X;}
-	virtual void ShowPageInfo(Profile*, const GURL&, const content::SSLStatus&, bool) {X;}
+	virtual void ShowPageInfo(content::WebContents*, const GURL&, const content::SSLStatus&, bool) {X;}
 	virtual void ShowWebsiteSettings(Profile*, TabContents*, const GURL&, const content::SSLStatus&, bool) {X;}
 	virtual void ShowAppMenu() {X;}
 	virtual bool PreHandleKeyboardEvent(const content::NativeWebKeyboardEvent&, bool*) {X;return false;}

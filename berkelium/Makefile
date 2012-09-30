@@ -220,9 +220,10 @@ clean:
 
 out:
 	mkdir -p out/o/berkelium
+	mkdir -p out/o/libberkelium
 	ln -s ../../chromium/src/out/Debug out
 
-out/o/%.o: src/%.cpp src/*/*.cpp src/*/*.hpp out
+out/o/%.o: src/%.cpp src/*/*.hpp out
 	g++ -Isrc/include -I../chromium/src/third_party/skia/include/config -I../chromium/src -D_DEBUG -DDEBUG -g -Wall -pthread -fno-exceptions -fno-strict-aliasing -Wno-unused-parameter -Wno-missing-field-initializers -fvisibility=hidden -pipe -fPIC -O0 -g -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -MMD -MF $@.d.raw -c -o $@ $<
 
 run/berkelium: $(SOURCES:%.cpp=out/o/%.o)
@@ -230,4 +231,4 @@ run/berkelium: $(SOURCES:%.cpp=out/o/%.o)
 
 .PHONY: run
 run: run/berkelium
-	LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../chromium/src/out/Debug/lib.target run/berkelium --berkelium
+	./berkelium

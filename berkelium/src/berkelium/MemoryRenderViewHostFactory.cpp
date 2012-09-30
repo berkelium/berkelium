@@ -58,12 +58,26 @@ public:
 	}
 };
 
+std::vector<std::string> split(std::string l, char delim) {
+    std::replace(l.begin(), l.end(), delim, ' ');
+    std::istringstream stm(l);
+    std::vector<std::string> tokens;
+    for (;;) {
+        std::string word;
+        if (!(stm >> word)) break;
+        tokens.push_back(word);
+    }
+    return tokens;
+}
+
 bool doRegister(int argc, const char** argv) {
 	bool ret = false;
 	for(int i = 0; i < argc; i++) {
 		//fprintf(stderr, "main: %i : '%s'\n", i, argv[i]);
-		if(strcmp("--berkelium", argv[i]) == 0) {
-			ret = true;
+		if(strncmp("--berkelium=", argv[i], 12) == 0) {
+			std::string str = &argv[i][13];
+			std::vector<std::string> tokens = split(str ,':');
+			Berkelium::init(tokens[0], tokens[1], tokens[2]);
 		}
 	}
 	//fprintf(stderr, "register factory: %s\n", ret ? "true" : "false");
@@ -71,9 +85,9 @@ bool doRegister(int argc, const char** argv) {
 }
 
 MemoryRenderViewHostFactory::MemoryRenderViewHostFactory(int argc, const char** argv)
-: registered(doRegister(argc, argv)) {
+: registered(doRegister(argc, argv))
+{
 	if(registered) {
-		Berkelium::init();
 		RenderViewHostFactory::RegisterFactory(this);
 	}
 }

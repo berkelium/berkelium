@@ -6,25 +6,34 @@
 #define PACKET_WRITER_HPP_
 #pragma once
 
+#include <string>
+
 namespace Berkelium {
 
-struct Rect;
+class IpcSender;
 
 class PacketWriter {
+private:
+	IpcSender* sender;
+	int capacity;
+	int used;
+	char* buffer;
+
 public:
-	PacketWriter(WindowSender*, int);
+	PacketWriter(IpcSender*, int initialSize);
+	~PacketWriter();
 
-	PacketWriter& add(int8);
-
-	PacketWriter& add(int16);
-
-	PacketWriter& add(int32);
-
-	PacketWriter& add(int64);
-
-	PacketWriter& add(Rect);
-
+	void reset();
 	void send();
+	void increase(int);
+	void add_8(char);
+	void add_16(short);
+	void add_32(int);
+	void add32s(int, const int* data);
+	void add_data(int, const void* data);
+	void add_str(const char*);
+	void add_str(const std::string&);
+
 };
 
 } // namespace Berkelium
