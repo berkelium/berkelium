@@ -71,17 +71,17 @@ std::vector<std::string> split(std::string l, char delim) {
 }
 
 bool doRegister(int argc, const char** argv) {
-	bool ret = false;
 	for(int i = 0; i < argc; i++) {
 		//fprintf(stderr, "main: %i : '%s'\n", i, argv[i]);
 		if(strncmp("--berkelium=", argv[i], 12) == 0) {
 			std::string str = &argv[i][13];
 			std::vector<std::string> tokens = split(str ,':');
 			Berkelium::init(tokens[0], tokens[1], tokens[2]);
+			return true;
 		}
 	}
 	//fprintf(stderr, "register factory: %s\n", ret ? "true" : "false");
-	return ret;
+	return false;
 }
 
 MemoryRenderViewHostFactory::MemoryRenderViewHostFactory(int argc, const char** argv)
