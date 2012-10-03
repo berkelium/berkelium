@@ -16,11 +16,6 @@ public final class BerkeliumImpl implements Berkelium, Runnable {
 	private final CyclicBarrier initDoneBarrier = new CyclicBarrier(2);
 	private final AtomicBoolean destroyed = new AtomicBoolean(false);
 	private final AtomicBoolean updateRunning = new AtomicBoolean(false);
-	/*
-	private final MapDispatcher root = new MapDispatcher();
-	private final IPC ipc = new IPC();
-	private final Channel main = new Channel(ipc, 0);
-	 */
 	private final Thread thread;
 	private final BerkeliumServer server;
 	private final BerkeliumProcess process;

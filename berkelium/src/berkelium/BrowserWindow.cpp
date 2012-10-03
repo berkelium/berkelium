@@ -128,12 +128,12 @@ BrowserWindow* BerkeliumCreateBrowserWindow(Browser* browser);
 BrowserWindow* BrowserWindow::CreateBrowserWindow(Browser* browser) {
 	BrowserWindow* ret;
 
-	fprintf(stderr, "CreateBrowserWindow start\n");
+	//fprintf(stderr, "CreateBrowserWindow start\n");
 	if(Berkelium::Berkelium::isActive()) {
 		ret = new BerkeliumBrowserWindow(browser);
 	} else {
 		ret = BerkeliumCreateBrowserWindow(browser);
 	}
-	fprintf(stderr, "CreateBrowserWindow done\n");
+	//fprintf(stderr, "CreateBrowserWindow done\n");
 	return ret;
 }

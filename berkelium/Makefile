@@ -212,7 +212,7 @@ LINK_LIBS_SYS = \
 SOURCES2 = $(shell find src -name '*.cpp')
 SOURCES = $(SOURCES2:src/%=%)
 
-all: clean out run/berkelium
+all: run/berkelium
 
 .PHONY: clean
 clean:

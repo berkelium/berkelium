@@ -72,7 +72,7 @@ int IpcSocket::connect(const char* host, int port) {
 
 void IpcSocket::close() {
 	if (sock != -1) {
-	int tmp = 0;
+		int tmp = 0;
 		::send(sock, (const char*) &tmp, 4, 0);
 		::close(sock);
 		sock = -1;

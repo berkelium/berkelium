@@ -21,7 +21,7 @@
 namespace Berkelium {
 
 PacketWriter* packetWriter = NULL;
-IpcSender* ipcSender = NULL;
+IpcSocket* ipcSocket = NULL;
 
 void update() {
 	/*
@@ -41,6 +41,7 @@ void update() {
 
 	}
 	*/
+	/*
 	pollfd cinfd[1];
 	int c = cinfd[0].fd = fileno(stdin);
 	cinfd[0].events = POLLIN;
@@ -50,7 +51,8 @@ void update() {
 	if (feof(stdin)){
 		printf("done!\n");
 	}
-	printf("...\n");
+	*/
+
 	content::BrowserThread::PostDelayedTask(content::BrowserThread::UI, FROM_HERE, base::Bind(&update), base::TimeDelta::FromMilliseconds(10));
 
 }
@@ -63,7 +65,6 @@ void Berkelium::init(const std::string& host, const std::string& port,const std:
 	} else {
 		initialised = 1;
 		int p = atoi(port.c_str());
-		fprintf(stderr, "berkelium started on port %d!\n", p);
 		/*
 		fifo_out = open(FIFO_OUT_NAME, O_WRONLY);
 		if(fifo_out == -1) {
@@ -80,21 +81,23 @@ void Berkelium::init(const std::string& host, const std::string& port,const std:
 		IpcSocket* sock = new IpcSocket();
 		int code = sock->connect("127.0.0.1", p);
 		if(code <= 0) {
-			fprintf(stderr, "failed to connect to port %d: %d\n", p, code);
+			fprintf(stderr, "berkelium: failed to connect to port %d: %d\n", p, code);
 			exit(0);
 		}
-		ipcSender = sock;
-		packetWriter = new PacketWriter(ipcSender, 1000);
+		//fprintf(stderr, "berkelium: connected to port %d!\n", p);
+		ipcSocket = sock;
+		packetWriter = new PacketWriter(ipcSocket, 1000);
 	}
 }
 
 void Berkelium::lasyInit() {
 	if(initialised == 1) {
 		initialised = 2;
-		fprintf(stderr, "berkelium update loop started!\n");
+		//fprintf(stderr, "berkelium update loop started!\n");
 		update();
 	} else if(initialised == 2) {
 		// everything is ok
+		//fprintf(stderr, "berkelium: running!\n");
 	} else {
 		fprintf(stderr, "berkelium init error!\n");
 	}
@@ -103,9 +106,9 @@ void Berkelium::lasyInit() {
 void Berkelium::destory() {
 	fprintf(stderr, "berkelium closed!\n");
 	delete packetWriter;
-	delete ipcSender;
+	delete ipcSocket;
 	packetWriter = NULL;
-	ipcSender = NULL;
+	ipcSocket = NULL;
 }
 
 bool Berkelium::isActive() {
