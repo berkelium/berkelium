@@ -18,7 +18,7 @@ public class WindowDelegateProcessor extends BerkeliumProcessor {
 	protected void process(DataInputStream data) throws IOException {
 		short command = data.readShort();
 
-		if(command == Delegate.onPaint.ordinal()) {
+		if(command == Delegate.onPaint) {
 			System.err.println("recv: onPaint!");
 			int to = data.readByte();
 			Rect[] copyRects = new Rect[to];
@@ -31,7 +31,7 @@ public class WindowDelegateProcessor extends BerkeliumProcessor {
 				System.err.println(copyRects[i]);
 			}
 			delegate.onPaint(null, null, null, copyRects, 0, 0, null);
-		} else if(command == Delegate.onTitleChanged.ordinal()) {
+		} else if(command == Delegate.onTitleChanged) {
 			System.err.printf("recv: onTitleChanged('%s')!\n", data.readUTF());
 		} else {
 			System.err.printf("recv: unknown ipc code %d!\n", command);
