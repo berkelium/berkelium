@@ -35,7 +35,7 @@ public class FifoStream {
 				if(readPos == writePos) {
 					throw new IOException("no data available");
 				}
-				int ret = array[readPos];
+				int ret = array[readPos] & 0xFF;
 				readPos++;
 				if(readPos > max) {
 					readPos = 0;

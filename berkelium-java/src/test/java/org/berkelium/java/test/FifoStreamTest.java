@@ -18,6 +18,12 @@ public class FifoStreamTest {
 		DataOutputStream dos = fifo.getDataOutputStream();
 		dos.writeUTF("test UTF8 €...");
 		Assert.assertEquals("test UTF8 €...", dis.readUTF());
+		dos.writeByte(-1);
+		Assert.assertEquals(-1, dis.readByte());
+		dos.writeShort(-1);
+		Assert.assertEquals(-1, dis.readShort());
+		dos.writeInt(-1);
+		Assert.assertEquals(-1, dis.readInt());
 	}
 
 	@Test
@@ -68,7 +74,7 @@ public class FifoStreamTest {
 			dos.write(i);
 		}
 		for(int i = 1; i <= size; i++) {
-			Assert.assertEquals((byte)i, dis.read());
+			Assert.assertEquals(i & 0xFF, dis.read());
 		}
 	}
 
