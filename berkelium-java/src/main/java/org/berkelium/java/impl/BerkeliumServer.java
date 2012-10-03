@@ -54,20 +54,20 @@ public class BerkeliumServer {
 					SocketChannel client = server.accept();
 					client.configureBlocking(false);
 					SelectionKey clientKey = client.register(selector, SelectionKey.OP_READ);
+					clientKey.attach(new BerkeliumConnection(client));
 					clients.add(clientKey);
 					connected = true;
 					System.err.println("new client connected!");
-					// ServerChannel ss = new ServerChannel(manager, broadcast, client);
-					// clientkey.attach(ss);
-					// servers.add(ss);
 				}
-			} else if(!key.isAcceptable()) {
-				System.err.println("client disconnected!");
-				key.cancel();
-				clients.remove(key);
 			} else if(key.isReadable()) {
-				// TODO
-				// System.err.println("reading...");
+				BerkeliumConnection client = (BerkeliumConnection)key.attachment();
+				if(client.read()) {
+					key.interestOps(SelectionKey.OP_READ);
+				} else {
+					System.err.println("client disconnected!");
+					key.cancel();
+					clients.remove(key);
+				}
 			}
 		}
 
