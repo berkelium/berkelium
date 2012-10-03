@@ -1,6 +1,10 @@
 package org.berkelium.java.api;
 
+import java.nio.Buffer;
+
 public interface WindowDelegate {
+	void onWindowClosed(Window win);
+
 	/*
 	void onResize(Window win, int width, int height);
 
@@ -41,9 +45,12 @@ public interface WindowDelegate {
 	void onExternalHost(Window win, String message, String origin, String target);
 
 	void onCreatedWindow(Window win, Window newWindow, Rect initialRect);
+	*/
 
-	void onPaint(Window win, Buffer sourceBuffer, Rect sourceBufferRect, Rect copyRects[], int dx, int dy, Rect scrollRect);
+	void onPaint(Window win, Buffer sourceBuffer, Rect sourceBufferRect, Rect copyRects[], int dx, int dy,
+			Rect scrollRect);
 
+/*
 	void onJavascriptCallback(Window win, String url, String funcName);
 
 	void onRunFileChooser(Window win, int mode, String title, String defaultFile);

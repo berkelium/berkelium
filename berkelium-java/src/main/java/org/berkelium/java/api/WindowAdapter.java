@@ -1,6 +1,12 @@
 package org.berkelium.java.api;
 
+import java.nio.Buffer;
+
 public class WindowAdapter implements WindowDelegate {
+	@Override
+	public void onWindowClosed(Window win) {
+	}
+
 	/*
 	public void onResize(Window win, int width, int height) {
 	}
@@ -47,11 +53,14 @@ public class WindowAdapter implements WindowDelegate {
 			String referrer, boolean isNewWindow, boolean[] cancelDefaultAction) {
 		return false;
 	}
+	*/
 
-	public void onPaint(Window win, Buffer sourceBuffer, Rect sourceBufferRect,
-			Rect[] copyRects, int dx, int dy, Rect scrollRect) {
+	@Override
+	public void onPaint(Window win, Buffer sourceBuffer, Rect sourceBufferRect, Rect[] copyRects, int dx, int dy,
+			Rect scrollRect) {
 	}
 
+/*
 	public void onProvisionalLoadError(Window win, String url, int errorCode,
 			boolean isMainFrame) {
 	}
