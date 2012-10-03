@@ -29,18 +29,11 @@ public class BerkeliumProcess {
 		pull(errSr, errSb);
 	}
 
-	int x = 0;
-
 	private void pull(InputStreamReader sr, StringBuilder sb) {
 		try {
 			while(sr.ready()) {
 				int c = sr.read();
 				if(c == '\n') {
-					x++;
-					if(x >= 5) {
-						process.getOutputStream().close();
-						process.destroy();
-					}
 					runtime.log(sb.toString());
 					sb.setLength(0);
 					continue;
