@@ -93,4 +93,23 @@ void IpcSocket::send(int len, const void* data) {
 	::send(sock, (const char*) data, len, 0);
 }
 
+void IpcSocket::recv() {
+	fd_set rfds;
+	FD_ZERO(&rfds);
+	FD_SET(sock, &rfds);
+
+	struct timeval tv;
+	tv.tv_sec = 0;
+	tv.tv_usec = 0;
+	int retval = select(sock + 1, &rfds, NULL, NULL, &tv);
+	if (retval == -1) {
+		perror("select()");
+	} else if(retval) {
+		char data[1024];
+		size_t size = read(sock, &data, 1024);
+		write(sock, data, size);
+		fprintf(stderr, "DATA\n");
+	}
+}
+
 } // namespace Berkelium

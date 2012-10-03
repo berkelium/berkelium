@@ -30,6 +30,8 @@ public:
 	void send(int op, int len, const void* data);
 
 	void send(int len, const void* data);
+
+	void recv();
 };
 
 } // namespace Berkelium
