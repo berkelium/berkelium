@@ -30,7 +30,8 @@ public:
 	void add_16(short);
 	void add_32(int);
 	void add32s(int, const int* data);
-	void add_data(int, const void* data);
+	void add_data16(int, const void* data);
+	void add_data32(int, const void* data);
 	void add_str(const char*);
 	void add_str(const std::string&);
 

@@ -63,26 +63,33 @@ void PacketWriter::add_32(int data) {
 }
 
 void PacketWriter::add32s(int count, const int* data) {
-	increase((count+1) * 4);
+	increase((count) * 4);
 	add_32(count);
 	for(int i = 0; i < count; ++i) {
 		add_32(data[i]);
 	}
 }
 
-void PacketWriter::add_data(int size, const void* data) {
-	increase(size + 4);
+void PacketWriter::add_data16(int size, const void* data) {
+	increase(size);
+	add_16(size);
+	memcpy(&buffer[used], data, size);
+	used += size;
+}
+
+void PacketWriter::add_data32(int size, const void* data) {
+	increase(size);
 	add_32(size);
 	memcpy(&buffer[used], data, size);
 	used += size;
 }
 
 void PacketWriter::add_str(const char* data) {
-	add_data(strlen(data), data);
+	add_data16(strlen(data), data);
 }
 
 void PacketWriter::add_str(const std::string& data) {
-	add_data(data.size(), data.c_str());
+	add_data16(data.size(), data.c_str());
 }
 
 
