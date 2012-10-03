@@ -107,10 +107,15 @@ public final class BerkeliumImpl implements Berkelium, Runnable {
 		destroyed.set(true);
 	}
 
+	public final static WindowImpl onlyOneWindowSupported = new WindowImpl();
+
 	@Override
 	public Window createWindow() {
 		checkNotDestoryed();
-		return null;
+		return onlyOneWindowSupported;
+		/*
+		return new WindowImpl();
+		*/
 	}
 
 	@Override

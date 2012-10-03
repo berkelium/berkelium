@@ -8,8 +8,11 @@ public class BerkeliumConnection {
 	private final SocketChannel client;
 	private final ByteBuffer buffer = ByteBuffer.allocate(1024 * 4);
 	private final byte[] array = buffer.array();
+	/*
 	private final WindowImpl window = new WindowImpl();
-	private final BerkeliumProcessor processor = new WindowDelegateProcessor(window.getDelegate());
+	*/
+	private final WindowImpl window = BerkeliumImpl.onlyOneWindowSupported;
+	private final BerkeliumProcessor processor = new WindowDelegateProcessor(window, window.getDelegate());
 
 	public BerkeliumConnection(SocketChannel client) {
 		this.client = client;

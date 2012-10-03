@@ -1,15 +1,16 @@
 package org.berkelium.java.api;
 
-import java.nio.Buffer;
-
 public interface WindowDelegate {
 	void onWindowClosed(Window win);
 
 	/*
 	void onResize(Window win, int width, int height);
+	*/
 
+	// this is internally called by BufferedImageAdapter.onPaint
 	void onPaintDone(Window win, Rect rect);
 
+	/*
 	void onAddressBarChanged(Window win, String newURL);
 
 	void onStartLoading(Window win, String newURL);
@@ -31,9 +32,11 @@ public interface WindowDelegate {
 	boolean onNavigationRequested(Window win, String newUrl, String referrer, boolean isNewWindow, boolean cancelDefaultAction[]);
 
 	void onLoadingStateChanged(Window win, boolean isLoading);
+	*/
 
 	void onTitleChanged(Window win, String title);
 
+	/*
 	void onTooltipChanged(Window win, String text);
 
 	void onCrashed(Window win);
@@ -47,7 +50,7 @@ public interface WindowDelegate {
 	void onCreatedWindow(Window win, Window newWindow, Rect initialRect);
 	*/
 
-	void onPaint(Window win, Buffer sourceBuffer, Rect sourceBufferRect, Rect copyRects[], int dx, int dy,
+	void onPaint(Window win, byte[] sourceBuffer, Rect sourceBufferRect, Rect copyRects[], int dx, int dy,
 			Rect scrollRect);
 
 /*

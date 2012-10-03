@@ -1,5 +1,8 @@
 package org.berkelium.java.api;
 
+import java.io.DataInputStream;
+import java.io.IOException;
+
 public class Rect {
 
 	public final int x;
@@ -12,6 +15,10 @@ public class Rect {
 		this.y = y;
 		this.w = w;
 		this.h = h;
+	}
+
+	public Rect(DataInputStream data) throws IOException {
+		this(data.readShort(), data.readShort(), data.readShort(), data.readShort());
 	}
 
 	public int left() {
@@ -51,7 +58,7 @@ public class Rect {
 		int ry = Math.max(top(), rect.top());
 		int rr = Math.min(right(), rect.right());
 		int rb = Math.min(bottom(), rect.bottom());
-		if (rx >= rr || ry >= rb)
+		if(rx >= rr || ry >= rb)
 			rx = ry = rr = rb = 0; // non-intersecting
 		return new Rect(rx, ry, rr - rx, rb - ry);
 	}
@@ -62,7 +69,7 @@ public class Rect {
 	}
 
 	public Rect grow(Rect other) {
-		if (w == 0 || h == 0) {
+		if(w == 0 || h == 0) {
 			return new Rect(other.x, other.y, other.w, other.h);
 		} else {
 			// TODO junit test
@@ -73,11 +80,11 @@ public class Rect {
 			return new Rect(left, top, right - left, bottom - top);
 		}
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof Rect) {
-			Rect r = (Rect) obj;
+			Rect r = (Rect)obj;
 			return r.x == x && r.y == y && r.w == w && r.h == h;
 		}
 		return false;

@@ -16,11 +16,11 @@ public class FifoStream {
 		@Override
 		public void write(int b) throws IOException {
 			synchronized(array) {
-				if(writePos > max) {
-					writePos = 0;
-				}
 				if(readPos == writePos + 1) {
 					throw new IOException("buffer overflow!");
+				}
+				if(writePos == max) {
+					writePos = 0;
 				}
 				array[writePos] = (byte)b;
 				writePos++;
@@ -37,7 +37,7 @@ public class FifoStream {
 				}
 				int ret = array[readPos] & 0xFF;
 				readPos++;
-				if(readPos > max) {
+				if(readPos == max) {
 					readPos = 0;
 				}
 				return ret;

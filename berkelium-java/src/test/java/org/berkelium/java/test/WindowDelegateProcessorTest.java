@@ -1,7 +1,6 @@
 package org.berkelium.java.test;
 
 import java.io.IOException;
-import java.nio.Buffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import junit.framework.Assert;
@@ -19,7 +18,7 @@ public class WindowDelegateProcessorTest {
 		final AtomicBoolean test = new AtomicBoolean();
 		WindowDelegate delegate = new WindowAdapter() {
 			@Override
-			public void onPaint(Window win, Buffer sourceBuffer, Rect sourceBufferRect, Rect[] copyRects, int dx,
+			public void onPaint(Window win, byte[] sourceBuffer, Rect sourceBufferRect, Rect[] copyRects, int dx,
 					int dy, Rect scrollRect) {
 				test.set(true);
 				Assert.assertEquals(1, copyRects.length);
@@ -29,7 +28,7 @@ public class WindowDelegateProcessorTest {
 				Assert.assertEquals(600, copyRects[0].h);
 			}
 		};
-		WindowDelegateProcessor subject = new WindowDelegateProcessor(delegate);
+		WindowDelegateProcessor subject = new WindowDelegateProcessor(null, delegate);
 
 		subject.process(IpcTestData.onPaint, 0, IpcTestData.onPaint.length);
 

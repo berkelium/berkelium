@@ -15,25 +15,29 @@ public abstract class BerkeliumProcessor {
 			return true;
 		}
 		dos.write(b, off, len);
-		int a = dis.available();
-		if(toRead == 0 && a >= 4) {
-			toRead = dis.readInt();
-			a -= 4;
-		}
-		if(toRead == 4) {
-			// disconnect command
-			return false;
-		}
-		int d = a - toRead;
-		if(toRead != 0 && d >= 0) {
-			process(dis);
-			while(dis.available() < d) {
-				System.err.println("Warning: skipping byte!");
-				dis.read();
+		while(true) {
+			int a = dis.available();
+			if(toRead == 0 && a >= 4) {
+				toRead = dis.readInt();
+				a -= 4;
 			}
-			toRead = 0;
+			if(toRead == 4) {
+				// disconnect command
+				return false;
+			}
+			int d = a - toRead;
+			if(toRead != 0 && d >= 0) {
+				process(dis);
+				int skip = dis.available() - d;
+				if(skip > 0) {
+					System.err.printf("skipping %d bytes\n", skip);
+					dis.skipBytes(skip);
+				}
+				toRead = 0;
+			} else {
+				return true;
+			}
 		}
-		return true;
 	}
 
 	protected abstract void process(DataInputStream data) throws IOException;

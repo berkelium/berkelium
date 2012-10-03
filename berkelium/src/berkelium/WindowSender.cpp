@@ -46,6 +46,16 @@ void WindowSender::OnMsgUpdateRect(const ViewHostMsg_UpdateRect_Params& params) 
 	*/
 	ChromiumPacketWriter::write(*pw, params.copy_rects);
 	/*
+	pw->add_8(params.copy_rects.size());
+	for (std::vector<gfx::Rect>::const_iterator it = rects.begin(); it != rects.end(); ++it) {
+		ChromiumPacketWriter::write(w, *it);
+	}
+	*/
+	const gfx::Rect& r = params.bitmap_rect;
+	ChromiumPacketWriter::write(*pw, r);
+	pw->add_data32(r.width() * r.height() * 4, dib->memory());
+
+	/*
 	w.add(sourceBufferRect);
 	w.add(params.copy_rects);
 	w.add16(dx);

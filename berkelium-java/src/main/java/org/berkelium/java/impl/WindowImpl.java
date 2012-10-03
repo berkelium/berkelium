@@ -6,6 +6,7 @@ import org.berkelium.java.api.WindowDelegate;
 public class WindowImpl implements Window {
 	private final MultiDelegate delegate = new MultiDelegate();
 
+	@Override
 	public WindowDelegate getDelegate() {
 		return delegate.getProxy();
 	}

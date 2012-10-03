@@ -1,9 +1,8 @@
 package org.berkelium.java.api;
 
 public interface Window {
-/*
 	WindowDelegate getDelegate();
-*/
+
 	void addDelegate(WindowDelegate delegate);
 
 	void removeDelegate(WindowDelegate delegate);

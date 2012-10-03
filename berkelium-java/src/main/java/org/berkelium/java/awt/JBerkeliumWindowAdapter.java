@@ -26,6 +26,10 @@ public final class JBerkeliumWindowAdapter implements InvocationHandler {
 	}
 
 	public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
+		if(SwingUtilities.isEventDispatchThread()) {
+			return method.invoke(delegate, args);
+		}
+
 		final AtomicReference<Object> ret = new AtomicReference<Object>();
 		final AtomicReference<InvocationTargetException> ex = new AtomicReference<InvocationTargetException>();
 		if(method.getReturnType() == void.class) {
