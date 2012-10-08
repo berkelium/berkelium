@@ -30,4 +30,8 @@ public class BerkeliumConnection {
 		buffer.rewind();
 		return ret;
 	}
+
+	public void close() throws IOException {
+		client.close();
+	}
 }

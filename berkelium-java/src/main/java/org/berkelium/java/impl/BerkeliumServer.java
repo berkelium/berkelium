@@ -87,4 +87,13 @@ public class BerkeliumServer {
 		}
 		throw new RuntimeException("no free port found!");
 	}
+
+	public void destory() throws IOException {
+		selector.close();
+		server.close();
+		for(SelectionKey key : clients) {
+			BerkeliumConnection client = (BerkeliumConnection)key.attachment();
+			client.close();
+		}
+	}
 }

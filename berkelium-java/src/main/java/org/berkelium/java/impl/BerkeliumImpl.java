@@ -71,6 +71,11 @@ public final class BerkeliumImpl implements Berkelium, Runnable {
 	}
 
 	private void shutdownThread() {
+		try {
+			server.destory();
+		} catch (IOException e) {
+			handleThrowable(e);
+		}
 		process.destroy();
 	}
 
@@ -105,6 +110,11 @@ public final class BerkeliumImpl implements Berkelium, Runnable {
 
 	public synchronized void destory() {
 		destroyed.set(true);
+		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			// ignore
+		}
 	}
 
 	public final static WindowImpl onlyOneWindowSupported = new WindowImpl();

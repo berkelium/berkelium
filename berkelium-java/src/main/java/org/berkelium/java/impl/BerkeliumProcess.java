@@ -46,6 +46,21 @@ public class BerkeliumProcess {
 	}
 
 	public void destroy() {
+		while(true) {
+			try {
+				process.exitValue();
+				break;
+			} catch (IllegalThreadStateException e) {
+				// ignore
+			}
+			update();
+
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				break;
+			}
+		}
 		process.destroy();
 		update();
 	}
