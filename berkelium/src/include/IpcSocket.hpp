@@ -31,7 +31,7 @@ public:
 
 	void send(int len, const void* data);
 
-	void recv();
+	bool recv();
 };
 
 } // namespace Berkelium

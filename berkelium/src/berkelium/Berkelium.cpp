@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "Berkelium.hpp"
+#include "WindowActions.hpp"
 
 #include "content/public/browser/browser_thread.h"
 
@@ -18,12 +19,34 @@
 
 #include <poll.h>
 
+#include <set>
+
 namespace Berkelium {
+
+std::set<WindowActions*> allWindows;
+
+void Berkelium::addWindow(WindowActions* window) {
+	fprintf(stderr, "berkelium addWindow!\n");
+	allWindows.insert(window);
+}
+
+void Berkelium::removeWindow(WindowActions* window) {
+	fprintf(stderr, "berkelium removeWindow!\n");
+	allWindows.erase(window);
+}
 
 PacketWriter* packetWriter = NULL;
 IpcSocket* ipcSocket = NULL;
 
 void update() {
+	if(!ipcSocket->recv()) {
+		fprintf(stderr, "berkelium update down!\n");
+		for(std::set<WindowActions*>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
+			fprintf(stderr, "berkelium Shutdown!\n");
+			(*it)->Shutdown();
+		}
+		return;
+	}
 	/*
 	fd_set rfds;
 	FD_ZERO(&rfds);

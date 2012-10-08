@@ -16,11 +16,12 @@ class RenderProcessHost;
 
 namespace Berkelium {
 
+class WindowActions;
 class IpcSender;
 
 class WindowSender {
 public:
-	WindowSender(content::RenderProcessHost*);
+	WindowSender(content::RenderProcessHost*, WindowActions*);
 	virtual ~WindowSender();
 
 	virtual bool OnMessageReceived(const IPC::Message& msg);
@@ -31,6 +32,7 @@ protected:
 	void OnMsgContextMenu(const content::ContextMenuParams& params);
 
 private:
+	WindowActions* actions;
 	content::RenderProcessHost* process;
 	int channelId;
 

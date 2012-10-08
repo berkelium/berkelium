@@ -17,7 +17,8 @@
 
 namespace Berkelium {
 
-WindowSender::WindowSender(content::RenderProcessHost* process) :
+WindowSender::WindowSender(content::RenderProcessHost* process, WindowActions* actions) :
+	actions(actions),
 	process(process),
 	channelId(-1)
 {

@@ -4,6 +4,7 @@
 
 #include "Berkelium.hpp"
 #include "MemoryRenderViewHostFactory.hpp"
+#include "WindowActions.hpp"
 #include "WindowSender.hpp"
 
 #include "base/utf_string_conversions.h"
@@ -15,7 +16,7 @@
 
 namespace Berkelium {
 
-class MemoryRenderViewHost : public content::RenderViewHostImpl {
+class MemoryRenderViewHost : public content::RenderViewHostImpl, WindowActions {
 private:
 	scoped_ptr<WindowSender> window;
 
@@ -35,7 +36,7 @@ public:
 		bool swapped_out,
 		content::SessionStorageNamespace* session_storage_namespace)
 	: content::RenderViewHostImpl(instance, delegate, widget_delegate, routing_id, swapped_out, session_storage_namespace),
-	window(new WindowSender(GetProcess())),
+	window(new WindowSender(GetProcess(), this)),
 	instance(instance),
 	delegate(delegate),
 	widget_delegate(widget_delegate),
@@ -55,6 +56,10 @@ public:
 		// after processing them with berkelium,
 		// just pass them to chrome
 		return content::RenderViewHostImpl::OnMessageReceived(msg);
+	}
+
+	virtual void Shutdown() {
+		content::RenderViewHostImpl::Shutdown();
 	}
 };
 
