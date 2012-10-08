@@ -16,7 +16,7 @@ public class BerkeliumProcess {
 	public BerkeliumProcess(int port, Berkelium runtime) {
 		this.runtime = runtime;
 		try {
-			process = Runtime.getRuntime().exec("../berkelium/berkelium --berkelium=127.0.0.1:" + port);
+			process = Runtime.getRuntime().exec("../berkelium/berkelium about:blank --berkelium=127.0.0.1:" + port);
 			outSr = new InputStreamReader(process.getInputStream());
 			errSr = new InputStreamReader(process.getErrorStream());
 		} catch (IOException e) {
