@@ -12,6 +12,15 @@ namespace Berkelium {
 
 namespace IpcConstants {
 
+namespace Window {
+
+enum {
+	DESTROY = 0, //
+	NAVIGATE_TO = 1, //
+};
+
+} // namespace Window
+
 namespace Delegate {
 
 enum {

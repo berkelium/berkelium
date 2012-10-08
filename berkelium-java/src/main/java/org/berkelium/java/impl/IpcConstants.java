@@ -10,8 +10,9 @@ public interface IpcConstants {
 	};
 
 	public static interface Window {
-		/*
 		final static int DESTROY = 0;
+		final static int NAVIGATE_TO = 1;
+		/*
 		final static int TRANSPARENT = 1;
 		final static int FOCUS = 2;
 		final static int UNFOCUS = 3;
@@ -24,7 +25,6 @@ public interface IpcConstants {
 		final static int RESIZE = 10;
 		final static int EXECUTE_JAVASCRIPT = 11;
 		final static int INSERT_CSS = 12;
-		final static int NAVIGATE_TO = 13;
 		final static int REFRESH = 14;
 		final static int STOP = 15;
 		final static int GO_BACK = 16;
