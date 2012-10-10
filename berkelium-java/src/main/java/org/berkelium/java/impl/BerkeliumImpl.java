@@ -110,6 +110,9 @@ public final class BerkeliumImpl implements Berkelium, Runnable {
 
 	public synchronized void destory() {
 		destroyed.set(true);
+		if(Thread.currentThread() == thread) {
+			return;
+		}
 		try {
 			thread.join();
 		} catch (InterruptedException e) {
