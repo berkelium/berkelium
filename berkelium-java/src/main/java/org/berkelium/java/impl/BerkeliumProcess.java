@@ -6,6 +6,9 @@ import java.io.InputStreamReader;
 import org.berkelium.java.api.Berkelium;
 
 public class BerkeliumProcess {
+	private final static String PREFIX_OUT = "out: ";
+	private final static String PREFIX_ERR = "err: ";
+
 	private final Berkelium runtime;
 	private final Process process;
 	private final InputStreamReader outSr;
@@ -25,16 +28,16 @@ public class BerkeliumProcess {
 	}
 
 	public void update() {
-		pull(outSr, outSb);
-		pull(errSr, errSb);
+		pull(outSr, outSb, PREFIX_OUT);
+		pull(errSr, errSb, PREFIX_ERR);
 	}
 
-	private void pull(InputStreamReader sr, StringBuilder sb) {
+	private void pull(InputStreamReader sr, StringBuilder sb, String prefix) {
 		try {
 			while(sr.ready()) {
 				int c = sr.read();
 				if(c == '\n') {
-					runtime.log(sb.toString());
+					runtime.log(prefix + sb.toString());
 					sb.setLength(0);
 					continue;
 				}
@@ -54,6 +57,14 @@ public class BerkeliumProcess {
 				// ignore
 			}
 			update();
+
+			// flush streams...
+			if(outSb.length() != 0) {
+				runtime.log(PREFIX_OUT + outSb.toString());
+			}
+			if(errSb.length() != 0) {
+				runtime.log(PREFIX_ERR + errSb.toString());
+			}
 
 			try {
 				Thread.sleep(10);
