@@ -40,8 +40,6 @@ solutions = [
         "src/content/test/data/layout_tests/LayoutTests/storage/domstorage": None,
         "src/content/test/data/layout_tests/LayoutTests/storage/indexeddb": None,
         "src/third_party/hunspell_dictionaries": None,
-        "src/third_party/libphonenumber/src/test": None,
-        "src/third_party/safe_browsing/testing": None,
     },
     "safesync_url": "",
   },
