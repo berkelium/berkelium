@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <api>
-	<mapping type="c">
+	<mapping type="c" class-prefix="BK_">
 		<type name="int32" value="bk_int32"/>
 		<type name="bool" value="bk_bool"/>
 		<type name="string" value="bk_string"/>
-		<type name="HostExecutable"/>
-		<type name="HostVersion"/>
-		<type name="Profile"/>
 	</mapping>
-	<group type="class" name="HostVersion">
+	<mapping type="java">
+		<type name="int32" value="int"/>
+		<type name="bool" value="boolean"/>
+		<type name="string" value="String"/>
+	</mapping>
+	<group type="interface" name="HostVersion">
 		<entry name="getVersionString" ret="string">
 			<short>Returns the berkelium host version e.g. “22.0.1229.94”</short>
 		</entry>
@@ -26,18 +28,36 @@
 		</entry>
 		<entry name="isMinVersion" ret="bool">
 			<arg type="string" name="version"/>
-			<short>Returns true if the given Version is less or equal to the version of the executable represented by this BerkeliumExecutable object.</short>
+			<short>Returns true if the given Version is less or equal to the version of the executable represented by this executable object.</short>
 		</entry>
 	</group>
-	<group type="class" name="HostExecutable">
-		<short>Represents a reference to the executable file of the berkelium host process.</short>
-		<entry static="true" name="forExecutable" ret="HostExecutable" t1="string" n1="pathTo">
-			<short>Creates an BerkeliumHostExecutable Object representing the given executable.</short>
+	<group type="class" name="HostExecutableFactory">
+		<implementation type="java"><![CDATA[	private static HostExecutableFactory instance;
+
+	public synchronized static HostExecutableFactory getInstance() {
+		if(instance == null) {
+			try {
+				Class<?> c = HostExecutableFactory.class.getClassLoader().loadClass(
+					"org.berkelium.impl.HostExecutableFactoryImpl");
+				instance = (HostExecutableFactory)c.getConstructor().newInstance();
+			} catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+		return instance;
+	}
+		]]></implementation>
+		<entry static="true" name="forExecutable" ret="HostExecutable">
+			<arg type="string" name="pathTo"/>
+			<short>Creates an HostExecutable Object representing the given executable.</short>
 		</entry>
 		<entry static="true" name="forSystemInstalled" ret="HostExecutable">
-			<short>Creates an BerkeliumHostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)</short>
+			<short>Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)</short>
 			<todo>Maybe a version number should be given here</todo>
 		</entry>
+	</group>
+	<group type="interface" name="HostExecutable">
+		<short>Represents a reference to the executable file of the berkelium host process.</short>
 		<entry name="getVersion" ret="HostVersion">
 			<short>Returns the version of this berkelium host executable.</short>
 		</entry>
@@ -54,4 +74,40 @@
 			<short>Creates a temporary profile that gets automatically removed after use.</short>
 		</entry>
 	</group>
+	<group type="interface" name="Profile">
+		<short>Represents a berkelium profile on disk.</short>
+		<entry name="isInUse" ret="bool">
+			<short>Returns true if this profile is already in use.</short>
+		</entry>
+		<entry name="isFound" ret="bool">
+			<short>Returns true if this profile was found on disk.</short>
+		</entry>
+		<entry name="isSameVersion" ret="bool">
+			<short>Returns true if this profile can be used without updating this profile to a newer version.</short>
+		</entry>
+		<entry name="isTooNew" ret="bool">
+			<short>Returns true if this profile is from a newer berkelium host version.</short>
+		</entry>
+		<entry name="getApplicationName" ret="string">
+			<short>Returns the name of the application or “berkelium” if not specified.</short>
+		</entry>
+		<entry name="getProfileName" ret="string">
+			<short>Returns the name of the profile or “default” if not specified.</short>
+		</entry>
+		<entry name="getProfilePath" ret="string">
+			<short>Returns the full path to the used Profile.</short>
+		</entry>
+		<entry name="open" ret="Instance">
+			<short>Launches a new berkelium host process using this profile.</short>
+		</entry>
+	</group>
+	<group type="interface" name="Instance">
+	</group>
+<!--
+	<group type="class" name="Profile">
+		<entry name="" ret="">
+			<short></short>
+		</entry>
+	</group>
+-->
 </api>
