@@ -6,6 +6,7 @@
 
 <xsl:template match="/api">
 	<xsl:call-template name="c"/>
+	<xsl:call-template name="cpp"/>
 	<xsl:call-template name="java"/>
 </xsl:template>
 
@@ -15,6 +16,25 @@
 #
 </xsl:text>
 	<xsl:text>/usr/bin/xsltproc -o ../berkelium-c/include/berkelium.h api/api-c.xslt api/api.xml</xsl:text>
+	<xsl:text>
+
+</xsl:text>
+</xsl:template>
+
+<xsl:template name="cpp">
+	<xsl:text>#
+# C++ API
+#
+</xsl:text>
+	<xsl:for-each select="/api/group">
+		<xsl:text>/usr/bin/xsltproc --stringparam class </xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text> -o ../berkelium-cpp/src/include/berkelium/</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>.hpp api/api-cpp.xslt api/api.xml</xsl:text>
+	<xsl:text>
+</xsl:text>
+	</xsl:for-each>
 	<xsl:text>
 
 </xsl:text>
