@@ -12,7 +12,7 @@ package org.berkelium.api;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class HostExecutableFactory {
+public abstract class HostExecutableFactory {
 	private static HostExecutableFactory instance;
 
 	public synchronized static HostExecutableFactory getInstance() {
@@ -29,8 +29,8 @@ public class HostExecutableFactory {
 	}
 		
 	// Creates an HostExecutable Object representing the given executable.
-	HostExecutable forExecutable(String pathTo);
+	public abstract HostExecutable forExecutable(String pathTo);
 
 	// Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
-	HostExecutable forSystemInstalled();
+	public abstract HostExecutable forSystemInstalled();
 }

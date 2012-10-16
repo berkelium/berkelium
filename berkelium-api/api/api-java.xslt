@@ -31,8 +31,17 @@
 
 	<!-- class definition -->
 	<xsl:text>public </xsl:text>
-	<xsl:value-of select="$group/@type"/>
-	<xsl:text> </xsl:text>
+	<xsl:choose>
+		<xsl:when test="$group/@type='class'">
+			<xsl:text>abstract class </xsl:text>
+		</xsl:when>
+		<xsl:when test="$group/@type='interface'">
+			<xsl:text>interface </xsl:text>
+		</xsl:when>
+		<xsl:otherwise>
+			!!ERROR!!
+		</xsl:otherwise>
+	</xsl:choose>
 	<xsl:value-of select="$class"/>
 	<xsl:text> {
 </xsl:text>
@@ -64,8 +73,20 @@
 </xsl:text>
 	</xsl:if>
 
+	<!-- member definition -->
+	<xsl:choose>
+		<xsl:when test="../@type='class'">
+			<xsl:text>	public abstract </xsl:text>
+		</xsl:when>
+		<xsl:when test="../@type='interface'">
+			<xsl:text>	</xsl:text>
+		</xsl:when>
+		<xsl:otherwise>
+			!!ERROR!!
+		</xsl:otherwise>
+	</xsl:choose>
+
 	<!-- member return type -->
-	<xsl:text>	</xsl:text>
 	<xsl:call-template name="type">
 		<xsl:with-param name="name" select="@ret"/>
 	</xsl:call-template>
