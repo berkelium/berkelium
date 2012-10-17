@@ -20,6 +20,7 @@
 
 	<xsl:text>#include &lt;string&gt;
 #include &lt;memory&gt;
+#include &lt;cstdint&gt;
 
 namespace Berkelium {
 
