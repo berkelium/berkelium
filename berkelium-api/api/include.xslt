@@ -43,6 +43,7 @@
 		<xsl:when test="/api/group[@name = $name]">
 			<xsl:value-of select="/api/mapping[@type=$lang]/@class-prefix"/>
 			<xsl:value-of select="$name"/>
+			<xsl:value-of select="/api/mapping[@type=$lang]/@class-postfix"/>
 		</xsl:when>
 		<xsl:otherwise>
 			<xsl:text>!!ERROR: Type '</xsl:text>
@@ -66,6 +67,31 @@
 			<xsl:text>, </xsl:text>
 		</xsl:if>
 	</xsl:for-each>
+</xsl:template>
+
+<xsl:template name="include-guard-start">
+	<!-- TODO: not very important, but some underscores are missing ;-) -->
+	<xsl:variable name="guard" select="concat('BERKELIUM_', translate($class, $smallcase, $uppercase),'_HPP_')"/>
+
+	<xsl:text>#ifndef </xsl:text>
+	<xsl:value-of select="$guard"/>
+	<xsl:text>
+#define </xsl:text>
+	<xsl:value-of select="$guard"/>
+	<xsl:text>
+#pragma once
+
+</xsl:text>
+</xsl:template>
+
+<xsl:template name="include-guard-end">
+	<!-- TODO: not very important, but some underscores are missing ;-) -->
+	<xsl:variable name="guard" select="concat('BERKELIUM_', translate($class, $smallcase, $uppercase),'_HPP_')"/>
+
+	<xsl:text>#endif // </xsl:text>
+	<xsl:value-of select="$guard"/>
+	<xsl:text>
+</xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>

@@ -14,17 +14,33 @@
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-#include <string>
+#include "berkelium/berkelium.hpp"
 
 namespace Berkelium {
 
-class HostVersion;
-class HostExecutableFactory;
-class HostExecutable;
-class Profile;
-class Instance;
+class HostVersion {
+protected:
+	inline HostVersion() {}
+	inline virtual ~HostVersion() {}
 
-public interface HostVersion {
+public:
+	// Returns the berkelium host version e.g. “22.0.1229.94”
+	virtual const std::string& getVersionString();
+
+	// Returns the Major Version, e.g. “22”
+	virtual bk_int32 getMajor();
+
+	// Returns the Minor Version, always zero?
+	virtual bk_int32 getMinor();
+
+	// Returns the Build Version, e.g. “1229”
+	virtual bk_int32 getBuild();
+
+	// Returns the Patch Version, e.g. “94”
+	virtual bk_int32 getPatch();
+
+	// Returns true if the given Version is less or equal to the version of the executable represented by this executable object.
+	virtual bool isMinVersion(const std::string& version);
 };
 
 } // namespace Berkelium

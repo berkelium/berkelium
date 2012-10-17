@@ -14,18 +14,40 @@
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-#include <string>
+#include "berkelium/berkelium.hpp"
 
 namespace Berkelium {
 
-class HostVersion;
-class HostExecutableFactory;
-class HostExecutable;
-class Profile;
-class Instance;
-
 // Represents a berkelium profile on disk.
-public interface Profile {
+class Profile {
+protected:
+	inline Profile() {}
+	inline virtual ~Profile() {}
+
+public:
+	// Returns true if this profile is already in use.
+	virtual bool isInUse();
+
+	// Returns true if this profile was found on disk.
+	virtual bool isFound();
+
+	// Returns true if this profile can be used without updating this profile to a newer version.
+	virtual bool isSameVersion();
+
+	// Returns true if this profile is from a newer berkelium host version.
+	virtual bool isTooNew();
+
+	// Returns the name of the application or “berkelium” if not specified.
+	virtual const std::string& getApplicationName();
+
+	// Returns the name of the profile or “default” if not specified.
+	virtual const std::string& getProfileName();
+
+	// Returns the full path to the used Profile.
+	virtual const std::string& getProfilePath();
+
+	// Launches a new berkelium host process using this profile.
+	virtual InstanceRef open();
 };
 
 } // namespace Berkelium

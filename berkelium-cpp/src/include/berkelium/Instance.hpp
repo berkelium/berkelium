@@ -14,18 +14,16 @@
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-#include <string>
+#include "berkelium/berkelium.hpp"
 
 namespace Berkelium {
 
-class HostVersion;
-class HostExecutableFactory;
-class HostExecutable;
-class Profile;
-class Instance;
+class Instance {
+protected:
+	inline Instance() {}
+	inline virtual ~Instance() {}
 
-public interface Instance {
-};
+public:};
 
 } // namespace Berkelium
 

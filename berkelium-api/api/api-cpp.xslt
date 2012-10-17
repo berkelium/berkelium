@@ -13,46 +13,16 @@
 <!-- ============================================================= -->
 <xsl:template match="/api">
 	<xsl:variable name="group" select="group[@name=$class]"/>
-	<!-- TODO: not very important, but some underscores are missing ;-) -->
-	<xsl:variable name="guard" select="concat('BERKELIUM_', translate($class, $smallcase, $uppercase),'_HPP_')"/>
 
 	<!-- header -->
 	<xsl:call-template name="comment-header"/>
-	<xsl:text>#ifndef </xsl:text>
-	<xsl:value-of select="$guard"/>
-	<xsl:text>
-#define </xsl:text>
-	<xsl:value-of select="$guard"/>
-	<xsl:text>
-#pragma once
-
-</xsl:text>
+	<xsl:call-template name="include-guard-start"/>
 	<xsl:call-template name="comment-generated"/>
 
-	<xsl:text>#include &lt;string&gt;
+	<xsl:text>#include "berkelium/berkelium.hpp"
 
 namespace Berkelium {
 
-</xsl:text>
-
-	<!-- forward defs -->
-	<xsl:for-each select="/api/group">
-		<xsl:choose>
-			<xsl:when test="@type='class'">
-				<xsl:text>class </xsl:text>
-			</xsl:when>
-			<xsl:when test="@type='interface'">
-				<xsl:text>class </xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				!!ERROR!!
-			</xsl:otherwise>
-		</xsl:choose>
-		<xsl:value-of select="@name"/>
-		<xsl:text>;
-</xsl:text>
-	</xsl:for-each>
-	<xsl:text>
 </xsl:text>
 
 	<!-- class comment -->
@@ -64,24 +34,29 @@ namespace Berkelium {
 	</xsl:if>
 
 	<!-- class definition -->
-	<xsl:text>public </xsl:text>
-	<xsl:choose>
-		<xsl:when test="$group/@type='class'">
-			<xsl:text>abstract class </xsl:text>
-		</xsl:when>
-		<xsl:when test="$group/@type='interface'">
-			<xsl:text>interface </xsl:text>
-		</xsl:when>
-		<xsl:otherwise>
-			!!ERROR!!
-		</xsl:otherwise>
-	</xsl:choose>
+	<xsl:text>class </xsl:text>
 	<xsl:value-of select="$class"/>
 	<xsl:text> {
 </xsl:text>
 
+	<!-- interface -->
+	<xsl:if test="$group/@type='interface'">
+		<xsl:text>protected:
+	inline </xsl:text>
+		<xsl:value-of select="$class"/>
+		<xsl:text>() {}
+	inline virtual ~</xsl:text>
+		<xsl:value-of select="$class"/>
+		<xsl:text>() {}
+
+</xsl:text>
+
+	</xsl:if>
+
 	<!-- class implementation -->
 	<xsl:value-of select="$group/implementation[@type=$lang]"/>
+
+	<xsl:text>public:</xsl:text>
 
 	<!-- class members -->
 	<xsl:apply-templates select="$group/entry"/>
@@ -90,18 +65,41 @@ namespace Berkelium {
 
 } // namespace Berkelium
 
-#endif // </xsl:text>
-	<xsl:value-of select="$guard"/>
-	<xsl:text>
 </xsl:text>
-
+	<xsl:call-template name="include-guard-end"/>
 </xsl:template>
 
 <!-- ============================================================= -->
 <!-- Class Member                                                  -->
 <!-- ============================================================= -->
 <xsl:template match="group/entry">
-	<!-- TODO -->
+
+	<xsl:if test="short">
+		<xsl:text>
+	// </xsl:text>
+		<xsl:value-of select="short"/>
+		<xsl:text>
+</xsl:text>
+	</xsl:if>
+
+	<xsl:text>	</xsl:text>
+	<xsl:choose>
+		<xsl:when test="@static='true'">
+			<xsl:text>static </xsl:text>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:text>virtual </xsl:text>
+		</xsl:otherwise>
+	</xsl:choose>
+	<xsl:call-template name="type">
+		<xsl:with-param name="name" select="@ret"/>
+	</xsl:call-template>
+	<xsl:text> </xsl:text>
+	<xsl:value-of select="@name"/>
+	<xsl:text>(</xsl:text>
+	<xsl:call-template name="arguments"/>
+	<xsl:text>);
+</xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>

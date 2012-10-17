@@ -14,17 +14,17 @@
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-#include <string>
+#include "berkelium/berkelium.hpp"
 
 namespace Berkelium {
 
-class HostVersion;
-class HostExecutableFactory;
-class HostExecutable;
-class Profile;
-class Instance;
+class HostExecutableFactory {
+public:
+	// Creates an HostExecutable Object representing the given executable.
+	static HostExecutableRef forExecutable(const std::string& pathTo);
 
-public abstract class HostExecutableFactory {
+	// Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
+	static HostExecutableRef forSystemInstalled();
 };
 
 } // namespace Berkelium

@@ -14,18 +14,28 @@
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-#include <string>
+#include "berkelium/berkelium.hpp"
 
 namespace Berkelium {
 
-class HostVersion;
-class HostExecutableFactory;
-class HostExecutable;
-class Profile;
-class Instance;
-
 // Represents a reference to the executable file of the berkelium host process.
-public interface HostExecutable {
+class HostExecutable {
+protected:
+	inline HostExecutable() {}
+	inline virtual ~HostExecutable() {}
+
+public:
+	// Returns the version of this berkelium host executable.
+	virtual HostVersionRef getVersion();
+
+	// Returns the default profile for the given application name. A profile can only be held open by one instance at the same time . An exception is thrown of the profile is already be used.
+	virtual ProfileRef forProfile(const std::string& application);
+
+	// As above, but instead the given profile is used.
+	virtual ProfileRef forProfile(const std::string& application, const std::string& profile);
+
+	// Creates a temporary profile that gets automatically removed after use.
+	virtual ProfileRef createTemporaryProfile();
 };
 
 } // namespace Berkelium
