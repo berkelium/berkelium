@@ -19,7 +19,7 @@
 	<xsl:call-template name="include-guard-start"/>
 	<xsl:call-template name="comment-generated"/>
 
-	<xsl:text>#include "berkelium/berkelium.hpp"
+	<xsl:text>#include "berkelium/Berkelium.hpp"
 
 namespace Berkelium {
 

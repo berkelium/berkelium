@@ -14,7 +14,7 @@
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-#include "berkelium/berkelium.hpp"
+#include "berkelium/Berkelium.hpp"
 
 namespace Berkelium {
 
@@ -28,16 +28,16 @@ public:
 	virtual const std::string& getVersionString();
 
 	// Returns the Major Version, e.g. “22”
-	virtual bk_int32 getMajor();
+	virtual int32_t getMajor();
 
 	// Returns the Minor Version, always zero?
-	virtual bk_int32 getMinor();
+	virtual int32_t getMinor();
 
 	// Returns the Build Version, e.g. “1229”
-	virtual bk_int32 getBuild();
+	virtual int32_t getBuild();
 
 	// Returns the Patch Version, e.g. “94”
-	virtual bk_int32 getPatch();
+	virtual int32_t getPatch();
 
 	// Returns true if the given Version is less or equal to the version of the executable represented by this executable object.
 	virtual bool isMinVersion(const std::string& version);

@@ -14,7 +14,7 @@
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-#include "berkelium/berkelium.hpp"
+#include "berkelium/Berkelium.hpp"
 
 namespace Berkelium {
 

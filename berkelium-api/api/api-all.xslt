@@ -25,6 +25,7 @@
 	<xsl:text>#
 # C++ API
 #
+/usr/bin/xsltproc -o ../berkelium-cpp/src/include/berkelium/Berkelium.hpp api/api-cpp-global.xslt api/api.xml
 </xsl:text>
 	<xsl:for-each select="/api/group">
 		<xsl:text>/usr/bin/xsltproc --stringparam class </xsl:text>

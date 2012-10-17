@@ -6,7 +6,7 @@
 		<type name="string" value="bk_string"/>
 	</mapping>
 	<mapping type="cpp" class-postfix="Ref">
-		<type name="int32" value="bk_int32"/>
+		<type name="int32" value="int32_t"/>
 		<type name="bool" value="bool"/>
 		<type name="string" value="const std::string&amp;"/>
 	</mapping>
