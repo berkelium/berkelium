@@ -20,19 +20,19 @@
 namespace Berkelium {
 
 class HostVersion;
-typedef std::​shared_ptr<HostVersion> HostVersionRef;
+typedef std::shared_ptr<HostVersion> HostVersionRef;
 
 class HostExecutableFactory;
-typedef std::​shared_ptr<HostExecutableFactory> HostExecutableFactoryRef;
+typedef std::shared_ptr<HostExecutableFactory> HostExecutableFactoryRef;
 
 class HostExecutable;
-typedef std::​shared_ptr<HostExecutable> HostExecutableRef;
+typedef std::shared_ptr<HostExecutable> HostExecutableRef;
 
 class Profile;
-typedef std::​shared_ptr<Profile> ProfileRef;
+typedef std::shared_ptr<Profile> ProfileRef;
 
 class Instance;
-typedef std::​shared_ptr<Instance> InstanceRef;
+typedef std::shared_ptr<Instance> InstanceRef;
 
 } // namespace Berkelium
 

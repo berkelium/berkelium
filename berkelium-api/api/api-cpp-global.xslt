@@ -43,7 +43,7 @@ namespace Berkelium {
 		<xsl:text>;
 </xsl:text>
 		<!-- type pointer -->
-		<xsl:text>typedef std::​shared_ptr&lt;</xsl:text>
+		<xsl:text>typedef std::shared_ptr&lt;</xsl:text>
 		<xsl:value-of select="@name"/>
 		<xsl:text>&gt; </xsl:text>
 		<xsl:value-of select="@name"/>
