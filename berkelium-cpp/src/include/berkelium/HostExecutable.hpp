@@ -22,6 +22,8 @@ namespace Berkelium {
 class HostExecutable {
 protected:
 	inline HostExecutable() {}
+
+public:
 	inline virtual ~HostExecutable() {}
 
 public:

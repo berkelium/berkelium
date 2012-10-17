@@ -21,6 +21,8 @@ namespace Berkelium {
 class HostVersion {
 protected:
 	inline HostVersion() {}
+
+public:
 	inline virtual ~HostVersion() {}
 
 public:

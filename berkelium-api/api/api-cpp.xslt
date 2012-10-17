@@ -39,12 +39,17 @@ namespace Berkelium {
 	<xsl:text> {
 </xsl:text>
 
+	<!-- class implementation -->
+	<xsl:value-of select="$group/implementation[@type=$lang]"/>
+
 	<!-- interface -->
 	<xsl:if test="$group/@type='interface'">
 		<xsl:text>protected:
 	inline </xsl:text>
 		<xsl:value-of select="$class"/>
 		<xsl:text>() {}
+
+public:
 	inline virtual ~</xsl:text>
 		<xsl:value-of select="$class"/>
 		<xsl:text>() {}
@@ -52,9 +57,6 @@ namespace Berkelium {
 </xsl:text>
 
 	</xsl:if>
-
-	<!-- class implementation -->
-	<xsl:value-of select="$group/implementation[@type=$lang]"/>
 
 	<xsl:text>public:</xsl:text>
 

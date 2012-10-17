@@ -21,6 +21,8 @@ namespace Berkelium {
 class Instance {
 protected:
 	inline Instance() {}
+
+public:
 	inline virtual ~Instance() {}
 
 public:};

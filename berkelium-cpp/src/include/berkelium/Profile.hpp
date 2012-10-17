@@ -22,6 +22,8 @@ namespace Berkelium {
 class Profile {
 protected:
 	inline Profile() {}
+
+public:
 	inline virtual ~Profile() {}
 
 public:
