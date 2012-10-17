@@ -53,14 +53,22 @@ typedef const char* bk_string;
 <!-- Group                                                         -->
 <!-- ============================================================= -->
 <xsl:template match="group">
+	<xsl:text>
 // =========================================
-// <xsl:value-of select="@type"/><xsl:text> </xsl:text><xsl:value-of select="@name"/>
-<xsl:if test="short">
+// </xsl:text>
+	<xsl:value-of select="@type"/>
+	<xsl:text> </xsl:text>
+	<xsl:value-of select="@name"/>
+	<xsl:if test="short">
+		<xsl:text>
 //
-// <xsl:value-of select="short"/>
-</xsl:if>
+// </xsl:text>
+		<xsl:value-of select="short"/>
+	</xsl:if>
+	<xsl:text>
 // =========================================
-<xsl:apply-templates select="entry"/>
+</xsl:text>
+	<xsl:apply-templates select="entry"/>
 </xsl:template>
 
 <!-- ============================================================= -->
