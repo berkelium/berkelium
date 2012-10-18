@@ -25,12 +25,12 @@
 	<xsl:text>#
 # C++ API
 #
-/usr/bin/xsltproc -o ../berkelium-cpp/src/include/berkelium/Berkelium.hpp api/api-cpp-global.xslt api/api.xml
+/usr/bin/xsltproc -o ../berkelium-cpp/include/berkelium/Berkelium.hpp api/api-cpp-global.xslt api/api.xml
 </xsl:text>
 	<xsl:for-each select="/api/group">
 		<xsl:text>/usr/bin/xsltproc --stringparam class </xsl:text>
 		<xsl:value-of select="@name"/>
-		<xsl:text> -o ../berkelium-cpp/src/include/berkelium/</xsl:text>
+		<xsl:text> -o ../berkelium-cpp/include/berkelium/</xsl:text>
 		<xsl:value-of select="@name"/>
 		<xsl:text>.hpp api/api-cpp.xslt api/api.xml</xsl:text>
 	<xsl:text>
