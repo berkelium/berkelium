@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BERKELIUM_HOSTEXECUTABLEFACTORY_HPP_
-#define BERKELIUM_HOSTEXECUTABLEFACTORY_HPP_
+#ifndef BERKELIUM_LOGDELEGATE_HPP_
+#define BERKELIUM_LOGDELEGATE_HPP_
 #pragma once
 
 // =========================================
@@ -18,16 +18,18 @@
 
 namespace Berkelium {
 
-class HostExecutableFactory {
+// Handler for log messages. LogAdapter is an abstract class with empty function definitions for all functions in LogDelegate.
+class LogDelegate {
+protected:
+	LogDelegate();
+
 public:
+	virtual ~LogDelegate() = 0;
 
-	// Creates an HostExecutable Object representing the given executable.
-	static HostExecutableRef forExecutable(const std::string& pathTo);
-
-	// Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
-	static HostExecutableRef forSystemInstalled();
+	// Allows the client application to handle berkelium host console messages.
+	virtual void log(InstanceRef instance, LogTypeRef type, const std::string& message);
 };
 
 } // namespace Berkelium
 
-#endif // BERKELIUM_HOSTEXECUTABLEFACTORY_HPP_
+#endif // BERKELIUM_LOGDELEGATE_HPP_

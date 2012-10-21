@@ -6,6 +6,12 @@
 
 namespace Berkelium {
 
+Profile::Profile() {
+}
+
+Profile::~Profile() {
+}
+
 bool Profile::isInUse() {
 	return false;
 }

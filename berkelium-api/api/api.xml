@@ -4,16 +4,26 @@
 		<type name="int32" value="bk_int32"/>
 		<type name="bool" value="bk_bool"/>
 		<type name="string" value="bk_string"/>
+		<type name="Rect" value="BK_Rect"/>
+		<type name="WindowList" value="BK_WindowList"/>
+		<type name="TabList" value="BK_TabList"/>
 	</mapping>
 	<mapping type="cpp" class-postfix="Ref">
 		<type name="int32" value="int32_t"/>
 		<type name="bool" value="bool"/>
 		<type name="string" value="const std::string&amp;"/>
+		<type name="Rect" value="const Rect&amp;"/>
+		<type name="WindowList" value="WindowList"/>
+		<type name="TabList" value="TabList"/>
 	</mapping>
 	<mapping type="java">
 		<type name="int32" value="int"/>
 		<type name="bool" value="boolean"/>
 		<type name="string" value="String"/>
+		<type name="Rect" value="Rect"/>
+		<type name="WindowList" value="java.util.List&lt;Window&gt;"/>
+		<type name="TabList" value="java.util.List&lt;Tab&gt;"/>
+		<type name="Throwable" value="Throwable"/>
 	</mapping>
 	<group type="interface" name="HostVersion">
 		<entry name="getVersionString" ret="string">
@@ -106,13 +116,157 @@
 			<short>Launches a new berkelium host process using this profile.</short>
 		</entry>
 	</group>
-	<group type="interface" name="Instance">
-	</group>
-<!--
-	<group type="class" name="Profile">
-		<entry name="" ret="">
-			<short></short>
+	<group type="enum" name="LogType">
+		<entry name="HostOut">
+			<short>Represents the stdout stream of the berkelium host process.</short>
+		</entry>
+		<entry name="HostErr">
+			<short>Represents the stderr stream of the berkelium host process.</short>
+		</entry>
+		<entry name="Debug">
+			<short>Represents debug messages of the berkelium library.</short>
+		</entry>
+		<entry name="Error">
+			<short>Represents error messages of the berkelium library.</short>
 		</entry>
 	</group>
--->
+	<group type="interface" name="LogDelegate">
+		<short>Handler for log messages. LogAdapter is an abstract class with empty function definitions for all functions in LogDelegate.</short>
+		<entry name="log">
+			<arg type="Instance" name="instance"/>
+			<arg type="LogType" name="type"/>
+			<arg type="string" name="message"/>
+			<short>Allows the client application to handle berkelium host console messages.</short>
+		</entry>
+	</group>
+	<group type="interface" name="HostDelegate">
+		<short>Handler for events concerning the berkelium host process.</short>
+		<short>HostAdapter is an abstract class with empty function definitions for all functions in HostDelegate.</short>
+		<entry name="onCrashed">
+			<arg type="Instance" name="instance"/>
+			<short>Called if the host process was unexpected terminated.</short>
+		</entry>
+		<entry name="onClosed">
+			<arg type="Instance" name="instance"/>
+			<short>Called if the host process was properly closed.</short>
+		</entry>
+	</group>
+	<group type="interface" name="Instance">
+		<short>Represents a running berkelium host instance.</short>
+		<entry name="close">
+			<short>Closes all open Windows/Tabs and the profile, terminates the host.</short>
+			<short>Also removes the profile if it is a temporary one.</short>
+		</entry>
+		<entry name="getProfile" ret="Profile">
+			<short>Returns the profile used to launch this instance.</short>
+		</entry>
+		<entry name="getExecutable" ret="HostExecutable">
+			<short>Returns the executable used to launch this instance.</short>
+		</entry>
+		<entry name="addLogDelegate">
+			<arg type="LogDelegate" name="delegate"/>
+			<short>Add the given LogDelegate to this Instance.</short>
+		</entry>
+		<entry name="removeLogDelegate">
+			<arg type="LogDelegate" name="delegate"/>
+			<short>Remove the given LogDelegate from this Instance.</short>
+		</entry>
+		<entry name="addHostDelegate">
+			<arg type="HostDelegate" name="delegate"/>
+			<short>Add the given HostDelegate to this Instance.</short>
+		</entry>
+		<entry name="removeHostDelegate">
+			<arg type="HostDelegate" name="delegate"/>
+			<short>Remove the given HostDelegate from this Instance.</short>
+		</entry>
+		<entry name="log">
+			<arg type="LogType" name="type"/>
+			<arg type="string" name="message"/>
+			<short>Forwards the given type/message to all log handlers attached to this instance.</short>
+		</entry>
+		<entry name="handleThrowable" type="java">
+			<arg type="Throwable" name="t"/>
+			<short>Error handler used by this instance.</short>
+		</entry>
+		<entry name="getWindowCount" ret="int32">
+			<short>Returns the number of active Windows.</short>
+		</entry>
+		<entry name="getWindowList" ret="WindowList">
+			<short>Returns a list of all active windows.</short>
+			<short>It is guaranteed that there is at least one window. If the last window is closed the host process will be closed.</short>
+		</entry>
+		<entry name="createWindow" ret="Window">
+			<arg type="bool" name="incognito"/>
+			<short>Open a new window.</short>
+		</entry>
+	</group>
+	<group type="interface" name="Window">
+		<entry name="getTabCount" ret="int32">
+			<short>Returns the current tab count.</short>
+		</entry>
+		<entry name="getTabList" ret="TabList">
+			<short>Returns an ordered list of all tabs in this window.</short>
+		</entry>
+		<entry name="createTab" ret="Tab">
+			<short>Creates a new (about:blank) Tab.</short>
+		</entry>
+		<entry name="moveTo">
+			<arg type="Tab" name="tab"/>
+			<arg type="int32" name="index"/>
+			<short>Move this Tab to the given index.</short>
+		</entry>
+		<entry name="isIncognito" ret="bool">
+			<short>Returns true if this is a incognito window.</short>
+		</entry>
+	</group>
+	<group type="interface" name="WindowDelegate">
+	</group>
+	<group type="interface" name="Tab">
+		<entry name="close">
+			<short>Closes this tab and removes it from the window.</short>
+		</entry>
+		<entry name="sync">
+			<short>Wait until all pending Java Script Events are handled.</short>
+		</entry>
+		<entry name="getTabDelegate" ret="TabDelegate">
+			<short>All methods called on this tab delegate are forwared to all tab delegates of this tab.</short>
+		</entry>
+		<entry name="addTabDelegate">
+			<arg type="TabDelegate" name="delegate"/>
+			<short>Add a TabDelegate to this tab.</short>
+		</entry>
+		<entry name="removeTabDelegate">
+			<arg type="TabDelegate" name="delegate"/>
+			<short>Remove a TabDelegate from this tab.</short>
+		</entry>
+		<entry name="resize">
+			<arg type="int32" name="width"/>
+			<arg type="int32" name="height"/>
+			<short>Set the size of this tab.</short>
+			<short>A onResize() event is triggered on the tab delegate.</short>
+		</entry>
+		<entry name="navigateTo">
+			<arg type="string" name="url"/>
+			<short>Set the URL of this tab. A new tab has the url “about:blank”.</short>
+			<short>This function should be called after all event listeners are registered.</short>
+		</entry>
+	</group>
+	<group type="interface" name="TabDelegate">
+		<short>Handler for events concerning tab content.</short>
+		<short>TabAdapter is an abstract class with empty function definitions for all functions in TabDelegate.</short>
+		<entry name="onClosed">
+			<arg type="Tab" name="tab"/>
+		</entry>
+		<entry name="onTitleChanged">
+			<arg type="Tab" name="tab"/>
+			<arg type="string" name="title"/>
+		</entry>
+		<entry name="onPaint">
+			<arg type="Tab" name="tab"/>
+		</entry>
+		<entry name="onPaintDone">
+			<arg type="Tab" name="tab"/>
+			<arg type="Rect" name="rect"/>
+		</entry>
+	</group>
 </api>

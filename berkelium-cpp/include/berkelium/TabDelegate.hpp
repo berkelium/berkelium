@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BERKELIUM_HOSTEXECUTABLEFACTORY_HPP_
-#define BERKELIUM_HOSTEXECUTABLEFACTORY_HPP_
+#ifndef BERKELIUM_TABDELEGATE_HPP_
+#define BERKELIUM_TABDELEGATE_HPP_
 #pragma once
 
 // =========================================
@@ -18,16 +18,19 @@
 
 namespace Berkelium {
 
-class HostExecutableFactory {
+// Handler for events concerning tab content.
+class TabDelegate {
+protected:
+	TabDelegate();
+
 public:
-
-	// Creates an HostExecutable Object representing the given executable.
-	static HostExecutableRef forExecutable(const std::string& pathTo);
-
-	// Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
-	static HostExecutableRef forSystemInstalled();
+	virtual ~TabDelegate() = 0;
+	virtual void onClosed(TabRef tab);
+	virtual void onTitleChanged(TabRef tab, const std::string& title);
+	virtual void onPaint(TabRef tab);
+	virtual void onPaintDone(TabRef tab, const Rect& rect);
 };
 
 } // namespace Berkelium
 
-#endif // BERKELIUM_HOSTEXECUTABLEFACTORY_HPP_
+#endif // BERKELIUM_TABDELEGATE_HPP_

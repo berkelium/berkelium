@@ -34,7 +34,7 @@
 <!-- Argument Type                                                 -->
 <!-- ============================================================= -->
 <xsl:template name="type">
- 	<xsl:param name="name" select="'Not Available'" />
+	<xsl:param name="name" select="''"/>
 	<xsl:variable name="node" select="/api/mapping[@type=$lang]/type[@name = $name]"/>
 	<xsl:choose>
 		<xsl:when test="$node/@value">
@@ -44,6 +44,9 @@
 			<xsl:value-of select="/api/mapping[@type=$lang]/@class-prefix"/>
 			<xsl:value-of select="$name"/>
 			<xsl:value-of select="/api/mapping[@type=$lang]/@class-postfix"/>
+		</xsl:when>
+		<xsl:when test="not($name)">
+			<xsl:text>void</xsl:text>
 		</xsl:when>
 		<xsl:otherwise>
 			<xsl:text>!!ERROR: Type '</xsl:text>

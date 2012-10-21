@@ -38,6 +38,9 @@
 		<xsl:when test="$group/@type='interface'">
 			<xsl:text>interface </xsl:text>
 		</xsl:when>
+		<xsl:when test="$group/@type='enum'">
+			<xsl:text>enum </xsl:text>
+		</xsl:when>
 		<xsl:otherwise>
 			!!ERROR!!
 		</xsl:otherwise>
@@ -81,25 +84,37 @@
 		<xsl:when test="../@type='interface'">
 			<xsl:text>	</xsl:text>
 		</xsl:when>
+		<xsl:when test="../@type='enum'">
+			<xsl:text>	</xsl:text>
+		</xsl:when>
 		<xsl:otherwise>
 			!!ERROR!!
 		</xsl:otherwise>
 	</xsl:choose>
 
-	<!-- member return type -->
-	<xsl:call-template name="type">
-		<xsl:with-param name="name" select="@ret"/>
-	</xsl:call-template>
-
-	<!-- member name -->
-	<xsl:text> </xsl:text>
-	<xsl:value-of select="@name"/>
-
-	<!-- member arguments -->
-	<xsl:text>(</xsl:text>
-	<xsl:call-template name="arguments"/>
-	<xsl:text>);
+	<xsl:choose>
+		<xsl:when test="../@type!='enum'">
+			<!-- member return type -->
+			<xsl:call-template name="type">
+				<xsl:with-param name="name" select="@ret"/>
+			</xsl:call-template>
+		
+			<!-- member name -->
+			<xsl:text> </xsl:text>
+			<xsl:value-of select="@name"/>
+		
+			<!-- member arguments -->
+			<xsl:text>(</xsl:text>
+			<xsl:call-template name="arguments"/>
+			<xsl:text>);
 </xsl:text>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:value-of select="@name"/>
+			<xsl:text>,
+</xsl:text>
+		</xsl:otherwise>
+	</xsl:choose>
 
 </xsl:template>
 

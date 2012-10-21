@@ -28,7 +28,13 @@ typedef bk_int32 BK_HostVersion;
 typedef bk_int32 BK_HostExecutableFactory;
 typedef bk_int32 BK_HostExecutable;
 typedef bk_int32 BK_Profile;
+typedef bk_int32 BK_LogDelegate;
+typedef bk_int32 BK_HostDelegate;
 typedef bk_int32 BK_Instance;
+typedef bk_int32 BK_Window;
+typedef bk_int32 BK_WindowDelegate;
+typedef bk_int32 BK_Tab;
+typedef bk_int32 BK_TabDelegate;
 
 // =========================================
 // interface HostVersion
@@ -111,8 +117,138 @@ bk_string BK_Profile_getProfilePath(BK_Profile self);
 BK_Instance BK_Profile_open(BK_Profile self);
 
 // =========================================
-// interface Instance
+// enum LogType
 // =========================================
+
+// Represents the stdout stream of the berkelium host process.
+void BK_LogType_HostOut(BK_LogType self);
+
+// Represents the stderr stream of the berkelium host process.
+void BK_LogType_HostErr(BK_LogType self);
+
+// Represents debug messages of the berkelium library.
+void BK_LogType_Debug(BK_LogType self);
+
+// Represents error messages of the berkelium library.
+void BK_LogType_Error(BK_LogType self);
+
+// =========================================
+// interface LogDelegate
+//
+// Handler for log messages. LogAdapter is an abstract class with empty function definitions for all functions in LogDelegate.
+// =========================================
+
+// Allows the client application to handle berkelium host console messages.
+void BK_LogDelegate_log(BK_LogDelegate self, BK_Instance instance, BK_LogType type, bk_string message);
+
+// =========================================
+// interface HostDelegate
+//
+// Handler for events concerning the berkelium host process.
+// =========================================
+
+// Called if the host process was unexpected terminated.
+void BK_HostDelegate_onCrashed(BK_HostDelegate self, BK_Instance instance);
+
+// Called if the host process was properly closed.
+void BK_HostDelegate_onClosed(BK_HostDelegate self, BK_Instance instance);
+
+// =========================================
+// interface Instance
+//
+// Represents a running berkelium host instance.
+// =========================================
+
+// Closes all open Windows/Tabs and the profile, terminates the host.
+void BK_Instance_close(BK_Instance self);
+
+// Returns the profile used to launch this instance.
+BK_Profile BK_Instance_getProfile(BK_Instance self);
+
+// Returns the executable used to launch this instance.
+BK_HostExecutable BK_Instance_getExecutable(BK_Instance self);
+
+// Add the given LogDelegate to this Instance.
+void BK_Instance_addLogDelegate(BK_Instance self, BK_LogDelegate delegate);
+
+// Remove the given LogDelegate from this Instance.
+void BK_Instance_removeLogDelegate(BK_Instance self, BK_LogDelegate delegate);
+
+// Add the given HostDelegate to this Instance.
+void BK_Instance_addHostDelegate(BK_Instance self, BK_HostDelegate delegate);
+
+// Remove the given HostDelegate from this Instance.
+void BK_Instance_removeHostDelegate(BK_Instance self, BK_HostDelegate delegate);
+
+// Forwards the given type/message to all log handlers attached to this instance.
+void BK_Instance_log(BK_Instance self, BK_LogType type, bk_string message);
+
+// Returns the number of active Windows.
+bk_int32 BK_Instance_getWindowCount(BK_Instance self);
+
+// Returns a list of all active windows.
+BK_WindowList BK_Instance_getWindowList(BK_Instance self);
+
+// Open a new window.
+BK_Window BK_Instance_createWindow(BK_Instance self, bk_bool incognito);
+
+// =========================================
+// interface Window
+// =========================================
+
+// Returns the current tab count.
+bk_int32 BK_Window_getTabCount(BK_Window self);
+
+// Returns an ordered list of all tabs in this window.
+BK_TabList BK_Window_getTabList(BK_Window self);
+
+// Creates a new (about:blank) Tab.
+BK_Tab BK_Window_createTab(BK_Window self);
+
+// Move this Tab to the given index.
+void BK_Window_moveTo(BK_Window self, BK_Tab tab, bk_int32 index);
+
+// Returns true if this is a incognito window.
+bk_bool BK_Window_isIncognito(BK_Window self);
+
+// =========================================
+// interface WindowDelegate
+// =========================================
+
+// =========================================
+// interface Tab
+// =========================================
+
+// Closes this tab and removes it from the window.
+void BK_Tab_close(BK_Tab self);
+
+// Wait until all pending Java Script Events are handled.
+void BK_Tab_sync(BK_Tab self);
+
+// All methods called on this tab delegate are forwared to all tab delegates of this tab.
+BK_TabDelegate BK_Tab_getTabDelegate(BK_Tab self);
+
+// Add a TabDelegate to this tab.
+void BK_Tab_addTabDelegate(BK_Tab self, BK_TabDelegate delegate);
+
+// Remove a TabDelegate from this tab.
+void BK_Tab_removeTabDelegate(BK_Tab self, BK_TabDelegate delegate);
+
+// Set the size of this tab.
+void BK_Tab_resize(BK_Tab self, bk_int32 width, bk_int32 height);
+
+// Set the URL of this tab. A new tab has the url “about:blank”.
+void BK_Tab_navigateTo(BK_Tab self, bk_string url);
+
+// =========================================
+// interface TabDelegate
+//
+// Handler for events concerning tab content.
+// =========================================
+void BK_TabDelegate_onClosed(BK_TabDelegate self, BK_Tab tab);
+void BK_TabDelegate_onTitleChanged(BK_TabDelegate self, BK_Tab tab, bk_string title);
+void BK_TabDelegate_onPaint(BK_TabDelegate self, BK_Tab tab);
+void BK_TabDelegate_onPaintDone(BK_TabDelegate self, BK_Tab tab, BK_Rect rect);
 
 #ifdef __cplusplus
 }

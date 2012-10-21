@@ -20,12 +20,11 @@ namespace Berkelium {
 
 class HostVersion {
 protected:
-	inline HostVersion() {}
+	HostVersion();
 
 public:
-	inline virtual ~HostVersion() {}
+	virtual ~HostVersion() = 0;
 
-public:
 	// Returns the berkelium host version e.g. “22.0.1229.94”
 	virtual const std::string& getVersionString();
 

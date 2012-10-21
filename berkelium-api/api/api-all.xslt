@@ -27,7 +27,7 @@
 #
 /usr/bin/xsltproc -o ../berkelium-cpp/include/berkelium/Berkelium.hpp api/api-cpp-global.xslt api/api.xml
 </xsl:text>
-	<xsl:for-each select="/api/group">
+	<xsl:for-each select="/api/group[@type!='enum']">
 		<xsl:text>/usr/bin/xsltproc --stringparam class </xsl:text>
 		<xsl:value-of select="@name"/>
 		<xsl:text> -o ../berkelium-cpp/include/berkelium/</xsl:text>

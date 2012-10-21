@@ -21,12 +21,11 @@ namespace Berkelium {
 // Represents a berkelium profile on disk.
 class Profile {
 protected:
-	inline Profile() {}
+	Profile();
 
 public:
-	inline virtual ~Profile() {}
+	virtual ~Profile() = 0;
 
-public:
 	// Returns true if this profile is already in use.
 	virtual bool isInUse();
 

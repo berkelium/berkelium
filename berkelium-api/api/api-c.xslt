@@ -87,9 +87,14 @@ typedef const char* bk_string;
 </xsl:template>
 
 <!-- ============================================================= -->
-<!-- Functions                                                     -->
+<!-- Ignore Functions for other languages                          -->
 <!-- ============================================================= -->
-<xsl:template match="entry" >
+<xsl:template match="entry"/>
+
+<!-- ============================================================= -->
+<!-- Functions for c and all languages                             -->
+<!-- ============================================================= -->
+<xsl:template match="entry[@type='c']|entry[not(@type)]">
 <xsl:if test="short">
 	<xsl:text>
 </xsl:text>

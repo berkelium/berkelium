@@ -6,6 +6,12 @@
 
 namespace Berkelium {
 
+HostVersion::HostVersion() {
+}
+
+HostVersion::~HostVersion() {
+}
+
 const std::string version = "0.0.0.0";
 
 const std::string& HostVersion::getVersionString() {

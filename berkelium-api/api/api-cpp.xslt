@@ -43,22 +43,25 @@ namespace Berkelium {
 	<xsl:value-of select="$group/implementation[@type=$lang]"/>
 
 	<!-- interface -->
-	<xsl:if test="$group/@type='interface'">
-		<xsl:text>protected:
-	inline </xsl:text>
-		<xsl:value-of select="$class"/>
-		<xsl:text>() {}
+	<xsl:choose>
+		<xsl:when test="$group/@type='interface'">
+			<xsl:text>protected:
+	</xsl:text>
+			<xsl:value-of select="$class"/>
+			<xsl:text>();
 
 public:
-	inline virtual ~</xsl:text>
-		<xsl:value-of select="$class"/>
-		<xsl:text>() {}
-
+	virtual ~</xsl:text>
+			<xsl:value-of select="$class"/>
+			<xsl:text>() = 0;
 </xsl:text>
 
-	</xsl:if>
-
-	<xsl:text>public:</xsl:text>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:text>public:
+</xsl:text>
+		</xsl:otherwise>
+	</xsl:choose>
 
 	<!-- class members -->
 	<xsl:apply-templates select="$group/entry"/>
@@ -72,9 +75,14 @@ public:
 </xsl:template>
 
 <!-- ============================================================= -->
+<!-- Ignore Entrys for other languages                             -->
+<!-- ============================================================= -->
+<xsl:template match="group/entry"/>
+
+<!-- ============================================================= -->
 <!-- Class Member                                                  -->
 <!-- ============================================================= -->
-<xsl:template match="group/entry">
+<xsl:template match="group/entry[@type='cpp']|group/entry[not(@type)]">
 
 	<xsl:if test="short">
 		<xsl:text>

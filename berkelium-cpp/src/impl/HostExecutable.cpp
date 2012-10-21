@@ -8,6 +8,12 @@
 
 namespace Berkelium {
 
+HostExecutable::HostExecutable() {
+}
+
+HostExecutable::~HostExecutable() {
+}
+
 HostVersionRef HostExecutable::getVersion() {
 	return HostVersionRef(impl::newHostVersion());
 }

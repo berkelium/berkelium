@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BERKELIUM_HOSTEXECUTABLEFACTORY_HPP_
-#define BERKELIUM_HOSTEXECUTABLEFACTORY_HPP_
+#ifndef BERKELIUM_HOSTDELEGATE_HPP_
+#define BERKELIUM_HOSTDELEGATE_HPP_
 #pragma once
 
 // =========================================
@@ -18,16 +18,21 @@
 
 namespace Berkelium {
 
-class HostExecutableFactory {
+// Handler for events concerning the berkelium host process.
+class HostDelegate {
+protected:
+	HostDelegate();
+
 public:
+	virtual ~HostDelegate() = 0;
 
-	// Creates an HostExecutable Object representing the given executable.
-	static HostExecutableRef forExecutable(const std::string& pathTo);
+	// Called if the host process was unexpected terminated.
+	virtual void onCrashed(InstanceRef instance);
 
-	// Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
-	static HostExecutableRef forSystemInstalled();
+	// Called if the host process was properly closed.
+	virtual void onClosed(InstanceRef instance);
 };
 
 } // namespace Berkelium
 
-#endif // BERKELIUM_HOSTEXECUTABLEFACTORY_HPP_
+#endif // BERKELIUM_HOSTDELEGATE_HPP_

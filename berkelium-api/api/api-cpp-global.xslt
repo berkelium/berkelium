@@ -19,6 +19,7 @@
 	<xsl:call-template name="comment-generated"/>
 
 	<xsl:text>#include &lt;string&gt;
+#include &lt;vector&gt;
 #include &lt;memory&gt;
 #include &lt;cstdint&gt;
 
@@ -26,8 +27,31 @@ namespace Berkelium {
 
 </xsl:text>
 
+	<!-- enums -->
+	<xsl:for-each select="/api/group[@type='enum']">
+		<xsl:text>enum </xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text> {
+</xsl:text>
+		<xsl:for-each select="entry">
+			<xsl:for-each select="short">
+				<xsl:text>	// </xsl:text>
+				<xsl:value-of select="text()"/>
+			</xsl:for-each>
+			<xsl:text>
+	</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>,
+
+</xsl:text>
+		</xsl:for-each>
+		<xsl:text>};
+
+</xsl:text>
+	</xsl:for-each>
+
 	<!-- forward defs -->
-	<xsl:for-each select="/api/group">
+	<xsl:for-each select="/api/group[@type!='enum']">
 		<!-- type -->
 		<xsl:choose>
 			<xsl:when test="@type='class'">
@@ -54,7 +78,11 @@ namespace Berkelium {
 
 	</xsl:for-each>
 
-	<xsl:text>} // namespace Berkelium
+	<xsl:text>typedef std::vector&lt;Window&gt; WindowList;
+
+typedef std::vector&lt;Tab&gt; TabList;
+
+} // namespace Berkelium
 
 </xsl:text>
 	<xsl:call-template name="include-guard-end"/>

@@ -15,10 +15,26 @@
 // =========================================
 
 #include <string>
+#include <vector>
 #include <memory>
 #include <cstdint>
 
 namespace Berkelium {
+
+enum LogType {
+	// Represents the stdout stream of the berkelium host process.
+	HostOut,
+
+	// Represents the stderr stream of the berkelium host process.
+	HostErr,
+
+	// Represents debug messages of the berkelium library.
+	Debug,
+
+	// Represents error messages of the berkelium library.
+	Error,
+
+};
 
 class HostVersion;
 typedef std::shared_ptr<HostVersion> HostVersionRef;
@@ -32,8 +48,30 @@ typedef std::shared_ptr<HostExecutable> HostExecutableRef;
 class Profile;
 typedef std::shared_ptr<Profile> ProfileRef;
 
+class LogDelegate;
+typedef std::shared_ptr<LogDelegate> LogDelegateRef;
+
+class HostDelegate;
+typedef std::shared_ptr<HostDelegate> HostDelegateRef;
+
 class Instance;
 typedef std::shared_ptr<Instance> InstanceRef;
+
+class Window;
+typedef std::shared_ptr<Window> WindowRef;
+
+class WindowDelegate;
+typedef std::shared_ptr<WindowDelegate> WindowDelegateRef;
+
+class Tab;
+typedef std::shared_ptr<Tab> TabRef;
+
+class TabDelegate;
+typedef std::shared_ptr<TabDelegate> TabDelegateRef;
+
+typedef std::vector<Window> WindowList;
+
+typedef std::vector<Tab> TabList;
 
 } // namespace Berkelium
 

@@ -21,12 +21,11 @@ namespace Berkelium {
 // Represents a reference to the executable file of the berkelium host process.
 class HostExecutable {
 protected:
-	inline HostExecutable() {}
+	HostExecutable();
 
 public:
-	inline virtual ~HostExecutable() {}
+	virtual ~HostExecutable() = 0;
 
-public:
 	// Returns the version of this berkelium host executable.
 	virtual HostVersionRef getVersion();
 

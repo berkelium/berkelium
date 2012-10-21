@@ -18,14 +18,47 @@
 
 namespace Berkelium {
 
+// Represents a running berkelium host instance.
 class Instance {
 protected:
-	inline Instance() {}
+	Instance();
 
 public:
-	inline virtual ~Instance() {}
+	virtual ~Instance() = 0;
 
-public:};
+	// Closes all open Windows/Tabs and the profile, terminates the host.
+	virtual void close();
+
+	// Returns the profile used to launch this instance.
+	virtual ProfileRef getProfile();
+
+	// Returns the executable used to launch this instance.
+	virtual HostExecutableRef getExecutable();
+
+	// Add the given LogDelegate to this Instance.
+	virtual void addLogDelegate(LogDelegateRef delegate);
+
+	// Remove the given LogDelegate from this Instance.
+	virtual void removeLogDelegate(LogDelegateRef delegate);
+
+	// Add the given HostDelegate to this Instance.
+	virtual void addHostDelegate(HostDelegateRef delegate);
+
+	// Remove the given HostDelegate from this Instance.
+	virtual void removeHostDelegate(HostDelegateRef delegate);
+
+	// Forwards the given type/message to all log handlers attached to this instance.
+	virtual void log(LogTypeRef type, const std::string& message);
+
+	// Returns the number of active Windows.
+	virtual int32_t getWindowCount();
+
+	// Returns a list of all active windows.
+	virtual WindowList getWindowList();
+
+	// Open a new window.
+	virtual WindowRef createWindow(bool incognito);
+};
 
 } // namespace Berkelium
 
