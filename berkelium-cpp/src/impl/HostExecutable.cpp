@@ -4,7 +4,7 @@
 
 #include "berkelium/HostExecutable.hpp"
 #include "berkelium/Profile.hpp"
-#include "Impl.hpp"
+#include "berkelium/Impl.hpp"
 
 namespace Berkelium {
 
