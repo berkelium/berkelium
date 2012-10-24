@@ -6,6 +6,10 @@
 #define BERKELIUM_IMPL_HPP_
 #pragma once
 
+#ifndef BERKELIUM_CPP_IMPL
+# error "This file is intended for internal use only!"
+#endif
+
 #include "berkelium/Berkelium.hpp"
 
 namespace Berkelium {

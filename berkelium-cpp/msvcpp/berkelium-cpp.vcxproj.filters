@@ -38,9 +38,6 @@
     <ClInclude Include="..\include\berkelium\Instance.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\impl\Impl.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\berkelium\HostVersion.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -69,6 +66,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\berkelium\WindowDelegate.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\berkelium\Impl.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
