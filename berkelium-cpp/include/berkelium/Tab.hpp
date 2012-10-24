@@ -26,25 +26,25 @@ public:
 	virtual ~Tab() = 0;
 
 	// Closes this tab and removes it from the window.
-	virtual void close();
+	virtual void close() = 0;
 
 	// Wait until all pending Java Script Events are handled.
-	virtual void sync();
+	virtual void sync() = 0;
 
 	// All methods called on this tab delegate are forwared to all tab delegates of this tab.
-	virtual TabDelegateRef getTabDelegate();
+	virtual TabDelegateRef getTabDelegate() = 0;
 
 	// Add a TabDelegate to this tab.
-	virtual void addTabDelegate(TabDelegateRef delegate);
+	virtual void addTabDelegate(TabDelegateRef delegate) = 0;
 
 	// Remove a TabDelegate from this tab.
-	virtual void removeTabDelegate(TabDelegateRef delegate);
+	virtual void removeTabDelegate(TabDelegateRef delegate) = 0;
 
 	// Set the size of this tab.
-	virtual void resize(int32_t width, int32_t height);
+	virtual void resize(int32_t width, int32_t height) = 0;
 
 	// Set the URL of this tab. A new tab has the url “about:blank”.
-	virtual void navigateTo(const std::string& url);
+	virtual void navigateTo(const std::string& url) = 0;
 };
 
 } // namespace Berkelium

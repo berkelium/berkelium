@@ -27,10 +27,10 @@ public:
 	virtual ~HostDelegate() = 0;
 
 	// Called if the host process was unexpected terminated.
-	virtual void onCrashed(InstanceRef instance);
+	virtual void onCrashed(InstanceRef instance) = 0;
 
 	// Called if the host process was properly closed.
-	virtual void onClosed(InstanceRef instance);
+	virtual void onClosed(InstanceRef instance) = 0;
 };
 
 } // namespace Berkelium

@@ -108,7 +108,7 @@ public:
 	<xsl:value-of select="@name"/>
 	<xsl:text>(</xsl:text>
 	<xsl:call-template name="arguments"/>
-	<xsl:text>);
+	<xsl:text>) = 0;
 </xsl:text>
 </xsl:template>
 

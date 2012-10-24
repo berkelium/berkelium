@@ -27,37 +27,37 @@ public:
 	virtual ~Instance() = 0;
 
 	// Closes all open Windows/Tabs and the profile, terminates the host.
-	virtual void close();
+	virtual void close() = 0;
 
 	// Returns the profile used to launch this instance.
-	virtual ProfileRef getProfile();
+	virtual ProfileRef getProfile() = 0;
 
 	// Returns the executable used to launch this instance.
-	virtual HostExecutableRef getExecutable();
+	virtual HostExecutableRef getExecutable() = 0;
 
 	// Add the given LogDelegate to this Instance.
-	virtual void addLogDelegate(LogDelegateRef delegate);
+	virtual void addLogDelegate(LogDelegateRef delegate) = 0;
 
 	// Remove the given LogDelegate from this Instance.
-	virtual void removeLogDelegate(LogDelegateRef delegate);
+	virtual void removeLogDelegate(LogDelegateRef delegate) = 0;
 
 	// Add the given HostDelegate to this Instance.
-	virtual void addHostDelegate(HostDelegateRef delegate);
+	virtual void addHostDelegate(HostDelegateRef delegate) = 0;
 
 	// Remove the given HostDelegate from this Instance.
-	virtual void removeHostDelegate(HostDelegateRef delegate);
+	virtual void removeHostDelegate(HostDelegateRef delegate) = 0;
 
 	// Forwards the given type/message to all log handlers attached to this instance.
-	virtual void log(LogTypeRef type, const std::string& message);
+	virtual void log(LogTypeRef type, const std::string& message) = 0;
 
 	// Returns the number of active Windows.
-	virtual int32_t getWindowCount();
+	virtual int32_t getWindowCount() = 0;
 
 	// Returns a list of all active windows.
-	virtual WindowList getWindowList();
+	virtual WindowList getWindowList() = 0;
 
 	// Open a new window.
-	virtual WindowRef createWindow(bool incognito);
+	virtual WindowRef createWindow(bool incognito) = 0;
 };
 
 } // namespace Berkelium

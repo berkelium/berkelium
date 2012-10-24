@@ -27,28 +27,28 @@ public:
 	virtual ~Profile() = 0;
 
 	// Returns true if this profile is already in use.
-	virtual bool isInUse();
+	virtual bool isInUse() = 0;
 
 	// Returns true if this profile was found on disk.
-	virtual bool isFound();
+	virtual bool isFound() = 0;
 
 	// Returns true if this profile can be used without updating this profile to a newer version.
-	virtual bool isSameVersion();
+	virtual bool isSameVersion() = 0;
 
 	// Returns true if this profile is from a newer berkelium host version.
-	virtual bool isTooNew();
+	virtual bool isTooNew() = 0;
 
 	// Returns the name of the application or “berkelium” if not specified.
-	virtual const std::string& getApplicationName();
+	virtual const std::string& getApplicationName() = 0;
 
 	// Returns the name of the profile or “default” if not specified.
-	virtual const std::string& getProfileName();
+	virtual const std::string& getProfileName() = 0;
 
 	// Returns the full path to the used Profile.
-	virtual const std::string& getProfilePath();
+	virtual const std::string& getProfilePath() = 0;
 
 	// Launches a new berkelium host process using this profile.
-	virtual InstanceRef open();
+	virtual InstanceRef open() = 0;
 };
 
 } // namespace Berkelium

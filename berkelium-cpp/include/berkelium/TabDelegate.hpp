@@ -25,10 +25,10 @@ protected:
 
 public:
 	virtual ~TabDelegate() = 0;
-	virtual void onClosed(TabRef tab);
-	virtual void onTitleChanged(TabRef tab, const std::string& title);
-	virtual void onPaint(TabRef tab);
-	virtual void onPaintDone(TabRef tab, const Rect& rect);
+	virtual void onClosed(TabRef tab) = 0;
+	virtual void onTitleChanged(TabRef tab, const std::string& title) = 0;
+	virtual void onPaint(TabRef tab) = 0;
+	virtual void onPaintDone(TabRef tab, const Rect& rect) = 0;
 };
 
 } // namespace Berkelium

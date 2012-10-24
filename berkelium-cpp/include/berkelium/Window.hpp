@@ -26,19 +26,19 @@ public:
 	virtual ~Window() = 0;
 
 	// Returns the current tab count.
-	virtual int32_t getTabCount();
+	virtual int32_t getTabCount() = 0;
 
 	// Returns an ordered list of all tabs in this window.
-	virtual TabList getTabList();
+	virtual TabList getTabList() = 0;
 
 	// Creates a new (about:blank) Tab.
-	virtual TabRef createTab();
+	virtual TabRef createTab() = 0;
 
 	// Move this Tab to the given index.
-	virtual void moveTo(TabRef tab, int32_t index);
+	virtual void moveTo(TabRef tab, int32_t index) = 0;
 
 	// Returns true if this is a incognito window.
-	virtual bool isIncognito();
+	virtual bool isIncognito() = 0;
 };
 
 } // namespace Berkelium
