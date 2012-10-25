@@ -15,6 +15,7 @@
     <ClCompile Include="..\src\test\HostExecutableTest.cpp" />
     <ClCompile Include="..\src\test\HostVersion.cpp" />
     <ClCompile Include="..\src\test\HostExecutableFactoryTest.cpp" />
+    <ClCompile Include="..\src\test\ProfileTest.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{573CB7C6-64E9-492E-BA02-0048DE85ECFA}</ProjectGuid>
