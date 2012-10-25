@@ -22,10 +22,10 @@ class HostExecutableFactory {
 public:
 
 	// Creates an HostExecutable Object representing the given executable.
-	static HostExecutableRef forExecutable(const std::string& pathTo) = 0;
+	static HostExecutableRef forExecutable(const std::string& pathTo);
 
 	// Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
-	static HostExecutableRef forSystemInstalled() = 0;
+	static HostExecutableRef forSystemInstalled();
 };
 
 } // namespace Berkelium

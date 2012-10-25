@@ -108,7 +108,11 @@ public:
 	<xsl:value-of select="@name"/>
 	<xsl:text>(</xsl:text>
 	<xsl:call-template name="arguments"/>
-	<xsl:text>) = 0;
+	<xsl:text>)</xsl:text>
+	<xsl:if test="../@type='interface'">
+		<xsl:text> = 0</xsl:text>
+	</xsl:if>
+	<xsl:text>;
 </xsl:text>
 </xsl:template>
 
