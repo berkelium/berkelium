@@ -11,9 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\gtest\src\gtest_main.cc" />
     <ClCompile Include="..\src\test\HostExecutableTest.cpp" />
     <ClCompile Include="..\src\test\HostVersion.cpp" />
-    <ClCompile Include="..\src\test\TestMain.cpp" />
     <ClCompile Include="..\src\test\HostExecutableFactoryTest.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
