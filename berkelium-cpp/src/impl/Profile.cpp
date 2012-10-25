@@ -12,38 +12,56 @@ Profile::Profile() {
 Profile::~Profile() {
 }
 
-bool Profile::isInUse() {
-	return false;
-}
-
-bool Profile::isFound() {
-	return true;
-}
-
-bool Profile::isSameVersion() {
-	return true;
-}
-
-bool Profile::isTooNew() {
-	return false;
-}
+namespace impl {
 
 std::string dummy = "todo";
 
-const std::string& Profile::getApplicationName() {
-	return dummy;
+class ProfileImpl : public Profile {
+public:
+	ProfileImpl() {
+	}
+
+	~ProfileImpl() {
+	}
+
+	bool Profile::isInUse() {
+		return false;
+	}
+
+	bool Profile::isFound() {
+		return true;
+	}
+
+	bool Profile::isSameVersion() {
+		return true;
+	}
+
+	bool Profile::isTooNew() {
+		return false;
+	}
+
+	const std::string& Profile::getApplicationName() {
+		return dummy;
+	}
+
+	const std::string& Profile::getProfileName() {
+		return dummy;
+	}
+
+	const std::string& Profile::getProfilePath() {
+		return dummy;
+	}
+
+	InstanceRef Profile::open() {
+		return InstanceRef();
+	}
+
+};
+
+ProfileRef newProfile() {
+	return ProfileRef(new ProfileImpl());
 }
 
-const std::string& Profile::getProfileName() {
-	return dummy;
-}
-
-const std::string& Profile::getProfilePath() {
-	return dummy;
-}
-
-InstanceRef Profile::open() {
-	return InstanceRef();
-}
+} // namespace impl
 
 } // namespace Berkelium

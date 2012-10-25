@@ -14,20 +14,37 @@ HostExecutable::HostExecutable() {
 HostExecutable::~HostExecutable() {
 }
 
-HostVersionRef HostExecutable::getVersion() {
-	return HostVersionRef(impl::newHostVersion());
+namespace impl {
+
+class HostExecutableImpl : public HostExecutable {
+public:
+	HostExecutableImpl() {
+	}
+
+	virtual ~HostExecutableImpl() {
+	}
+
+	virtual HostVersionRef getVersion() {
+		return HostVersionRef(impl::newHostVersion(0, 0, 0, 0));
+	}
+
+	virtual ProfileRef forProfile(const std::string& application) {
+		return ProfileRef(impl::newProfile());
+	}
+
+	virtual ProfileRef forProfile(const std::string& application, const std::string& profile) {
+		return ProfileRef(impl::newProfile());
+	}
+
+	virtual ProfileRef createTemporaryProfile() {
+		return ProfileRef(impl::newProfile());
+	}
+};
+
+HostExecutableRef newHostExecutable() {
+	return HostExecutableRef(new HostExecutableImpl());
 }
 
-ProfileRef HostExecutable::forProfile(const std::string& application) {
-	return ProfileRef(impl::newProfile());
-}
-
-ProfileRef HostExecutable::forProfile(const std::string& application, const std::string& profile) {
-	return ProfileRef(impl::newProfile());
-}
-
-ProfileRef HostExecutable::createTemporaryProfile() {
-	return ProfileRef(impl::newProfile());
-}
+} // namespace impl
 
 } // namespace Berkelium

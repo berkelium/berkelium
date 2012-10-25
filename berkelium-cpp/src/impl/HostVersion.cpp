@@ -6,36 +6,65 @@
 
 namespace Berkelium {
 
+const std::string version = "0.0.0.0";
+
 HostVersion::HostVersion() {
 }
 
 HostVersion::~HostVersion() {
 }
 
-const std::string version = "0.0.0.0";
+namespace impl {
 
-const std::string& HostVersion::getVersionString() {
-	return version;
+class HostVersionImpl : public HostVersion {
+private:
+	const int32_t major;
+	const int32_t minor;
+	const int32_t build;
+	const int32_t patch;
+
+public:
+	HostVersionImpl(int32_t major, int32_t minor, int32_t build, int32_t patch)
+		: major(major)
+		, minor(minor)
+		, build(build)
+		, patch(patch)
+	{
+	}
+
+	virtual ~HostVersionImpl() {
+	}
+
+	virtual const std::string& HostVersionImpl::getVersionString() {
+		return version;
+	}
+
+	virtual int32_t HostVersionImpl::getMajor() {
+		return major;
+	}
+
+	virtual int32_t HostVersionImpl::getMinor() {
+		return minor;
+	}
+
+	virtual int32_t HostVersionImpl::getBuild() {
+		return build;
+	}
+
+	virtual int32_t HostVersionImpl::getPatch() {
+		return patch;
+	}
+
+	virtual bool HostVersionImpl::isMinVersion(const std::string& version) {
+		return false;
+	}
+
+};
+
+HostVersionRef newHostVersion(int32_t major, int32_t minor, int32_t build, int32_t patch) {
+	return HostVersionRef(new HostVersionImpl(major, minor, build, patch));
 }
 
-int32_t HostVersion::getMajor() {
-	return 0;
-}
-
-int32_t HostVersion::getMinor() {
-	return 0;
-}
-
-int32_t HostVersion::getBuild() {
-	return 0;
-}
-
-int32_t HostVersion::getPatch() {
-	return 0;
-}
-
-bool HostVersion::isMinVersion(const std::string& version) {
-	return false;
-}
+} // namespace impl
 
 } // namespace Berkelium

@@ -16,7 +16,7 @@ namespace Berkelium {
 
 namespace impl {
 
-HostVersionRef newHostVersion();
+HostVersionRef newHostVersion(int32_t major, int32_t minor, int32_t build, int32_t patch);
 HostExecutableRef newHostExecutable();
 ProfileRef newProfile();
 
