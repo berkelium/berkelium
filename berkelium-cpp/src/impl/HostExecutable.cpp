@@ -18,16 +18,26 @@ HostExecutable::~HostExecutable() {
 
 namespace impl {
 
+HostVersionRef getVersionImpl(const boost::filesystem::path&);
+
 class HostExecutableImpl : public HostExecutable {
+private:
+	const boost::filesystem::path& path;
+	HostVersionRef version;
+
 public:
-	HostExecutableImpl() {
+	HostExecutableImpl(const boost::filesystem::path& path)
+		: path(path) {
 	}
 
 	virtual ~HostExecutableImpl() {
 	}
 
 	virtual HostVersionRef getVersion() {
-		return HostVersionRef(impl::newHostVersion(0, 0, 0, 0));
+		if(!version) {
+			version = getVersionImpl(path);
+		}
+		return version;
 	}
 
 	virtual ProfileRef forProfile(const std::string& application) {
@@ -43,16 +53,18 @@ public:
 	}
 };
 
-HostExecutableRef newHostExecutable() {
-	return HostExecutableRef(new HostExecutableImpl());
-}
-
 HostExecutableRef newHostExecutable(const boost::filesystem::path& path) {
-	return HostExecutableRef(new HostExecutableImpl());
+	return HostExecutableRef(new HostExecutableImpl(path));
 }
 
 HostExecutableRef newHostExecutable(const std::string& path) {
 	return newHostExecutable(boost::filesystem::path(path));
+}
+
+HostVersionRef getVersionImpl(const boost::filesystem::path&) {
+	HostVersionRef ret;
+	ret = newHostVersion("0.0.0.0");
+	return ret;
 }
 
 } // namespace impl

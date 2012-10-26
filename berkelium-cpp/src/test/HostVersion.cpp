@@ -1,49 +1,51 @@
-#include "berkelium/HostExecutableFactory.hpp"
-#include "berkelium/HostExecutable.hpp"
 #include "berkelium/HostVersion.hpp"
+#include "berkelium/Impl.hpp"
 #include "gtest/gtest.h"
 
 namespace {
 
 class HostVersionTest : public ::testing::Test {
-public:
-	Berkelium::HostExecutableRef executable;
-	Berkelium::HostVersionRef subject;
-
-	HostVersionTest() {
-		executable = Berkelium::HostExecutableFactory::forSystemInstalled();
-		subject = executable->getVersion();
-	}
 };
 
-TEST_F(HostVersionTest, create) {
-	ASSERT_TRUE(executable); // not NULL
+void test(Berkelium::HostVersionRef subject, int32_t major, int32_t minor, int32_t build, int32_t patch, const std::string& ver) {
 	ASSERT_TRUE(subject); // not NULL
+	ASSERT_EQ(major, subject->getMajor());
+	ASSERT_EQ(minor, subject->getMinor());
+	ASSERT_EQ(build, subject->getBuild());
+	ASSERT_EQ(patch, subject->getPatch());
+	ASSERT_EQ(0, ver.compare(subject->getVersionString()));
 }
 
-TEST_F(HostVersionTest, getVersionString) {
-	std::string str = subject->getVersionString();
-	ASSERT_EQ(0, str.compare("0.0.0.0"));
+TEST_F(HostVersionTest, test1) {
+	test(Berkelium::impl::newHostVersion(0, 0, 0, 0), 0, 0, 0, 0, "0.0.0.0");
 }
 
-TEST_F(HostVersionTest, getMajor) {
-	ASSERT_EQ(0, subject->getMajor());
+TEST_F(HostVersionTest, test2) {
+	test(Berkelium::impl::newHostVersion(1, 2, 3, 4), 1, 2, 3, 4, "1.2.3.4");
 }
 
-TEST_F(HostVersionTest, getMinor) {
-	ASSERT_EQ(0, subject->getMajor());
+TEST_F(HostVersionTest, test3) {
+	test(Berkelium::impl::newHostVersion("0.0.0.0"), 0, 0, 0, 0, "0.0.0.0");
 }
 
-TEST_F(HostVersionTest, getBuild) {
-	ASSERT_EQ(0, subject->getBuild());
+TEST_F(HostVersionTest, test4) {
+	test(Berkelium::impl::newHostVersion("1.2.3.4"), 1, 2, 3, 4, "1.2.3.4");
 }
 
-TEST_F(HostVersionTest, getPatch) {
-	ASSERT_EQ(0, subject->getPatch());
+TEST_F(HostVersionTest, err1) {
+	ASSERT_FALSE(Berkelium::impl::newHostVersion("0.0.0.0 ")); // NULL
 }
 
-TEST_F(HostVersionTest, isMinVersion) {
-	ASSERT_FALSE(subject->isMinVersion(""));
+TEST_F(HostVersionTest, err2) {
+	ASSERT_FALSE(Berkelium::impl::newHostVersion("0.0.a.0")); // NULL
+}
+
+TEST_F(HostVersionTest, err3) {
+	ASSERT_FALSE(Berkelium::impl::newHostVersion("0.0.0")); // NULL
+}
+
+TEST_F(HostVersionTest, err4) {
+	ASSERT_FALSE(Berkelium::impl::newHostVersion("0.0.0.0.0")); // NULL
 }
 
 } // namespace

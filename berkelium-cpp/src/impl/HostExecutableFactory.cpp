@@ -9,11 +9,19 @@
 namespace Berkelium {
 
 HostExecutableRef HostExecutableFactory::forExecutable(const std::string& pathTo) {
-	return HostExecutableRef(impl::newHostExecutable());
+	return HostExecutableRef(impl::newHostExecutable(pathTo));
 }
 
 HostExecutableRef HostExecutableFactory::forSystemInstalled() {
-	return HostExecutableRef(impl::newHostExecutable());
+	std::string path;
+
+#ifdef WIN32
+	path = Berkelium::impl::getEnv("PROGRAMFILES(X86)") + "\\Google\\Chrome\\chrome.exe";
+#else
+#error "please add path to chrome here"
+#endif
+
+	return HostExecutableRef(impl::newHostExecutable(path));
 }
 
 } // namespace Berkelium

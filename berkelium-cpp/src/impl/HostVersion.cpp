@@ -4,9 +4,9 @@
 
 #include "berkelium/HostVersion.hpp"
 
-namespace Berkelium {
+#include <sstream>
 
-const std::string version = "0.0.0.0";
+namespace Berkelium {
 
 HostVersion::HostVersion() {
 }
@@ -16,6 +16,12 @@ HostVersion::~HostVersion() {
 
 namespace impl {
 
+std::string toVersionString(int32_t major, int32_t minor, int32_t build, int32_t patch) {
+	std::stringstream ret;
+	ret << major << '.' << minor << '.' << build << '.' << patch;
+	return ret.str();
+}
+
 class HostVersionImpl : public HostVersion {
 private:
 	const int32_t major;
@@ -23,12 +29,15 @@ private:
 	const int32_t build;
 	const int32_t patch;
 
+	const std::string version;
+
 public:
 	HostVersionImpl(int32_t major, int32_t minor, int32_t build, int32_t patch)
 		: major(major)
 		, minor(minor)
 		, build(build)
 		, patch(patch)
+		, version(toVersionString(major, minor, build, patch))
 	{
 	}
 
@@ -63,6 +72,45 @@ public:
 
 HostVersionRef newHostVersion(int32_t major, int32_t minor, int32_t build, int32_t patch) {
 	return HostVersionRef(new HostVersionImpl(major, minor, build, patch));
+}
+
+HostVersionRef newHostVersion(const std::string& version) {
+	HostVersionRef ret;
+	std::stringstream ss(version);
+	int8_t dot;
+
+	int32_t major;
+	int32_t minor;
+	int32_t build;
+	int32_t patch;
+
+	if((ss >> major).fail()) {
+		return ret;
+	}
+	if((ss >> dot).fail() || dot != '.') {
+		return ret;
+	}
+	if((ss >> minor).fail()) {
+		return ret;
+	}
+	if((ss >> dot).fail() || dot != '.') {
+		return ret;
+	}
+	if((ss >> build).fail()) {
+		return ret;
+	}
+	if((ss >> dot).fail() || dot != '.') {
+		return ret;
+	}
+	if((ss >> patch).fail()) {
+		return ret;
+	}
+
+	if(!ss.eof()) {
+		return ret;
+	}
+
+	return newHostVersion(major, minor, build, patch);
 }
 
 } // namespace impl
