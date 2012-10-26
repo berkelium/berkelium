@@ -13,7 +13,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\gtest\src\gtest_main.cc" />
     <ClCompile Include="..\src\test\HostExecutableTest.cpp" />
-    <ClCompile Include="..\src\test\HostVersion.cpp" />
+    <ClCompile Include="..\src\test\HostVersionTest.cpp" />
     <ClCompile Include="..\src\test\HostExecutableFactoryTest.cpp" />
     <ClCompile Include="..\src\test\ImplTest.cpp" />
     <ClCompile Include="..\src\test\ProfileTest.cpp" />
