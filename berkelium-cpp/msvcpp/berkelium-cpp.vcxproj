@@ -38,12 +38,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>..\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\include;..\..\..\boost;$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)out\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)out\$(Configuration)\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>..\include;$(IncludePath)</IncludePath>
+    <IncludePath>..\include;..\..\..\boost;$(IncludePath)</IncludePath>
     <IntDir>$(SolutionDir)out\$(Configuration)\$(ProjectName)\</IntDir>
     <OutDir>$(SolutionDir)out\$(Configuration)\</OutDir>
   </PropertyGroup>

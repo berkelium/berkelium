@@ -6,6 +6,8 @@
 #include "berkelium/Profile.hpp"
 #include "berkelium/Impl.hpp"
 
+#include <boost/filesystem.hpp>
+
 namespace Berkelium {
 
 HostExecutable::HostExecutable() {
@@ -43,6 +45,14 @@ public:
 
 HostExecutableRef newHostExecutable() {
 	return HostExecutableRef(new HostExecutableImpl());
+}
+
+HostExecutableRef newHostExecutable(const boost::filesystem::path& path) {
+	return HostExecutableRef(new HostExecutableImpl());
+}
+
+HostExecutableRef newHostExecutable(const std::string& path) {
+	return newHostExecutable(boost::filesystem::path(path));
 }
 
 } // namespace impl
