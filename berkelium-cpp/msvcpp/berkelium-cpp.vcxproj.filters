@@ -27,6 +27,9 @@
     <ClCompile Include="..\src\impl\HostVersion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\impl\ImplWin32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\berkelium\Profile.hpp">
