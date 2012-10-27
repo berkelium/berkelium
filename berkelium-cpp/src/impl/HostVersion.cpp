@@ -44,27 +44,27 @@ public:
 	virtual ~HostVersionImpl() {
 	}
 
-	virtual const std::string& HostVersionImpl::getVersionString() {
+	virtual const std::string& getVersionString() {
 		return version;
 	}
 
-	virtual int32_t HostVersionImpl::getMajor() {
+	virtual int32_t getMajor() {
 		return major;
 	}
 
-	virtual int32_t HostVersionImpl::getMinor() {
+	virtual int32_t getMinor() {
 		return minor;
 	}
 
-	virtual int32_t HostVersionImpl::getBuild() {
+	virtual int32_t getBuild() {
 		return build;
 	}
 
-	virtual int32_t HostVersionImpl::getPatch() {
+	virtual int32_t getPatch() {
 		return patch;
 	}
 
-	virtual bool HostVersionImpl::isMinVersion(const std::string& version) {
+	virtual bool isMinVersion(const std::string& version) {
 		return false;
 	}
 
