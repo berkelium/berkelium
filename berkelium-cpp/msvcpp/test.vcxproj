@@ -18,6 +18,9 @@
     <ClCompile Include="..\src\test\ImplTest.cpp" />
     <ClCompile Include="..\src\test\ProfileTest.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\test\test.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{573CB7C6-64E9-492E-BA02-0048DE85ECFA}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -49,11 +52,13 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)out\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)out\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>..\..\..\boost;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)out\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)out\$(Configuration)\$(ProjectName)\</IntDir>
+    <IncludePath>..\..\..\boost;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
