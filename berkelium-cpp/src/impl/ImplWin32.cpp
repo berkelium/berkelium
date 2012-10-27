@@ -12,20 +12,20 @@ namespace Berkelium {
 
 namespace impl {
 
-std::wstring getEnv(const std::wstring& env) {
+std::wstring getEnv(const std::wstring& env, const std::wstring& defaultValue) {
 	DWORD bufferSize = 65535;
 	std::wstring buffer;
 	buffer.resize(bufferSize);
 	DWORD length = GetEnvironmentVariableW(env.c_str(), &buffer[0], bufferSize);
 	if(length == 0) {
-		return std::wstring();
+		return defaultValue;
 	}
 	buffer.resize(length);
 	return buffer;
 }
 
-std::string getEnv(const std::string& env) {
-	return ws2s(getEnv(s2ws(env)));
+std::string getEnv(const std::string& env, const std::string& defaultValue) {
+	return ws2s(getEnv(s2ws(env), s2ws(defaultValue)));
 }
 
 std::string ws2s(const std::wstring& from) {

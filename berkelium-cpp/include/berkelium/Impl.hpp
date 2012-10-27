@@ -21,7 +21,7 @@ HostVersionRef newHostVersion(int32_t major, int32_t minor, int32_t build, int32
 HostExecutableRef newHostExecutable(const std::string&);
 ProfileRef newProfile();
 std::string getEnv(const std::string&, const std::string& defaultValue);
-#ifdef WINDOWS
+#ifdef WIN32
 std::string ws2s(const std::wstring&);
 std::wstring s2ws(const std::string&);
 #endif
