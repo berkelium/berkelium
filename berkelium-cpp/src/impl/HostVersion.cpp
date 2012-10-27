@@ -16,28 +16,28 @@ HostVersion::~HostVersion() {
 
 namespace impl {
 
-std::string toVersionString(int32_t major, int32_t minor, int32_t build, int32_t patch) {
+std::string toVersionString(int32_t vmajor, int32_t vminor, int32_t build, int32_t patch) {
 	std::stringstream ret;
-	ret << major << '.' << minor << '.' << build << '.' << patch;
+	ret << vmajor << '.' << vminor << '.' << build << '.' << patch;
 	return ret.str();
 }
 
 class HostVersionImpl : public HostVersion {
 private:
-	const int32_t major;
-	const int32_t minor;
+	const int32_t vmajor;
+	const int32_t vminor;
 	const int32_t build;
 	const int32_t patch;
 
 	const std::string version;
 
 public:
-	HostVersionImpl(int32_t major, int32_t minor, int32_t build, int32_t patch)
-		: major(major)
-		, minor(minor)
+	HostVersionImpl(int32_t vmajor, int32_t vminor, int32_t build, int32_t patch)
+		: vmajor(vmajor)
+		, vminor(vminor)
 		, build(build)
 		, patch(patch)
-		, version(toVersionString(major, minor, build, patch))
+		, version(toVersionString(vmajor, vminor, build, patch))
 	{
 	}
 
@@ -49,11 +49,11 @@ public:
 	}
 
 	virtual int32_t getMajor() {
-		return major;
+		return vmajor;
 	}
 
 	virtual int32_t getMinor() {
-		return minor;
+		return vminor;
 	}
 
 	virtual int32_t getBuild() {
@@ -70,8 +70,8 @@ public:
 
 };
 
-HostVersionRef newHostVersion(int32_t major, int32_t minor, int32_t build, int32_t patch) {
-	return HostVersionRef(new HostVersionImpl(major, minor, build, patch));
+HostVersionRef newHostVersion(int32_t vmajor, int32_t vminor, int32_t build, int32_t patch) {
+	return HostVersionRef(new HostVersionImpl(vmajor, vminor, build, patch));
 }
 
 HostVersionRef newHostVersion(const std::string& version) {
@@ -79,18 +79,18 @@ HostVersionRef newHostVersion(const std::string& version) {
 	std::stringstream ss(version);
 	int8_t dot;
 
-	int32_t major;
-	int32_t minor;
+	int32_t vmajor;
+	int32_t vminor;
 	int32_t build;
 	int32_t patch;
 
-	if((ss >> major).fail()) {
+	if((ss >> vmajor).fail()) {
 		return ret;
 	}
 	if((ss >> dot).fail() || dot != '.') {
 		return ret;
 	}
-	if((ss >> minor).fail()) {
+	if((ss >> vminor).fail()) {
 		return ret;
 	}
 	if((ss >> dot).fail() || dot != '.') {
@@ -110,7 +110,7 @@ HostVersionRef newHostVersion(const std::string& version) {
 		return ret;
 	}
 
-	return newHostVersion(major, minor, build, patch);
+	return newHostVersion(vmajor, vminor, build, patch);
 }
 
 } // namespace impl
