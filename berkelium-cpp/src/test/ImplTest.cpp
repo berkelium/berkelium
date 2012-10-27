@@ -1,3 +1,5 @@
+#ifdef WINDOWS
+
 #include "berkelium/Impl.hpp"
 #include "gtest/gtest.h"
 
@@ -7,13 +9,9 @@ class ImplTest : public ::testing::Test {
 };
 
 TEST_F(ImplTest, getEnv) {
-#ifdef WIN32
 	std::string key = "SystemDrive";
 	std::string value = "C:";
-#else
-#error "missing implementation"
-#endif
-	std::string s = Berkelium::impl::getEnv(key);
+	std::string s = Berkelium::impl::getEnv(key, "");
 	ASSERT_EQ(0, s.compare(value));
 }
 
@@ -36,7 +34,7 @@ TEST_F(ImplTest, s2wsTest) {
 }
 
 TEST_F(ImplTest, s2ws) {
-	s2ws(L"-äüöÄÜÖß@-", "-äüöÄÜÖß@-");
+	s2ws(L"-Ã¤Ã¼Ã¶Ã„ÃœÃ–ÃŸ@-", "-Ã¤Ã¼Ã¶Ã„ÃœÃ–ÃŸ@-");
 }
 
 TEST_F(ImplTest, ws2sEmpty) {
@@ -48,7 +46,9 @@ TEST_F(ImplTest, ws2sTest) {
 }
 
 TEST_F(ImplTest, ws2s) {
-	ws2s("-äüöÄÜÖß@-", L"-äüöÄÜÖß@-");
+	ws2s("-Ã¤Ã¼Ã¶Ã„ÃœÃ–ÃŸ@-", L"-Ã¤Ã¼Ã¶Ã„ÃœÃ–ÃŸ@-");
 }
 
 } // namespace
+
+#endif // WINDOWS

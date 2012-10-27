@@ -1,19 +1,19 @@
 #include "berkelium/HostExecutableFactory.hpp"
 #include "gtest/gtest.h"
 
+#include "test.h"
+
 namespace {
 
 class HostExecutableFactoryTest : public ::testing::Test {
 };
 
 TEST_F(HostExecutableFactoryTest, forExecutable) {
-	Berkelium::HostExecutableRef he = Berkelium::HostExecutableFactory::forExecutable("");
-	ASSERT_TRUE(he); // not NULL
+	ASSERT_NOT_NULL(Berkelium::HostExecutableFactory::forExecutable(""));
 }
 
 TEST_F(HostExecutableFactoryTest, forSystemInstalled) {
-	Berkelium::HostExecutableRef he = Berkelium::HostExecutableFactory::forSystemInstalled();
-	ASSERT_TRUE(he); // not NULL
+	ASSERT_NOT_NULL(Berkelium::HostExecutableFactory::forSystemInstalled());
 }
 
 } // namespace

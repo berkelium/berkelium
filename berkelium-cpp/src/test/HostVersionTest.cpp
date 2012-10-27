@@ -2,13 +2,15 @@
 #include "berkelium/Impl.hpp"
 #include "gtest/gtest.h"
 
+#include "test.h"
+
 namespace {
 
 class HostVersionTest : public ::testing::Test {
 };
 
 void test(Berkelium::HostVersionRef subject, int32_t major, int32_t minor, int32_t build, int32_t patch, const std::string& ver) {
-	ASSERT_TRUE(subject); // not NULL
+	ASSERT_NOT_NULL(subject);
 	ASSERT_EQ(major, subject->getMajor());
 	ASSERT_EQ(minor, subject->getMinor());
 	ASSERT_EQ(build, subject->getBuild());

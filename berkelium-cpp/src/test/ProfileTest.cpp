@@ -3,6 +3,8 @@
 #include "berkelium/Profile.hpp"
 #include "gtest/gtest.h"
 
+#include "test.h"
+
 namespace {
 
 class ProfileTest : public ::testing::Test {
@@ -17,23 +19,23 @@ public:
 };
 
 TEST_F(ProfileTest, create) {
-	ASSERT_TRUE(subject); // not NULL
+	ASSERT_NOT_NULL(subject);
 }
 
 TEST_F(ProfileTest, isInUse) {
-	ASSERT_FALSE(subject->isInUse()); // not NULL
+	ASSERT_FALSE(subject->isInUse());
 }
 
 TEST_F(ProfileTest, isFound) {
-	ASSERT_TRUE(subject->isFound()); // not NULL
+	ASSERT_TRUE(subject->isFound());
 }
 
 TEST_F(ProfileTest, isSameVersion) {
-	ASSERT_TRUE(subject->isSameVersion()); // not NULL
+	ASSERT_TRUE(subject->isSameVersion());
 }
 
 TEST_F(ProfileTest, isTooNew) {
-	ASSERT_FALSE(subject->isTooNew()); // not NULL
+	ASSERT_FALSE(subject->isTooNew());
 }
 
 TEST_F(ProfileTest, getApplicationName) {
@@ -52,8 +54,7 @@ TEST_F(ProfileTest, getProfilePath) {
 }
 
 TEST_F(ProfileTest, open) {
-	Berkelium::InstanceRef ref = subject->open();
-	ASSERT_FALSE(ref); // NULL
+	ASSERT_NULL(subject->open());
 }
 
 } // namespace

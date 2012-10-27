@@ -20,9 +20,11 @@ HostVersionRef newHostVersion(const std::string&);
 HostVersionRef newHostVersion(int32_t major, int32_t minor, int32_t build, int32_t patch);
 HostExecutableRef newHostExecutable(const std::string&);
 ProfileRef newProfile();
-std::string getEnv(const std::string&);
+std::string getEnv(const std::string&, const std::string& defaultValue);
+#ifdef WINDOWS
 std::string ws2s(const std::wstring&);
 std::wstring s2ws(const std::string&);
+#endif
 
 } // namespace impl
 

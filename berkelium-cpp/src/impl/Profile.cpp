@@ -24,35 +24,35 @@ public:
 	~ProfileImpl() {
 	}
 
-	bool Profile::isInUse() {
+	bool isInUse() {
 		return false;
 	}
 
-	bool Profile::isFound() {
+	bool isFound() {
 		return true;
 	}
 
-	bool Profile::isSameVersion() {
+	bool isSameVersion() {
 		return true;
 	}
 
-	bool Profile::isTooNew() {
+	bool isTooNew() {
 		return false;
 	}
 
-	const std::string& Profile::getApplicationName() {
+	const std::string& getApplicationName() {
 		return dummy;
 	}
 
-	const std::string& Profile::getProfileName() {
+	const std::string& getProfileName() {
 		return dummy;
 	}
 
-	const std::string& Profile::getProfilePath() {
+	const std::string& getProfilePath() {
 		return dummy;
 	}
 
-	InstanceRef Profile::open() {
+	InstanceRef open() {
 		return InstanceRef();
 	}
 

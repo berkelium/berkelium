@@ -6,3 +6,5 @@ out/
 run/
 .project
 .cproject
+CTestTestfile.cmake
+Testing/

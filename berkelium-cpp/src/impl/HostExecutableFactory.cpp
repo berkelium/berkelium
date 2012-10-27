@@ -17,6 +17,8 @@ HostExecutableRef HostExecutableFactory::forSystemInstalled() {
 
 #ifdef WIN32
 	path = Berkelium::impl::getEnv("PROGRAMFILES(X86)") + "\\Google\\Chrome\\chrome.exe";
+#elif LINUX
+	path = "../berkelium-host/berkelium";
 #else
 #error "please add path to chrome here"
 #endif
