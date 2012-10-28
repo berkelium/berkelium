@@ -26,6 +26,27 @@ public:
 
 	// Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
 	static HostExecutableRef forSystemInstalled();
+
+	// Returns the default profile for the given application name. A profile can only be held open by one instance at the same time . An exception is thrown of the profile is already be used.
+	static ProfileRef forProfile(const std::string& application);
+
+	// As above, but instead the given profile is used.
+	static ProfileRef forProfile(const std::string& application, const std::string& profile);
+
+	// Returns a Profile object representing the given Google Chrome profile.
+	static ProfileRef forChromeProfile(const std::string& profile);
+
+	// As above, but instead the default profile is used.
+	static ProfileRef forChromeProfile();
+
+	// Creates a temporary profile that gets automatically removed after use.
+	static ProfileRef createTemporaryProfile();
+
+	// Creates a HostVersion object representing the given version string.
+	static HostVersionRef forVersion(const std::string& version);
+
+	// Creates a HostVersion object representing the given version number.
+	static HostVersionRef forVersion(int32_t vMajor, int32_t vMinor, int32_t vBuild, int32_t vPatch);
 };
 
 } // namespace Berkelium

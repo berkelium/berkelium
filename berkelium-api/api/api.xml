@@ -70,23 +70,41 @@
 			<short>Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)</short>
 			<todo>Maybe a version number should be given here</todo>
 		</entry>
+		<entry static="true" name="forProfile" ret="Profile">
+			<arg type="string" name="application"/>
+			<short>Returns the default profile for the given application name. A profile can only be held open by one instance at the same time . An exception is thrown of the profile is already be used.</short>
+		</entry>
+		<entry static="true" name="forProfile" ret="Profile">
+			<arg type="string" name="application"/>
+			<arg type="string" name="profile"/>
+			<short>As above, but instead the given profile is used.</short>
+		</entry>
+		<entry static="true" name="forChromeProfile" ret="Profile">
+			<arg type="string" name="profile"/>
+			<short>Returns a Profile object representing the given Google Chrome profile.</short>
+		</entry>
+		<entry static="true" name="forChromeProfile" ret="Profile">
+			<short>As above, but instead the default profile is used.</short>
+		</entry>
+		<entry static="true" name="createTemporaryProfile" ret="Profile">
+			<short>Creates a temporary profile that gets automatically removed after use.</short>
+		</entry>
+		<entry static="true" name="forVersion" ret="HostVersion">
+			<arg type="string" name="version"/>
+			<short>Creates a HostVersion object representing the given version string.</short>
+		</entry>
+		<entry static="true" name="forVersion" ret="HostVersion">
+			<arg type="int32" name="vMajor"/>
+			<arg type="int32" name="vMinor"/>
+			<arg type="int32" name="vBuild"/>
+			<arg type="int32" name="vPatch"/>
+			<short>Creates a HostVersion object representing the given version number.</short>
+		</entry>
 	</group>
 	<group type="interface" name="HostExecutable">
 		<short>Represents a reference to the executable file of the berkelium host process.</short>
 		<entry name="getVersion" ret="HostVersion">
 			<short>Returns the version of this berkelium host executable.</short>
-		</entry>
-		<entry name="forProfile" ret="Profile">
-			<arg type="string" name="application"/>
-			<short>Returns the default profile for the given application name. A profile can only be held open by one instance at the same time . An exception is thrown of the profile is already be used.</short>
-		</entry>
-		<entry name="forProfile" ret="Profile">
-			<arg type="string" name="application"/>
-			<arg type="string" name="profile"/>
-			<short>As above, but instead the given profile is used.</short>
-		</entry>
-		<entry name="createTemporaryProfile" ret="Profile">
-			<short>Creates a temporary profile that gets automatically removed after use.</short>
 		</entry>
 	</group>
 	<group type="interface" name="Profile">

@@ -28,15 +28,6 @@ public:
 
 	// Returns the version of this berkelium host executable.
 	virtual HostVersionRef getVersion() = 0;
-
-	// Returns the default profile for the given application name. A profile can only be held open by one instance at the same time . An exception is thrown of the profile is already be used.
-	virtual ProfileRef forProfile(const std::string& application) = 0;
-
-	// As above, but instead the given profile is used.
-	virtual ProfileRef forProfile(const std::string& application, const std::string& profile) = 0;
-
-	// Creates a temporary profile that gets automatically removed after use.
-	virtual ProfileRef createTemporaryProfile() = 0;
 };
 
 } // namespace Berkelium

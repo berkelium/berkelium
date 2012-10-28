@@ -17,13 +17,4 @@ public interface HostExecutable {
 
 	// Returns the version of this berkelium host executable.
 	HostVersion getVersion();
-
-	// Returns the default profile for the given application name. A profile can only be held open by one instance at the same time . An exception is thrown of the profile is already be used.
-	Profile forProfile(String application);
-
-	// As above, but instead the given profile is used.
-	Profile forProfile(String application, String profile);
-
-	// Creates a temporary profile that gets automatically removed after use.
-	Profile createTemporaryProfile();
 }
