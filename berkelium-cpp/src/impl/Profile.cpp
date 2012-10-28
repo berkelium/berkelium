@@ -36,6 +36,9 @@ public:
 	}
 
 	~ProfileImpl() {
+		if(temp && !application.empty() && !profile.empty() && !isInUse()) {
+			boost::filesystem::remove_all(path);
+		}
 	}
 
 	bool isInUse() {
@@ -56,10 +59,12 @@ public:
 	}
 
 	bool isSameVersion() {
+		// TODO
 		return true;
 	}
 
 	bool isTooNew() {
+		// TODO
 		return false;
 	}
 
@@ -76,6 +81,7 @@ public:
 	}
 
 	InstanceRef open() {
+		// TODO
 		return InstanceRef();
 	}
 
