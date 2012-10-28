@@ -35,7 +35,4 @@ public interface Profile {
 
 	// Returns the full path to the used Profile.
 	String getProfilePath();
-
-	// Launches a new berkelium host process using this profile.
-	Instance open();
 }

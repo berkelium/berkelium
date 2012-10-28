@@ -54,4 +54,7 @@ public abstract class BerkeliumFactory {
 
 	// Creates a HostVersion object representing the given version number.
 	public abstract HostVersion forVersion(int vMajor, int vMinor, int vBuild, int vPatch);
+
+	// Launches a the given berkelium host process using the given profile.
+	public abstract Instance open(HostExecutable executable, Profile profile);
 }

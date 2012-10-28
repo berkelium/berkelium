@@ -46,9 +46,6 @@ public:
 
 	// Returns the full path to the used Profile.
 	virtual const std::string& getProfilePath() = 0;
-
-	// Launches a new berkelium host process using this profile.
-	virtual InstanceRef open() = 0;
 };
 
 } // namespace Berkelium

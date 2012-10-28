@@ -47,6 +47,9 @@ public:
 
 	// Creates a HostVersion object representing the given version number.
 	static HostVersionRef forVersion(int32_t vMajor, int32_t vMinor, int32_t vBuild, int32_t vPatch);
+
+	// Launches a the given berkelium host process using the given profile.
+	static InstanceRef open(HostExecutableRef executable, ProfileRef profile);
 };
 
 } // namespace Berkelium

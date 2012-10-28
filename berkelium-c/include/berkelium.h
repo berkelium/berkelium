@@ -89,6 +89,9 @@ BK_HostVersion BK_BerkeliumFactory_forVersion(bk_string version);
 // Creates a HostVersion object representing the given version number.
 BK_HostVersion BK_BerkeliumFactory_forVersion(bk_int32 vMajor, bk_int32 vMinor, bk_int32 vBuild, bk_int32 vPatch);
 
+// Launches a the given berkelium host process using the given profile.
+BK_Instance BK_BerkeliumFactory_open(BK_HostExecutable executable, BK_Profile profile);
+
 // =========================================
 // interface HostExecutable
 //
@@ -124,9 +127,6 @@ bk_string BK_Profile_getProfileName(BK_Profile self);
 
 // Returns the full path to the used Profile.
 bk_string BK_Profile_getProfilePath(BK_Profile self);
-
-// Launches a new berkelium host process using this profile.
-BK_Instance BK_Profile_open(BK_Profile self);
 
 // =========================================
 // enum LogType
