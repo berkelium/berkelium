@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "berkelium/HostExecutableFactory.hpp"
+#include "berkelium/BerkeliumFactory.hpp"
 #include "berkelium/HostExecutable.hpp"
 #include "berkelium/Profile.hpp"
 
@@ -19,57 +19,42 @@ class ProfileTest : public ::testing::Test {
 };
 
 TEST_F(ProfileTest, create) {
-	Berkelium::HostExecutableRef executable = Berkelium::HostExecutableFactory::forSystemInstalled();
-	ASSERT_NOT_NULL(executable);
-	Berkelium::ProfileRef subject = executable->createTemporaryProfile();
-	ASSERT_NOT_NULL(subject);
+	ASSERT_NOT_NULL(Berkelium::BerkeliumFactory::createTemporaryProfile());
 }
 
 TEST_F(ProfileTest, isInUse) {
-	Berkelium::HostExecutableRef executable = Berkelium::HostExecutableFactory::forSystemInstalled();
-	ASSERT_NOT_NULL(executable);
-	Berkelium::ProfileRef subject = executable->createTemporaryProfile();
+	Berkelium::ProfileRef subject = Berkelium::BerkeliumFactory::createTemporaryProfile();
 	ASSERT_NOT_NULL(subject);
 	ASSERT_FALSE(subject->isInUse());
 }
 
 TEST_F(ProfileTest, isFound) {
-	Berkelium::HostExecutableRef executable = Berkelium::HostExecutableFactory::forSystemInstalled();
-	ASSERT_NOT_NULL(executable);
-	Berkelium::ProfileRef subject = executable->createTemporaryProfile();
+	Berkelium::ProfileRef subject = Berkelium::BerkeliumFactory::createTemporaryProfile();
 	ASSERT_NOT_NULL(subject);
 	ASSERT_FALSE(subject->isFound());
 }
 
 TEST_F(ProfileTest, isSameVersion) {
-	Berkelium::HostExecutableRef executable = Berkelium::HostExecutableFactory::forSystemInstalled();
-	ASSERT_NOT_NULL(executable);
-	Berkelium::ProfileRef subject = executable->createTemporaryProfile();
+	Berkelium::ProfileRef subject = Berkelium::BerkeliumFactory::createTemporaryProfile();
 	ASSERT_NOT_NULL(subject);
 	ASSERT_TRUE(subject->isSameVersion());
 }
 
 TEST_F(ProfileTest, isTooNew) {
-	Berkelium::HostExecutableRef executable = Berkelium::HostExecutableFactory::forSystemInstalled();
-	ASSERT_NOT_NULL(executable);
-	Berkelium::ProfileRef subject = executable->createTemporaryProfile();
+	Berkelium::ProfileRef subject = Berkelium::BerkeliumFactory::createTemporaryProfile();
 	ASSERT_NOT_NULL(subject);
 	ASSERT_FALSE(subject->isTooNew());
 }
 
 TEST_F(ProfileTest, getApplicationName) {
-	Berkelium::HostExecutableRef executable = Berkelium::HostExecutableFactory::forSystemInstalled();
-	ASSERT_NOT_NULL(executable);
-	Berkelium::ProfileRef subject = executable->createTemporaryProfile();
+	Berkelium::ProfileRef subject = Berkelium::BerkeliumFactory::createTemporaryProfile();
 	ASSERT_NOT_NULL(subject);
 	std::string str = subject->getApplicationName();
 	ASSERT_EQ(0, str.compare("berkelium"));
 }
 
 TEST_F(ProfileTest, getProfileName) {
-	Berkelium::HostExecutableRef executable = Berkelium::HostExecutableFactory::forSystemInstalled();
-	ASSERT_NOT_NULL(executable);
-	Berkelium::ProfileRef subject = executable->forProfile("berkelium");
+	Berkelium::ProfileRef subject = Berkelium::BerkeliumFactory::forProfile("berkelium");
 	ASSERT_NOT_NULL(subject);
 	std::string str = subject->getProfileName();
 	ASSERT_EQ(0, str.compare("Default"));
@@ -81,24 +66,16 @@ TEST_F(ProfileTest, getProfilePath) {
 }
 */
 
-TEST_F(ProfileTest, open) {
-	Berkelium::HostExecutableRef executable = Berkelium::HostExecutableFactory::forSystemInstalled();
-	ASSERT_NOT_NULL(executable);
-	Berkelium::ProfileRef subject = executable->createTemporaryProfile();
-	ASSERT_NOT_NULL(subject);
-	ASSERT_NULL(subject->open());
-}
-
 TEST_F(ProfileTest, extended) {
-	Berkelium::HostExecutableRef executable = Berkelium::HostExecutableFactory::forSystemInstalled();
+	Berkelium::HostExecutableRef executable = Berkelium::BerkeliumFactory::forSystemInstalled();
 	ASSERT_NOT_NULL(executable);
-	Berkelium::ProfileRef profile = executable->createTemporaryProfile();
+	Berkelium::ProfileRef profile = Berkelium::BerkeliumFactory::createTemporaryProfile();
 	ASSERT_NOT_NULL(profile);
 	path path = profile->getProfilePath();
 	ASSERT_FALSE(exists(path));
 	ASSERT_FALSE(profile->isFound());
 	ASSERT_FALSE(profile->isInUse());
-	Berkelium::InstanceRef instance = profile->open();
+	Berkelium::InstanceRef instance = Berkelium::BerkeliumFactory::open(executable, profile);
 	ASSERT_NOT_NULL(instance);
 	ASSERT_TRUE(exists(path));
 	ASSERT_TRUE(profile->isFound());

@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "berkelium/BerkeliumFactory.hpp"
 #include "berkelium/Profile.hpp"
 #include "berkelium/Impl.hpp"
 
 #include <iostream>
 #include <fstream>
 #include <boost/filesystem.hpp>
+#include <boost/random/random_device.hpp>
+#include <boost/random/uniform_int_distribution.hpp>
 
 namespace Berkelium {
 
@@ -18,6 +21,23 @@ Profile::~Profile() {
 }
 
 namespace impl {
+
+std::string randomId(int length) {
+	static const std::string CHARS("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
+	boost::random::uniform_int_distribution<> INDEX(0, CHARS.size() - 1);
+	boost::random::random_device rnd;
+	std::string ret;
+
+	for(int i = 0; i < length; i++) {
+		ret += CHARS[INDEX(rnd)];
+	}
+
+	return ret;
+}
+
+std::string randomId() {
+	return randomId(8);
+}
 
 class ProfileImpl : public Profile {
 private:
@@ -79,12 +99,6 @@ public:
 	const std::string& getProfilePath() {
 		return pathstr;
 	}
-
-	InstanceRef open() {
-		// TODO
-		return InstanceRef();
-	}
-
 };
 
 ProfileRef newProfile(const std::string& application, const std::string& profile, const bool temp) {
@@ -113,5 +127,25 @@ ProfileRef newProfile(const std::string& application, const std::string& profile
 }
 
 } // namespace impl
+
+ProfileRef BerkeliumFactory::forProfile(const std::string& application) {
+	return forProfile(application, "Default");
+}
+
+ProfileRef BerkeliumFactory::forProfile(const std::string& application, const std::string& profile) {
+	return impl::newProfile(application, profile, false);
+}
+
+ProfileRef BerkeliumFactory::forChromeProfile(const std::string& profile) {
+	return ProfileRef();
+}
+
+ProfileRef BerkeliumFactory::forChromeProfile() {
+	return ProfileRef();
+}
+
+ProfileRef BerkeliumFactory::createTemporaryProfile() {
+	return impl::newProfile("berkelium", impl::randomId(), true);
+}
 
 } // namespace Berkelium

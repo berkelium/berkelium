@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "berkelium/BerkeliumFactory.hpp"
 #include "berkelium/HostVersion.hpp"
 
 #include <sstream>
@@ -70,39 +71,41 @@ public:
 
 };
 
-HostVersionRef newHostVersion(int32_t vmajor, int32_t vminor, int32_t build, int32_t patch) {
-	return HostVersionRef(new HostVersionImpl(vmajor, vminor, build, patch));
+} // namespace impl
+
+HostVersionRef BerkeliumFactory::forVersion(int32_t vMajor, int32_t vMinor, int32_t vBuild, int32_t vPatch) {
+	return HostVersionRef(new impl::HostVersionImpl(vMajor, vMinor, vBuild, vPatch));
 }
 
-HostVersionRef newHostVersion(const std::string& version) {
+HostVersionRef BerkeliumFactory::forVersion(const std::string& version) {
 	HostVersionRef ret;
 	std::stringstream ss(version);
 	int8_t dot;
 
-	int32_t vmajor;
-	int32_t vminor;
-	int32_t build;
-	int32_t patch;
+	int32_t vMajor;
+	int32_t vMinor;
+	int32_t vBuild;
+	int32_t vPatch;
 
-	if((ss >> vmajor).fail()) {
+	if((ss >> vMajor).fail()) {
 		return ret;
 	}
 	if((ss >> dot).fail() || dot != '.') {
 		return ret;
 	}
-	if((ss >> vminor).fail()) {
+	if((ss >> vMinor).fail()) {
 		return ret;
 	}
 	if((ss >> dot).fail() || dot != '.') {
 		return ret;
 	}
-	if((ss >> build).fail()) {
+	if((ss >> vBuild).fail()) {
 		return ret;
 	}
 	if((ss >> dot).fail() || dot != '.') {
 		return ret;
 	}
-	if((ss >> patch).fail()) {
+	if((ss >> vPatch).fail()) {
 		return ret;
 	}
 
@@ -110,9 +113,7 @@ HostVersionRef newHostVersion(const std::string& version) {
 		return ret;
 	}
 
-	return newHostVersion(vmajor, vminor, build, patch);
+	return forVersion(vMajor, vMinor, vBuild, vPatch);
 }
-
-} // namespace impl
 
 } // namespace Berkelium

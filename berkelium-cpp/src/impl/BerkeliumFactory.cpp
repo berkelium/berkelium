@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "berkelium/HostExecutableFactory.hpp"
+#include "berkelium/BerkeliumFactory.hpp"
 #include "berkelium/HostExecutable.hpp"
 #include "berkelium/Impl.hpp"
 
 namespace Berkelium {
 
-HostExecutableRef HostExecutableFactory::forExecutable(const std::string& pathTo) {
+HostExecutableRef BerkeliumFactory::forExecutable(const std::string& pathTo) {
 	return HostExecutableRef(impl::newHostExecutable(pathTo));
 }
 
-HostExecutableRef HostExecutableFactory::forSystemInstalled() {
+HostExecutableRef BerkeliumFactory::forSystemInstalled() {
 	std::string path;
 
 #ifdef WIN32
@@ -24,6 +24,11 @@ HostExecutableRef HostExecutableFactory::forSystemInstalled() {
 #endif
 
 	return HostExecutableRef(impl::newHostExecutable(path));
+}
+
+InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef profile) {
+	// TODO
+	return InstanceRef();
 }
 
 } // namespace Berkelium

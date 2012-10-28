@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "berkelium/BerkeliumFactory.hpp"
 #include "berkelium/HostExecutable.hpp"
 #include "berkelium/Profile.hpp"
 #include "berkelium/Impl.hpp"
 
 #include <boost/filesystem.hpp>
-#include <boost/random/random_device.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
 
 namespace Berkelium {
 
@@ -21,23 +20,6 @@ HostExecutable::~HostExecutable() {
 namespace impl {
 
 HostVersionRef getVersionImpl(const boost::filesystem::path&);
-
-std::string randomId(int length) {
-	static const std::string CHARS("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
-	boost::random::uniform_int_distribution<> INDEX(0, CHARS.size() - 1);
-	boost::random::random_device rnd;
-	std::string ret;
-
-	for(int i = 0; i < length; i++) {
-		ret += CHARS[INDEX(rnd)];
-	}
-
-	return ret;
-}
-
-std::string randomId() {
-	return randomId(8);
-}
 
 class HostExecutableImpl : public HostExecutable {
 private:
@@ -58,18 +40,6 @@ public:
 		}
 		return version;
 	}
-
-	virtual ProfileRef forProfile(const std::string& application) {
-		return forProfile(application, "Default");
-	}
-
-	virtual ProfileRef forProfile(const std::string& application, const std::string& profile) {
-		return ProfileRef(impl::newProfile(application, profile, false));
-	}
-
-	virtual ProfileRef createTemporaryProfile() {
-		return ProfileRef(impl::newProfile("berkelium", randomId(), true));
-	}
 };
 
 HostExecutableRef newHostExecutable(const boost::filesystem::path& path) {
@@ -82,7 +52,7 @@ HostExecutableRef newHostExecutable(const std::string& path) {
 
 HostVersionRef getVersionImpl(const boost::filesystem::path&) {
 	HostVersionRef ret;
-	ret = newHostVersion("0.0.0.0");
+	ret = Berkelium::BerkeliumFactory::forVersion("0.0.0.0");
 	return ret;
 }
 

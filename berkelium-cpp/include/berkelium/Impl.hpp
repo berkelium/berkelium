@@ -16,8 +16,6 @@ namespace Berkelium {
 
 namespace impl {
 
-HostVersionRef newHostVersion(const std::string&);
-HostVersionRef newHostVersion(int32_t major, int32_t minor, int32_t build, int32_t patch);
 HostExecutableRef newHostExecutable(const std::string&);
 ProfileRef newProfile(const std::string& application, const std::string& profile, const bool temp);
 std::string getEnv(const std::string&, const std::string& defaultValue);

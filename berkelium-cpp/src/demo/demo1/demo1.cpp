@@ -7,20 +7,20 @@
 #include "berkelium/Profile.hpp"
 #include "berkelium/HostVersion.hpp"
 #include "berkelium/HostExecutable.hpp"
-#include "berkelium/HostExecutableFactory.hpp"
+#include "berkelium/BerkeliumFactory.hpp"
 
 int main(int argc, char* argv[])
 {
 	std::cout << "berkelium demo application..." << std::endl;
-	Berkelium::HostExecutableRef host = Berkelium::HostExecutableFactory::forSystemInstalled();
+	Berkelium::HostExecutableRef host = Berkelium::BerkeliumFactory::forSystemInstalled();
 
 	Berkelium::HostVersionRef version = host->getVersion();
 	std::cout << "host version string: " << version->getVersionString() << std::endl;
 
 	/*
-	Berkelium::ProfileRef profile = host->createTemporaryProfile();
+	Berkelium::ProfileRef profile = Berkelium::BerkeliumFactory::createTemporaryProfile();
 	*/
-	Berkelium::ProfileRef profile = host->forProfile("Google\\Chrome", "User Data");
+	Berkelium::ProfileRef profile = Berkelium::BerkeliumFactory::forChromeProfile();
 	std::cout << "profile application: " << profile->getApplicationName() << std::endl;
 	std::cout << "profile name: " << profile->getProfileName() << std::endl;
 	std::cout << "profile path: " << profile->getProfilePath() << std::endl;

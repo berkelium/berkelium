@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "berkelium/HostVersion.hpp"
-#include "berkelium/Impl.hpp"
+#include "berkelium/BerkeliumFactory.hpp"
 #include "gtest/gtest.h"
 
 #include "test.h"
@@ -23,35 +23,35 @@ void test(Berkelium::HostVersionRef subject, int32_t major, int32_t minor, int32
 }
 
 TEST_F(HostVersionTest, test1) {
-	test(Berkelium::impl::newHostVersion(0, 0, 0, 0), 0, 0, 0, 0, "0.0.0.0");
+	test(Berkelium::BerkeliumFactory::forVersion(0, 0, 0, 0), 0, 0, 0, 0, "0.0.0.0");
 }
 
 TEST_F(HostVersionTest, test2) {
-	test(Berkelium::impl::newHostVersion(1, 2, 3, 4), 1, 2, 3, 4, "1.2.3.4");
+	test(Berkelium::BerkeliumFactory::forVersion(1, 2, 3, 4), 1, 2, 3, 4, "1.2.3.4");
 }
 
 TEST_F(HostVersionTest, test3) {
-	test(Berkelium::impl::newHostVersion("0.0.0.0"), 0, 0, 0, 0, "0.0.0.0");
+	test(Berkelium::BerkeliumFactory::forVersion("0.0.0.0"), 0, 0, 0, 0, "0.0.0.0");
 }
 
 TEST_F(HostVersionTest, test4) {
-	test(Berkelium::impl::newHostVersion("1.2.3.4"), 1, 2, 3, 4, "1.2.3.4");
+	test(Berkelium::BerkeliumFactory::forVersion("1.2.3.4"), 1, 2, 3, 4, "1.2.3.4");
 }
 
 TEST_F(HostVersionTest, err1) {
-	ASSERT_FALSE(Berkelium::impl::newHostVersion("0.0.0.0 ")); // NULL
+	ASSERT_FALSE(Berkelium::BerkeliumFactory::forVersion("0.0.0.0 ")); // NULL
 }
 
 TEST_F(HostVersionTest, err2) {
-	ASSERT_FALSE(Berkelium::impl::newHostVersion("0.0.a.0")); // NULL
+	ASSERT_FALSE(Berkelium::BerkeliumFactory::forVersion("0.0.a.0")); // NULL
 }
 
 TEST_F(HostVersionTest, err3) {
-	ASSERT_FALSE(Berkelium::impl::newHostVersion("0.0.0")); // NULL
+	ASSERT_FALSE(Berkelium::BerkeliumFactory::forVersion("0.0.0")); // NULL
 }
 
 TEST_F(HostVersionTest, err4) {
-	ASSERT_FALSE(Berkelium::impl::newHostVersion("0.0.0.0.0")); // NULL
+	ASSERT_FALSE(Berkelium::BerkeliumFactory::forVersion("0.0.0.0.0")); // NULL
 }
 
 } // namespace
