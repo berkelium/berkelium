@@ -5,6 +5,8 @@
 #include "berkelium/Profile.hpp"
 #include "berkelium/Impl.hpp"
 
+#include <iostream>
+#include <fstream>
 #include <boost/filesystem.hpp>
 
 namespace Berkelium {
@@ -37,11 +39,20 @@ public:
 	}
 
 	bool isInUse() {
-		return false;
+#ifdef WIN32
+		boost::filesystem::path lock = path / "lockfile";
+		if(!boost::filesystem::exists(lock)) {
+			return false;
+		}
+		std::ofstream file(lock.string());
+		return !file.is_open();
+#else
+#error "TODO"
+#endif
 	}
 
 	bool isFound() {
-		return true;
+		return boost::filesystem::exists(path);
 	}
 
 	bool isSameVersion() {
@@ -75,9 +86,9 @@ ProfileRef newProfile(const std::string& application, const std::string& profile
 
 #ifdef WIN32
 	if(temp) {
-		path = getEnv("LOCALAPPDATA", "C:");
-	} else {
 		path = getEnv("TEMP", "C:\\WINDOWS\\TEMP");
+	} else {
+		path = getEnv("LOCALAPPDATA", "C:");
 	}
 #elif LINUX
 	if(temp) {
@@ -91,8 +102,6 @@ ProfileRef newProfile(const std::string& application, const std::string& profile
 
 	path /= application;
 	path /= profile;
-
-	std::cerr << path << std::endl;
 
 	return ProfileRef(new ProfileImpl(path, application, profile, temp));
 }

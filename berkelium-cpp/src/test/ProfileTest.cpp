@@ -38,7 +38,7 @@ TEST_F(ProfileTest, isFound) {
 	ASSERT_NOT_NULL(executable);
 	Berkelium::ProfileRef subject = executable->createTemporaryProfile();
 	ASSERT_NOT_NULL(subject);
-	ASSERT_TRUE(subject->isFound());
+	ASSERT_FALSE(subject->isFound());
 }
 
 TEST_F(ProfileTest, isSameVersion) {
