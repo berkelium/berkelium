@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BERKELIUM_HOSTEXECUTABLEFACTORY_HPP_
-#define BERKELIUM_HOSTEXECUTABLEFACTORY_HPP_
+#ifndef BERKELIUM_BERKELIUMFACTORY_HPP_
+#define BERKELIUM_BERKELIUMFACTORY_HPP_
 #pragma once
 
 // =========================================
@@ -18,7 +18,7 @@
 
 namespace Berkelium {
 
-class HostExecutableFactory {
+class BerkeliumFactory {
 public:
 
 	// Creates an HostExecutable Object representing the given executable.
@@ -30,4 +30,4 @@ public:
 
 } // namespace Berkelium
 
-#endif // BERKELIUM_HOSTEXECUTABLEFACTORY_HPP_
+#endif // BERKELIUM_BERKELIUMFACTORY_HPP_

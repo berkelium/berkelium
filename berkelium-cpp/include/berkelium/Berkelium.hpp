@@ -39,8 +39,8 @@ enum LogType {
 class HostVersion;
 typedef std::shared_ptr<HostVersion> HostVersionRef;
 
-class HostExecutableFactory;
-typedef std::shared_ptr<HostExecutableFactory> HostExecutableFactoryRef;
+class BerkeliumFactory;
+typedef std::shared_ptr<BerkeliumFactory> BerkeliumFactoryRef;
 
 class HostExecutable;
 typedef std::shared_ptr<HostExecutable> HostExecutableRef;

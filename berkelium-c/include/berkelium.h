@@ -25,7 +25,7 @@ typedef int32_t bk_bool;
 typedef const char* bk_string;
 
 typedef bk_int32 BK_HostVersion;
-typedef bk_int32 BK_HostExecutableFactory;
+typedef bk_int32 BK_BerkeliumFactory;
 typedef bk_int32 BK_HostExecutable;
 typedef bk_int32 BK_Profile;
 typedef bk_int32 BK_LogDelegate;
@@ -59,14 +59,14 @@ bk_int32 BK_HostVersion_getPatch(BK_HostVersion self);
 bk_bool BK_HostVersion_isMinVersion(BK_HostVersion self, bk_string version);
 
 // =========================================
-// class HostExecutableFactory
+// class BerkeliumFactory
 // =========================================
 
 // Creates an HostExecutable Object representing the given executable.
-BK_HostExecutable BK_HostExecutableFactory_forExecutable(bk_string pathTo);
+BK_HostExecutable BK_BerkeliumFactory_forExecutable(bk_string pathTo);
 
 // Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
-BK_HostExecutable BK_HostExecutableFactory_forSystemInstalled();
+BK_HostExecutable BK_BerkeliumFactory_forSystemInstalled();
 
 // =========================================
 // interface HostExecutable

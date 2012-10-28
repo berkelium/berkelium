@@ -46,15 +46,15 @@
 			<short>Returns true if the given Version is less or equal to the version of the executable represented by this executable object.</short>
 		</entry>
 	</group>
-	<group type="class" name="HostExecutableFactory">
-		<implementation type="java"><![CDATA[	private static HostExecutableFactory instance;
+	<group type="class" name="BerkeliumFactory">
+		<implementation type="java"><![CDATA[	private static BerkeliumFactory instance;
 
-	public synchronized static HostExecutableFactory getInstance() {
+	public synchronized static BerkeliumFactory getInstance() {
 		if(instance == null) {
 			try {
-				Class<?> c = HostExecutableFactory.class.getClassLoader().loadClass(
-					"org.berkelium.impl.HostExecutableFactoryImpl");
-				instance = (HostExecutableFactory)c.getConstructor().newInstance();
+				Class<?> c = BerkeliumFactory.class.getClassLoader().loadClass(
+					"org.berkelium.impl.BerkeliumFactoryImpl");
+				instance = (BerkeliumFactory)c.getConstructor().newInstance();
 			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			}

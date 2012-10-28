@@ -12,15 +12,15 @@ package org.berkelium.api;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public abstract class HostExecutableFactory {
-	private static HostExecutableFactory instance;
+public abstract class BerkeliumFactory {
+	private static BerkeliumFactory instance;
 
-	public synchronized static HostExecutableFactory getInstance() {
+	public synchronized static BerkeliumFactory getInstance() {
 		if(instance == null) {
 			try {
-				Class<?> c = HostExecutableFactory.class.getClassLoader().loadClass(
-					"org.berkelium.impl.HostExecutableFactoryImpl");
-				instance = (HostExecutableFactory)c.getConstructor().newInstance();
+				Class<?> c = BerkeliumFactory.class.getClassLoader().loadClass(
+					"org.berkelium.impl.BerkeliumFactoryImpl");
+				instance = (BerkeliumFactory)c.getConstructor().newInstance();
 			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			}
