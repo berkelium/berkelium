@@ -34,17 +34,14 @@ public abstract class BerkeliumFactory {
 	// Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
 	public abstract HostExecutable forSystemInstalled();
 
-	// Returns the default profile for the given application name. A profile can only be held open by one instance at the same time . An exception is thrown of the profile is already be used.
+	// Returns the profile for the given application name.
 	public abstract Profile forProfile(String application);
 
-	// As above, but instead the given profile is used.
-	public abstract Profile forProfile(String application, String profile);
-
-	// Returns a Profile object representing the given Google Chrome profile.
-	public abstract Profile forChromeProfile(String profile);
-
-	// As above, but instead the default profile is used.
+	// Returns a Profile object representing the Google Chrome profile.
 	public abstract Profile forChromeProfile();
+
+	// Returns the profile located inside the given path.
+	public abstract Profile forProfilePath(String path);
 
 	// Creates a temporary profile that gets automatically removed after use.
 	public abstract Profile createTemporaryProfile();

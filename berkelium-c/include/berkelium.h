@@ -68,17 +68,14 @@ BK_HostExecutable BK_BerkeliumFactory_forExecutable(bk_string pathTo);
 // Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
 BK_HostExecutable BK_BerkeliumFactory_forSystemInstalled();
 
-// Returns the default profile for the given application name. A profile can only be held open by one instance at the same time . An exception is thrown of the profile is already be used.
+// Returns the profile for the given application name.
 BK_Profile BK_BerkeliumFactory_forProfile(bk_string application);
 
-// As above, but instead the given profile is used.
-BK_Profile BK_BerkeliumFactory_forProfile(bk_string application, bk_string profile);
-
-// Returns a Profile object representing the given Google Chrome profile.
-BK_Profile BK_BerkeliumFactory_forChromeProfile(bk_string profile);
-
-// As above, but instead the default profile is used.
+// Returns a Profile object representing the Google Chrome profile.
 BK_Profile BK_BerkeliumFactory_forChromeProfile();
+
+// Returns the profile located inside the given path.
+BK_Profile BK_BerkeliumFactory_forProfilePath(bk_string path);
 
 // Creates a temporary profile that gets automatically removed after use.
 BK_Profile BK_BerkeliumFactory_createTemporaryProfile();
