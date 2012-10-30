@@ -23,15 +23,21 @@ HostVersionRef getVersionImpl(const boost::filesystem::path&);
 
 class HostExecutableImpl : public HostExecutable {
 private:
-	const boost::filesystem::path& path;
+	const boost::filesystem::path path;
+	const std::string pathStr;
 	HostVersionRef version;
 
 public:
 	HostExecutableImpl(const boost::filesystem::path& path)
-		: path(path) {
+		: path(path)
+		, pathStr(path.string()) {
 	}
 
 	virtual ~HostExecutableImpl() {
+	}
+
+	virtual const std::string& getPath() {
+		return pathStr;
 	}
 
 	virtual HostVersionRef getVersion() {

@@ -17,6 +17,7 @@ namespace Berkelium {
 namespace impl {
 
 HostExecutableRef newHostExecutable(const std::string&);
+void sleep(int32_t ms);
 std::string getEnv(const std::string&, const std::string& defaultValue);
 #ifdef WIN32
 std::string ws2s(const std::wstring&);

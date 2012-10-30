@@ -30,6 +30,12 @@
     <ClCompile Include="..\src\impl\BerkeliumFactory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\impl\Launcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\impl\ProcessWin32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\berkelium\Profile.hpp">
@@ -69,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\berkelium\BerkeliumFactory.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\impl\Process.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

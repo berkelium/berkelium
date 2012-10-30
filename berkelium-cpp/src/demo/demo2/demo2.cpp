@@ -9,18 +9,6 @@
 #include "berkelium/HostExecutable.hpp"
 #include "berkelium/BerkeliumFactory.hpp"
 
-void dumpProfile(const std::string& name, Berkelium::ProfileRef profile)
-{
-	if(!profile) {
-		std::cout << name << " profile not found!" << std::endl;
-		return;
-	}
-	std::cout << "profile application: " << profile->getApplicationName() << std::endl;
-	std::cout << "profile path: " << profile->getProfilePath() << std::endl;
-	std::cout << "profile is found: " << profile->isFound() << std::endl;
-	std::cout << "profile in use: " << profile->isInUse() << std::endl;
-}
-
 int main(int argc, char* argv[])
 {
 	std::cout << "berkelium demo application..." << std::endl;

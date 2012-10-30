@@ -60,6 +60,10 @@ std::wstring s2ws(const std::string& from) {
 	return std::wstring(buffer.begin(), buffer.end());
 }
 
+void sleep(int32_t ms) {
+	::Sleep(ms);
+}
+
 } // namespace impl
 
 } // namespace Berkelium

@@ -97,12 +97,15 @@
     <ClInclude Include="..\include\berkelium\HostVersion.hpp" />
     <ClInclude Include="..\include\berkelium\Instance.hpp" />
     <ClInclude Include="..\include\berkelium\Profile.hpp" />
+    <ClInclude Include="..\src\impl\Process.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\impl\HostExecutable.cpp" />
     <ClCompile Include="..\src\impl\BerkeliumFactory.cpp" />
     <ClCompile Include="..\src\impl\HostVersion.cpp" />
     <ClCompile Include="..\src\impl\ImplWin32.cpp" />
+    <ClCompile Include="..\src\impl\Launcher.cpp" />
+    <ClCompile Include="..\src\impl\ProcessWin32.cpp" />
     <ClCompile Include="..\src\impl\Profile.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
