@@ -44,19 +44,17 @@ private:
 	const boost::filesystem::path path;
 	const std::string pathstr;
 	const std::string application;
-	const std::string profile;
 	const bool temp;
 public:
-	ProfileImpl(const boost::filesystem::path& path, const std::string& application, const std::string& profile, const bool temp) :
+	ProfileImpl(const boost::filesystem::path& path, const std::string& application, const bool temp) :
 		path(path),
 		pathstr(path.string()),
 		application(application),
-		profile(profile),
 		temp(temp) {
 	}
 
 	~ProfileImpl() {
-		if(temp && !application.empty() && !profile.empty() && !isInUse()) {
+		if(temp && !application.empty() && !isInUse()) {
 			boost::filesystem::remove_all(path);
 		}
 	}
@@ -92,60 +90,74 @@ public:
 		return application;
 	}
 
-	const std::string& getProfileName() {
-		return profile;
-	}
-
 	const std::string& getProfilePath() {
 		return pathstr;
 	}
 };
 
-ProfileRef newProfile(const std::string& application, const std::string& profile, const bool temp) {
+// see http://www.chromium.org/user-experience/user-data-directory (without "Default" at the end)
+ProfileRef newProfile(const boost::filesystem::path& appDir, const std::string& application) {
 	boost::filesystem::path path;
 
 #ifdef WIN32
-	if(temp) {
-		path = getEnv("TEMP", "C:\\WINDOWS\\TEMP");
-	} else {
-		path = getEnv("LOCALAPPDATA", "C:");
-	}
+	path = impl::getEnv("LOCALAPPDATA", "C:");
+	path /= appDir;
+	path /= "User Data";
 #elif LINUX
-	if(temp) {
-		path = "~/.config";
-	} else {
-		path = "/tmp";
-	}
+	path = impl::getEnv("HOME", "/tmp");
+	path /= ".config";
+	path /= appDir;
 #else
-#error "please add path to chrome here"
+#error "please add path to chrome profile here"
 #endif
-
-	path /= application;
-	path /= profile;
-
-	return ProfileRef(new ProfileImpl(path, application, profile, temp));
+	return ProfileRef(new impl::ProfileImpl(path, application, false));
 }
 
 } // namespace impl
 
 ProfileRef BerkeliumFactory::forProfile(const std::string& application) {
-	return forProfile(application, "Default");
+	return impl::newProfile(application, application);
 }
 
-ProfileRef BerkeliumFactory::forProfile(const std::string& application, const std::string& profile) {
-	return impl::newProfile(application, profile, false);
+ProfileRef BerkeliumFactory::getChromeProfile() {
+#ifdef WIN32
+	return impl::newProfile("Google\\Chrome", "Google Chrome");
+#elif LINUX
+	return impl::newProfile("google-chrome", "Google Chrome");
+#else
+#error "please add app path to profile here"
+#endif
 }
 
-ProfileRef BerkeliumFactory::forChromeProfile(const std::string& profile) {
-	return ProfileRef();
+ProfileRef BerkeliumFactory::getChromiumProfile() {
+#ifdef WIN32
+	return impl::newProfile("Chromium", "Chromium");
+#elif LINUX
+	return impl::newProfile("chromium", "Chromium");
+#else
+#error "please add app path to profile here"
+#endif
 }
 
-ProfileRef BerkeliumFactory::forChromeProfile() {
-	return ProfileRef();
+ProfileRef BerkeliumFactory::forProfilePath(const std::string& path) {
+	return ProfileRef(new impl::ProfileImpl(path, "berkelium", false));
 }
 
 ProfileRef BerkeliumFactory::createTemporaryProfile() {
-	return impl::newProfile("berkelium", impl::randomId(), true);
+	boost::filesystem::path path;
+
+#ifdef WIN32
+	path = impl::getEnv("TEMP", "C:\\WINDOWS\\TEMP");
+#elif LINUX
+	path = "/tmp";
+#else
+#error "please add path to temp here"
+#endif
+
+	path /= "berkelium";
+	path /= impl::randomId();
+
+	return ProfileRef(new impl::ProfileImpl(path, "berkelium", true));
 }
 
 } // namespace Berkelium
