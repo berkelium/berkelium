@@ -72,7 +72,10 @@ BK_HostExecutable BK_BerkeliumFactory_forSystemInstalled();
 BK_Profile BK_BerkeliumFactory_forProfile(bk_string application);
 
 // Returns a Profile object representing the Google Chrome profile.
-BK_Profile BK_BerkeliumFactory_forChromeProfile();
+BK_Profile BK_BerkeliumFactory_getChromeProfile();
+
+// Returns a Profile object representing the Chromium profile.
+BK_Profile BK_BerkeliumFactory_getChromiumProfile();
 
 // Returns the profile located inside the given path.
 BK_Profile BK_BerkeliumFactory_forProfilePath(bk_string path);

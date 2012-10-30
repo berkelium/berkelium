@@ -74,8 +74,11 @@
 			<arg type="string" name="application"/>
 			<short>Returns the profile for the given application name.</short>
 		</entry>
-		<entry static="true" name="forChromeProfile" ret="Profile">
+		<entry static="true" name="getChromeProfile" ret="Profile">
 			<short>Returns a Profile object representing the Google Chrome profile.</short>
+		</entry>
+		<entry static="true" name="getChromiumProfile" ret="Profile">
+			<short>Returns a Profile object representing the Chromium profile.</short>
 		</entry>
 		<entry static="true" name="forProfilePath" ret="Profile">
 			<arg type="string" name="path"/>

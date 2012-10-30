@@ -38,7 +38,10 @@ public abstract class BerkeliumFactory {
 	public abstract Profile forProfile(String application);
 
 	// Returns a Profile object representing the Google Chrome profile.
-	public abstract Profile forChromeProfile();
+	public abstract Profile getChromeProfile();
+
+	// Returns a Profile object representing the Chromium profile.
+	public abstract Profile getChromiumProfile();
 
 	// Returns the profile located inside the given path.
 	public abstract Profile forProfilePath(String path);

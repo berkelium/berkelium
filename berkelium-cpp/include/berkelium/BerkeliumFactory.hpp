@@ -31,7 +31,10 @@ public:
 	static ProfileRef forProfile(const std::string& application);
 
 	// Returns a Profile object representing the Google Chrome profile.
-	static ProfileRef forChromeProfile();
+	static ProfileRef getChromeProfile();
+
+	// Returns a Profile object representing the Chromium profile.
+	static ProfileRef getChromiumProfile();
 
 	// Returns the profile located inside the given path.
 	static ProfileRef forProfilePath(const std::string& path);
