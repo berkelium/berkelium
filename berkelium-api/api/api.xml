@@ -106,6 +106,9 @@
 	</group>
 	<group type="interface" name="HostExecutable">
 		<short>Represents a reference to the executable file of the berkelium host process.</short>
+		<entry name="getPath" ret="string">
+			<short>Returns the full (native) path to the berkelium host executable represented by this object.</short>
+		</entry>
 		<entry name="getVersion" ret="HostVersion">
 			<short>Returns the version of this berkelium host executable.</short>
 		</entry>

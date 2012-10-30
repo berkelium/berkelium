@@ -15,6 +15,9 @@ package org.berkelium.api;
 // Represents a reference to the executable file of the berkelium host process.
 public interface HostExecutable {
 
+	// Returns the full (native) path to the berkelium host executable represented by this object.
+	String getPath();
+
 	// Returns the version of this berkelium host executable.
 	HostVersion getVersion();
 }

@@ -98,6 +98,9 @@ BK_Instance BK_BerkeliumFactory_open(BK_HostExecutable executable, BK_Profile pr
 // Represents a reference to the executable file of the berkelium host process.
 // =========================================
 
+// Returns the full (native) path to the berkelium host executable represented by this object.
+bk_string BK_HostExecutable_getPath(BK_HostExecutable self);
+
 // Returns the version of this berkelium host executable.
 BK_HostVersion BK_HostExecutable_getVersion(BK_HostExecutable self);
 
