@@ -53,13 +53,6 @@ TEST_F(ProfileTest, getApplicationName) {
 	ASSERT_EQ(0, str.compare("berkelium"));
 }
 
-TEST_F(ProfileTest, getProfileName) {
-	Berkelium::ProfileRef subject = Berkelium::BerkeliumFactory::forProfile("berkelium");
-	ASSERT_NOT_NULL(subject);
-	std::string str = subject->getProfileName();
-	ASSERT_EQ(0, str.compare("Default"));
-}
-
 /*
 TEST_F(ProfileTest, getProfilePath) {
 	// TODO?

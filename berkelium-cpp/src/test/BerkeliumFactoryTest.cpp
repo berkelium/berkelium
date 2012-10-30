@@ -21,12 +21,16 @@ TEST_F(BerkeliumFactoryTest, forSystemInstalled) {
 	ASSERT_NOT_NULL(Berkelium::BerkeliumFactory::forSystemInstalled());
 }
 
-TEST_F(BerkeliumFactoryTest, forProfile1) {
+TEST_F(BerkeliumFactoryTest, forProfile) {
 	ASSERT_NOT_NULL(Berkelium::BerkeliumFactory::forProfile(""));
 }
 
-TEST_F(BerkeliumFactoryTest, forProfile2) {
-	ASSERT_NOT_NULL(Berkelium::BerkeliumFactory::forProfile("", ""));
+TEST_F(BerkeliumFactoryTest, getChromeProfile) {
+	ASSERT_NOT_NULL(Berkelium::BerkeliumFactory::getChromeProfile());
+}
+
+TEST_F(BerkeliumFactoryTest, getChromiumProfile) {
+	ASSERT_NOT_NULL(Berkelium::BerkeliumFactory::getChromiumProfile());
 }
 
 TEST_F(BerkeliumFactoryTest, createTemporaryProfile) {
