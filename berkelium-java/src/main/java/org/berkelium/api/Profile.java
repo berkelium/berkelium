@@ -30,9 +30,6 @@ public interface Profile {
 	// Returns the name of the application or “berkelium” if not specified.
 	String getApplicationName();
 
-	// Returns the name of the profile or “default” if not specified.
-	String getProfileName();
-
 	// Returns the full path to the used Profile.
 	String getProfilePath();
 }

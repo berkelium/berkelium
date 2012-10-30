@@ -41,9 +41,6 @@ public:
 	// Returns the name of the application or “berkelium” if not specified.
 	virtual const std::string& getApplicationName() = 0;
 
-	// Returns the name of the profile or “default” if not specified.
-	virtual const std::string& getProfileName() = 0;
-
 	// Returns the full path to the used Profile.
 	virtual const std::string& getProfilePath() = 0;
 };

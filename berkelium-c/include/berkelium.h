@@ -119,9 +119,6 @@ bk_bool BK_Profile_isTooNew(BK_Profile self);
 // Returns the name of the application or “berkelium” if not specified.
 bk_string BK_Profile_getApplicationName(BK_Profile self);
 
-// Returns the name of the profile or “default” if not specified.
-bk_string BK_Profile_getProfileName(BK_Profile self);
-
 // Returns the full path to the used Profile.
 bk_string BK_Profile_getProfilePath(BK_Profile self);
 

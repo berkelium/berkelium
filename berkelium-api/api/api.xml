@@ -124,9 +124,6 @@
 		<entry name="getApplicationName" ret="string">
 			<short>Returns the name of the application or “berkelium” if not specified.</short>
 		</entry>
-		<entry name="getProfileName" ret="string">
-			<short>Returns the name of the profile or “default” if not specified.</short>
-		</entry>
 		<entry name="getProfilePath" ret="string">
 			<short>Returns the full path to the used Profile.</short>
 		</entry>
