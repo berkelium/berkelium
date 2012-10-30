@@ -16,6 +16,7 @@ INCLUDE_DIRECTORIES(../include)
 FILE(GLOB_RECURSE SRC_INCLUDE "../include/*.hpp")
 FILE(GLOB_RECURSE SRC_LIB "../src/impl/*.cpp")
 FILE(GLOB_RECURSE SRC_DEMO1 "../src/demo/demo1/*.cpp")
+FILE(GLOB_RECURSE SRC_DEMO2 "../src/demo/demo2/*.cpp")
 FILE(GLOB_RECURSE SRC_TEST "../src/test/*.cpp" "../src/test/*.h")
 
 ###################################
@@ -62,6 +63,12 @@ ADD_LIBRARY(berkelium-cpp STATIC ${SRC_LIB} ${SRC_INCLUDE})
 ## ---------------
 ADD_EXECUTABLE(demo1 ${SRC_DEMO1} ${SRC_INCLUDE})
 TARGET_LINK_LIBRARIES(demo1 berkelium-cpp ${Boost_LIBRARIES})
+
+##################
+## berkelium demo2
+## ---------------
+ADD_EXECUTABLE(demo2 ${SRC_DEMO2} ${SRC_INCLUDE})
+TARGET_LINK_LIBRARIES(demo2 berkelium-cpp ${Boost_LIBRARIES})
 
 ##############
 ## Google Test
