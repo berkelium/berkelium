@@ -10,6 +10,9 @@
 #include <Windows.h>
 
 #include <iostream>
+#include <sstream>
+#include <algorithm>
+#include <iterator>
 
 namespace Berkelium {
 
@@ -39,8 +42,10 @@ public:
 		CloseHandle(pi.hThread);
 	}
 
-	virtual const bool start(const std::string& cmd) {
-		std::wstring wcmd = impl::s2ws(cmd);
+	virtual const bool start(const std::vector<std::string>& args) {
+		std::stringstream s;
+		std::copy(args.begin(), args.end(), std::ostream_iterator<std::string>(s," "));
+		std::wstring wcmd = impl::s2ws(s.str());
 		std::wcerr << "wcmd:" << wcmd << std::endl;
 
 		// Start the child process. 

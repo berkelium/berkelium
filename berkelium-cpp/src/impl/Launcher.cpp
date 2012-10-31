@@ -13,13 +13,17 @@
 
 namespace Berkelium {
 
+namespace {
+
+inline std::string enclose(const std::string& str) {
 #ifdef WIN32
-#define STR_START "\"" +
-#define STR_END + "\""
+	return "\"" + str + "\"";
 #else
-#define STR_START
-#define STR_END
+	return str;
 #endif
+}
+
+} // namespace
 
 InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef profile) {
 	InstanceRef ret;
@@ -29,10 +33,10 @@ InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef prof
 	}
 
 	std::vector<std::string> args;
-	args.push_back(STR_START executable->getPath() STR_END);
+	args.push_back(enclose(executable->getPath()));
 	args.push_back("--no-first-run");
 	//args.push_back("--crash-test");
-	args.push_back("--user-data-dir=" + STR_START profile->getProfilePath() STR_END);
+	args.push_back("--user-data-dir=" + enclose(profile->getProfilePath()));
 	args.push_back("about:blank");
 
 	impl::ProcessRef process = impl::Process::create();
