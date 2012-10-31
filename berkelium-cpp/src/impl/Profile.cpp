@@ -23,13 +23,12 @@ namespace impl {
 
 std::string randomId(int length) {
 	static const std::string CHARS("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
-	const double to = CHARS.size() - 1;
+	const int to = CHARS.size();
 	std::string ret;
 
+	srand((unsigned)time(0));
 	for(int i = 0; i < length; i++) {
-		double r = std::rand() / 1000;
-		r -= (int)r;
-		ret += CHARS[r * to];
+		ret += CHARS[std::rand() % to];
 	}
 
 	return ret;
@@ -161,6 +160,7 @@ ProfileRef BerkeliumFactory::createTemporaryProfile() {
 	path = impl::getEnv("TEMP", "C:\\WINDOWS\\TEMP");
 #elif defined(LINUX)
 	path = "/tmp";
+	path /= "berkelium." + impl::getEnv("USER", "user");
 #else
 #error "please add path to temp here"
 #endif
