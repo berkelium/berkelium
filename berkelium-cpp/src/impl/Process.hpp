@@ -20,7 +20,7 @@ public:
 	static ProcessRef create();
 	virtual ~Process() = 0;
 
-	virtual const bool start(const std::string& cmd) = 0;
+	virtual const bool start(const std::vector<std::string>& args) = 0;
 };
 
 } // namespace impl

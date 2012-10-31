@@ -54,6 +54,7 @@ public:
 
 	~ProfileImpl() {
 		if(temp && !application.empty() && !isInUse()) {
+			std::cerr << "removing temporary profile " << path << std::endl;
 			boost::filesystem::remove_all(path);
 		}
 	}
@@ -123,6 +124,20 @@ ProfileRef newProfile(const boost::filesystem::path& appDir, const std::string& 
 	return ProfileRef(new impl::ProfileImpl(path, application, false));
 }
 
+void cleanup(const boost::filesystem::path& tmp) {
+	static bool done = false;
+	if(done) return;
+	done = true;
+	if(boost::filesystem::is_directory(tmp)) {
+		for(boost::filesystem::directory_iterator itr(tmp); itr != boost::filesystem::directory_iterator(); ++itr) {
+			// create temporary profile object
+			// this will remove old profile directory
+			// if they are not used
+			ProfileImpl(*itr, "berkelium", true);
+		}
+	}
+}
+
 } // namespace impl
 
 ProfileRef BerkeliumFactory::forProfile(const std::string& application) {
@@ -166,6 +181,7 @@ ProfileRef BerkeliumFactory::createTemporaryProfile() {
 #endif
 
 	path /= "berkelium";
+	impl::cleanup(path);
 	path /= impl::randomId();
 
 	return ProfileRef(new impl::ProfileImpl(path, "berkelium", true));
