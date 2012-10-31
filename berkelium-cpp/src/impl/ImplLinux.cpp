@@ -7,6 +7,7 @@
 #include "berkelium/Impl.hpp"
 
 #include <cstdlib>
+#include <sys/select.h>
 
 namespace Berkelium {
 
@@ -18,6 +19,13 @@ std::string getEnv(const std::string& env, const std::string& defaultValue) {
 		return defaultValue;
 	}
 	return ret;
+}
+
+void sleep(int32_t ms) {
+	struct timeval tv;
+	tv.tv_sec = ms / 1000000L;
+	tv.tv_usec = ms % 1000000L;
+	select(0, NULL, NULL, NULL, &tv);
 }
 
 } // namespace impl

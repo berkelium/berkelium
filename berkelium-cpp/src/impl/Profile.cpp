@@ -6,11 +6,10 @@
 #include "berkelium/Profile.hpp"
 #include "berkelium/Impl.hpp"
 
+#include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <boost/filesystem.hpp>
-#include <boost/random/random_device.hpp>
-#include <boost/random/uniform_int_distribution.hpp>
 
 namespace Berkelium {
 
@@ -24,12 +23,13 @@ namespace impl {
 
 std::string randomId(int length) {
 	static const std::string CHARS("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
-	boost::random::uniform_int_distribution<> INDEX(0, CHARS.size() - 1);
-	boost::random::random_device rnd;
+	const double to = CHARS.size() - 1;
 	std::string ret;
 
 	for(int i = 0; i < length; i++) {
-		ret += CHARS[INDEX(rnd)];
+		double r = std::rand() / 1000;
+		r -= (int)r;
+		ret += CHARS[r * to];
 	}
 
 	return ret;
@@ -67,6 +67,17 @@ public:
 		}
 		std::ofstream file(lock.string());
 		return !file.is_open();
+#elif defined(LINUX)
+		boost::filesystem::path lock = path / "SingletonLock";
+		boost::system::error_code ec;
+		boost::filesystem::path read = boost::filesystem::read_symlink(lock, ec);
+		if(!ec) {
+			return true;
+		}
+
+		// TODO check for running instance is missing
+
+		return false;
 #else
 #error "TODO"
 #endif
@@ -103,7 +114,7 @@ ProfileRef newProfile(const boost::filesystem::path& appDir, const std::string& 
 	path = impl::getEnv("LOCALAPPDATA", "C:");
 	path /= appDir;
 	path /= "User Data";
-#elif LINUX
+#elif defined(LINUX)
 	path = impl::getEnv("HOME", "/tmp");
 	path /= ".config";
 	path /= appDir;
@@ -122,7 +133,7 @@ ProfileRef BerkeliumFactory::forProfile(const std::string& application) {
 ProfileRef BerkeliumFactory::getChromeProfile() {
 #ifdef WIN32
 	return impl::newProfile("Google\\Chrome", "Google Chrome");
-#elif LINUX
+#elif defined(LINUX)
 	return impl::newProfile("google-chrome", "Google Chrome");
 #else
 #error "please add app path to profile here"
@@ -132,7 +143,7 @@ ProfileRef BerkeliumFactory::getChromeProfile() {
 ProfileRef BerkeliumFactory::getChromiumProfile() {
 #ifdef WIN32
 	return impl::newProfile("Chromium", "Chromium");
-#elif LINUX
+#elif defined(LINUX)
 	return impl::newProfile("chromium", "Chromium");
 #else
 #error "please add app path to profile here"
@@ -148,7 +159,7 @@ ProfileRef BerkeliumFactory::createTemporaryProfile() {
 
 #ifdef WIN32
 	path = impl::getEnv("TEMP", "C:\\WINDOWS\\TEMP");
-#elif LINUX
+#elif defined(LINUX)
 	path = "/tmp";
 #else
 #error "please add path to temp here"
