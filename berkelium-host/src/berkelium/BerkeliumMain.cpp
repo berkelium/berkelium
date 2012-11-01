@@ -58,31 +58,39 @@ int ChromeMain(int argc, const char** argv) {
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#if 0 // BERKELIUM PATCH: removed
 #include "chrome/app/breakpad_win.h"
 #include "chrome/app/client_util.h"
 #include "chrome/app/metro_driver_win.h"
+#endif // BERKELIUM PATCH: end
 #include "content/public/app/startup_helper_win.h"
 #include "content/public/common/result_codes.h"
 #include "sandbox/win/src/sandbox_factory.h"
 
 int RunChrome(HINSTANCE instance) {
+#if 0 // BERKELIUM PATCH: removed
   bool exit_now = true;
   // We restarted because of a previous crash. Ask user if we should relaunch.
   if (ShowRestartDialogIfCrashed(&exit_now)) {
     if (exit_now)
       return content::RESULT_CODE_NORMAL_EXIT;
   }
+#endif // BERKELIUM PATCH: end
 
   // Initialize the sandbox services.
   sandbox::SandboxInterfaceInfo sandbox_info = {0};
   content::InitializeSandboxInfo(&sandbox_info);
 
+#if 1 // BERKELIUM PATCH: added
+  return ChromeMain(instance, &sandbox_info);
+#else // BERKELIUM PATCH: removed
   // Load and launch the chrome dll. *Everything* happens inside.
   MainDllLoader* loader = MakeMainDllLoader();
   int rc = loader->Launch(instance, &sandbox_info);
   loader->RelaunchChromeBrowserWithNewCommandLineIfNeeded();
   delete loader;
   return rc;
+#endif // BERKELIUM PATCH: end
 }
 
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t*, int) {
@@ -91,10 +99,12 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t*, int) {
   // The exit manager is in charge of calling the dtors of singletons.
   base::AtExitManager exit_manager;
 
+#if 0 // BERKELIUM PATCH: removed
   MetroDriver metro_driver;
   if (metro_driver.in_metro_mode())
     return metro_driver.RunInMetro(instance, &RunChrome);
   // Not in metro mode, proceed as normal.
+#endif // BERKELIUM PATCH: end
   return RunChrome(instance);
 }
 
