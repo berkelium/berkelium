@@ -16,12 +16,13 @@ namespace impl {
 
 int exec(const std::vector<std::string>& args) {
 	const size_t size = args.size();
-	std::vector<char*> tmp(size);
+	std::vector<char*> tmp(size + 1);
 	printf("'%s'\n", args[0].c_str());
 	for(size_t i = 0; i < size; i++) {
 		tmp[i] = (char*)args[i].c_str();
 		printf("arg[%lu]='%s'\n", i, tmp[i]);
 	}
+	tmp[size] = NULL;
     return execvp(args[0].c_str(), &tmp[0]);
 }
 
