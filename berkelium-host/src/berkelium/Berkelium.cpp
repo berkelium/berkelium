@@ -17,7 +17,7 @@
 #include "../include/PacketWriter.hpp"
 #include "../include/IpcSocket.hpp"
 
-#include <poll.h>
+#include "berkelium/Ipc.hpp"
 
 #include <set>
 
@@ -82,13 +82,21 @@ void update() {
 
 static int initialised = 0;
 
-void Berkelium::init(const std::string& host, const std::string& port,const std::string& key) {
+using ::Berkelium::impl::Ipc;
+using ::Berkelium::impl::IpcRef;
+
+IpcRef ipc;
+
+bool Berkelium::init(const std::string& dir, const std::string& name) {
 	if(initialised != 0) {
 		fprintf(stderr, "berkelium init double call!\n");
 	} else {
 		initialised = 1;
-		int p = atoi(port.c_str());
+		ipc = Ipc::getIpc(dir, name, false);
+		ipc->send("berkelium");
+		return true;
 		/*
+		int p = atoi(port.c_str());
 		fifo_out = open(FIFO_OUT_NAME, O_WRONLY);
 		if(fifo_out == -1) {
 			fprintf(stderr, "can't open '" FIFO_OUT_NAME "'!\n");
@@ -100,7 +108,6 @@ void Berkelium::init(const std::string& host, const std::string& port,const std:
 			close(fifo_out);
 			exit(0);
 		}
-		*/
 		IpcSocket* sock = new IpcSocket();
 		int code = sock->connect("127.0.0.1", p);
 		if(code <= 0) {
@@ -110,7 +117,9 @@ void Berkelium::init(const std::string& host, const std::string& port,const std:
 		//fprintf(stderr, "berkelium: connected to port %d!\n", p);
 		ipcSocket = sock;
 		packetWriter = new PacketWriter(ipcSocket, 1000);
+		*/
 	}
+	return false;
 }
 
 void Berkelium::lasyInit() {

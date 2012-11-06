@@ -2,6 +2,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 
 PROJECT(berkelium-cpp)
 
+
 ####################
 ## Output Directorys
 ## -----------------
@@ -14,7 +15,7 @@ SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY "run")
 ## ------------
 INCLUDE_DIRECTORIES(../include)
 FILE(GLOB_RECURSE SRC_INCLUDE "../include/*.hpp")
-FILE(GLOB_RECURSE SRC_LIB "../src/impl/*.cpp")
+FILE(GLOB_RECURSE SRC_LIB "../src/impl/*.cpp" "../src/impl/*.hpp")
 FILE(GLOB_RECURSE SRC_DEMO1 "../src/demo/demo1/*.cpp")
 FILE(GLOB_RECURSE SRC_DEMO2 "../src/demo/demo2/*.cpp")
 FILE(GLOB_RECURSE SRC_TEST "../src/test/*.cpp" "../src/test/*.h")
@@ -35,7 +36,7 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	IF(GCC_VERSION VERSION_LESS 4.7)
 		SET(ENABLE_CXX11 "-std=c++0x")
 	ENDIF()
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ENABLE_CXX11}")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ENABLE_CXX11} -fPIC")
 	ADD_DEFINITIONS(-D__GXX_EXPERIMENTAL_CXX0X__)
 ENDIF()
 

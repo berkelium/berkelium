@@ -53,12 +53,6 @@ TEST_F(ProfileTest, getApplicationName) {
 	ASSERT_EQ(0, str.compare("berkelium"));
 }
 
-/*
-TEST_F(ProfileTest, getProfilePath) {
-	// TODO?
-}
-*/
-
 TEST_F(ProfileTest, extended) {
 	Berkelium::HostExecutableRef executable = Berkelium::BerkeliumFactory::forSystemInstalled();
 	ASSERT_NOT_NULL(executable);

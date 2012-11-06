@@ -7,6 +7,11 @@
 #pragma once
 
 #include "berkelium/Berkelium.hpp"
+#include "berkelium/Ipc.hpp"
+
+#ifndef BERKELIUM_CPP_IMPL
+# error "This file is intended for internal use only!"
+#endif
 
 namespace Berkelium {
 
@@ -16,9 +21,22 @@ class Process;
 typedef std::shared_ptr<Process> ProcessRef;
 
 class Process {
+private:
+	IpcRef ipc;
+
+protected:
+	inline Process(const std::string& dir) :
+		ipc(Ipc::getIpc(dir, true)) {
+	}
+
 public:
-	static ProcessRef create();
+	static ProcessRef create(const std::string& dir);
+
 	virtual ~Process() = 0;
+
+	IpcRef getIpc() {
+		return ipc;
+	}
 
 	virtual const bool start(const std::vector<std::string>& args) = 0;
 };

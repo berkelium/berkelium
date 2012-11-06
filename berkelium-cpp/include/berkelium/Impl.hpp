@@ -16,6 +16,8 @@ namespace Berkelium {
 
 namespace impl {
 
+std::string randomId();
+std::string randomId(int length);
 HostExecutableRef newHostExecutable(const std::string&);
 void sleep(int32_t ms);
 std::string getEnv(const std::string&, const std::string& defaultValue);

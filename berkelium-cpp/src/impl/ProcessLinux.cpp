@@ -17,10 +17,10 @@ namespace impl {
 int exec(const std::vector<std::string>& args) {
 	const size_t size = args.size();
 	std::vector<char*> tmp(size + 1);
-	printf("'%s'\n", args[0].c_str());
+	//printf("'%s'\n", args[0].c_str());
 	for(size_t i = 0; i < size; i++) {
 		tmp[i] = (char*)args[i].c_str();
-		printf("arg[%lu]='%s'\n", i, tmp[i]);
+		//printf("arg[%lu]='%s'\n", i, tmp[i]);
 	}
 	tmp[size] = NULL;
     return execvp(args[0].c_str(), &tmp[0]);
@@ -31,22 +31,24 @@ private:
 	pid_t pid;
 
 public:
-	ProcessImpl() :
+	ProcessImpl(const std::string& dir) : Process(dir),
 		pid(-1) {
 	}
 
 	virtual ~ProcessImpl() {
 		if(pid == -1) return;
 		int status;
+		fprintf(stderr, "waiting for pid %d...\n", pid);
 		if (waitpid(pid, &status, 0) != -1) {
 			printf("Child exited with status %i\n", status);
 		} else {
 			perror("waitpid");
 		}
+		fprintf(stderr, "berkelium host process terminated!\n");
 	}
 
 	virtual const bool start(const std::vector<std::string>& args) {
-		pid_t pid = fork();
+		pid = fork();
 		switch (pid) {
 		case -1:
 			perror("fork");
@@ -56,14 +58,14 @@ public:
 			perror(("launch " + args[0]).c_str());
 			break;
 		default:
-			printf("Child id: %i\n", pid);
+			printf("started berkelium host process with pid %i!\n", pid);
 		}
 		return true;
 	}
 };
 
-ProcessRef Process::create() {
-	return ProcessRef(new ProcessImpl());
+ProcessRef Process::create(const std::string& dir) {
+	return ProcessRef(new ProcessImpl(dir));
 }
 
 Process::~Process() {

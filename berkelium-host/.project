@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>berkelium2</name>
+	<name>berkelium-host</name>
 	<comment></comment>
 	<projects>
 		<project>chromium</project>

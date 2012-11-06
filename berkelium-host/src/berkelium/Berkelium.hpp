@@ -16,7 +16,7 @@ class IpcSender;
 
 class Berkelium {
 public:
-	static void init(const std::string&, const std::string&,const std::string&);
+	static bool init(const std::string&, const std::string&);
 
 	static void lasyInit();
 

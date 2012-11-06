@@ -22,7 +22,7 @@ private:
 	const bool registered;
 
 public:
-	MemoryRenderViewHostFactory(int argc, const char** argv);
+	MemoryRenderViewHostFactory();
 	virtual ~MemoryRenderViewHostFactory();
 
 	virtual content::RenderViewHost* CreateRenderViewHost(

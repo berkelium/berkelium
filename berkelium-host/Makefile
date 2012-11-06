@@ -42,7 +42,7 @@ out/Debug/obj.target/net/libnet.so \
 out/Debug/obj.target/third_party/icu/libicui18n.so \
 out/Debug/obj.target/third_party/icu/libicuuc.so \
 out/Debug/obj.target/net/third_party/nss/libssl.a \
-out/Debug/obj.target/third_party/zlib/libchrome_zlib.a \
+out/Debug/obj.target/third_party/zlib/libzlib.a \
 out/Debug/obj.target/chrome/libmetrics_proto.a \
 out/Debug/obj.target/third_party/protobuf/libprotobuf_lite.a \
 out/Debug/obj.target/base/libbase_i18n.so \
@@ -221,13 +221,13 @@ clean:
 out:
 	mkdir -p out/o/berkelium
 	mkdir -p out/o/libberkelium
-	ln -s ../../chromium/src/out/Debug out
+	ln -s ../../chromium/src/out/Release out/Debug
 
 out/o/%.o: src/%.cpp src/*/*.hpp out
-	g++ -Isrc/include -I../chromium/src/third_party/skia/include/config -I../chromium/src -D_DEBUG -DDEBUG -g -Wall -pthread -fno-exceptions -fno-strict-aliasing -Wno-unused-parameter -Wno-missing-field-initializers -fvisibility=hidden -pipe -fPIC -O0 -g -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -MMD -MF $@.d.raw -c -o $@ $<
+	g++ -fexceptions -std=c++0x -DBERKELIUM_CPP_IMPL -Isrc/include -I../berkelium-cpp/include -I../chromium/src/third_party/skia/include/config -I../chromium/src -D_DEBUG -DDEBUG -g -Wall -pthread -fno-exceptions -fno-strict-aliasing -Wno-unused-parameter -Wno-missing-field-initializers -fvisibility=hidden -pipe -fPIC -O0 -g -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -MMD -MF $@.d.raw -c -o $@ $<
 
 run/berkelium: $(SOURCES:%.cpp=out/o/%.o)
-	g++ $(LINK_ARGS) -o run/berkelium -Wl,--start-group $(LINK_OBJS) $^ $(LINK_LIBS_OWN) -Wl,--end-group $(LINK_LIBS_SYS) 
+	g++ -L../berkelium-cpp/cmake/out $(LINK_ARGS) -o run/berkelium -Wl,--start-group $(LINK_OBJS) $^ $(LINK_LIBS_OWN) -Wl,--end-group $(LINK_LIBS_SYS) -lberkelium-cpp -lboost_filesystem -lboost_system
 
 .PHONY: run
 run: run/berkelium

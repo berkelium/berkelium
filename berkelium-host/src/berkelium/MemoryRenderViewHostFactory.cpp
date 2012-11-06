@@ -7,6 +7,7 @@
 #include "WindowActions.hpp"
 #include "WindowSender.hpp"
 
+#include "base/command_line.h"
 #include "base/utf_string_conversions.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 
@@ -75,22 +76,21 @@ std::vector<std::string> split(std::string l, char delim) {
     return tokens;
 }
 
-bool doRegister(int argc, const char** argv) {
-	for(int i = 0; i < argc; i++) {
-		//fprintf(stderr, "main: %i : '%s'\n", i, argv[i]);
-		if(strncmp("--berkelium=", argv[i], 12) == 0) {
-			std::string str = &argv[i][13];
-			std::vector<std::string> tokens = split(str ,':');
-			Berkelium::init(tokens[0], tokens[1], tokens[2]);
-			return true;
-		}
+bool doRegister() {
+	const std::string bs("berkelium");
+	const std::string ds("user-data-dir");
+	if(!CommandLine::ForCurrentProcess()->HasSwitch(bs)) return false;
+	if(!CommandLine::ForCurrentProcess()->HasSwitch(ds)) return false;
+	std::string id = CommandLine::ForCurrentProcess()->GetSwitchValueASCII(bs);
+	std::string dir = CommandLine::ForCurrentProcess()->GetSwitchValueASCII(ds);
+	if(id.empty() || dir.empty()) {
+		return false;
 	}
-	//fprintf(stderr, "register factory: %s\n", ret ? "true" : "false");
-	return false;
+	return Berkelium::init(dir, id);
 }
 
-MemoryRenderViewHostFactory::MemoryRenderViewHostFactory(int argc, const char** argv)
-: registered(doRegister(argc, argv))
+MemoryRenderViewHostFactory::MemoryRenderViewHostFactory()
+: registered(doRegister())
 {
 	if(registered) {
 		RenderViewHostFactory::RegisterFactory(this);

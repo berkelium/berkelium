@@ -25,8 +25,11 @@ std::string randomId(int length) {
 	static const std::string CHARS("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
 	const int to = CHARS.size();
 	std::string ret;
-
-	srand((unsigned)time(0));
+	static bool initialised = false;
+	if(!initialised) {
+		initialised = true;
+		srand((unsigned)time(0));
+	}
 	for(int i = 0; i < length; i++) {
 		ret += CHARS[std::rand() % to];
 	}
@@ -50,6 +53,7 @@ public:
 		pathstr(path.string()),
 		application(application),
 		temp(temp) {
+		boost::filesystem::create_directory(path);
 	}
 
 	~ProfileImpl() {

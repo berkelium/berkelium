@@ -32,22 +32,37 @@ InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef prof
 		return ret;
 	}
 
+	impl::ProcessRef process = impl::Process::create(profile->getProfilePath());
+	impl::IpcRef ipc = process->getIpc();
+
 	std::vector<std::string> args;
 	args.push_back(enclose(executable->getPath()));
+	args.push_back("--berkelium=" + ipc->getName());
 	args.push_back("--no-first-run");
 	//args.push_back("--crash-test");
 	args.push_back("--user-data-dir=" + enclose(profile->getProfilePath()));
 	args.push_back("about:blank");
 
-	impl::ProcessRef process = impl::Process::create();
 	if(!process->start(args)) {
 		return ret;
 	}
-	std::cerr << "waiting..." << std::endl;
+
+	std::cerr << "awaiting berkelium host process ipc startup message!" << std::endl;
+	if(ipc->recv().compare("berkelium") != 0) {
+		std::cerr << "ipc bad magic!" << std::endl;
+		return ret;
+	}
+	std::cerr << "waiting for profile..." << std::endl;
 	while(!profile->isInUse()) {
 		impl::sleep(100);
 	}
-	std::cerr << "running!" << std::endl;
+	/*
+	if(!profile->isInUse()) {
+		std::cerr << "profile not in use!" << std::endl;
+		return ret;
+	}
+	*/
+	std::cerr << "berkelium host process is up and running!" << std::endl;
 	return ret;
 }
 

@@ -7,6 +7,8 @@
 
 #include "MemoryRenderViewHostFactory.hpp"
 
+#include "base/command_line.h"
+
 #if 1 // BERKELIUM: start of chrome_main.cc
 // Copyright (c) 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
@@ -40,7 +42,8 @@ DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
 int ChromeMain(int argc, const char** argv) {
   ChromeMainDelegate chrome_main_delegate;
 #if 1 // BERKELIUM PATCH: added
-  Berkelium::MemoryRenderViewHostFactory factory(argc, argv);
+  CommandLine::Init(argc, argv); // already here needed for berkelium
+  Berkelium::MemoryRenderViewHostFactory factory;
 #endif // BERKELIUM PATCH: end
   return content::ContentMain(argc, argv, &chrome_main_delegate);
 #endif

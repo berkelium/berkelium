@@ -15,12 +15,15 @@
 
 #include "ui/gfx/rect.h"
 
-#define X //fprintf(stderr, "BerkeliumBrowserWindow::%s\n", __func__)
+#define X fprintf(stderr, "BerkeliumBrowserWindow::%s\n", __func__)
 
 class BerkeliumBrowserWindow : public BrowserWindow, public TabStripModelObserver {
 public:
 	BerkeliumBrowserWindow(Browser* browser) : browser(browser) {
-		browser->tab_strip_model()->AddObserver(this);
+		fprintf(stderr, "this: %p\n", this);
+		fprintf(stderr, "browser: %p\n", browser);
+		fprintf(stderr, "tab_strip_model: %p\n", browser->tab_strip_model());
+		//browser->tab_strip_model()->AddObserver(this);
 	}
 
 	virtual ~BerkeliumBrowserWindow() {
