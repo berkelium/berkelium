@@ -16,9 +16,16 @@ namespace Berkelium {
 
 namespace impl {
 
+class Ipc;
+typedef std::shared_ptr<Ipc> IpcRef;
+
+class Pipe;
+typedef std::shared_ptr<Pipe> PipeRef;
+
 std::string randomId();
 std::string randomId(int length);
 HostExecutableRef newHostExecutable(const std::string&);
+InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, IpcRef ipc);
 void sleep(int32_t ms);
 std::string getEnv(const std::string&, const std::string& defaultValue);
 #ifdef WIN32

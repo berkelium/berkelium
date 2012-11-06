@@ -26,10 +26,8 @@ inline std::string enclose(const std::string& str) {
 } // namespace
 
 InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef profile) {
-	InstanceRef ret;
-
 	if(profile->isInUse()) {
-		return ret;
+		return InstanceRef();
 	}
 
 	impl::ProcessRef process = impl::Process::create(profile->getProfilePath());
@@ -44,13 +42,13 @@ InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef prof
 	args.push_back("about:blank");
 
 	if(!process->start(args)) {
-		return ret;
+		return InstanceRef();
 	}
 
 	std::cerr << "awaiting berkelium host process ipc startup message!" << std::endl;
 	if(ipc->recv().compare("berkelium") != 0) {
 		std::cerr << "ipc bad magic!" << std::endl;
-		return ret;
+		return InstanceRef();
 	}
 	std::cerr << "waiting for profile..." << std::endl;
 	while(!profile->isInUse()) {
@@ -63,7 +61,8 @@ InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef prof
 	}
 	*/
 	std::cerr << "berkelium host process is up and running!" << std::endl;
-	return ret;
+
+	return impl::newInstance(executable, profile, ipc);
 }
 
 } // namespace Berkelium

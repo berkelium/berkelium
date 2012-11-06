@@ -10,14 +10,11 @@
 # error "This file is intended for internal use only!"
 #endif
 
-#include "berkelium/Berkelium.hpp"
+#include "berkelium/Impl.hpp"
 
 namespace Berkelium {
 
 namespace impl {
-
-class Pipe;
-typedef std::shared_ptr<Pipe> PipeRef;
 
 class Pipe {
 protected:
