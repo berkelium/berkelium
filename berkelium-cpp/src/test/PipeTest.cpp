@@ -23,21 +23,21 @@ TEST_F(PipeTest, create) {
 }
 
 TEST_F(PipeTest, remove) {
-	std::string name = Berkelium::impl::randomId();
-	ASSERT_FALSE(boost::filesystem::exists("/tmp/berkelium." + name));
+	std::string name = "/tmp/berkelium." + Berkelium::impl::randomId();
+	ASSERT_FALSE(boost::filesystem::exists(name));
 	{
 		PipeRef pipe = Pipe::getPipe(name);
-		ASSERT_TRUE(boost::filesystem::exists("/tmp/berkelium." + name));
+		ASSERT_TRUE(boost::filesystem::exists(name));
 	}
-	ASSERT_FALSE(boost::filesystem::exists("/tmp/berkelium." + name));
+	ASSERT_FALSE(boost::filesystem::exists(name));
 }
 
 TEST_F(PipeTest, sendRecv) {
-	std::string name = Berkelium::impl::randomId();
-	ASSERT_FALSE(boost::filesystem::exists("/tmp/berkelium." + name));
+	std::string name = "/tmp/berkelium." + Berkelium::impl::randomId();
+	ASSERT_FALSE(boost::filesystem::exists(name));
 	{
 		PipeRef pipe = Pipe::getPipe(name);
-		ASSERT_TRUE(boost::filesystem::exists("/tmp/berkelium." + name));
+		ASSERT_TRUE(boost::filesystem::exists(name));
 		ASSERT_TRUE(pipe->isEmpty());
 		pipe->send("hello");
 		ASSERT_FALSE(pipe->isEmpty());
@@ -45,7 +45,7 @@ TEST_F(PipeTest, sendRecv) {
 		ASSERT_TRUE(pipe->isEmpty());
 		ASSERT_EQ(0, recv.compare("hello"));
 	}
-	ASSERT_FALSE(boost::filesystem::exists("/tmp/berkelium." + name));
+	ASSERT_FALSE(boost::filesystem::exists(name));
 }
 
 } // namespace

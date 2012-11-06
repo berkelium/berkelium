@@ -31,7 +31,7 @@ TEST_F(ProfileTest, isInUse) {
 TEST_F(ProfileTest, isFound) {
 	Berkelium::ProfileRef subject = Berkelium::BerkeliumFactory::createTemporaryProfile();
 	ASSERT_NOT_NULL(subject);
-	ASSERT_FALSE(subject->isFound());
+	ASSERT_TRUE(subject->isFound());
 }
 
 TEST_F(ProfileTest, isSameVersion) {
@@ -59,10 +59,11 @@ TEST_F(ProfileTest, extended) {
 	Berkelium::ProfileRef profile = Berkelium::BerkeliumFactory::createTemporaryProfile();
 	ASSERT_NOT_NULL(profile);
 	path path = profile->getProfilePath();
-	ASSERT_FALSE(exists(path));
-	ASSERT_FALSE(profile->isFound());
+	ASSERT_TRUE(exists(path));
+	ASSERT_TRUE(profile->isFound());
 	ASSERT_FALSE(profile->isInUse());
 	Berkelium::InstanceRef instance = Berkelium::BerkeliumFactory::open(executable, profile);
+	ASSERT_NOT_NULL(instance);
 	ASSERT_NOT_NULL(instance);
 	ASSERT_TRUE(exists(path));
 	ASSERT_TRUE(profile->isFound());
