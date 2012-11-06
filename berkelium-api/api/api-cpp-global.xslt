@@ -78,9 +78,9 @@ namespace Berkelium {
 
 	</xsl:for-each>
 
-	<xsl:text>typedef std::vector&lt;Window&gt; WindowList;
+	<xsl:text>typedef std::vector&lt;WindowRef&gt; WindowList;
 
-typedef std::vector&lt;Tab&gt; TabList;
+typedef std::vector&lt;TabRef&gt; TabList;
 
 } // namespace Berkelium
 

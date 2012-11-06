@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <api>
-	<mapping type="c" class-prefix="BK_">
+	<mapping type="c" prefix="BK_">
 		<type name="int32" value="bk_int32"/>
 		<type name="bool" value="bk_bool"/>
 		<type name="string" value="bk_string"/>

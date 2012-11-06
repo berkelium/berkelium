@@ -36,14 +36,24 @@
 <xsl:template name="type">
 	<xsl:param name="name" select="''"/>
 	<xsl:variable name="node" select="/api/mapping[@type=$lang]/type[@name = $name]"/>
+	<xsl:variable name="group" select="/api/group[@name = $name]"/>
 	<xsl:choose>
 		<xsl:when test="$node/@value">
 			<xsl:value-of select="$node/@value"/>
 		</xsl:when>
-		<xsl:when test="/api/group[@name = $name]">
-			<xsl:value-of select="/api/mapping[@type=$lang]/@class-prefix"/>
-			<xsl:value-of select="$name"/>
-			<xsl:value-of select="/api/mapping[@type=$lang]/@class-postfix"/>
+		<xsl:when test="$group">
+			<xsl:value-of select="/api/mapping[@type=$lang]/@prefix"/>
+			<xsl:choose>
+				<xsl:when test="$group[@type='class']|$group[@type='interface']">
+					<xsl:value-of select="/api/mapping[@type=$lang]/@class-prefix"/>
+					<xsl:value-of select="$name"/>
+					<xsl:value-of select="/api/mapping[@type=$lang]/@class-postfix"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$name"/>
+				</xsl:otherwise>
+			</xsl:choose>
+			<xsl:value-of select="/api/mapping[@type=$lang]/@postfix"/>
 		</xsl:when>
 		<xsl:when test="not($name)">
 			<xsl:text>void</xsl:text>

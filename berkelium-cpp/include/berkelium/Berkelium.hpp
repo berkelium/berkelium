@@ -69,9 +69,9 @@ typedef std::shared_ptr<Tab> TabRef;
 class TabDelegate;
 typedef std::shared_ptr<TabDelegate> TabDelegateRef;
 
-typedef std::vector<Window> WindowList;
+typedef std::vector<WindowRef> WindowList;
 
-typedef std::vector<Tab> TabList;
+typedef std::vector<TabRef> TabList;
 
 } // namespace Berkelium
 

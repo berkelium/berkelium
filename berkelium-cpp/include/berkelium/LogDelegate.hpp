@@ -27,7 +27,7 @@ public:
 	virtual ~LogDelegate() = 0;
 
 	// Allows the client application to handle berkelium host console messages.
-	virtual void log(InstanceRef instance, LogTypeRef type, const std::string& message) = 0;
+	virtual void log(InstanceRef instance, LogType type, const std::string& message) = 0;
 };
 
 } // namespace Berkelium
