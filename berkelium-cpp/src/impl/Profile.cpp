@@ -8,8 +8,15 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include <fstream>
 #include <boost/filesystem.hpp>
+
+#ifdef LINUX
+#include <unistd.h>
+#include <limits.h>
+#include <signal.h>
+#endif
 
 namespace Berkelium {
 
@@ -63,6 +70,10 @@ public:
 		}
 	}
 
+#ifdef LINUX
+	bool warned;
+#endif
+
 	bool isInUse() {
 #ifdef WIN32
 		boost::filesystem::path lock = path / "lockfile";
@@ -75,13 +86,46 @@ public:
 		boost::filesystem::path lock = path / "SingletonLock";
 		boost::system::error_code ec;
 		boost::filesystem::path read = boost::filesystem::read_symlink(lock, ec);
-		if(!ec) {
-			return true;
+		if(ec) {
+			warned = false;
+			return false;
 		}
 
-		// TODO check for running instance is missing
+		std::string s(read.string());
+	    std::replace(s.begin(), s.end(), '-', ' ');
+		std::istringstream is(s);
+		std::string host;
+		is >> host;
+		int pid;
+		is >> pid;
 
-		return false;
+		//std::cerr << lock << " host '" << host << "' pid'" << pid << "'" << std::endl;
+
+		char tmp[HOST_NAME_MAX];
+		gethostname(tmp, HOST_NAME_MAX);
+		std::string hostname(tmp);
+
+		if(hostname.compare(host) != 0) {
+			if(!warned) {
+				warned = true;
+				std::cerr << "Warning: Profile " << path << " socket is from another host ('" << hostname << "' != '" << host <<  "')!" << std::endl;
+			}
+			return false;
+		}
+
+		if(kill(pid, 0) != 0) {
+			if(!warned) {
+				warned = true;
+				std::cerr << "Warning: Profile " << path << " was not properly closed!?" << std::endl;
+			}
+			return false;
+		}
+
+		// TODO check if name of process contains berkelium...
+
+		warned = false;
+
+		return true;
 #else
 #error "TODO"
 #endif

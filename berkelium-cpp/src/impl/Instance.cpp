@@ -37,8 +37,6 @@ public:
 				impl::sleep(100);
 			}
 			std::cerr << "profile closed!" << std::endl;
-		} else {
-			std::cerr << "profile is unused!" << std::endl;
 		}
 	}
 
