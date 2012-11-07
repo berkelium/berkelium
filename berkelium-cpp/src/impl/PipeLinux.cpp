@@ -71,16 +71,31 @@ public:
 	virtual void send(IpcMessageRef msg) {
 		if(fd == -1) return;
 		int32_t size = msg->length();
+		//fprintf(stderr, "send: 4 bytes '%d'!\n", size);
 		::write(fd, &size, 4);
+		//fprintf(stderr, "send: data...\n");
 		::write(fd, msg->data(), size);
+		//fprintf(stderr, "send: done!\n");
 		msg->reset();
 	}
 
 	virtual void recv(IpcMessageRef msg) {
 		int32_t size = 0;
-		::read(fd, &size, 4);
+		recv((char*)&size, 4);
+		//fprintf(stderr, "recv: %d bytes!\n", size);
 		msg->setup(size);
-		::read(fd, msg->data(), size);
+		recv((char*)msg->data(), size);
+	}
+
+	void recv(char* to, size_t size) {
+		size_t off = 0;
+		while(off < size) {
+			//fprintf(stderr, "reading %ld of %ld...\n", off, size);
+			ssize_t ret = ::read(fd, &to[off], size);
+			//fprintf(stderr, "read: %ld bytes of %ld!\n", ret, size);
+			if(ret == -1) break;
+			off += ret;
+		}
 	}
 
 	virtual const std::string getPath() {

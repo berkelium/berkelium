@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "berkelium/Profile.hpp"
 #include "berkelium/Instance.hpp"
 #include "berkelium/Impl.hpp"
+
+#include <iostream>
 
 namespace Berkelium {
 
@@ -28,6 +31,15 @@ public:
 	}
 
 	~InstanceImpl() {
+		if(profile->isInUse()) {
+			std::cerr << "waiting for profile..." << std::endl;
+			while(profile->isInUse()) {
+				impl::sleep(100);
+			}
+			std::cerr << "profile closed!" << std::endl;
+		} else {
+			std::cerr << "profile is unused!" << std::endl;
+		}
 	}
 
 	virtual void close() {

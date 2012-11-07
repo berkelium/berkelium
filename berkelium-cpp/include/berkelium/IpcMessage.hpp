@@ -26,6 +26,7 @@ public:
 	virtual ~IpcMessage() = 0;
 
 	virtual size_t length() = 0;
+	virtual size_t remaining() = 0;
 	virtual void* data() = 0;
 	virtual void reset() = 0;
 	virtual void setup(size_t) = 0;
