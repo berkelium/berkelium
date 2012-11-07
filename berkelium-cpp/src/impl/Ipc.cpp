@@ -50,17 +50,13 @@ public:
 	}
 
 	// Sends this message.
-	virtual void send(const std::string& msg) {
-		//std::cerr << "Ipc" << (server ? "Server" : "Client ") << name << " send '" << msg << "'" << std::endl;
+	virtual void send(IpcMessageRef msg) {
 		pout->send(msg);
 	}
 
 	// Receives the next message.
-	virtual const std::string recv() {
-		//std::cerr << "Ipc" << (server ? "Server" : "Client ") << name << " recv..." << std::endl;
-		std::string ret = pin->recv();
-		//std::cerr << "Ipc" << (server ? "Server" : "Client ") << name << " recv '" << ret << "'" << std::endl;
-		return ret;
+	virtual void recv(IpcMessageRef msg) {
+		pin->recv(msg);
 	}
 
 	virtual std::string getName() {

@@ -5,6 +5,7 @@
 #ifdef LINUX
 
 #include "berkelium/BerkeliumFactory.hpp"
+#include "berkelium/IpcMessage.hpp"
 #include "berkelium/Pipe.hpp"
 
 #include <stdio.h>
@@ -67,19 +68,19 @@ public:
 		return select(fd + 1, &fds, NULL, NULL, &tv) != 1;
 	}
 
-	virtual void send(const std::string& msg) {
+	virtual void send(IpcMessageRef msg) {
 		if(fd == -1) return;
-		int32_t size = msg.length();
+		int32_t size = msg->length();
 		::write(fd, &size, 4);
-		::write(fd, &msg[0], size);
+		::write(fd, msg->data(), size);
+		msg->reset();
 	}
 
-	virtual const std::string recv() {
+	virtual void recv(IpcMessageRef msg) {
 		int32_t size = 0;
 		::read(fd, &size, 4);
-		std::string ret(size, 0);
-		::read(fd, &ret[0], size);
-		return ret;
+		msg->setup(size);
+		::read(fd, msg->data(), size);
 	}
 
 	virtual const std::string getPath() {

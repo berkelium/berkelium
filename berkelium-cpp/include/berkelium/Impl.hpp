@@ -19,8 +19,14 @@ namespace impl {
 class Ipc;
 typedef std::shared_ptr<Ipc> IpcRef;
 
+class IpcMessage;
+typedef std::shared_ptr<IpcMessage> IpcMessageRef;
+
 class Pipe;
 typedef std::shared_ptr<Pipe> PipeRef;
+
+typedef std::shared_ptr<int8_t> ByteRef;
+typedef std::shared_ptr<int32_t> Int32Ref;
 
 std::string randomId();
 std::string randomId(int length);

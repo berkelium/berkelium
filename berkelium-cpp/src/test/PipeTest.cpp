@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "berkelium/Pipe.hpp"
+#include "berkelium/IpcMessage.hpp"
 #include "berkelium/Impl.hpp"
 
 #include "gtest/gtest.h"
@@ -39,9 +40,13 @@ TEST_F(PipeTest, sendRecv) {
 		PipeRef pipe = Pipe::getPipe(name);
 		ASSERT_TRUE(boost::filesystem::exists(name));
 		ASSERT_TRUE(pipe->isEmpty());
-		pipe->send("hello");
+		Berkelium::impl::IpcMessageRef msg(Berkelium::impl::IpcMessage::create());
+		msg->add_str("hello");
+		pipe->send(msg);
 		ASSERT_FALSE(pipe->isEmpty());
-		std::string recv = pipe->recv();
+		msg = Berkelium::impl::IpcMessage::create();
+		pipe->recv(msg);
+		std::string recv = msg->get_str();
 		ASSERT_TRUE(pipe->isEmpty());
 		ASSERT_EQ(0, recv.compare("hello"));
 	}

@@ -5,6 +5,7 @@
 #include "berkelium/BerkeliumFactory.hpp"
 #include "berkelium/Profile.hpp"
 #include "berkelium/HostExecutable.hpp"
+#include "berkelium/IpcMessage.hpp"
 #include "berkelium/Impl.hpp"
 
 #include "Process.hpp"
@@ -46,7 +47,9 @@ InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef prof
 	}
 
 	std::cerr << "awaiting berkelium host process ipc startup message!" << std::endl;
-	if(ipc->recv().compare("berkelium") != 0) {
+	impl::IpcMessageRef msg(impl::IpcMessage::create());
+	ipc->recv(msg);
+	if(msg->get_str().compare("berkelium") != 0) {
 		std::cerr << "ipc bad magic!" << std::endl;
 		return InstanceRef();
 	}

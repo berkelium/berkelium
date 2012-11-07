@@ -18,6 +18,7 @@
 #include "../include/IpcSocket.hpp"
 
 #include "berkelium/Ipc.hpp"
+#include "berkelium/IpcMessage.hpp"
 
 #include <set>
 
@@ -84,6 +85,8 @@ static int initialised = 0;
 
 using ::Berkelium::impl::Ipc;
 using ::Berkelium::impl::IpcRef;
+using ::Berkelium::impl::IpcMessage;
+using ::Berkelium::impl::IpcMessageRef;
 
 IpcRef ipc;
 
@@ -93,7 +96,9 @@ bool Berkelium::init(const std::string& dir, const std::string& name) {
 	} else {
 		initialised = 1;
 		ipc = Ipc::getIpc(dir, name, false);
-		ipc->send("berkelium");
+		IpcMessageRef msg(IpcMessage::create());
+		msg->add_str("berkelium");
+		ipc->send(msg);
 		return true;
 		/*
 		int p = atoi(port.c_str());

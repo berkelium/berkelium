@@ -29,10 +29,10 @@ public:
 	virtual bool isEmpty() = 0;
 
 	// Sends this message.
-	virtual void send(const std::string& msg) = 0;
+	virtual void send(IpcMessageRef msg) = 0;
 
 	// Receives the next message.
-	virtual const std::string recv() = 0;
+	virtual void recv(IpcMessageRef msg) = 0;
 
 	virtual const std::string getPath() = 0;
 };
