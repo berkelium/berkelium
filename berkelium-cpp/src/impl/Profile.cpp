@@ -53,7 +53,7 @@ public:
 		pathstr(path.string()),
 		application(application),
 		temp(temp) {
-		boost::filesystem::create_directory(path);
+		boost::filesystem::create_directories(path);
 	}
 
 	~ProfileImpl() {
