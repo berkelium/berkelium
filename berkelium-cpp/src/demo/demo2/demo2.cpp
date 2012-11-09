@@ -4,10 +4,12 @@
 
 #include <iostream>
 
+#include "berkelium/Impl.hpp"
 #include "berkelium/Profile.hpp"
 #include "berkelium/HostVersion.hpp"
 #include "berkelium/HostExecutable.hpp"
 #include "berkelium/BerkeliumFactory.hpp"
+#include "berkelium/Instance.hpp"
 
 int main(int argc, char* argv[])
 {
@@ -25,4 +27,9 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 	std::cout << "berkelium browser is running!" << std::endl;
+	std::cout << "waiting 10s..." << std::endl;
+	Berkelium::impl::sleep(10000);
+	std::cout << "shutting down browser..." << std::endl;
+	instance->close();
+	std::cout << "done!" << std::endl;
 }

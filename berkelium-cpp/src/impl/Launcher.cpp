@@ -65,7 +65,7 @@ InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef prof
 	*/
 	std::cerr << "berkelium host process is up and running!" << std::endl;
 
-	return impl::newInstance(executable, profile, ipc);
+	return impl::newInstance(executable, profile, ipc, process);
 }
 
 } // namespace Berkelium

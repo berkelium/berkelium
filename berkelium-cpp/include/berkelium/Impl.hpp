@@ -25,13 +25,16 @@ typedef std::shared_ptr<IpcMessage> IpcMessageRef;
 class Pipe;
 typedef std::shared_ptr<Pipe> PipeRef;
 
+class Process;
+typedef std::shared_ptr<Process> ProcessRef;
+
 typedef std::shared_ptr<int8_t> ByteRef;
 typedef std::shared_ptr<int32_t> Int32Ref;
 
 std::string randomId();
 std::string randomId(int length);
 HostExecutableRef newHostExecutable(const std::string&);
-InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, IpcRef ipc);
+InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, IpcRef ipc, ProcessRef process);
 void sleep(int32_t ms);
 std::string getEnv(const std::string&, const std::string& defaultValue);
 #ifdef WIN32

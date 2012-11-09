@@ -17,9 +17,6 @@ namespace Berkelium {
 
 namespace impl {
 
-class Process;
-typedef std::shared_ptr<Process> ProcessRef;
-
 class Process {
 private:
 	IpcRef ipc;

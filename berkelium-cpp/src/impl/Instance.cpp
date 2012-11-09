@@ -5,6 +5,8 @@
 #include "berkelium/Profile.hpp"
 #include "berkelium/Instance.hpp"
 #include "berkelium/Impl.hpp"
+#include "berkelium/Ipc.hpp"
+#include "berkelium/IpcMessage.hpp"
 
 #include <iostream>
 
@@ -22,15 +24,19 @@ class InstanceImpl : public Instance {
 	HostExecutableRef executable;
 	ProfileRef profile;
 	IpcRef ipc;
+	ProcessRef process;
 
 public:
-	InstanceImpl(HostExecutableRef executable, ProfileRef profile, IpcRef ipc) :
+	InstanceImpl(HostExecutableRef executable, ProfileRef profile, IpcRef ipc, ProcessRef process) :
 		executable(executable),
 		profile(profile),
-		ipc(ipc) {
+		ipc(ipc),
+		process(process) {
 	}
 
 	~InstanceImpl() {
+		// TODO only call close if ipc is open...
+		close();
 		if(profile->isInUse()) {
 			std::cerr << "waiting for profile..." << std::endl;
 			while(profile->isInUse()) {
@@ -41,6 +47,10 @@ public:
 	}
 
 	virtual void close() {
+		IpcMessageRef msg = IpcMessage::create();
+		msg->add_str("exit");
+		ipc->send(msg);
+		ipc->recv(msg); //ACK
 	}
 
 	virtual ProfileRef getProfile() {
@@ -79,8 +89,8 @@ public:
 	}
 };
 
-InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, IpcRef ipc) {
-	return InstanceRef(new InstanceImpl(executable, profile, ipc));
+InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, IpcRef ipc, ProcessRef process) {
+	return InstanceRef(new InstanceImpl(executable, profile, ipc, process));
 }
 
 } // namespace impl
