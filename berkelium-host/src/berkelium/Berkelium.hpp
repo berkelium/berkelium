@@ -11,8 +11,6 @@
 namespace Berkelium {
 
 class WindowActions;
-class PacketWriter;
-class IpcSender;
 
 class Berkelium {
 public:
@@ -27,8 +25,6 @@ public:
 	static void addWindow(WindowActions*);
 
 	static void removeWindow(WindowActions*);
-
-	static PacketWriter* getPacketWriter();
 };
 
 } // namespace Berkelium

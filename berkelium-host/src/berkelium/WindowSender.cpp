@@ -4,10 +4,8 @@
 
 #include "WindowSender.hpp"
 #include "Berkelium.hpp"
-#include "ChromiumPacketWriter.hpp"
 
 #include "../include/IpcConstants.hpp"
-#include "../include/PacketWriter.hpp"
 
 #include "base/utf_string_conversions.h"
 #include "ui/surface/transport_dib.h"
@@ -39,38 +37,42 @@ bool WindowSender::OnMessageReceived(const IPC::Message& msg) {
 }
 
 void WindowSender::OnMsgUpdateRect(const ViewHostMsg_UpdateRect_Params& params) {
+	/*
 	TransportDIB* dib = process->GetTransportDIB(params.bitmap);
 	PacketWriter* pw = Berkelium::getPacketWriter();
 	pw->add_16(IpcConstants::Delegate::onPaint);
-	/*
+	/ *
 	w.add(params.copy_rects .sourceBuffer);
-	*/
+	* /
 	ChromiumPacketWriter::write(*pw, params.copy_rects);
-	/*
+	/ *
 	pw->add_8(params.copy_rects.size());
 	for (std::vector<gfx::Rect>::const_iterator it = rects.begin(); it != rects.end(); ++it) {
 		ChromiumPacketWriter::write(w, *it);
 	}
-	*/
+	* /
 	const gfx::Rect& r = params.bitmap_rect;
 	ChromiumPacketWriter::write(*pw, r);
 	pw->add_data32(r.width() * r.height() * 4, dib->memory());
 
-	/*
+	/ *
 	w.add(sourceBufferRect);
 	w.add(params.copy_rects);
 	w.add16(dx);
 	w.add16(dy);
 	w.add(scrollRect);
-	*/
+	* /
 	pw->send();
+	*/
 }
 
 void WindowSender::OnMsgUpdateTitle(int32 page_id, string16 title, WebKit::WebTextDirection) {
+	/*
 	PacketWriter* pw = Berkelium::getPacketWriter();
 	pw->add_16(IpcConstants::Delegate::onTitleChanged);
 	pw->add_str(UTF16ToUTF8(title));
 	pw->send();
+	*/
 }
 
 void WindowSender::OnMsgContextMenu(const content::ContextMenuParams& params) {

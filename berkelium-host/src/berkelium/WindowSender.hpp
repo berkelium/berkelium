@@ -12,8 +12,6 @@ namespace content {
 class RenderProcessHost;
 }
 
-#include "../include/PacketWriter.hpp"
-
 namespace Berkelium {
 
 class WindowActions;

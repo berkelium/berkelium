@@ -6,6 +6,7 @@
 #include "WindowActions.hpp"
 
 #include "content/public/browser/browser_thread.h"
+#include "base/message_loop.h"
 
 #include <stdio.h>
 #include <unistd.h>
@@ -13,16 +14,20 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "../include/IpcSender.hpp"
-#include "../include/PacketWriter.hpp"
-#include "../include/IpcSocket.hpp"
-
 #include "berkelium/Ipc.hpp"
 #include "berkelium/IpcMessage.hpp"
 
 #include <set>
+#include <iostream>
 
 namespace Berkelium {
+
+using ::Berkelium::impl::Ipc;
+using ::Berkelium::impl::IpcRef;
+using ::Berkelium::impl::IpcMessage;
+using ::Berkelium::impl::IpcMessageRef;
+
+IpcRef ipc;
 
 std::set<WindowActions*> allWindows;
 
@@ -36,17 +41,34 @@ void Berkelium::removeWindow(WindowActions* window) {
 	allWindows.erase(window);
 }
 
-PacketWriter* packetWriter = NULL;
-IpcSocket* ipcSocket = NULL;
-
 void update() {
-	if(!ipcSocket->recv()) {
-		fprintf(stderr, "berkelium update down!\n");
-		for(std::set<WindowActions*>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
-			fprintf(stderr, "berkelium Shutdown!\n");
-			(*it)->Shutdown();
+	static IpcMessageRef msg = IpcMessage::create();
+	static bool started_send = false;
+
+	if(!started_send) {
+		started_send = true;
+		msg->add_str("berkelium");
+		ipc->send(msg);
+	}
+
+	if(!ipc->isEmpty()) {
+		ipc->recv(msg);
+		std::string cmd = msg->get_str();
+		std::cout << "recv: '" << cmd << "'" << std::endl;
+		msg->reset();
+		ipc->send(msg); // ACK
+
+		if(cmd.compare("exit") == 0){
+			fprintf(stderr, "berkelium update down!\n");
+			/*
+			for(std::set<WindowActions*>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
+				fprintf(stderr, "berkelium Shutdown!\n");
+				(*it)->Shutdown();
+			}
+			*/
+			content::BrowserThread::UnsafeGetMessageLoopForThread(content::BrowserThread::UI)->QuitWhenIdle();
+			return;
 		}
-		return;
 	}
 	/*
 	fd_set rfds;
@@ -83,22 +105,12 @@ void update() {
 
 static int initialised = 0;
 
-using ::Berkelium::impl::Ipc;
-using ::Berkelium::impl::IpcRef;
-using ::Berkelium::impl::IpcMessage;
-using ::Berkelium::impl::IpcMessageRef;
-
-IpcRef ipc;
-
 bool Berkelium::init(const std::string& dir, const std::string& name) {
 	if(initialised != 0) {
 		fprintf(stderr, "berkelium init double call!\n");
 	} else {
 		initialised = 1;
 		ipc = Ipc::getIpc(dir, name, false);
-		IpcMessageRef msg(IpcMessage::create());
-		msg->add_str("berkelium");
-		ipc->send(msg);
 		return true;
 		/*
 		int p = atoi(port.c_str());
@@ -142,18 +154,10 @@ void Berkelium::lasyInit() {
 
 void Berkelium::destory() {
 	fprintf(stderr, "berkelium closed!\n");
-	delete packetWriter;
-	delete ipcSocket;
-	packetWriter = NULL;
-	ipcSocket = NULL;
 }
 
 bool Berkelium::isActive() {
 	return initialised != 0;
-}
-
-PacketWriter* Berkelium::getPacketWriter() {
-	return packetWriter;
 }
 
 } // namespace Berkelium
