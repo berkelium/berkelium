@@ -170,6 +170,7 @@ void BK_HostDelegate_onClosed(BK_HostDelegate self, BK_Instance instance);
 //
 // Represents a running berkelium host instance.
 // =========================================
+void BK_Instance_update(BK_Instance self);
 
 // Closes all open Windows/Tabs and the profile, terminates the host.
 void BK_Instance_close(BK_Instance self);

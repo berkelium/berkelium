@@ -171,6 +171,7 @@
 	</group>
 	<group type="interface" name="Instance">
 		<short>Represents a running berkelium host instance.</short>
+		<entry name="update"/>
 		<entry name="close">
 			<short>Closes all open Windows/Tabs and the profile, terminates the host.</short>
 			<short>Also removes the profile if it is a temporary one.</short>
