@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include "berkelium/Ipc.hpp"
+#include <Berkelium/IPC/Ipc.hpp>
 
 namespace Berkelium {
 

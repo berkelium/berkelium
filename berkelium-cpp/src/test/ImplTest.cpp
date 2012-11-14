@@ -4,7 +4,7 @@
 
 #ifdef WINDOWS
 
-#include "berkelium/Impl.hpp"
+#include <Berkelium/Impl/Impl.hpp>
 #include "gtest/gtest.h"
 
 namespace {

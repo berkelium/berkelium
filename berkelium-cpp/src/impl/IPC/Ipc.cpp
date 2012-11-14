@@ -1,0 +1,86 @@
+// Copyright (c) 2012 The Berkelium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/Ipc.hpp>
+#include <Berkelium/Impl/Impl.hpp>
+
+#include <boost/filesystem.hpp>
+
+#include <iostream>
+
+using boost::filesystem::path;
+
+namespace Berkelium {
+
+namespace impl {
+
+Ipc::Ipc() {
+}
+
+Ipc::~Ipc() {
+}
+
+class IpcImpl : public Ipc {
+private:
+	const std::string dir;
+	const std::string name;
+	const bool server;
+	PipeRef pin;
+	PipeRef pout;
+
+	static inline std::string getExt(const bool server) {
+		return server ? "1" : "2";
+	}
+
+public:
+	IpcImpl(const path& dir, const std::string& name, const bool server) :
+		dir(dir.string()),
+		name(name),
+		server(server),
+		pin(Pipe::getPipe((dir / name).string() + getExt(server))),
+		pout(Pipe::getPipe((dir / name).string() + getExt(!server))) {
+	}
+
+	virtual ~IpcImpl() {
+	}
+
+	// Returns true if there are no pending messages to receive.
+	virtual bool isEmpty() {
+		return pin->isEmpty();
+	}
+
+	// Sends this message.
+	virtual void send(IpcMessageRef msg) {
+		pout->send(msg);
+	}
+
+	// Receives the next message.
+	virtual void recv(IpcMessageRef msg) {
+		pin->recv(msg);
+	}
+
+	virtual IpcRef createChannel() {
+		return Ipc::getIpc(dir, true);
+	}
+
+	virtual IpcRef getChannel(const std::string& name) {
+		return Ipc::getIpc(dir, name, false);
+	}
+
+	virtual std::string getName() {
+		return name;
+	}
+};
+
+IpcRef Ipc::getIpc(const std::string& dir, const bool server) {
+	return getIpc(dir, randomId(), server);
+}
+IpcRef Ipc::getIpc(const std::string& dir, const std::string& name, const bool server) {
+	return IpcRef(new impl::IpcImpl(path(dir), name, server));
+}
+
+} // namespace impl
+
+} // namespace Berkelium

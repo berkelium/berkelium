@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "berkelium/Pipe.hpp"
-#include "berkelium/IpcMessage.hpp"
-#include "berkelium/Impl.hpp"
+#include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/IpcMessage.hpp>
+#include <Berkelium/Impl/Impl.hpp>
 
 #include "gtest/gtest.h"
 #include "test.h"

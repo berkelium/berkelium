@@ -14,8 +14,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include "berkelium/Ipc.hpp"
-#include "berkelium/IpcMessage.hpp"
+#include <Berkelium/IPC/Ipc.hpp>
+#include <Berkelium/IPC/IpcMessage.hpp>
 
 #include <set>
 #include <iostream>

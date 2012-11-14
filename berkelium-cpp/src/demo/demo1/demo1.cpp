@@ -4,10 +4,10 @@
 
 #include <iostream>
 
-#include "berkelium/Profile.hpp"
-#include "berkelium/HostVersion.hpp"
-#include "berkelium/HostExecutable.hpp"
-#include "berkelium/BerkeliumFactory.hpp"
+#include <Berkelium/API/Profile.hpp>
+#include <Berkelium/API/HostVersion.hpp>
+#include <Berkelium/API/HostExecutable.hpp>
+#include <Berkelium/API/BerkeliumFactory.hpp>
 
 void dumpProfile(const std::string& name, Berkelium::ProfileRef profile)
 {

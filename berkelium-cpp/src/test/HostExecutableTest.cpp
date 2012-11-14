@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "berkelium/BerkeliumFactory.hpp"
-#include "berkelium/HostExecutable.hpp"
+#include <Berkelium/API/BerkeliumFactory.hpp>
+#include <Berkelium/API/HostExecutable.hpp>
 #include "gtest/gtest.h"
 
 #include "test.h"

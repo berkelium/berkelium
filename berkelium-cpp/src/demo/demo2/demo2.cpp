@@ -4,12 +4,12 @@
 
 #include <iostream>
 
-#include "berkelium/Impl.hpp"
-#include "berkelium/Profile.hpp"
-#include "berkelium/HostVersion.hpp"
-#include "berkelium/HostExecutable.hpp"
-#include "berkelium/BerkeliumFactory.hpp"
-#include "berkelium/Instance.hpp"
+#include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/API/Profile.hpp>
+#include <Berkelium/API/HostVersion.hpp>
+#include <Berkelium/API/HostExecutable.hpp>
+#include <Berkelium/API/BerkeliumFactory.hpp>
+#include <Berkelium/API/Instance.hpp>
 
 int main(int argc, char* argv[])
 {

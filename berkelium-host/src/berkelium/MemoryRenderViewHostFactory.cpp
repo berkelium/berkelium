@@ -11,8 +11,8 @@
 #include "content/common/view_messages.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 
-#include "berkelium/Ipc.hpp"
-#include "berkelium/IpcMessage.hpp"
+#include <Berkelium/IPC/Ipc.hpp>
+#include <Berkelium/IPC/IpcMessage.hpp>
 
 #include "googleurl/src/gurl.h"
 
