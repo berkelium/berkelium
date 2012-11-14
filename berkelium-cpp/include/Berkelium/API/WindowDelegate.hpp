@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BERKELIUM_WINDOWDELEGATE_HPP_
-#define BERKELIUM_WINDOWDELEGATE_HPP_
+#ifndef BERKELIUM_API_WINDOWDELEGATE_HPP_
+#define BERKELIUM_API_WINDOWDELEGATE_HPP_
 #pragma once
 
 // =========================================

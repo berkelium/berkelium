@@ -84,7 +84,7 @@
 
 <xsl:template name="include-guard-start">
 	<!-- TODO: not very important, but some underscores are missing ;-) -->
-	<xsl:variable name="guard" select="concat('BERKELIUM_', translate($class, $smallcase, $uppercase),'_HPP_')"/>
+	<xsl:variable name="guard" select="concat('BERKELIUM_API_', translate($class, $smallcase, $uppercase),'_HPP_')"/>
 
 	<xsl:text>#ifndef </xsl:text>
 	<xsl:value-of select="$guard"/>

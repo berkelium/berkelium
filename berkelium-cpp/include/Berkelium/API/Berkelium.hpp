@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BERKELIUM__HPP_
-#define BERKELIUM__HPP_
+#ifndef BERKELIUM_API__HPP_
+#define BERKELIUM_API__HPP_
 #pragma once
 
 // =========================================
