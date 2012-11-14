@@ -15,7 +15,7 @@
 
 #include "ui/gfx/rect.h"
 
-#define X fprintf(stderr, "BerkeliumBrowserWindow::%s\n", __func__)
+#define X //fprintf(stderr, "BerkeliumBrowserWindow::%s\n", __func__)
 
 class BerkeliumBrowserWindow : public BrowserWindow, public TabStripModelObserver {
 public:
@@ -114,8 +114,8 @@ private:
 	virtual void Cut() {X;}
 	virtual void Copy() {X;}
 	virtual void Paste() {X;}
-	virtual void ShowInstant(TabContents*) {X;fprintf(stderr, "ShowInstant\n");}
-	virtual void HideInstant() {X;fprintf(stderr, "HideInstant\n");}
+	virtual void ShowInstant(TabContents*) {X;}
+	virtual void HideInstant() {X;}
 	virtual gfx::Rect GetInstantBounds() {X;return gfx::Rect(640, 480);}
 	virtual WindowOpenDisposition GetDispositionForPopupBounds(const gfx::Rect&) {X;return WindowOpenDisposition();}
 	virtual FindBar* CreateFindBar() {X;return NULL;}

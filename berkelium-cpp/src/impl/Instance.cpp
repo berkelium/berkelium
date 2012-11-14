@@ -25,13 +25,16 @@ class InstanceImpl : public Instance {
 	ProfileRef profile;
 	IpcRef ipc;
 	ProcessRef process;
+	std::vector<IpcRef> windows;
 
 public:
 	InstanceImpl(HostExecutableRef executable, ProfileRef profile, IpcRef ipc, ProcessRef process) :
 		executable(executable),
 		profile(profile),
 		ipc(ipc),
-		process(process) {
+		process(process),
+		windows() {
+		windows.push_back(ipc);
 	}
 
 	~InstanceImpl() {
@@ -50,7 +53,33 @@ public:
 		IpcMessageRef msg = IpcMessage::create();
 		msg->add_str("exit");
 		ipc->send(msg);
-		ipc->recv(msg); //ACK
+		//ipc->recv(msg); //ACK
+	}
+
+	virtual void update() {
+		std::vector<IpcRef> copy(windows);
+		for(std::vector<IpcRef>::iterator it = copy.begin(); it != copy.end(); it++) {
+			IpcRef ir = *it;
+			if(!ir->isEmpty()) {
+				IpcMessageRef msg = IpcMessage::create();
+				ir->recv(msg);
+				std::string str = msg->get_str();
+				if(str.compare("addWindow") == 0) {
+					std::string id = msg->get_str();
+					std::cerr << "new window: '" << id << "'!" << std::endl;
+					IpcRef c = ipc->getChannel(id);
+					windows.push_back(c);
+				} else if(str.compare("OnReady") == 0) {
+					msg->reset();
+					msg->add_str("Navigate");
+					msg->add_str("http://heise.de/");
+					std::cerr << "sending navigate to heise.de!" << std::endl;
+					ir->send(msg);
+				} else {
+					std::cerr << "recv from host: '" << str << "'!" << std::endl;
+				}
+			}
+		}
 	}
 
 	virtual ProfileRef getProfile() {

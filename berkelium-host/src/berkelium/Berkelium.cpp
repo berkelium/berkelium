@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "Berkelium.hpp"
-#include "WindowActions.hpp"
+#include "BerkeliumTab.hpp"
 
 #include "content/public/browser/browser_thread.h"
 #include "base/message_loop.h"
@@ -28,27 +28,47 @@ using ::Berkelium::impl::IpcMessage;
 using ::Berkelium::impl::IpcMessageRef;
 
 IpcRef ipc;
+IpcMessageRef msg = IpcMessage::create();
 
-std::set<WindowActions*> allWindows;
+std::set<BerkeliumTab*> allWindows;
 
-void Berkelium::addWindow(WindowActions* window) {
-	fprintf(stderr, "berkelium addWindow!\n");
+IpcRef Berkelium::addWindow(BerkeliumTab* window) {
+	IpcRef ret(ipc->createChannel());
+	fprintf(stderr, "berkelium tab added!\n");
 	allWindows.insert(window);
+	msg->reset();
+	msg->add_str("addWindow");
+	msg->add_str(ret->getName());
+	//std::cerr << "send: addWindow" << " " << ret->getName() << std::endl;
+	ipc->send(msg);
+
+	return ret;
 }
 
-void Berkelium::removeWindow(WindowActions* window) {
-	fprintf(stderr, "berkelium removeWindow!\n");
+void Berkelium::removeWindow(BerkeliumTab* window) {
 	allWindows.erase(window);
+	if(allWindows.empty()) {
+		fprintf(stderr, "last berkelium tab closed!\n");
+		content::BrowserThread::UnsafeGetMessageLoopForThread(content::BrowserThread::UI)->QuitWhenIdle();
+	} else {
+		fprintf(stderr, "closed berkelium tab!\n");
+	}
 }
 
 void update() {
-	static IpcMessageRef msg = IpcMessage::create();
 	static bool started_send = false;
 
 	if(!started_send) {
 		started_send = true;
 		msg->add_str("berkelium");
 		ipc->send(msg);
+	}
+
+	// call update on all tabs
+	{
+		for(std::set<BerkeliumTab*>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
+			(*it)->Update();
+		}
 	}
 
 	if(!ipc->isEmpty()) {
@@ -59,45 +79,13 @@ void update() {
 		ipc->send(msg); // ACK
 
 		if(cmd.compare("exit") == 0){
-			fprintf(stderr, "berkelium update down!\n");
-			/*
-			for(std::set<WindowActions*>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
-				fprintf(stderr, "berkelium Shutdown!\n");
-				(*it)->Shutdown();
+			fprintf(stderr, "berkelium update done!\n");
+			for(std::set<BerkeliumTab*>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
+				(*it)->Close();
 			}
-			*/
-			content::BrowserThread::UnsafeGetMessageLoopForThread(content::BrowserThread::UI)->QuitWhenIdle();
 			return;
 		}
 	}
-	/*
-	fd_set rfds;
-	FD_ZERO(&rfds);
-	FD_SET(fifo_in, &rfds);
-
-	struct timeval tv;
-	tv.tv_sec = 0;
-	tv.tv_usec = 0;
-	int retval = select(fifo_in + 1, &rfds, NULL, NULL, &tv);
-	if (retval == -1)
-		perror("select()");
-	else if (retval) {
-		size_t size = read(fifo_in, &data, 1024);
-		write(fifo_out, data, size);
-
-	}
-	*/
-	/*
-	pollfd cinfd[1];
-	int c = cinfd[0].fd = fileno(stdin);
-	cinfd[0].events = POLLIN;
-	if(poll(cinfd, 1, 100)) {
-		printf("read: %c\n", fgetc(stdin));
-	}
-	if (feof(stdin)){
-		printf("done!\n");
-	}
-	*/
 
 	content::BrowserThread::PostDelayedTask(content::BrowserThread::UI, FROM_HERE, base::Bind(&update), base::TimeDelta::FromMilliseconds(10));
 
@@ -153,6 +141,7 @@ void Berkelium::lasyInit() {
 }
 
 void Berkelium::destory() {
+	ipc.reset();
 	fprintf(stderr, "berkelium closed!\n");
 }
 

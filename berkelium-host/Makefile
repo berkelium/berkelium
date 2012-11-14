@@ -216,7 +216,7 @@ all: run/berkelium
 
 .PHONY: clean
 clean:
-	rm -rf out
+	rm -rf out run/berkelium
 
 out:
 	mkdir -p out/o/berkelium

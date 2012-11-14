@@ -8,9 +8,11 @@
 
 #include <string>
 
+#include "berkelium/Ipc.hpp"
+
 namespace Berkelium {
 
-class WindowActions;
+class BerkeliumTab;
 
 class Berkelium {
 public:
@@ -22,9 +24,9 @@ public:
 
 	static bool isActive();
 
-	static void addWindow(WindowActions*);
+	static ::Berkelium::impl::IpcRef addWindow(BerkeliumTab*);
 
-	static void removeWindow(WindowActions*);
+	static void removeWindow(BerkeliumTab*);
 };
 
 } // namespace Berkelium

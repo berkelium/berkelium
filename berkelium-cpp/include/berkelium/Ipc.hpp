@@ -35,6 +35,9 @@ public:
 	// Receives the next message.
 	virtual void recv(IpcMessageRef msg) = 0;
 
+ 	virtual IpcRef createChannel() = 0;
+ 	virtual IpcRef getChannel(const std::string& name) = 0;
+
 	virtual std::string getName() = 0;
 };
 

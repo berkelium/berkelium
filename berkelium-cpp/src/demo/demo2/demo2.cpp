@@ -28,7 +28,12 @@ int main(int argc, char* argv[])
 	}
 	std::cout << "berkelium browser is running!" << std::endl;
 	std::cout << "waiting 10s..." << std::endl;
-	Berkelium::impl::sleep(10000);
+
+	for(int i = 0; i < 10000; i += 100) {
+		instance->update();
+		Berkelium::impl::sleep(100);
+	}
+
 	std::cout << "shutting down browser..." << std::endl;
 	instance->close();
 	std::cout << "done!" << std::endl;

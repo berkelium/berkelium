@@ -22,10 +22,7 @@ std::string getEnv(const std::string& env, const std::string& defaultValue) {
 }
 
 void sleep(int32_t ms) {
-	struct timeval tv;
-	tv.tv_sec = ms / 1000L;
-	tv.tv_usec = ms % 1000L;
-	select(0, NULL, NULL, NULL, &tv);
+	usleep(1000 * ms);
 }
 
 } // namespace impl

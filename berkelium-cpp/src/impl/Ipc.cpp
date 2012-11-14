@@ -24,6 +24,7 @@ Ipc::~Ipc() {
 
 class IpcImpl : public Ipc {
 private:
+	const std::string dir;
 	const std::string name;
 	const bool server;
 	PipeRef pin;
@@ -35,6 +36,7 @@ private:
 
 public:
 	IpcImpl(const path& dir, const std::string& name, const bool server) :
+		dir(dir.string()),
 		name(name),
 		server(server),
 		pin(Pipe::getPipe((dir / name).string() + getExt(server))),
@@ -57,6 +59,14 @@ public:
 	// Receives the next message.
 	virtual void recv(IpcMessageRef msg) {
 		pin->recv(msg);
+	}
+
+	virtual IpcRef createChannel() {
+		return Ipc::getIpc(dir, true);
+	}
+
+	virtual IpcRef getChannel(const std::string& name) {
+		return Ipc::getIpc(dir, name, false);
 	}
 
 	virtual std::string getName() {
