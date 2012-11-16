@@ -4,12 +4,9 @@
 
 #include <iostream>
 
-#include <Berkelium/Impl/Impl.hpp>
-#include <Berkelium/API/Profile.hpp>
-#include <Berkelium/API/HostVersion.hpp>
-#include <Berkelium/API/HostExecutable.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/Instance.hpp>
+#include <Berkelium/API/Util.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -31,7 +28,7 @@ int main(int argc, char* argv[])
 
 	for(int i = 0; i < 10000; i += 100) {
 		instance->update();
-		Berkelium::impl::sleep(100);
+		Berkelium::Util::sleep(100);
 	}
 
 	std::cout << "shutting down browser..." << std::endl;

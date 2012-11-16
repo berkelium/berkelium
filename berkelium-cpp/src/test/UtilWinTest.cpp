@@ -4,15 +4,15 @@
 
 #ifdef WINDOWS
 
-#include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/API/Util.hpp>
 #include "gtest/gtest.h"
 
 namespace {
 
-class ImplTest : public ::testing::Test {
+class UtilWinTest : public ::testing::Test {
 };
 
-TEST_F(ImplTest, getEnv) {
+TEST_F(UtilWinTest, getEnv) {
 	std::string key = "SystemDrive";
 	std::string value = "C:";
 	std::string s = Berkelium::impl::getEnv(key, "");
@@ -29,27 +29,27 @@ void ws2s(const std::string& expected, const std::wstring& test) {
 	ASSERT_EQ(0, expected.compare(result));
 }
 
-TEST_F(ImplTest, s2wsEmpty) {
+TEST_F(UtilWinTest, s2wsEmpty) {
 	s2ws(L"", "");
 }
 
-TEST_F(ImplTest, s2wsTest) {
+TEST_F(UtilWinTest, s2wsTest) {
 	s2ws(L"test", "test");
 }
 
-TEST_F(ImplTest, s2ws) {
+TEST_F(UtilWinTest, s2ws) {
 	s2ws(L"-äüöÄÜÖß@-", "-äüöÄÜÖß@-");
 }
 
-TEST_F(ImplTest, ws2sEmpty) {
+TEST_F(UtilWinTest, ws2sEmpty) {
 	ws2s("", L"");
 }
 
-TEST_F(ImplTest, ws2sTest) {
+TEST_F(UtilWinTest, ws2sTest) {
 	ws2s("test", L"test");
 }
 
-TEST_F(ImplTest, ws2s) {
+TEST_F(UtilWinTest, ws2s) {
 	ws2s("-äüöÄÜÖß@-", L"-äüöÄÜÖß@-");
 }
 

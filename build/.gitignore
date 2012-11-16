@@ -4,7 +4,10 @@ Makefile
 cmake_install.cmake
 out/
 run/
+build/
 .project
 .cproject
 CTestTestfile.cmake
 Testing/
+*~
+eclipse

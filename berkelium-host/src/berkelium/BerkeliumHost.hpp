@@ -14,7 +14,7 @@ namespace Berkelium {
 
 class BerkeliumTab;
 
-class Berkelium {
+class BerkeliumHost {
 public:
 	static bool init(const std::string&, const std::string&);
 
@@ -24,7 +24,7 @@ public:
 
 	static bool isActive();
 
-	static ::Berkelium::impl::IpcRef addWindow(BerkeliumTab*);
+	static Ipc::ChannelRef addWindow(BerkeliumTab*);
 
 	static void removeWindow(BerkeliumTab*);
 };

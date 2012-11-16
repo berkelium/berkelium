@@ -1,0 +1,8 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
+PROJECT(berkelium-cpp-demo2)
+
+FILE(GLOB_RECURSE SRC "*.cpp")
+
+ADD_EXECUTABLE(demo2 ${SRC})
+TARGET_LINK_LIBRARIES(demo2 berkelium-cpp ${Boost_LIBRARIES})

@@ -26,46 +26,68 @@ int exec(const std::vector<std::string>& args) {
     return execvp(args[0].c_str(), &tmp[0]);
 }
 
-class ProcessImpl : public Process {
+class ProcessLinuxImpl : public Process {
 private:
 	pid_t pid;
+	int exit;
 
 public:
-	ProcessImpl(const std::string& dir) : Process(dir),
-		pid(-1) {
+	ProcessLinuxImpl(const std::string& dir) : Process(dir),
+		pid(-1),
+		exit(-1) {
 	}
 
-	virtual ~ProcessImpl() {
+	virtual ~ProcessLinuxImpl() {
 		if(pid == -1) return;
-		int status;
 		fprintf(stderr, "waiting for pid %d...\n", pid);
-		if (waitpid(pid, &status, 0) != -1) {
+		wait(0);
+	}
+
+	bool wait(int options) {
+		int status;
+		if (waitpid(pid, &status, options) != -1) {
 			printf("Child exited with status %i\n", status);
+			exit = status;
+			pid = -1;
+			fprintf(stderr, "berkelium host process terminated!\n");
+			return false;
 		} else {
 			perror("waitpid");
 		}
-		fprintf(stderr, "berkelium host process terminated!\n");
+		return true;
 	}
+
+	virtual bool isRunning() {
+		if(exit != -1) {
+			return false;
+		}
+		return wait(WNOHANG);
+	}
+
 
 	virtual const bool start(const std::vector<std::string>& args) {
 		pid = fork();
 		switch (pid) {
-		case -1:
+		case -1: {
 			perror("fork");
-			break;
-		case 0:
-			exec(args);
+			return false;
+		}
+		case 0: {
+			int ret = exec(args);
 			perror(("launch " + args[0]).c_str());
+			::exit(ret);
 			break;
-		default:
+		}
+		default: {
 			printf("started berkelium host process with pid %i!\n", pid);
+		}
 		}
 		return true;
 	}
 };
 
 ProcessRef Process::create(const std::string& dir) {
-	return ProcessRef(new ProcessImpl(dir));
+	return ProcessRef(new ProcessLinuxImpl(dir));
 }
 
 Process::~Process() {

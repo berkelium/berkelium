@@ -1,0 +1,32 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
+PROJECT(berkelium-cpp-lib)
+
+###############
+## Header Files
+## ------------
+FILE(GLOB_RECURSE INCLUDE_BK_API "../../include/Berkelium/API/*.hpp")
+FILE(GLOB_RECURSE INCLUDE_BK_IPC "../../include/Berkelium/IPC/*.hpp")
+FILE(GLOB_RECURSE INCLUDE_BK_IMPL "../../include/Berkelium/Impl/*.hpp")
+FILE(GLOB_RECURSE INCLUDE_BK ${INCLUDE_BK_API} ${INCLUDE_BK_IPC} ${INCLUDE_BK_IMPL})
+
+SOURCE_GROUP("Header Files" FILES ${INCLUDE_BK})
+SOURCE_GROUP("Header Files - API" FILES ${INCLUDE_BK_API})
+SOURCE_GROUP("Header Files - IPC" FILES ${INCLUDE_BK_IPC})
+SOURCE_GROUP("Header Files - Impl" FILES ${INCLUDE_BK_IMPL})
+
+###############
+## Source Files
+## ------------
+FILE(GLOB_RECURSE SRC_BK_API "API/*.cpp")
+FILE(GLOB_RECURSE SRC_BK_IPC "IPC/*.cpp")
+FILE(GLOB_RECURSE SRC_BK_IMPL "Impl/*.cpp")
+FILE(GLOB_RECURSE SRC_BK ${SRC_BK_API} ${SRC_BK_IPC} ${SRC_BK_IMPL})
+
+SOURCE_GROUP("Source Files" FILES ${SRC_BK})
+SOURCE_GROUP("Source Files - API" FILES ${SRC_BK_API})
+SOURCE_GROUP("Source Files - IPC" FILES ${SRC_BK_IPC})
+SOURCE_GROUP("Source Files - Impl" FILES ${SRC_BK_IMPL})
+
+ADD_DEFINITIONS(-DBERKELIUM_CPP_IMPL)
+ADD_LIBRARY(berkelium-cpp STATIC ${SRC_BK} ${INCLUDE_BK})

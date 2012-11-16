@@ -4,14 +4,14 @@
 
 #ifdef LINUX
 
-#include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/API/Util.hpp>
 
 #include <cstdlib>
 #include <sys/select.h>
 
 namespace Berkelium {
 
-namespace impl {
+namespace Util {
 
 std::string getEnv(const std::string& env, const std::string& defaultValue) {
 	const char* ret = std::getenv(env.c_str());
@@ -25,7 +25,7 @@ void sleep(int32_t ms) {
 	usleep(1000 * ms);
 }
 
-} // namespace impl
+} // namespace Util
 
 } // namespace Berkelium
 

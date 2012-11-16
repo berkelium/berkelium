@@ -2,47 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BERKELIUM_IPC_HPP_
-#define BERKELIUM_IPC_HPP_
+#ifndef BERKELIUM_IPC_IPC_HPP_
+#define BERKELIUM_IPC_IPC_HPP_
 #pragma once
 
 #ifndef BERKELIUM_CPP_IMPL
 # error "This file is intended for internal use only!"
 #endif
 
-#include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/API/Berkelium.hpp>
 
 namespace Berkelium {
 
-namespace impl {
+namespace Ipc {
 
-class Ipc {
-protected:
-	Ipc();
+class Channel;
+typedef std::shared_ptr<Channel> ChannelRef;
 
-public:
-	static IpcRef getIpc(const std::string& dir, const bool server);
-	static IpcRef getIpc(const std::string& dir, const std::string& name, const bool server);
+class Message;
+typedef std::shared_ptr<Message> MessageRef;
 
-	virtual ~Ipc() = 0;
+class Pipe;
+typedef std::shared_ptr<Pipe> PipeRef;
 
-	// Returns true if there are no pending messages to receive.
-	virtual bool isEmpty() = 0;
-
-	// Sends this message.
-	virtual void send(IpcMessageRef msg) = 0;
-
-	// Receives the next message.
-	virtual void recv(IpcMessageRef msg) = 0;
-
- 	virtual IpcRef createChannel() = 0;
- 	virtual IpcRef getChannel(const std::string& name) = 0;
-
-	virtual std::string getName() = 0;
-};
-
-} // namespace impl
+} // namespace Ipc
 
 } // namespace Berkelium
 
-#endif // BERKELIUM_PIPE_HPP_
+#endif // BERKELIUM_IPC_IPC_HPP_

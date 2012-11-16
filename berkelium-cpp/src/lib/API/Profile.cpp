@@ -4,6 +4,7 @@
 
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/Profile.hpp>
+#include <Berkelium/API/Util.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
 #include <cstdlib>
@@ -28,26 +29,6 @@ Profile::~Profile() {
 
 namespace impl {
 
-std::string randomId(int length) {
-	static const std::string CHARS("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
-	const int to = CHARS.size();
-	std::string ret;
-	static bool initialised = false;
-	if(!initialised) {
-		initialised = true;
-		srand((unsigned)time(0));
-	}
-	for(int i = 0; i < length; i++) {
-		ret += CHARS[std::rand() % to];
-	}
-
-	return ret;
-}
-
-std::string randomId() {
-	return randomId(8);
-}
-
 class ProfileImpl : public Profile {
 private:
 	const boost::filesystem::path path;
@@ -59,7 +40,11 @@ public:
 		path(path),
 		pathstr(path.string()),
 		application(application),
-		temp(temp) {
+		temp(temp)
+#ifdef LINUX
+		, warned(false)
+#endif
+	{
 		boost::filesystem::create_directories(path);
 	}
 
@@ -159,11 +144,11 @@ ProfileRef newProfile(const boost::filesystem::path& appDir, const std::string& 
 	boost::filesystem::path path;
 
 #ifdef WIN32
-	path = impl::getEnv("LOCALAPPDATA", "C:");
+	path = Util::getEnv("LOCALAPPDATA", "C:");
 	path /= appDir;
 	path /= "User Data";
 #elif defined(LINUX)
-	path = impl::getEnv("HOME", "/tmp");
+	path = Util::getEnv("HOME", "/tmp");
 	path /= ".config";
 	path /= appDir;
 #else
@@ -223,14 +208,14 @@ ProfileRef BerkeliumFactory::createTemporaryProfile() {
 	path = impl::getEnv("TEMP", "C:\\WINDOWS\\TEMP");
 #elif defined(LINUX)
 	path = "/tmp";
-	path /= "berkelium." + impl::getEnv("USER", "user");
+	path /= "berkelium." + Util::getEnv("USER", "user");
 #else
 #error "please add path to temp here"
 #endif
 
 	path /= "berkelium";
 	impl::cleanup(path);
-	path /= impl::randomId();
+	path /= Util::randomId();
 
 	return ProfileRef(new impl::ProfileImpl(path, "berkelium", true));
 }

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "Berkelium.hpp"
+#include "BerkeliumHost.hpp"
 #include "BerkeliumTab.hpp"
 
 #include "content/public/browser/browser_thread.h"
@@ -14,26 +14,26 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include <Berkelium/IPC/Ipc.hpp>
-#include <Berkelium/IPC/IpcMessage.hpp>
+#include <Berkelium/IPC/Channel.hpp>
+#include <Berkelium/IPC/Message.hpp>
 
 #include <set>
 #include <iostream>
 
 namespace Berkelium {
 
-using ::Berkelium::impl::Ipc;
-using ::Berkelium::impl::IpcRef;
-using ::Berkelium::impl::IpcMessage;
-using ::Berkelium::impl::IpcMessageRef;
+using Ipc::Channel;
+using Ipc::ChannelRef;
+using Ipc::Message;
+using Ipc::MessageRef;
 
-IpcRef ipc;
-IpcMessageRef msg = IpcMessage::create();
+ChannelRef ipc;
+MessageRef msg = Message::create();
 
 std::set<BerkeliumTab*> allWindows;
 
-IpcRef Berkelium::addWindow(BerkeliumTab* window) {
-	IpcRef ret(ipc->createChannel());
+ChannelRef BerkeliumHost::addWindow(BerkeliumTab* window) {
+	ChannelRef ret(ipc->createSubChannel());
 	fprintf(stderr, "berkelium tab added!\n");
 	allWindows.insert(window);
 	msg->reset();
@@ -45,7 +45,7 @@ IpcRef Berkelium::addWindow(BerkeliumTab* window) {
 	return ret;
 }
 
-void Berkelium::removeWindow(BerkeliumTab* window) {
+void BerkeliumHost::removeWindow(BerkeliumTab* window) {
 	allWindows.erase(window);
 	if(allWindows.empty()) {
 		fprintf(stderr, "last berkelium tab closed!\n");
@@ -93,12 +93,12 @@ void update() {
 
 static int initialised = 0;
 
-bool Berkelium::init(const std::string& dir, const std::string& name) {
+bool BerkeliumHost::init(const std::string& dir, const std::string& name) {
 	if(initialised != 0) {
 		fprintf(stderr, "berkelium init double call!\n");
 	} else {
 		initialised = 1;
-		ipc = Ipc::getIpc(dir, name, false);
+		ipc = Channel::getChannel(dir, name, false);
 		return true;
 		/*
 		int p = atoi(port.c_str());
@@ -127,7 +127,7 @@ bool Berkelium::init(const std::string& dir, const std::string& name) {
 	return false;
 }
 
-void Berkelium::lasyInit() {
+void BerkeliumHost::lasyInit() {
 	if(initialised == 1) {
 		initialised = 2;
 		//fprintf(stderr, "berkelium update loop started!\n");
@@ -140,12 +140,12 @@ void Berkelium::lasyInit() {
 	}
 }
 
-void Berkelium::destory() {
+void BerkeliumHost::destory() {
 	ipc.reset();
 	fprintf(stderr, "berkelium closed!\n");
 }
 
-bool Berkelium::isActive() {
+bool BerkeliumHost::isActive() {
 	return initialised != 0;
 }
 

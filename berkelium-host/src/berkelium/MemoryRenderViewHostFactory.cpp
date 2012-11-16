@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "Berkelium.hpp"
+#include "BerkeliumHost.hpp"
 #include "MemoryRenderViewHostFactory.hpp"
 #include "BerkeliumTab.hpp"
 
@@ -11,8 +11,8 @@
 #include "content/common/view_messages.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 
-#include <Berkelium/IPC/Ipc.hpp>
-#include <Berkelium/IPC/IpcMessage.hpp>
+#include <Berkelium/IPC/Channel.hpp>
+#include <Berkelium/IPC/Message.hpp>
 
 #include "googleurl/src/gurl.h"
 
@@ -20,10 +20,10 @@
 
 namespace Berkelium {
 
-using ::Berkelium::impl::Ipc;
-using ::Berkelium::impl::IpcRef;
-using ::Berkelium::impl::IpcMessage;
-using ::Berkelium::impl::IpcMessageRef;
+using Ipc::Channel;
+using Ipc::ChannelRef;
+using Ipc::Message;
+using Ipc::MessageRef;
 
 BerkeliumTab::BerkeliumTab() {
 }
@@ -40,8 +40,8 @@ private:
 	bool swapped_out;
 	content::SessionStorageNamespace* session_storage_namespace;
 	bool started;
-	IpcRef ipc;
-	IpcMessageRef msg;
+	ChannelRef ipc;
+	MessageRef msg;
 
 public:
 	MemoryRenderViewHost(
@@ -61,13 +61,13 @@ public:
 	session_storage_namespace(session_storage_namespace),
 	started(false),
 	ipc(),
-	msg(IpcMessage::create())
+	msg(Message::create())
 	{
-		ipc = Berkelium::addWindow(this);
+		ipc = BerkeliumHost::addWindow(this);
 	}
 
 	virtual ~MemoryRenderViewHost() {
-		Berkelium::removeWindow(this);
+		BerkeliumHost::removeWindow(this);
 	}
 
 	virtual bool OnMessageReceived(const IPC::Message& msg) {
@@ -176,7 +176,7 @@ bool doRegister() {
 	if(id.empty() || dir.empty()) {
 		return false;
 	}
-	return Berkelium::init(dir, id);
+	return BerkeliumHost::init(dir, id);
 }
 
 MemoryRenderViewHostFactory::MemoryRenderViewHostFactory()
@@ -189,7 +189,7 @@ MemoryRenderViewHostFactory::MemoryRenderViewHostFactory()
 
 MemoryRenderViewHostFactory::~MemoryRenderViewHostFactory() {
 	if(registered) {
-		Berkelium::destory();
+		BerkeliumHost::destory();
 		RenderViewHostFactory::UnregisterFactory();
 	}
 }
@@ -202,7 +202,7 @@ content::RenderViewHost* MemoryRenderViewHostFactory::CreateRenderViewHost(
 	bool swapped_out,
 	content::SessionStorageNamespace* session_storage) {
 
-	Berkelium::lasyInit();
+	BerkeliumHost::lasyInit();
 
 	return new MemoryRenderViewHost(instance, delegate, widget_delegate, routing_id,
 			swapped_out, session_storage);

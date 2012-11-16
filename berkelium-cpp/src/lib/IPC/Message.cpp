@@ -2,21 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <Berkelium/IPC/IpcMessage.hpp>
+#include <Berkelium/IPC/Message.hpp>
 
 #include <cstring>
 
 namespace Berkelium {
 
+namespace Ipc {
+
 namespace impl {
 
-IpcMessage::IpcMessage() {
-}
-
-IpcMessage::~IpcMessage() {
-}
-
-class IpcMessageImpl : public IpcMessage {
+class MessageImpl : public Message {
 private:
 	size_t capacity;
 	size_t wp;
@@ -24,14 +20,14 @@ private:
 	int8_t* buffer;
 
 public:
-	IpcMessageImpl() :
+	MessageImpl() :
 		capacity(1024),
 		wp(0),
 		rp(0),
 		buffer(new int8_t[capacity]) {
 	}
 
-	virtual ~IpcMessageImpl() {
+	virtual ~MessageImpl() {
 		capacity = 0;
 		wp = 0;
 		rp = 0;
@@ -156,6 +152,7 @@ public:
 		return ret;
 	}
 
+#if 0
 	virtual Int32Ref get32s() {
 		int32_t size = get_32();
 		assume(size);
@@ -185,6 +182,7 @@ public:
 		}
 		return ByteRef(ret);
 	}
+#endif
 
 	virtual std::string get_str() {
 		int16_t size = get_16();
@@ -199,8 +197,16 @@ public:
 	}
 };
 
-IpcMessageRef IpcMessage::create() {
-	return IpcMessageRef(new IpcMessageImpl());
+} // namespace impl
+
+Message::Message() {
+}
+
+Message::~Message() {
+}
+
+MessageRef Message::create() {
+	return MessageRef(new impl::MessageImpl());
 }
 
 } // namespace impl

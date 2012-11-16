@@ -4,13 +4,13 @@
 
 #ifdef WIN32
 
-#include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/API/Util.hpp>
 
 #include <Windows.h>
 
 namespace Berkelium {
 
-namespace impl {
+namespace Util {
 
 std::wstring getEnv(const std::wstring& env, const std::wstring& defaultValue) {
 	DWORD bufferSize = 65535;
@@ -64,7 +64,7 @@ void sleep(int32_t ms) {
 	::Sleep(ms);
 }
 
-} // namespace impl
+} // namespace Util
 
 } // namespace Berkelium
 

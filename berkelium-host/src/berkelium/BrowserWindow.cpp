@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "Berkelium.hpp"
+#include "BerkeliumHost.hpp"
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -132,7 +132,7 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(Browser* browser) {
 	BrowserWindow* ret;
 
 	//fprintf(stderr, "CreateBrowserWindow start\n");
-	if(Berkelium::Berkelium::isActive()) {
+	if(Berkelium::BerkeliumHost::isActive()) {
 		ret = new BerkeliumBrowserWindow(browser);
 	} else {
 		ret = BerkeliumCreateBrowserWindow(browser);

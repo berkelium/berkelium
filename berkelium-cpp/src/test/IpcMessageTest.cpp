@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <Berkelium/IPC/IpcMessage.hpp>
+#include <Berkelium/IPC/Message.hpp>
 
 #include "gtest/gtest.h"
 #include "test.h"
 
-using Berkelium::impl::IpcMessage;
-using Berkelium::impl::IpcMessageRef;
+using Berkelium::Ipc::Message;
+using Berkelium::Ipc::MessageRef;
 
 namespace {
 
@@ -16,13 +16,13 @@ class IpcMessageTest : public ::testing::Test {
 };
 
 TEST_F(IpcMessageTest, create) {
-	ASSERT_NOT_NULL(IpcMessage::create());
+	ASSERT_NOT_NULL(Message::create());
 }
 
-#define TEST_LR(l, r) ASSERT_EQ(l, m->length()); ASSERT_EQ(r, m->remaining())
+#define TEST_LR(l, r) ASSERT_EQ((size_t)l, m->length()); ASSERT_EQ((size_t)r, m->remaining())
 
 TEST_F(IpcMessageTest, test8) {
-	IpcMessageRef m = IpcMessage::create();
+	MessageRef m = Message::create();
 	TEST_LR(0, 0);
 
 	m->add_8(   0);TEST_LR(1, 1);
@@ -39,7 +39,7 @@ TEST_F(IpcMessageTest, test8) {
 }
 
 TEST_F(IpcMessageTest, test16) {
-	IpcMessageRef m = IpcMessage::create();
+	MessageRef m = Message::create();
 	TEST_LR(0, 0);
 
 	m->add_16(   0);TEST_LR(2, 2);
@@ -56,7 +56,7 @@ TEST_F(IpcMessageTest, test16) {
 }
 
 TEST_F(IpcMessageTest, test32) {
-	IpcMessageRef m = IpcMessage::create();
+	MessageRef m = Message::create();
 	TEST_LR(0, 0);
 
 	m->add_32(   0);TEST_LR(4, 4);
@@ -73,10 +73,10 @@ TEST_F(IpcMessageTest, test32) {
 }
 
 TEST_F(IpcMessageTest, test_c_str) {
-	IpcMessageRef m = IpcMessage::create();
+	MessageRef m = Message::create();
 	TEST_LR(0, 0);
 
-	char* TEST_STR = "test";
+	const char* TEST_STR = "test";
 	size_t TEST_SIZE = 6; // (2 byte length) + str
 
 	m->add_str(TEST_STR);
@@ -90,7 +90,7 @@ TEST_F(IpcMessageTest, test_c_str) {
 }
 
 TEST_F(IpcMessageTest, test_std_str) {
-	IpcMessageRef m = IpcMessage::create();
+	MessageRef m = Message::create();
 	TEST_LR(0, 0);
 
 	std::string TEST_STR = "test";
@@ -107,7 +107,7 @@ TEST_F(IpcMessageTest, test_std_str) {
 }
 
 TEST_F(IpcMessageTest, test_setup) {
-	IpcMessageRef m = IpcMessage::create();
+	MessageRef m = Message::create();
 	TEST_LR(0, 0);
 
 	m->setup(6);

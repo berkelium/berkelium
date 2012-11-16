@@ -10,20 +10,20 @@
 # error "This file is intended for internal use only!"
 #endif
 
-#include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/IPC/Ipc.hpp>
 
 namespace Berkelium {
 
-namespace impl {
+namespace Ipc {
 
-class IpcMessage {
+class Message {
 protected:
-	IpcMessage();
+	Message();
 
 public:
-	static IpcMessageRef create();
+	static MessageRef create();
 
-	virtual ~IpcMessage() = 0;
+	virtual ~Message() = 0;
 
 	virtual size_t length() = 0;
 	virtual size_t remaining() = 0;
@@ -43,13 +43,15 @@ public:
 	virtual int8_t get_8() = 0;
 	virtual int16_t get_16() = 0;
 	virtual int32_t get_32() = 0;
+#if 0
 	virtual Int32Ref get32s() = 0;
 	virtual ByteRef get_data16() = 0;
 	virtual ByteRef get_data32() = 0;
+#endif
 	virtual std::string get_str() = 0;
 };
 
-} // namespace impl
+} // namespace Ipc
 
 } // namespace Berkelium
 

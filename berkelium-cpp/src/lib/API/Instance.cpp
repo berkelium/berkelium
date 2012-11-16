@@ -4,9 +4,10 @@
 
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/API/Instance.hpp>
-#include <Berkelium/Impl/Impl.hpp>
-#include <Berkelium/IPC/Ipc.hpp>
-#include <Berkelium/IPC/IpcMessage.hpp>
+#include <Berkelium/API/Util.hpp>
+#include <Berkelium/IPC/Channel.hpp>
+#include <Berkelium/IPC/Message.hpp>
+#include <Berkelium/Impl/Process.hpp>
 
 #include <iostream>
 
@@ -23,12 +24,12 @@ namespace impl {
 class InstanceImpl : public Instance {
 	HostExecutableRef executable;
 	ProfileRef profile;
-	IpcRef ipc;
+	Ipc::ChannelRef ipc;
 	ProcessRef process;
-	std::vector<IpcRef> windows;
+	std::vector<Ipc::ChannelRef> windows;
 
 public:
-	InstanceImpl(HostExecutableRef executable, ProfileRef profile, IpcRef ipc, ProcessRef process) :
+	InstanceImpl(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process) :
 		executable(executable),
 		profile(profile),
 		ipc(ipc),
@@ -43,31 +44,31 @@ public:
 		if(profile->isInUse()) {
 			std::cerr << "waiting for profile..." << std::endl;
 			while(profile->isInUse()) {
-				impl::sleep(100);
+				Util::sleep(100);
 			}
 			std::cerr << "profile closed!" << std::endl;
 		}
 	}
 
 	virtual void close() {
-		IpcMessageRef msg = IpcMessage::create();
+		Ipc::MessageRef msg = Ipc::Message::create();
 		msg->add_str("exit");
 		ipc->send(msg);
 		//ipc->recv(msg); //ACK
 	}
 
 	virtual void update() {
-		std::vector<IpcRef> copy(windows);
-		for(std::vector<IpcRef>::iterator it = copy.begin(); it != copy.end(); it++) {
-			IpcRef ir = *it;
+		std::vector<Ipc::ChannelRef> copy(windows);
+		for(std::vector<Ipc::ChannelRef>::iterator it = copy.begin(); it != copy.end(); it++) {
+			Ipc::ChannelRef ir = *it;
 			if(!ir->isEmpty()) {
-				IpcMessageRef msg = IpcMessage::create();
+				Ipc::MessageRef msg = Ipc::Message::create();
 				ir->recv(msg);
 				std::string str = msg->get_str();
 				if(str.compare("addWindow") == 0) {
 					std::string id = msg->get_str();
 					std::cerr << "new window: '" << id << "'!" << std::endl;
-					IpcRef c = ipc->getChannel(id);
+					Ipc::ChannelRef c = ipc->getSubChannel(id);
 					windows.push_back(c);
 				} else if(str.compare("OnReady") == 0) {
 					msg->reset();
@@ -118,7 +119,7 @@ public:
 	}
 };
 
-InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, IpcRef ipc, ProcessRef process) {
+InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process) {
 	return InstanceRef(new InstanceImpl(executable, profile, ipc, process));
 }
 

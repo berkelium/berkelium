@@ -5,9 +5,9 @@
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/API/HostExecutable.hpp>
-#include <Berkelium/IPC/IpcMessage.hpp>
+#include <Berkelium/API/Util.hpp>
+#include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
-#include <Berkelium/Impl/Process.hpp>
 
 #include <iostream>
 
@@ -31,7 +31,7 @@ InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef prof
 	}
 
 	impl::ProcessRef process = impl::Process::create(profile->getProfilePath());
-	impl::IpcRef ipc = process->getIpc();
+	Ipc::ChannelRef ipc = process->getIpcChannel();
 
 	std::vector<std::string> args;
 	args.push_back(enclose(executable->getPath()));
@@ -46,7 +46,14 @@ InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef prof
 	}
 
 	std::cerr << "awaiting berkelium host process ipc startup message!" << std::endl;
-	impl::IpcMessageRef msg(impl::IpcMessage::create());
+	Ipc::MessageRef msg(Ipc::Message::create());
+	while(ipc->isEmpty()) {
+		if(!process->isRunning()) {
+			std::cerr << "berkelium host startup failed!" << std::endl;
+			return InstanceRef();
+		}
+		Util::sleep(100);
+	}
 	ipc->recv(msg);
 	if(msg->get_str().compare("berkelium") != 0) {
 		std::cerr << "ipc bad magic!" << std::endl;
@@ -54,7 +61,7 @@ InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef prof
 	}
 	std::cerr << "waiting for profile..." << std::endl;
 	while(!profile->isInUse()) {
-		impl::sleep(100);
+		Util::sleep(100);
 	}
 	/*
 	if(!profile->isInUse()) {

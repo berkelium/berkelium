@@ -3,6 +3,7 @@
 	<name>berkelium-host</name>
 	<comment></comment>
 	<projects>
+		<project>berkelium-cpp-Debug@build</project>
 		<project>chromium</project>
 	</projects>
 	<buildSpec>

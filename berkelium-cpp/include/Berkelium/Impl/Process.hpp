@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BERKELIUM_PROCESS_HPP_
-#define BERKELIUM_PROCESS_HPP_
+#ifndef BERKELIUM_IMPL_PROCESS_HPP_
+#define BERKELIUM_IMPL_PROCESS_HPP_
 #pragma once
 
 #include <Berkelium/API/Berkelium.hpp>
-#include <Berkelium/IPC/Ipc.hpp>
+#include <Berkelium/IPC/Channel.hpp>
 
 #ifndef BERKELIUM_CPP_IMPL
 # error "This file is intended for internal use only!"
@@ -17,13 +17,16 @@ namespace Berkelium {
 
 namespace impl {
 
+class Process;
+typedef std::shared_ptr<Process> ProcessRef;
+
 class Process {
 private:
-	IpcRef ipc;
+	Ipc::ChannelRef ipc;
 
 protected:
 	inline Process(const std::string& dir) :
-		ipc(Ipc::getIpc(dir, true)) {
+		ipc(Ipc::Channel::getChannel(dir, true)) {
 	}
 
 public:
@@ -31,7 +34,9 @@ public:
 
 	virtual ~Process() = 0;
 
-	IpcRef getIpc() {
+	virtual bool isRunning() = 0;
+
+	Ipc::ChannelRef getIpcChannel() {
 		return ipc;
 	}
 
@@ -42,4 +47,4 @@ public:
 
 } // namespace Berkelium
 
-#endif // BERKELIUM_PROCESS_HPP_
+#endif // BERKELIUM_IMPL_PROCESS_HPP_

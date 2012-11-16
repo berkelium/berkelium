@@ -5,7 +5,7 @@
 #ifdef LINUX
 
 #include <Berkelium/API/BerkeliumFactory.hpp>
-#include <Berkelium/IPC/IpcMessage.hpp>
+#include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
 
 #include <stdio.h>
@@ -20,13 +20,9 @@ using boost::filesystem::path;
 
 namespace Berkelium {
 
+namespace Ipc {
+
 namespace impl {
-
-Pipe::Pipe() {
-}
-
-Pipe::~Pipe() {
-}
 
 class PipeLinuxImpl : public Pipe {
 private:
@@ -68,7 +64,7 @@ public:
 		return select(fd + 1, &fds, NULL, NULL, &tv) != 1;
 	}
 
-	virtual void send(IpcMessageRef msg) {
+	virtual void send(MessageRef msg) {
 		if(fd == -1) return;
 		int32_t size = msg->length();
 		//fprintf(stderr, "send: 4 bytes '%d'!\n", size);
@@ -79,7 +75,7 @@ public:
 		msg->reset();
 	}
 
-	virtual void recv(IpcMessageRef msg) {
+	virtual void recv(MessageRef msg) {
 		int32_t size = 0;
 		recv((char*)&size, 4);
 		//fprintf(stderr, "recv: %d bytes!\n", size);
@@ -103,11 +99,19 @@ public:
 	}
 };
 
+} // namespace impl
+
+Pipe::Pipe() {
+}
+
+Pipe::~Pipe() {
+}
+
 PipeRef Pipe::getPipe(const std::string& name) {
 	return PipeRef(new impl::PipeLinuxImpl(name));
 }
 
-} // namespace impl
+} // namespace Ipc
 
 } // namespace Berkelium
 

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <Berkelium/API/Util.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
 #include <Berkelium/IPC/Ipc.hpp>
 #include <Berkelium/Impl/Impl.hpp>
@@ -14,15 +15,11 @@ using boost::filesystem::path;
 
 namespace Berkelium {
 
+namespace Ipc {
+
 namespace impl {
 
-Ipc::Ipc() {
-}
-
-Ipc::~Ipc() {
-}
-
-class IpcImpl : public Ipc {
+class ChannelImpl : public Channel {
 private:
 	const std::string dir;
 	const std::string name;
@@ -35,7 +32,7 @@ private:
 	}
 
 public:
-	IpcImpl(const path& dir, const std::string& name, const bool server) :
+	ChannelImpl(const path& dir, const std::string& name, const bool server) :
 		dir(dir.string()),
 		name(name),
 		server(server),
@@ -43,7 +40,7 @@ public:
 		pout(Pipe::getPipe((dir / name).string() + getExt(!server))) {
 	}
 
-	virtual ~IpcImpl() {
+	virtual ~ChannelImpl() {
 	}
 
 	// Returns true if there are no pending messages to receive.
@@ -52,21 +49,21 @@ public:
 	}
 
 	// Sends this message.
-	virtual void send(IpcMessageRef msg) {
+	virtual void send(Ipc::MessageRef msg) {
 		pout->send(msg);
 	}
 
 	// Receives the next message.
-	virtual void recv(IpcMessageRef msg) {
+	virtual void recv(Ipc::MessageRef msg) {
 		pin->recv(msg);
 	}
 
-	virtual IpcRef createChannel() {
-		return Ipc::getIpc(dir, true);
+	virtual ChannelRef createSubChannel() {
+		return Channel::getChannel(dir, true);
 	}
 
-	virtual IpcRef getChannel(const std::string& name) {
-		return Ipc::getIpc(dir, name, false);
+	virtual ChannelRef getSubChannel(const std::string& name) {
+		return Channel::getChannel(dir, name, false);
 	}
 
 	virtual std::string getName() {
@@ -74,13 +71,21 @@ public:
 	}
 };
 
-IpcRef Ipc::getIpc(const std::string& dir, const bool server) {
-	return getIpc(dir, randomId(), server);
-}
-IpcRef Ipc::getIpc(const std::string& dir, const std::string& name, const bool server) {
-	return IpcRef(new impl::IpcImpl(path(dir), name, server));
+} // namespace impl
+
+Channel::Channel() {
 }
 
-} // namespace impl
+Channel::~Channel() {
+}
+
+ChannelRef Channel::getChannel(const std::string& dir, const bool server) {
+	return getChannel(dir, Util::randomId(), server);
+}
+ChannelRef Channel::getChannel(const std::string& dir, const std::string& name, const bool server) {
+	return ChannelRef(new impl::ChannelImpl(path(dir), name, server));
+}
+
+} // namespace IPC
 
 } // namespace Berkelium
