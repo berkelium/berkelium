@@ -45,7 +45,11 @@ public:
 
 	bool wait(int options) {
 		int status;
-		if (waitpid(pid, &status, options) != -1) {
+		int wp = waitpid(pid, &status, options);
+		if (wp != -1) {
+			if(wp == 0 && options == WNOHANG) {
+				return true;
+			}
 			printf("Child exited with status %i\n", status);
 			exit = status;
 			pid = -1;
