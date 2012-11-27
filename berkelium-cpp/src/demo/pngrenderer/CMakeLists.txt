@@ -5,4 +5,4 @@ PROJECT(berkelium-cpp-pngrenderer)
 FILE(GLOB_RECURSE SRC "*.cpp")
 
 ADD_EXECUTABLE(pngrenderer ${SRC})
-TARGET_LINK_LIBRARIES(pngrenderer berkelium-cpp ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(pngrenderer ${BERKELIUM_CPP_LIBS})

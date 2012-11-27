@@ -40,6 +40,8 @@ ENDIF()
 find_package(Boost 1.46 COMPONENTS filesystem system REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
+SET(BERKELIUM_CPP_LIBS berkelium-cpp ${Boost_LIBRARIES})
+
 #################
 ## System Defines
 ## --------------
