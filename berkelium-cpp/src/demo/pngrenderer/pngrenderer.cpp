@@ -1,0 +1,43 @@
+// Copyright (c) 2012 The Berkelium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include <iostream>
+
+#include <Berkelium/API/Profile.hpp>
+#include <Berkelium/API/HostExecutable.hpp>
+#include <Berkelium/API/BerkeliumFactory.hpp>
+#include <Berkelium/API/Instance.hpp>
+
+using Berkelium::BerkeliumFactory;
+using Berkelium::HostExecutableRef;
+using Berkelium::ProfileRef;
+using Berkelium::InstanceRef;
+using Berkelium::WindowRef;
+
+int main(int argc, char* argv[])
+{
+	std::cout << "running pngrenderer..." << std::endl;
+	HostExecutableRef host = BerkeliumFactory::forSystemInstalled();
+
+	std::cout << "creating profile..." << std::endl;
+	ProfileRef profile = BerkeliumFactory::createTemporaryProfile();
+
+	std::cout << "launching berkelium host executable..." << std::endl;
+	InstanceRef instance = BerkeliumFactory::open(host, profile);
+
+	WindowRef window = instance->createWindow(false);
+
+	std::cout << "window: " << window.get() << std::endl;
+
+	std::cout << "closing berkelium host executable..." << std::endl;
+	instance.reset();
+
+	std::cout << "closing profile..." << std::endl;
+	profile.reset();
+
+	std::cout << "closing host..." << std::endl;
+	host.reset();
+
+	std::cout << "pngrenderer finished!" << std::endl;
+}

@@ -4,3 +4,4 @@ PROJECT(berkelium-cpp-demo)
 
 ADD_SUBDIRECTORY(demo1)
 ADD_SUBDIRECTORY(demo2)
+ADD_SUBDIRECTORY(pngrenderer)
