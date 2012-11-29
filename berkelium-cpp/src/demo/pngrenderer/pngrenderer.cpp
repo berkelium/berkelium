@@ -8,6 +8,8 @@
 #include <Berkelium/API/HostExecutable.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/Instance.hpp>
+#include <Berkelium/API/Util.hpp>
+#include <Berkelium/API/Window.hpp>
 
 using Berkelium::BerkeliumFactory;
 using Berkelium::HostExecutableRef;
@@ -26,9 +28,22 @@ int main(int argc, char* argv[])
 	std::cout << "launching berkelium host executable..." << std::endl;
 	InstanceRef instance = BerkeliumFactory::open(host, profile);
 
+	std::cout << "creating window..." << std::endl;
 	WindowRef window = instance->createWindow(false);
 
 	std::cout << "window: " << window.get() << std::endl;
+
+	window->getTabCount();
+
+	std::cout << "tested!" << std::endl;
+
+	for(int i = 0; i < 2000; i += 100) {
+		instance->update();
+		Berkelium::Util::sleep(100);
+	}
+
+	std::cout << "closing window..." << std::endl;
+	window.reset();
 
 	std::cout << "closing berkelium host executable..." << std::endl;
 	instance.reset();

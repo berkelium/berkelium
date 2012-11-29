@@ -32,6 +32,8 @@ int main(int argc, char* argv[])
 	}
 
 	std::cout << "shutting down browser..." << std::endl;
-	instance->close();
+	instance.reset();
+	profile.reset();
+	host.reset();
 	std::cout << "done!" << std::endl;
 }
