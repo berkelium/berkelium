@@ -54,6 +54,10 @@ public:
 		return TabRef();
 	}
 
+	virtual InstanceRef getInstance() {
+		return instance;
+	}
+
 	virtual void moveTo(TabRef tab, int32_t index)  {
 	}
 
