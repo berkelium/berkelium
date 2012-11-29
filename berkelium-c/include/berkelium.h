@@ -218,6 +218,9 @@ BK_TabList BK_Window_getTabList(BK_Window self);
 // Creates a new (about:blank) Tab.
 BK_Tab BK_Window_createTab(BK_Window self);
 
+// Returns the Instance used to create this Window.
+BK_Instance BK_Window_getInstance(BK_Window self);
+
 // Move this Tab to the given index.
 void BK_Window_moveTo(BK_Window self, BK_Tab tab, bk_int32 index);
 
@@ -246,6 +249,9 @@ void BK_Tab_addTabDelegate(BK_Tab self, BK_TabDelegate delegate);
 
 // Remove a TabDelegate from this tab.
 void BK_Tab_removeTabDelegate(BK_Tab self, BK_TabDelegate delegate);
+
+// Returns the Window of this Tab.
+BK_Window BK_Tab_getWindow(BK_Tab self);
 
 // Set the size of this tab.
 void BK_Tab_resize(BK_Tab self, bk_int32 width, bk_int32 height);

@@ -29,6 +29,9 @@ public interface Tab {
 	// Remove a TabDelegate from this tab.
 	void removeTabDelegate(TabDelegate delegate);
 
+	// Returns the Window of this Tab.
+	Window getWindow();
+
 	// Set the size of this tab.
 	void resize(int width, int height);
 

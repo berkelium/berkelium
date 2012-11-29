@@ -40,6 +40,9 @@ public:
 	// Remove a TabDelegate from this tab.
 	virtual void removeTabDelegate(TabDelegateRef delegate) = 0;
 
+	// Returns the Window of this Tab.
+	virtual WindowRef getWindow() = 0;
+
 	// Set the size of this tab.
 	virtual void resize(int32_t width, int32_t height) = 0;
 

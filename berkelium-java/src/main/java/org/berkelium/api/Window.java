@@ -23,6 +23,9 @@ public interface Window {
 	// Creates a new (about:blank) Tab.
 	Tab createTab();
 
+	// Returns the Instance used to create this Window.
+	Instance getInstance();
+
 	// Move this Tab to the given index.
 	void moveTo(Tab tab, int index);
 

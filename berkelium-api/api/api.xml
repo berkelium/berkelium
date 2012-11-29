@@ -229,6 +229,9 @@
 		<entry name="createTab" ret="Tab">
 			<short>Creates a new (about:blank) Tab.</short>
 		</entry>
+		<entry name="getInstance" ret="Instance">
+			<short>Returns the Instance used to create this Window.</short>
+		</entry>
 		<entry name="moveTo">
 			<arg type="Tab" name="tab"/>
 			<arg type="int32" name="index"/>
@@ -257,6 +260,9 @@
 		<entry name="removeTabDelegate">
 			<arg type="TabDelegate" name="delegate"/>
 			<short>Remove a TabDelegate from this tab.</short>
+		</entry>
+		<entry name="getWindow" ret="Window">
+			<short>Returns the Window of this Tab.</short>
 		</entry>
 		<entry name="resize">
 			<arg type="int32" name="width"/>

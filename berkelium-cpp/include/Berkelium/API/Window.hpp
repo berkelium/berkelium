@@ -34,6 +34,9 @@ public:
 	// Creates a new (about:blank) Tab.
 	virtual TabRef createTab() = 0;
 
+	// Returns the Instance used to create this Window.
+	virtual InstanceRef getInstance() = 0;
+
 	// Move this Tab to the given index.
 	virtual void moveTo(TabRef tab, int32_t index) = 0;
 
