@@ -73,6 +73,11 @@ namespace Berkelium {
 		<xsl:text>&gt; </xsl:text>
 		<xsl:value-of select="@name"/>
 		<xsl:text>Ref;
+typedef std::weak_ptr&lt;</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>&gt; </xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>WRef;
 
 </xsl:text>
 

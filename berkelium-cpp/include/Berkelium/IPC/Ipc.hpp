@@ -18,12 +18,15 @@ namespace Ipc {
 
 class Channel;
 typedef std::shared_ptr<Channel> ChannelRef;
+typedef std::weak_ptr<Channel> ChannelWRef;
 
 class Message;
 typedef std::shared_ptr<Message> MessageRef;
+typedef std::weak_ptr<Message> MessageWRef;
 
 class Pipe;
 typedef std::shared_ptr<Pipe> PipeRef;
+typedef std::weak_ptr<Pipe> PipeWRef;
 
 } // namespace Ipc
 

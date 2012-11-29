@@ -38,36 +38,47 @@ enum LogType {
 
 class HostVersion;
 typedef std::shared_ptr<HostVersion> HostVersionRef;
+typedef std::weak_ptr<HostVersion> HostVersionWRef;
 
 class BerkeliumFactory;
 typedef std::shared_ptr<BerkeliumFactory> BerkeliumFactoryRef;
+typedef std::weak_ptr<BerkeliumFactory> BerkeliumFactoryWRef;
 
 class HostExecutable;
 typedef std::shared_ptr<HostExecutable> HostExecutableRef;
+typedef std::weak_ptr<HostExecutable> HostExecutableWRef;
 
 class Profile;
 typedef std::shared_ptr<Profile> ProfileRef;
+typedef std::weak_ptr<Profile> ProfileWRef;
 
 class LogDelegate;
 typedef std::shared_ptr<LogDelegate> LogDelegateRef;
+typedef std::weak_ptr<LogDelegate> LogDelegateWRef;
 
 class HostDelegate;
 typedef std::shared_ptr<HostDelegate> HostDelegateRef;
+typedef std::weak_ptr<HostDelegate> HostDelegateWRef;
 
 class Instance;
 typedef std::shared_ptr<Instance> InstanceRef;
+typedef std::weak_ptr<Instance> InstanceWRef;
 
 class Window;
 typedef std::shared_ptr<Window> WindowRef;
+typedef std::weak_ptr<Window> WindowWRef;
 
 class WindowDelegate;
 typedef std::shared_ptr<WindowDelegate> WindowDelegateRef;
+typedef std::weak_ptr<WindowDelegate> WindowDelegateWRef;
 
 class Tab;
 typedef std::shared_ptr<Tab> TabRef;
+typedef std::weak_ptr<Tab> TabWRef;
 
 class TabDelegate;
 typedef std::shared_ptr<TabDelegate> TabDelegateRef;
+typedef std::weak_ptr<TabDelegate> TabDelegateWRef;
 
 typedef std::vector<WindowRef> WindowList;
 
