@@ -1,6 +1,18 @@
 #!/bin/sh
 dir=`dirname $(readlink -f "$0")`
 cd "$dir/run"
-export LD_LIBRARY_PATH="`readlink -f $dir/../chromium/src/out/Debug/lib.target`"
+base="$dir/../chromium/src/out"
+if [ -e "$base/Debug" ]; then
+	base="$base/Debug"
+elif [ -e "$base/Release" ]; then
+	base="$base/Release"
+else
+	echo "$base/Debug or $base/Release not found!"
+	exit 1
+fi
+
+export LD_LIBRARY_PATH="`readlink -f $base/lib.target`"
+
+# uncomment this to debug berkelium
 #exec gdb --args ./berkelium $*
 exec ./berkelium $*

@@ -32,17 +32,20 @@ public:
 private:
 	Browser* browser;
 
+/*
 	virtual void ActiveTabChanged(TabContents* old_contents, TabContents* new_contents, int index, bool user_gesture) {
 		fprintf(stderr, "BerkeliumBrowserWindow::%s %p %p %d %s\n", __func__, (void*)old_contents, (void*)new_contents, index, user_gesture ? "true" : "false");
 		if(new_contents != NULL) {
 			new_contents->web_contents()->GetView()->SizeContents(gfx::Size(800, 600));
 		}
 	}
+*/
 
 	virtual bool IsActive() const {X;return true;}
 	virtual bool IsMaximized() const {X;return false;}
 	virtual bool IsMinimized() const {X;return false;}
 	virtual bool IsFullscreen() const {X;return false;}
+	virtual gfx::NativeWindow GetNativeWindow() {X;fprintf(stderr, "GetNativeBrowser\n");return NULL;}
 	virtual gfx::Rect GetRestoredBounds() const {X;return gfx::Rect(640, 480);}
 	virtual gfx::Rect GetBounds() const {X;return gfx::Rect(640, 480);}
 	virtual void Show() {X;
@@ -50,6 +53,7 @@ private:
 	browser->OnWindowDidShow();
 	//browser->GetActiveTabContents()
 	}
+	virtual void Hide() {X;}
 	virtual void ShowInactive() {X;}
 	virtual void Close() {X;}
 	virtual void Activate() {X;}
@@ -62,16 +66,12 @@ private:
 	virtual bool IsAlwaysOnTop() const {X;return false;}
 	virtual BrowserWindowTesting* GetBrowserWindowTesting() {X;return NULL;}
 	virtual StatusBubble* GetStatusBubble() {X;return NULL;}
-	virtual void ToolbarSizeChanged(bool) {X;}
 	virtual void UpdateTitleBar() {X;}
 	virtual void BookmarkBarStateChanged(BookmarkBar::AnimateChangeType) {X;}
 	virtual void UpdateDevTools() {X;}
-	virtual void SetDevToolsDockSide(DevToolsDockSide) {X;}
 	virtual void UpdateLoadingAnimations(bool) {X;}
 	virtual void SetStarredState(bool) {X;}
-	virtual void SetZoomIconState(ZoomController::ZoomIconState) {X;}
-	virtual void SetZoomIconTooltipPercent(int) {X;}
-	virtual void ShowZoomBubble(int) {X;}
+	virtual void ZoomChangedForActiveTab(bool) {X;}
 	virtual void EnterFullscreen(const GURL&, FullscreenExitBubbleType) {X;}
 	virtual void ExitFullscreen() {X;}
 	virtual void UpdateFullscreenExitBubbleContent(const GURL&, FullscreenExitBubbleType) {X;}
@@ -92,7 +92,6 @@ private:
 	virtual bool IsPanel() const {X;return false;}
 	virtual void ConfirmAddSearchProvider(TemplateURL*, Profile*) {X;}
 	virtual void ToggleBookmarkBar() {X;}
-	virtual void ShowAboutChromeDialog() {X;}
 	virtual void ShowUpdateChromeDialog() {X;}
 	virtual void ShowTaskManager() {X;}
 	virtual void ShowBackgroundPages() {X;}
@@ -109,20 +108,18 @@ private:
 	virtual void ShowAppMenu() {X;}
 	virtual bool PreHandleKeyboardEvent(const content::NativeWebKeyboardEvent&, bool*) {X;return false;}
 	virtual void HandleKeyboardEvent(const content::NativeWebKeyboardEvent&) {X;}
-	virtual void ShowCreateWebAppShortcutsDialog(TabContents*) {X;}
 	virtual void ShowCreateChromeAppShortcutsDialog(Profile*, const extensions::Extension*) {X;}
 	virtual void Cut() {X;}
 	virtual void Copy() {X;}
 	virtual void Paste() {X;}
-	virtual void ShowInstant(TabContents*) {X;}
-	virtual void HideInstant() {X;}
 	virtual gfx::Rect GetInstantBounds() {X;return gfx::Rect(640, 480);}
+	virtual bool IsInstantTabShowing() {X;return false;}
 	virtual WindowOpenDisposition GetDispositionForPopupBounds(const gfx::Rect&) {X;return WindowOpenDisposition();}
 	virtual FindBar* CreateFindBar() {X;return NULL;}
+	virtual bool GetConstrainedWindowTopY(int*) {X;return false;}
 	virtual void ShowAvatarBubble(content::WebContents*, const gfx::Rect&) {X;}
 	virtual void ShowAvatarBubbleFromAvatarButton() {X;}
 	virtual void DestroyBrowser() {X;}
-	virtual gfx::NativeWindow GetNativeWindow() {X;fprintf(stderr, "GetNativeBrowser\n");return NULL;}
 };
 
 BrowserWindow* BerkeliumCreateBrowserWindow(Browser* browser);

@@ -17,7 +17,7 @@ class SessionStorageNamespace;
 
 namespace Berkelium {
 
-class MemoryRenderViewHostFactory : public RenderViewHostFactory {
+class MemoryRenderViewHostFactory : public content::RenderViewHostFactory {
 private:
 	const bool registered;
 
