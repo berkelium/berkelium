@@ -1,6 +1,6 @@
 solutions = [
   { "name"        : "deps",
-    "url"         : "https://src.chromium.org/chrome/releases/24.0.1312.52",
+    "url"         : "https://src.chromium.org/chrome/releases/25.0.1364.160",
     "deps_file"   : "DEPS",
     "managed"     : True,
     "custom_deps" : {
