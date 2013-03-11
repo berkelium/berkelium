@@ -1,0 +1,32 @@
+Index: src/chrome/browser/ui/gtk/browser_window_gtk.cc
+===================================================================
+--- src/chrome/browser/ui/gtk/browser_window_gtk.cc	(Revision 186726)
++++ src/chrome/browser/ui/gtk/browser_window_gtk.cc	(Arbeitskopie)
+@@ -2411,7 +2411,11 @@
+ }
+ 
+ // static
++#if 0 // berkelium patch: remove
+ BrowserWindow* BrowserWindow::CreateBrowserWindow(Browser* browser) {
++#else // berkelium patch: added
++BrowserWindow* BerkeliumCreateBrowserWindow(Browser* browser) {
++#endif // berkelium patch: end
+   BrowserWindowGtk* browser_window_gtk = new BrowserWindowGtk(browser);
+   browser_window_gtk->Init();
+   return browser_window_gtk;
+Index: src/chrome/browser/ui/browser.cc
+===================================================================
+--- src/chrome/browser/ui/browser.cc	(Revision 186726)
++++ src/chrome/browser/ui/browser.cc	(Arbeitskopie)
+@@ -2445,3 +2445,11 @@
+ 
+   return contents != NULL;
+ }
++
++#if 1 // berkelium patch: added
++BrowserWindow* BerkeliumCreateBrowserWindow(Browser*);
++
++BrowserWindow* BrowserWindow::CreateBrowserWindow(Browser* browser) {
++  return BerkeliumCreateBrowserWindow(browser);
++}
++#endif // berkelium patch: end
