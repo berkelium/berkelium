@@ -7,7 +7,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/tab_contents/tab_contents.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents.h"
@@ -79,7 +78,7 @@ private:
 	virtual LocationBar* GetLocationBar() const {X;return NULL;}
 	virtual void SetFocusToLocationBar(bool) {X;}
 	virtual void UpdateReloadStopState(bool, bool) {X;}
-	virtual void UpdateToolbar(TabContents*, bool) {X;}
+	virtual void UpdateToolbar(content::WebContents*, bool) {X;}
 	virtual void FocusToolbar() {X;}
 	virtual void FocusAppMenu() {X;}
 	virtual void FocusBookmarksToolbar() {X;}
@@ -104,7 +103,8 @@ private:
 	virtual int GetExtraRenderViewHeight() const {X;return 0;}
 	virtual void WebContentsFocused(content::WebContents*) {X;}
 	virtual void ShowPageInfo(content::WebContents*, const GURL&, const content::SSLStatus&, bool) {X;}
-	virtual void ShowWebsiteSettings(Profile*, TabContents*, const GURL&, const content::SSLStatus&, bool) {X;}
+	virtual void ShowPasswordGenerationBubble(const gfx::Rect&, const content::PasswordForm&, autofill::PasswordGenerator*) {X;}
+	virtual void ShowWebsiteSettings(Profile*, content::WebContents*, const GURL&, const content::SSLStatus&, bool) {X;}
 	virtual void ShowAppMenu() {X;}
 	virtual bool PreHandleKeyboardEvent(const content::NativeWebKeyboardEvent&, bool*) {X;return false;}
 	virtual void HandleKeyboardEvent(const content::NativeWebKeyboardEvent&) {X;}
