@@ -1,7 +1,7 @@
 Index: src/chrome/browser/ui/gtk/browser_window_gtk.cc
 ===================================================================
---- src/chrome/browser/ui/gtk/browser_window_gtk.cc	(Revision 186726)
-+++ src/chrome/browser/ui/gtk/browser_window_gtk.cc	(Arbeitskopie)
+--- src/chrome/browser/ui/gtk/browser_window_gtk.cc	(revision 186726)
++++ src/chrome/browser/ui/gtk/browser_window_gtk.cc	(working copy)
 @@ -2411,7 +2411,11 @@
  }
  
@@ -14,13 +14,13 @@ Index: src/chrome/browser/ui/gtk/browser_window_gtk.cc
    BrowserWindowGtk* browser_window_gtk = new BrowserWindowGtk(browser);
    browser_window_gtk->Init();
    return browser_window_gtk;
-Index: src/chrome/browser/ui/browser.cc
+Index: src/chrome/app/chrome_main.cc
 ===================================================================
---- src/chrome/browser/ui/browser.cc	(Revision 186726)
-+++ src/chrome/browser/ui/browser.cc	(Arbeitskopie)
-@@ -2445,3 +2445,11 @@
- 
-   return contents != NULL;
+--- src/chrome/app/chrome_main.cc	(revision 186726)
++++ src/chrome/app/chrome_main.cc	(working copy)
+@@ -32,3 +32,11 @@
+   return content::ContentMain(argc, argv, &chrome_main_delegate);
+ #endif
  }
 +
 +#if 1 // berkelium patch: added
