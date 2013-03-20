@@ -43,6 +43,12 @@ public:
 
 	// Returns the full path to the used Profile.
 	virtual const std::string& getProfilePath() = 0;
+
+	// Lock or Unlock the Profile so another instance can't open it for writing.
+	virtual void setLocked(bool locked) = 0;
+
+	// Returns true if this Profile instance holds the Profile lock.
+	virtual bool isLocked() = 0;
 };
 
 } // namespace Berkelium

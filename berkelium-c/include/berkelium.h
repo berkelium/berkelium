@@ -128,6 +128,12 @@ bk_string BK_Profile_getApplicationName(BK_Profile self);
 // Returns the full path to the used Profile.
 bk_string BK_Profile_getProfilePath(BK_Profile self);
 
+// Lock or Unlock the Profile so another instance can't open it for writing.
+void BK_Profile_setLocked(BK_Profile self, bk_bool locked);
+
+// Returns true if this Profile instance holds the Profile lock.
+bk_bool BK_Profile_isLocked(BK_Profile self);
+
 // =========================================
 // enum LogType
 // =========================================

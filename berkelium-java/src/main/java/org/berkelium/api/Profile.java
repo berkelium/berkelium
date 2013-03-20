@@ -32,4 +32,10 @@ public interface Profile {
 
 	// Returns the full path to the used Profile.
 	String getProfilePath();
+
+	// Lock or Unlock the Profile so another instance can't open it for writing.
+	void setLocked(boolean locked);
+
+	// Returns true if this Profile instance holds the Profile lock.
+	boolean isLocked();
 }

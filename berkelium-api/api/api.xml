@@ -133,6 +133,13 @@
 		<entry name="getProfilePath" ret="string">
 			<short>Returns the full path to the used Profile.</short>
 		</entry>
+		<entry name="setLocked">
+			<arg type="bool" name="locked"/>
+			<short>Lock or Unlock the Profile so another instance can't open it for writing.</short>
+		</entry>
+		<entry name="isLocked" ret="bool">
+			<short>Returns true if this Profile instance holds the Profile lock.</short>
+		</entry>
 	</group>
 	<group type="enum" name="LogType">
 		<entry name="HostOut">
