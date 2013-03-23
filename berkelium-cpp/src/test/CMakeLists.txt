@@ -16,4 +16,4 @@ INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 ADD_DEFINITIONS(-DBERKELIUM_CPP_IMPL)
 ADD_EXECUTABLE(berkelium-cpp-test ${SRC_TEST} ${INCLUDE_BK})
-TARGET_LINK_LIBRARIES(berkelium-cpp-test berkelium-cpp gtest gtest_main ${Boost_LIBRARIES})
+TARGET_LINK_LIBRARIES(berkelium-cpp-test berkelium-cpp gtest ${Boost_LIBRARIES})
