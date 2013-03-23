@@ -53,13 +53,41 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	std::cerr << "starting host fake!" << std::endl;
 	ChannelRef ipc = Channel::getChannel(dir, id, false);
 
-	MessageRef msg = Message::create();
-	msg->add_str("berkelium");
-	ipc->send(msg);
+	MessageRef recv = Message::create();
+	MessageRef send = Message::create();
+	send->add_str("berkelium");
+	ipc->send(send);
 
-	Berkelium::Util::sleep(5000);
+	std::cerr << "host fake started!" << std::endl;
+
+	ChannelRef win(ipc->createSubChannel());
+	send->reset();
+	send->add_str("addWindow");
+	send->add_str(win->getName());
+	ipc->send(send);
+
+	bool running = true;
+	while(running) {
+		if(ipc->isEmpty()) {
+			Berkelium::Util::sleep(250);
+			continue;
+		}
+		ipc->recv(recv);
+		std::string cmd = recv->get_str();
+		std::cout << "recv: '" << cmd << "'" << std::endl;
+
+		if(cmd.compare("exit") == 0) {
+			running = false;
+		}
+
+		send->reset();
+		ipc->send(send); // ACK
+	}
+
+	std::cerr << "host fake done!" << std::endl;
 
 	return 0;
 }
