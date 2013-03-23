@@ -58,4 +58,5 @@ ADD_SUBDIRECTORY(src/test build/test)
 ADD_SUBDIRECTORY(src/demo build/demo)
 
 ENABLE_TESTING(TRUE)
-ADD_TEST(test run/berkelium-cpp-test)
+ADD_TEST(test-fake run/berkelium-cpp-test --berkelium-host=run/host-fake)
+ADD_TEST(test-real run/berkelium-cpp-test)
