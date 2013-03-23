@@ -12,6 +12,11 @@
 
 namespace Berkelium {
 
+namespace impl {
+std::string defaultExecutable = "";
+
+} // namespace impl
+
 namespace {
 
 bool checkPath(const char* p, std::string& path) {
@@ -25,6 +30,10 @@ bool checkPath(const char* p, std::string& path) {
 
 } // namespace
 
+void BerkeliumFactory::setDefaultExecutable(const std::string& pathTo) {
+	impl::defaultExecutable = pathTo;
+}
+
 HostExecutableRef BerkeliumFactory::forExecutable(const std::string& pathTo) {
 	return HostExecutableRef(impl::newHostExecutable(pathTo));
 }
@@ -35,7 +44,8 @@ HostExecutableRef BerkeliumFactory::forSystemInstalled() {
 #ifdef WIN32
 	path = Berkelium::impl::getEnv("PROGRAMFILES(X86)", "C:\\Program Files") + "\\Google\\Chrome\\Application\\chrome.exe";
 #elif defined(LINUX)
-	if(checkPath("berkelium", path)) {
+	if(!impl::defaultExecutable.empty() && checkPath(impl::defaultExecutable.c_str(), path)) {
+	} else if(checkPath("berkelium", path)) {
 	} else if(checkPath("../berkelium", path)) {
 	} else if(checkPath("../berkelium-host/berkelium", path)) {
 	} else if(checkPath("../../berkelium-host/berkelium", path)) {
