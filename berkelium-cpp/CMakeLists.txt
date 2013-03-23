@@ -53,6 +53,7 @@ ENDIF()
 ## Projects
 ## --------
 ADD_SUBDIRECTORY(src/lib build/lib)
+ADD_SUBDIRECTORY(src/fake build/fake)
 ADD_SUBDIRECTORY(src/test build/test)
 ADD_SUBDIRECTORY(src/demo build/demo)
 
