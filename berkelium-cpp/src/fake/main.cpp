@@ -17,16 +17,7 @@ using Berkelium::Ipc::ChannelRef;
 using Berkelium::Ipc::Message;
 using Berkelium::Ipc::MessageRef;
 
-std::string getOption(int argc, char* argv[], std::string option)
-{
-	for(int i = 0; i < argc; i++) {
-		std::string tmp(argv[i]);
-		if(tmp.compare(0, option.length(), option) == 0) {
-			return tmp.substr(option.length());
-		}
-	}
-	return "";
-}
+using Berkelium::Util::getOption;
 
 int main(int argc, char* argv[])
 {
