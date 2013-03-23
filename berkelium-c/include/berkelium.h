@@ -62,6 +62,9 @@ bk_bool BK_HostVersion_isMinVersion(BK_HostVersion self, bk_string version);
 // class BerkeliumFactory
 // =========================================
 
+// Sets the Path to the HostExecutable Object used by forSystemInstalled.
+void BK_BerkeliumFactory_setDefaultExecutable(bk_string pathTo);
+
 // Creates an HostExecutable Object representing the given executable.
 BK_HostExecutable BK_BerkeliumFactory_forExecutable(bk_string pathTo);
 

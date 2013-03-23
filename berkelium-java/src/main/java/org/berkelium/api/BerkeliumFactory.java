@@ -28,6 +28,9 @@ public abstract class BerkeliumFactory {
 		return instance;
 	}
 		
+	// Sets the Path to the HostExecutable Object used by forSystemInstalled.
+	public abstract void setDefaultExecutable(String pathTo);
+
 	// Creates an HostExecutable Object representing the given executable.
 	public abstract HostExecutable forExecutable(String pathTo);
 

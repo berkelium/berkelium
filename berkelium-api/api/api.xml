@@ -62,6 +62,10 @@
 		return instance;
 	}
 		]]></implementation>
+		<entry static="true" name="setDefaultExecutable">
+			<arg type="string" name="pathTo"/>
+			<short>Sets the Path to the HostExecutable Object used by forSystemInstalled.</short>
+		</entry>
 		<entry static="true" name="forExecutable" ret="HostExecutable">
 			<arg type="string" name="pathTo"/>
 			<short>Creates an HostExecutable Object representing the given executable.</short>

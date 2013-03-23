@@ -21,6 +21,9 @@ namespace Berkelium {
 class BerkeliumFactory {
 public:
 
+	// Sets the Path to the HostExecutable Object used by forSystemInstalled.
+	static void setDefaultExecutable(const std::string& pathTo);
+
 	// Creates an HostExecutable Object representing the given executable.
 	static HostExecutableRef forExecutable(const std::string& pathTo);
 
