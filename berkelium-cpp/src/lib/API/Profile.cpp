@@ -34,12 +34,15 @@ private:
 	const boost::filesystem::path path;
 	const std::string pathstr;
 	const std::string application;
+	bool locked;
 	const bool temp;
+
 public:
 	ProfileImpl(const boost::filesystem::path& path, const std::string& application, const bool temp) :
 		path(path),
 		pathstr(path.string()),
 		application(application),
+		locked(false),
 		temp(temp)
 #ifdef LINUX
 		, warned(false)
@@ -49,6 +52,9 @@ public:
 	}
 
 	~ProfileImpl() {
+		if(isLocked()) {
+			setLocked(false);
+		}
 		if(temp && !application.empty() && !isInUse()) {
 			std::cerr << "removing temporary profile " << path << std::endl;
 			boost::filesystem::remove_all(path);
@@ -56,7 +62,20 @@ public:
 	}
 
 #ifdef LINUX
+private:
 	bool warned;
+
+	boost::filesystem::path getLock() {
+		return path / "SingletonLock";
+	}
+
+	std::string getHostname() {
+		char tmp[HOST_NAME_MAX];
+		gethostname(tmp, HOST_NAME_MAX);
+		return std::string(tmp);
+	}
+
+public:
 #endif
 
 	bool isInUse() {
@@ -68,9 +87,8 @@ public:
 		std::ofstream file(lock.string());
 		return !file.is_open();
 #elif defined(LINUX)
-		boost::filesystem::path lock = path / "SingletonLock";
 		boost::system::error_code ec;
-		boost::filesystem::path read = boost::filesystem::read_symlink(lock, ec);
+		boost::filesystem::path read = boost::filesystem::read_symlink(getLock(), ec);
 		if(ec) {
 			warned = false;
 			return false;
@@ -86,10 +104,7 @@ public:
 
 		//std::cerr << lock << " host '" << host << "' pid'" << pid << "'" << std::endl;
 
-		char tmp[HOST_NAME_MAX];
-		gethostname(tmp, HOST_NAME_MAX);
-		std::string hostname(tmp);
-
+		std::string hostname(getHostname());
 		if(hostname.compare(host) != 0) {
 			if(!warned) {
 				warned = true;
@@ -114,6 +129,43 @@ public:
 #else
 #error "TODO"
 #endif
+	}
+
+	void setLocked(bool locked) {
+		if(this->locked == locked) {
+			return;
+		}
+		if(locked) {
+			if(isInUse()) {
+				return;
+			}
+#ifdef WIN32
+#error "TODO"
+#elif defined(LINUX)
+			if(!isFound()) {
+				boost::filesystem::create_directories(path);
+			}
+			std::ostringstream os;
+			os << getHostname() << "-" << getpid();
+			boost::filesystem::path to(os.str());
+			boost::filesystem::create_symlink(to, getLock());
+#else
+#error "TODO"
+#endif
+		} else {
+#ifdef WIN32
+#error "TODO"
+#elif defined(LINUX)
+			boost::filesystem::remove(getLock());
+#else
+#error "TODO"
+#endif
+		}
+		this->locked = locked;
+	}
+
+	bool isLocked() {
+		return locked;
 	}
 
 	bool isFound() {
