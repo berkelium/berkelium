@@ -56,7 +56,7 @@ public:
 			Log::info() << "berkelium host process terminated!" << std::endl;
 			return false;
 		} else {
-			perror("waitpid");
+			Log::systemError("waitpid");
 		}
 		return true;
 	}
@@ -73,12 +73,12 @@ public:
 		pid = fork();
 		switch (pid) {
 		case -1: {
-			perror("fork");
+			Log::systemError("fork");
 			return false;
 		}
 		case 0: {
 			int ret = exec(args);
-			perror(("launch " + args[0]).c_str());
+			Log::systemError(("launch " + args[0]).c_str());
 			::exit(ret);
 			break;
 		}

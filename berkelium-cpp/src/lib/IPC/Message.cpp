@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <Berkelium/IPC/Message.hpp>
+#include <Berkelium/Impl/Logger.hpp>
 
 #include <cstring>
 
@@ -71,7 +72,7 @@ public:
 
 	void assume(size_t remaining) {
 		if(rp + remaining > wp) {
-			fprintf(stderr, "IpcMessage: buffer underflow! (wp:%lud rp:%lud capacity:%lud)", wp, remaining, capacity);
+			Log::error() << "IpcMessage: buffer underflow! (wp:" << wp << " rp:" << remaining << " capacity:" << capacity << ")" << std::endl;
 			throw "IpcMessage: buffer underflow!";
 		}
 	}

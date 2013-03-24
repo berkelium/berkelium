@@ -7,6 +7,7 @@
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/Impl/Logger.hpp>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -17,6 +18,7 @@
 #include <boost/filesystem.hpp>
 
 using boost::filesystem::path;
+using Berkelium::Log::systemError;
 
 namespace Berkelium {
 
@@ -37,12 +39,12 @@ public:
 
 		const char* p = name.c_str();
 		if(::access(p, F_OK) != 0 && ::mkfifo(p, 0700) != 0) {
-			perror("mkfifo");
+			systemError("mkfifo");
 			return;
 		}
 		fd = ::open(p, O_RDWR);
 		if(fd == -1) {
-			perror("open");
+			systemError("open");
 			return;
 		}
 	}

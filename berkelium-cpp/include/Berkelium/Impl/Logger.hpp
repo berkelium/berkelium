@@ -23,6 +23,8 @@ std::ostream& info();
 std::ostream& warn();
 std::ostream& error();
 
+void systemError(const std::string& error);
+
 } // namespace Log
 
 } // namespace Berkelium
