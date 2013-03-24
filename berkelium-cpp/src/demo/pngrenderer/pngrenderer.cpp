@@ -19,6 +19,8 @@ using Berkelium::WindowRef;
 
 int main(int argc, char* argv[])
 {
+	Berkelium::Util::parseCommandLine(argc, argv);
+
 	std::cout << "running pngrenderer..." << std::endl;
 	HostExecutableRef host = BerkeliumFactory::forSystemInstalled();
 

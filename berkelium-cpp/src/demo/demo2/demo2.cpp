@@ -10,6 +10,8 @@
 
 int main(int argc, char* argv[])
 {
+	Berkelium::Util::parseCommandLine(argc, argv);
+
 	std::cout << "berkelium demo application..." << std::endl;
 	Berkelium::HostExecutableRef host = Berkelium::BerkeliumFactory::forSystemInstalled();
 	if(!host) {
