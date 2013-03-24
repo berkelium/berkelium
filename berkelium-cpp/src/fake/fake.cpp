@@ -55,12 +55,6 @@ int main(int argc, char* argv[])
 
 	Berkelium::Log::info() << "host fake started!" << std::endl;
 
-	ChannelRef win(ipc->createSubChannel());
-	send->reset();
-	send->add_str("addWindow");
-	send->add_str(win->getName());
-	ipc->send(send);
-
 	bool running = true;
 	while(running) {
 		if(ipc->isEmpty()) {
@@ -73,6 +67,15 @@ int main(int argc, char* argv[])
 
 		if(cmd.compare("exit") == 0) {
 			running = false;
+		} else if(cmd.compare("openWindow") == 0) {
+			bool incognito = recv->get_8() == 1;
+			ChannelRef win(ipc->createSubChannel());
+			send->reset();
+			send->add_str("addWindow");
+			send->add_str(win->getName());
+			ipc->send(send);
+			Berkelium::Log::info() << "created new " << (incognito ? "incognito" : "default") << " window with id "
+					<< win->getName() << "!" << std::endl;
 		}
 
 		send->reset();

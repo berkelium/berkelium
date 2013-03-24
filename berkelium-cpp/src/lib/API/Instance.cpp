@@ -93,6 +93,7 @@ public:
 			}
 		}
 		ChannelWRefSet copy(channels);
+		Ipc::MessageRef msg = Ipc::Message::create();
 		for(std::set<Ipc::ChannelWRef>::iterator it = copy.begin(); it != copy.end(); it++) {
 			Ipc::ChannelWRef ref = *it;
 			if(ref.expired()) {
@@ -100,8 +101,11 @@ public:
 			}
 			Ipc::ChannelRef ir = Ipc::ChannelRef(ref);
 			if(!ir->isEmpty()) {
-				Ipc::MessageRef msg = Ipc::Message::create();
 				ir->recv(msg);
+				if(msg->length() == 0) {
+					// only an ack..
+					continue;
+				}
 				std::string str = msg->get_str();
 				if(str.compare("addWindow") == 0) {
 					std::string id = msg->get_str();
@@ -194,6 +198,11 @@ public:
 
 	virtual WindowRef createWindow(bool incognito) {
 		Log::debug() << "create Window start" << std::endl;
+
+		Ipc::MessageRef msg = Ipc::Message::create();
+		msg->add_str("openWindow");
+		msg->add_8(incognito);
+		ipc->send(msg);
 
 		while(freeWindowChannels.empty()) {
 			update();

@@ -43,13 +43,12 @@ TEST_F(WindowTest, createSecondProcessWindow) {
 	ASSERT_NOT_NULL(subject2);
 }
 
-/*
 TEST_F(WindowTest, createSecondWindow) {
 	WindowRef subject1 = createWindow();
 	ASSERT_NOT_NULL(subject1);
+	Berkelium::Log::debug() << "creating second window..." << std::endl;
 	WindowRef subject2 = subject1->getInstance()->createWindow(false);
 	ASSERT_NOT_NULL(subject2);
 }
-*/
 
 } // namespace
