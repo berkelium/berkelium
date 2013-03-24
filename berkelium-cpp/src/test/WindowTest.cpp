@@ -12,43 +12,70 @@
 
 namespace {
 
+using Berkelium::InstanceRef;
 using Berkelium::WindowRef;
 
 class WindowTest : public ::testing::Test {
 };
 
-WindowRef createWindow() {
+void createWindow(WindowRef& ret) {
 	Berkelium::Log::debug() << "creating host executable..." << std::endl;
 	Berkelium::HostExecutableRef host = Berkelium::BerkeliumFactory::forSystemInstalled();
+	ASSERT_NOT_NULL(host);
 
 	Berkelium::Log::debug() << "creating profile..." << std::endl;
 	Berkelium::ProfileRef profile = Berkelium::BerkeliumFactory::createTemporaryProfile();
+	ASSERT_NOT_NULL(profile);
 
 	Berkelium::Log::debug() << "launching berkelium host executable..." << std::endl;
 	Berkelium::InstanceRef instance = Berkelium::BerkeliumFactory::open(host, profile);
+	ASSERT_NOT_NULL(instance);
 
 	Berkelium::Log::debug() << "creating window..." << std::endl;
-	return instance->createWindow(false);
+	int old = instance->getWindowCount();
+	ret = instance->createWindow(false);
+	ASSERT_EQ(old + 1, instance->getWindowCount());
 }
 
 TEST_F(WindowTest, create) {
-	WindowRef subject = createWindow();
+	WindowRef subject;
+	createWindow(subject);
 	ASSERT_NOT_NULL(subject);
 }
 
 TEST_F(WindowTest, createSecondProcessWindow) {
-	WindowRef subject1 = createWindow();
-	ASSERT_NOT_NULL(subject1);
-	WindowRef subject2 = createWindow();
-	ASSERT_NOT_NULL(subject2);
+	WindowRef subject1;
+	createWindow(subject1);
+	WindowRef subject2;
+	createWindow(subject2);
+	ASSERT_NOT_SAME(subject1->getInstance(), subject2->getInstance());
 }
 
 TEST_F(WindowTest, createSecondWindow) {
-	WindowRef subject1 = createWindow();
+	WindowRef subject1;
+	createWindow(subject1);
 	ASSERT_NOT_NULL(subject1);
+
 	Berkelium::Log::debug() << "creating second window..." << std::endl;
 	WindowRef subject2 = subject1->getInstance()->createWindow(false);
 	ASSERT_NOT_NULL(subject2);
+	ASSERT_SAME(subject1->getInstance(), subject2->getInstance());
+}
+
+TEST_F(WindowTest, createWindows) {
+	WindowRef first;
+	createWindow(first);
+	ASSERT_NOT_NULL(first);
+	InstanceRef instance = first->getInstance();
+
+	std::vector<WindowRef> windows;
+	for(int i = 0; i < 10; i++) {
+		Berkelium::Log::debug() << "creating window" << i << "..." << std::endl;
+		WindowRef other = instance->createWindow(false);
+		ASSERT_NOT_NULL(other);
+		ASSERT_SAME(instance, other	->getInstance());
+		windows.push_back(other);
+	}
 }
 
 } // namespace

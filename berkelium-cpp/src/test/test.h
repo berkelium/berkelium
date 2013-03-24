@@ -7,6 +7,9 @@
 #pragma once
 
 #define ASSERT_NULL(ptr) ASSERT_EQ((void*)NULL, (void*)(ptr.get()))
-#define ASSERT_NOT_NULL(ptr) ASSERT_NE((void*)NULL, (void*)(ptr.get()))
+#define ASSERT_NOT_NULL(ptr) ASSERT_TRUE((void*)(ptr.get()) != NULL)
+
+#define ASSERT_SAME(ptr1, ptr2) ASSERT_EQ((void*)(ptr1.get()), (void*)(ptr2.get()))
+#define ASSERT_NOT_SAME(ptr1, ptr2) ASSERT_NE((void*)(ptr1.get()), (void*)(ptr2.get()))
 
 #endif // BERKELIUM_TEST_TEST_H_
