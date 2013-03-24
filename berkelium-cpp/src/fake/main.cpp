@@ -7,8 +7,7 @@
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Channel.hpp>
-
-#include <iostream>
+#include <Berkelium/Impl/Logger.hpp>
 
 using Berkelium::BerkeliumFactory;
 using Berkelium::ProfileRef;
@@ -21,30 +20,32 @@ using Berkelium::Util::getOption;
 
 int main(int argc, char* argv[])
 {
+	Berkelium::Log::setPrefix("Host");
+
 	std::string dir = getOption(argc, argv, "--user-data-dir=");
 	std::string id = getOption(argc, argv, "--berkelium=");
 
 	if(dir.empty() || id.empty()) {
-		std::cerr << "profile or id not given!" << std::endl;
+		Berkelium::Log::error() << "profile or id not given!" << std::endl;
 		return 1;
 	}
 
 	ProfileRef profile = BerkeliumFactory::forProfilePath(dir);
 	if(!profile->isFound()) {
-		std::cerr << "profile not found!" << std::endl;
+		Berkelium::Log::error() << "profile not found!" << std::endl;
 		return 1;
 	}
 	if(profile->isInUse()) {
-		std::cerr << "profile already in use!" << std::endl;
+		Berkelium::Log::error() << "profile already in use!" << std::endl;
 		return 1;
 	}
 	profile->setLocked(true);
 	if(!profile->isLocked()) {
-		std::cerr << "profile can not be locked!" << std::endl;
+		Berkelium::Log::error() << "profile can not be locked!" << std::endl;
 		return 1;
 	}
 
-	std::cerr << "starting host fake!" << std::endl;
+	Berkelium::Log::debug() << "starting host fake!" << std::endl;
 	ChannelRef ipc = Channel::getChannel(dir, id, false);
 
 	MessageRef recv = Message::create();
@@ -52,7 +53,7 @@ int main(int argc, char* argv[])
 	send->add_str("berkelium");
 	ipc->send(send);
 
-	std::cerr << "host fake started!" << std::endl;
+	Berkelium::Log::info() << "host fake started!" << std::endl;
 
 	ChannelRef win(ipc->createSubChannel());
 	send->reset();
@@ -68,7 +69,7 @@ int main(int argc, char* argv[])
 		}
 		ipc->recv(recv);
 		std::string cmd = recv->get_str();
-		std::cout << "recv: '" << cmd << "'" << std::endl;
+		Berkelium::Log::debug() << "recv: '" << cmd << "'" << std::endl;
 
 		if(cmd.compare("exit") == 0) {
 			running = false;
@@ -78,7 +79,7 @@ int main(int argc, char* argv[])
 		ipc->send(send); // ACK
 	}
 
-	std::cerr << "host fake done!" << std::endl;
+	Berkelium::Log::info() << "host fake done!" << std::endl;
 
 	return 0;
 }

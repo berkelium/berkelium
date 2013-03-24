@@ -5,6 +5,7 @@
 #include <Berkelium/API/Window.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/Logger.hpp>
 
 #include <iostream>
 
@@ -30,18 +31,18 @@ public:
 		channel(channel),
 		incognito(incognito),
 		message(Ipc::Message::create()) {
-		std::cerr << "new Window" << std::endl;
+		Log::debug() << "new Window" << std::endl;
 	}
 
 	virtual ~WindowImpl() {
-		std::cerr << "delete Window" << std::endl;
+		Log::debug() << "delete Window" << std::endl;
 	}
 
 	virtual int32_t getTabCount() {
 		/*
-		std::cerr << "new Window start" << std::endl;
+		Log::debug() << "new Window start" << std::endl;
 		channel->recv(message);
-		std::cerr << "new Window done" << std::endl;
+		Log::debug() << "new Window done" << std::endl;
 		*/
 		return 0;
 	}

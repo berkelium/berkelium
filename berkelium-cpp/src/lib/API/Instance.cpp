@@ -10,6 +10,7 @@
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Process.hpp>
 #include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/Logger.hpp>
 
 #include <set>
 #include <iostream>
@@ -65,11 +66,11 @@ public:
 		// TODO only call close if ipc is open...
 		close();
 		if(profile->isInUse()) {
-			std::cerr << "waiting for profile..." << std::endl;
+			Log::debug() << "waiting for profile..." << std::endl;
 			while(profile->isInUse()) {
 				Util::sleep(100);
 			}
-			std::cerr << "profile closed!" << std::endl;
+			Log::debug() << "profile closed!" << std::endl;
 		}
 	}
 
@@ -104,7 +105,7 @@ public:
 				std::string str = msg->get_str();
 				if(str.compare("addWindow") == 0) {
 					std::string id = msg->get_str();
-					std::cerr << "new window: '" << id << "'!" << std::endl;
+					Log::debug() << "new window: '" << id << "'!" << std::endl;
 					Ipc::ChannelRef c = ipc->getSubChannel(id);
 					channels.insert(c);
 					freeWindowChannels.push_back(c);
@@ -112,10 +113,10 @@ public:
 					msg->reset();
 					msg->add_str("Navigate");
 					msg->add_str("http://heise.de/");
-					std::cerr << "sending navigate to heise.de!" << std::endl;
+					Log::debug() << "sending navigate to heise.de!" << std::endl;
 					ir->send(msg);
 				} else {
-					std::cerr << "recv from host: '" << str << "'!" << std::endl;
+					Log::debug() << "recv from host: '" << str << "'!" << std::endl;
 				}
 			}
 		}
@@ -192,21 +193,21 @@ public:
 	}
 
 	virtual WindowRef createWindow(bool incognito) {
-		std::cerr << "create Window start" << std::endl;
+		Log::debug() << "create Window start" << std::endl;
 
 		while(freeWindowChannels.empty()) {
 			update();
 			Util::sleep(30);
 		}
 
-		std::cerr << "got free window channel" << std::endl;
+		Log::debug() << "got free window channel" << std::endl;
 		Ipc::ChannelRef channel = freeWindowChannels.back();
 		freeWindowChannels.pop_back();
 
 		WindowRef ret(newWindow(InstanceRef(self), channel, incognito));
 		windows.insert(ret);
 
-		std::cerr << "create Window done" << std::endl;
+		Log::debug() << "create Window done" << std::endl;
 		return ret;
 	}
 };

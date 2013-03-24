@@ -6,9 +6,9 @@
 
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Process.hpp>
+#include <Berkelium/Impl/Logger.hpp>
 
 #include <sys/wait.h>
-#include <iostream>
 
 namespace Berkelium {
 
@@ -39,7 +39,7 @@ public:
 
 	virtual ~ProcessLinuxImpl() {
 		if(pid == -1) return;
-		fprintf(stderr, "waiting for pid %d...\n", pid);
+		Log::debug() << "waiting for pid " << pid << "..." << std::endl;
 		wait(0);
 	}
 
@@ -50,10 +50,10 @@ public:
 			if(wp == 0 && options == WNOHANG) {
 				return true;
 			}
-			printf("Child exited with status %i\n", status);
+			Log::debug() << "Child exited with status " << status << std::endl;
 			exit = status;
 			pid = -1;
-			fprintf(stderr, "berkelium host process terminated!\n");
+			Log::info() << "berkelium host process terminated!" << std::endl;
 			return false;
 		} else {
 			perror("waitpid");
@@ -83,7 +83,7 @@ public:
 			break;
 		}
 		default: {
-			printf("started berkelium host process with pid %i!\n", pid);
+			Log::debug() << "started berkelium host process with pid " << pid << "!" << std::endl;
 		}
 		}
 		return true;

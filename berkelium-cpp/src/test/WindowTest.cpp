@@ -5,6 +5,7 @@
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/Instance.hpp>
 #include <Berkelium/API/Window.hpp>
+#include <Berkelium/Impl/Logger.hpp>
 #include "gtest/gtest.h"
 
 #include "test.h"
@@ -17,16 +18,16 @@ class WindowTest : public ::testing::Test {
 };
 
 WindowRef createWindow() {
-	std::cout << "creating host executable..." << std::endl;
+	Berkelium::Log::debug() << "creating host executable..." << std::endl;
 	Berkelium::HostExecutableRef host = Berkelium::BerkeliumFactory::forSystemInstalled();
 
-	std::cout << "creating profile..." << std::endl;
+	Berkelium::Log::debug() << "creating profile..." << std::endl;
 	Berkelium::ProfileRef profile = Berkelium::BerkeliumFactory::createTemporaryProfile();
 
-	std::cout << "launching berkelium host executable..." << std::endl;
+	Berkelium::Log::debug() << "launching berkelium host executable..." << std::endl;
 	Berkelium::InstanceRef instance = Berkelium::BerkeliumFactory::open(host, profile);
 
-	std::cout << "creating window..." << std::endl;
+	Berkelium::Log::debug() << "creating window..." << std::endl;
 	return instance->createWindow(false);
 }
 

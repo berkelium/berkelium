@@ -6,6 +6,7 @@
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/Logger.hpp>
 
 #include <cstdlib>
 #include <iostream>
@@ -56,7 +57,7 @@ public:
 			setLocked(false);
 		}
 		if(temp && !application.empty() && !isInUse()) {
-			std::cerr << "removing temporary profile " << path << std::endl;
+			Log::debug() << "removing temporary profile " << path << std::endl;
 			boost::filesystem::remove_all(path);
 		}
 	}
@@ -102,13 +103,13 @@ public:
 		int pid;
 		is >> pid;
 
-		//std::cerr << lock << " host '" << host << "' pid'" << pid << "'" << std::endl;
+		//Log::debug() << lock << " host '" << host << "' pid'" << pid << "'" << std::endl;
 
 		std::string hostname(getHostname());
 		if(hostname.compare(host) != 0) {
 			if(!warned) {
 				warned = true;
-				std::cerr << "Warning: Profile " << path << " socket is from another host ('" << hostname << "' != '" << host <<  "')!" << std::endl;
+				Log::warn() << "Profile " << path << " socket is from another host ('" << hostname << "' != '" << host <<  "')!" << std::endl;
 			}
 			return false;
 		}
@@ -116,7 +117,7 @@ public:
 		if(kill(pid, 0) != 0) {
 			if(!warned) {
 				warned = true;
-				std::cerr << "Warning: Profile " << path << " was not properly closed!?" << std::endl;
+				Log::warn() << "Profile " << path << " was not properly closed!?" << std::endl;
 			}
 			return false;
 		}

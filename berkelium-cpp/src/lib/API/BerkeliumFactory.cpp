@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <iostream>
-
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/HostExecutable.hpp>
 #include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/Logger.hpp>
 
 #include <boost/filesystem.hpp>
 
@@ -57,7 +56,7 @@ HostExecutableRef BerkeliumFactory::forSystemInstalled() {
 #error "please add path to chrome here"
 #endif
 
-	std::cerr << "using berkelium host executable " << path << std::endl;
+	Log::debug() << "using berkelium host executable " << path << std::endl;
 
 	return HostExecutableRef(impl::newHostExecutable(path));
 }

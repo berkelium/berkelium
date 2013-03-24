@@ -8,8 +8,7 @@
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
-
-#include <iostream>
+#include <Berkelium/Impl/Logger.hpp>
 
 namespace Berkelium {
 
@@ -45,31 +44,25 @@ InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef prof
 		return InstanceRef();
 	}
 
-	std::cerr << "awaiting berkelium host process ipc startup message!" << std::endl;
+	Log::debug() << "awaiting berkelium host process ipc startup message!" << std::endl;
 	Ipc::MessageRef msg(Ipc::Message::create());
 	while(ipc->isEmpty()) {
 		if(!process->isRunning()) {
-			std::cerr << "berkelium host startup failed!" << std::endl;
+			Log::error() << "berkelium host startup failed!" << std::endl;
 			return InstanceRef();
 		}
 		Util::sleep(100);
 	}
 	ipc->recv(msg);
 	if(msg->get_str().compare("berkelium") != 0) {
-		std::cerr << "ipc bad magic!" << std::endl;
+		Log::error() << "ipc bad magic!" << std::endl;
 		return InstanceRef();
 	}
-	std::cerr << "waiting for profile..." << std::endl;
+	Log::debug() << "waiting for profile..." << std::endl;
 	while(!profile->isInUse()) {
 		Util::sleep(100);
 	}
-	/*
-	if(!profile->isInUse()) {
-		std::cerr << "profile not in use!" << std::endl;
-		return ret;
-	}
-	*/
-	std::cerr << "berkelium host process is up and running!" << std::endl;
+	Log::info() << "berkelium host process is up and running!" << std::endl;
 
 	return impl::newInstance(executable, profile, ipc, process);
 }
