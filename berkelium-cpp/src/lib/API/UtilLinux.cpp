@@ -25,6 +25,16 @@ void sleep(int32_t ms) {
 	usleep(1000 * ms);
 }
 
+std::string getOption(int argc, char* argv[], const std::string& option) {
+	for(int i = 0; i < argc; i++) {
+		std::string tmp(argv[i]);
+		if(tmp.compare(0, option.length(), option) == 0) {
+			return tmp.substr(option.length());
+		}
+	}
+	return "";
+}
+
 } // namespace Util
 
 } // namespace Berkelium

@@ -19,7 +19,9 @@ void sleep(int32_t ms);
 
 std::string getEnv(const std::string&, const std::string& defaultValue);
 
+#ifdef LINUX
 std::string getOption(int argc, char* argv[], const std::string& option);
+#endif
 
 #ifdef WIN32
 std::string ws2s(const std::wstring&);
