@@ -8,6 +8,8 @@
 #include <Berkelium/Impl/Logger.hpp>
 #include "gtest/gtest.h"
 
+#include <list>
+
 #include "test.h"
 
 namespace {
@@ -76,6 +78,39 @@ TEST_F(WindowTest, createWindows) {
 		ASSERT_SAME(instance, other	->getInstance());
 		windows.push_back(other);
 	}
+}
+
+TEST_F(WindowTest, createDeleteRandomWindows) {
+	WindowRef first;
+	createWindow(first);
+	ASSERT_NOT_NULL(first);
+	InstanceRef instance = first->getInstance();
+
+	std::list<WindowRef> windows;
+	for(int i = 0; i < 20; i++) {
+		bool del = !windows.empty();
+		if(del) {
+			del = rand() % 2 == 0;
+		}
+		if(del) {
+			int pos = rand() % windows.size();
+			for (std::list<WindowRef>::iterator it = windows.begin(); it != windows.end(); it++) {
+				if(pos == 0) {
+					Berkelium::Log::info() << "removing window..." << std::endl;
+					windows.remove(*it);
+					break;
+				}
+				pos--;
+			}
+		} else {
+			Berkelium::Log::debug() << "creating window..." << std::endl;
+			WindowRef other = instance->createWindow(rand() % 2 == 0);
+			ASSERT_NOT_NULL(other);
+			ASSERT_SAME(instance, other->getInstance());
+			windows.push_back(other);
+		}
+	}
+	windows.clear();
 }
 
 } // namespace
