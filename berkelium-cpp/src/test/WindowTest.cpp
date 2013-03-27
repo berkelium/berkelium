@@ -16,6 +16,7 @@ namespace {
 
 using Berkelium::InstanceRef;
 using Berkelium::WindowRef;
+using Berkelium::TabRef;
 
 class WindowTest : public ::testing::Test {
 };
@@ -37,6 +38,7 @@ void createWindow(WindowRef& ret) {
 	int old = instance->getWindowCount();
 	ret = instance->createWindow(false);
 	ASSERT_EQ(old + 1, instance->getWindowCount());
+	ASSERT_EQ(0, ret->getTabCount());
 }
 
 TEST_F(WindowTest, create) {
@@ -111,6 +113,30 @@ TEST_F(WindowTest, createDeleteRandomWindows) {
 		}
 	}
 	windows.clear();
+}
+
+TEST_F(WindowTest, createTab) {
+	WindowRef window;
+	createWindow(window);
+	ASSERT_NOT_NULL(window);
+
+	ASSERT_EQ(0, window->getTabCount());
+	TabRef tab = window->createTab();
+	ASSERT_NOT_NULL(tab);
+	ASSERT_EQ(1, window->getTabCount());
+}
+
+TEST_F(WindowTest, createMultipleTabs) {
+	WindowRef window;
+	createWindow(window);
+	ASSERT_NOT_NULL(window);
+
+	for(int i = 0; i < 10; i++) {
+		ASSERT_EQ(i, window->getTabCount());
+		TabRef tab = window->createTab();
+		ASSERT_NOT_NULL(tab);
+		ASSERT_EQ(i + 1, window->getTabCount());
+	}
 }
 
 } // namespace

@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Window.hpp>
+#include <Berkelium/API/Tab.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Logger.hpp>
 
-#include <iostream>
+#include <list>
 
 namespace Berkelium {
 
@@ -20,39 +22,46 @@ Window::~Window() {
 namespace impl {
 
 class WindowImpl : public Window {
+private:
+	WindowWRef self;
 	InstanceRef instance;
 	Ipc::ChannelRef channel;
 	const bool incognito;
+	std::list<TabRef> tabs;
 	Ipc::MessageRef message;
 
 public:
 	WindowImpl(InstanceRef instance, Ipc::ChannelRef channel, bool incognito) :
+		Window(),
+		self(),
 		instance(instance),
 		channel(channel),
 		incognito(incognito),
+		tabs(),
 		message(Ipc::Message::create()) {
-		Log::debug() << "new Window" << std::endl;
 	}
 
 	virtual ~WindowImpl() {
-		Log::debug() << "delete Window" << std::endl;
 	}
 
 	virtual int32_t getTabCount() {
-		/*
-		Log::debug() << "new Window start" << std::endl;
-		channel->recv(message);
-		Log::debug() << "new Window done" << std::endl;
-		*/
-		return 0;
+		return tabs.size();
 	}
 
 	virtual TabList getTabList()  {
-		return TabList();
+		TabList ret;
+		std::copy(tabs.begin(), tabs.end(), ret.begin());
+		return ret;
 	}
 
 	virtual TabRef createTab()  {
-		return TabRef();
+		message->reset();
+		message->add_str("openTab");
+		channel->send(message);
+		channel->recv(message);
+		TabRef ret(newTab(getSelf()));
+		tabs.push_back(ret);
+		return ret;
 	}
 
 	virtual InstanceRef getInstance() {
@@ -65,10 +74,21 @@ public:
 	virtual bool isIncognito()  {
 		return incognito;
 	}
+
+	const WindowRef getSelf() 	{
+		return self.lock();
+	}
+
+	static WindowRef newWindow(InstanceRef instance, Ipc::ChannelRef channel, bool incognito) {
+		WindowImpl* impl = new WindowImpl(instance, channel, incognito);
+		WindowRef ret(impl);
+		impl->self = ret;
+		return ret;
+	}
 };
 
 WindowRef newWindow(InstanceRef instance, Ipc::ChannelRef channel, bool incognito) {
-	return WindowRef(new WindowImpl(instance, channel, incognito));
+	return WindowImpl::newWindow(instance, channel, incognito);
 }
 
 } // namespace impl

@@ -23,6 +23,7 @@ typedef std::shared_ptr<int8_t> ByteRef;
 typedef std::shared_ptr<int32_t> Int32Ref;
 #endif
 
+TabRef newTab(WindowRef window);
 WindowRef newWindow(InstanceRef instance, Ipc::ChannelRef channel, bool incognito);
 HostExecutableRef newHostExecutable(const std::string&);
 InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process);
