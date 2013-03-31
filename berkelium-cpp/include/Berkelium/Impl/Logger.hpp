@@ -24,6 +24,7 @@ std::ostream& warn();
 std::ostream& error();
 
 void systemError(const std::string& error);
+void systemError(const std::string& error, const std::string& arg);
 
 } // namespace Log
 

@@ -34,7 +34,11 @@ std::ostream& error() {
 }
 
 void systemError(const std::string& error) {
-	Log::error() << error << ":" << strerror(errno) << std::endl;
+	Log::error() << error << ": " << strerror(errno) << std::endl;
+}
+
+void systemError(const std::string& error, const std::string& arg) {
+	Log::error() << error << ": " << strerror(errno) << " " << arg << std::endl;
 }
 
 } // namespace Log
