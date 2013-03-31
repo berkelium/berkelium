@@ -5,6 +5,7 @@
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/Instance.hpp>
 #include <Berkelium/API/Window.hpp>
+#include <Berkelium/API/Tab.hpp>
 #include <Berkelium/Impl/Logger.hpp>
 #include "gtest/gtest.h"
 
@@ -131,12 +132,40 @@ TEST_F(WindowTest, createMultipleTabs) {
 	createWindow(window);
 	ASSERT_NOT_NULL(window);
 
+	std::list<TabRef> tabs;
 	for(int i = 0; i < 10; i++) {
 		ASSERT_EQ(i, window->getTabCount());
 		TabRef tab = window->createTab();
 		ASSERT_NOT_NULL(tab);
+		tabs.push_back(tab);
 		ASSERT_EQ(i + 1, window->getTabCount());
 	}
+	tabs.clear();
+	ASSERT_EQ(0, window->getTabCount());
+}
+
+TEST_F(WindowTest, free1) {
+	WindowRef window;
+	createWindow(window);
+	ASSERT_NOT_NULL(window);
+
+	TabRef tab = window->createTab();
+	int count = tab->getWindow().use_count();
+	window.reset();
+	ASSERT_EQ(count - 1, tab->getWindow().use_count());
+}
+
+TEST_F(WindowTest, free2) {
+	WindowRef window;
+	createWindow(window);
+	ASSERT_NOT_NULL(window);
+
+	ASSERT_EQ(0, window->getTabCount());
+	TabRef tab = window->createTab();
+	ASSERT_NOT_NULL(tab);
+	ASSERT_EQ(1, window->getTabCount());
+	tab.reset();
+	ASSERT_EQ(0, window->getTabCount());
 }
 
 } // namespace

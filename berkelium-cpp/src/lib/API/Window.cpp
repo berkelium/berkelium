@@ -27,7 +27,7 @@ private:
 	InstanceRef instance;
 	Ipc::ChannelRef channel;
 	const bool incognito;
-	std::list<TabRef> tabs;
+	std::list<TabWRef> tabs;
 	Ipc::MessageRef message;
 
 public:
@@ -45,16 +45,21 @@ public:
 	}
 
 	virtual int32_t getTabCount() {
+		cleanupTabs();
 		return tabs.size();
 	}
 
 	virtual TabList getTabList()  {
+		cleanupTabs();
 		TabList ret;
-		std::copy(tabs.begin(), tabs.end(), ret.begin());
+		for(std::list<TabWRef>::iterator it = tabs.begin(); it != tabs.end(); it++) {
+			ret.push_back(it->lock());
+		}
 		return ret;
 	}
 
 	virtual TabRef createTab()  {
+		cleanupTabs();
 		message->reset();
 		message->add_str("openTab");
 		channel->send(message);
@@ -73,6 +78,14 @@ public:
 
 	virtual bool isIncognito()  {
 		return incognito;
+	}
+
+	static bool tabIsExpired(TabWRef& tab) {
+		return tab.expired();
+	}
+
+	void cleanupTabs() {
+		tabs.remove_if(tabIsExpired);
 	}
 
 	const WindowRef getSelf() 	{
