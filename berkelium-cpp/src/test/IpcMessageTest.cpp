@@ -55,6 +55,12 @@ TEST_F(IpcMessageTest, test16) {
 	m->reset();TEST_LR(0, 0);
 }
 
+TEST_F(IpcMessageTest, uint) {
+	MessageRef m = Message::create();
+	m->add_32(1234567890);
+	ASSERT_EQ(1234567890, m->get_32());
+}
+
 TEST_F(IpcMessageTest, test32) {
 	MessageRef m = Message::create();
 	TEST_LR(0, 0);

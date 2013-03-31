@@ -18,14 +18,14 @@ private:
 	size_t capacity;
 	size_t wp;
 	size_t rp;
-	int8_t* buffer;
+	uint8_t* buffer;
 
 public:
 	MessageImpl() :
 		capacity(1024),
 		wp(0),
 		rp(0),
-		buffer(new int8_t[capacity]) {
+		buffer(new uint8_t[capacity]) {
 	}
 
 	virtual ~MessageImpl() {
@@ -62,7 +62,7 @@ public:
 	void resize(size_t size) {
 		if(size > capacity) {
 			size += 1024;
-			int8_t* tmp = new int8_t[size];
+			uint8_t* tmp = new uint8_t[size];
 			memcpy(tmp, buffer, wp);
 			delete buffer;
 			buffer = tmp;
