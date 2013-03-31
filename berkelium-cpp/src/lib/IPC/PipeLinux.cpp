@@ -37,14 +37,20 @@ public:
 		name(name) {
 		fd = -1;
 
+		path p1(name);
+		path p2(p1.parent_path());
+		if(!exists(p2)) {
+			create_directories(p2);
+		}
+
 		const char* p = name.c_str();
 		if(::access(p, F_OK) != 0 && ::mkfifo(p, 0700) != 0) {
-			systemError("mkfifo");
+			systemError("mkfifo", name);
 			return;
 		}
 		fd = ::open(p, O_RDWR);
 		if(fd == -1) {
-			systemError("open");
+			systemError("open", name);
 			return;
 		}
 	}
