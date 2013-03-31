@@ -38,6 +38,8 @@ public:
  	virtual ChannelRef createSubChannel() = 0;
  	virtual ChannelRef getSubChannel(const std::string& name) = 0;
 
+	virtual ChannelRef getReverseChannel() = 0;
+
 	virtual std::string getName() = 0;
 };
 

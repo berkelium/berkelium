@@ -6,6 +6,7 @@
 #include <Berkelium/IPC/Pipe.hpp>
 #include <Berkelium/IPC/Ipc.hpp>
 #include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/Logger.hpp>
 
 #include <boost/filesystem.hpp>
 
@@ -24,20 +25,28 @@ private:
 	const std::string dir;
 	const std::string name;
 	const bool server;
+	const bool reverse;
+	ChannelWRef reverseRef;
+	ChannelWRef self;
 	PipeRef pin;
 	PipeRef pout;
 
-	static inline std::string getExt(const bool server) {
+	static inline std::string getExt(const bool server, const bool reverse) {
+		if(reverse) {
+			return server ? "3" : "4";
+		}
 		return server ? "1" : "2";
 	}
 
 public:
-	ChannelImpl(const path& dir, const std::string& name, const bool server) :
+	ChannelImpl(const path& dir, const std::string& name, const bool server, const bool reverse) :
 		dir(dir.string()),
 		name(name),
 		server(server),
-		pin(Pipe::getPipe((dir / name).string() + getExt(server))),
-		pout(Pipe::getPipe((dir / name).string() + getExt(!server))) {
+		reverse(reverse),
+		reverseRef(),
+		pin(Pipe::getPipe((dir / name).string() + getExt(server, reverse))),
+		pout(Pipe::getPipe((dir / name).string() + getExt(!server, reverse))) {
 	}
 
 	virtual ~ChannelImpl() {
@@ -66,8 +75,31 @@ public:
 		return Channel::getChannel(dir, name, false);
 	}
 
+	virtual ChannelRef getReverseChannel() {
+		ChannelRef ret = reverseRef.lock();
+		if(ret) {
+			return ret;
+		}
+		impl::ChannelImpl* impl = new impl::ChannelImpl(path(dir), name, server, !reverse);
+
+		ret = ChannelRef(impl);
+		reverseRef = ret;
+		return ret;
+	}
+
 	virtual std::string getName() {
 		return name;
+	}
+
+	ChannelRef getSelf() {
+		return self.lock();
+	}
+
+	static ChannelRef newChannel(const std::string& dir, const std::string& name, const bool server) {
+		ChannelImpl* impl = new ChannelImpl(path(dir), name, server, false);
+		ChannelRef ret(impl);
+		impl->self = ret;
+		return ret;
 	}
 };
 
@@ -82,8 +114,9 @@ Channel::~Channel() {
 ChannelRef Channel::getChannel(const std::string& dir, const bool server) {
 	return getChannel(dir, Util::randomId(), server);
 }
+
 ChannelRef Channel::getChannel(const std::string& dir, const std::string& name, const bool server) {
-	return ChannelRef(new impl::ChannelImpl(path(dir), name, server));
+	return impl::ChannelImpl::newChannel(dir, name, server);
 }
 
 } // namespace IPC
