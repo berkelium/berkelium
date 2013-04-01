@@ -4,7 +4,7 @@
 
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
-#include <Berkelium/IPC/Ipc.hpp>
+#include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Logger.hpp>
 
@@ -28,6 +28,7 @@ private:
 	const bool reverse;
 	ChannelWRef reverseRef;
 	ChannelWRef self;
+	MessageRef message;
 	PipeRef pin;
 	PipeRef pout;
 
@@ -46,6 +47,7 @@ public:
 		reverse(reverse),
 		reverseRef(),
 		self(),
+		message(Message::create()),
 		pin(Pipe::getPipe((dir / name).string() + getExt(server, reverse))),
 		pout(Pipe::getPipe((dir / name).string() + getExt(!server, reverse))) {
 	}
@@ -55,6 +57,10 @@ public:
 
 	virtual bool isEmpty() {
 		return pin->isEmpty();
+	}
+
+	virtual Ipc::MessageRef getMessage() {
+		return message;
 	}
 
 	virtual void send(Ipc::MessageRef msg) {

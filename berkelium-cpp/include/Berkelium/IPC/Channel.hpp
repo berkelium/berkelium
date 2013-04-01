@@ -29,6 +29,9 @@ public:
 	// Returns true if there are no pending messages to receive.
 	virtual bool isEmpty() = 0;
 
+	// Returns the Channel default Message.
+	virtual MessageRef getMessage() = 0;
+
 	// Sends this message.
 	virtual void send(MessageRef msg) = 0;
 
