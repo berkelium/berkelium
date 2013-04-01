@@ -40,6 +40,7 @@ class InstanceImpl : public Instance {
 	HostExecutableRef executable;
 	ProfileRef profile;
 	Ipc::ChannelRef ipc;
+	Ipc::MessageRef message;
 	ProcessRef process;
 	WindowWRefSet windows;
 	LogDelegateWRefSet logs;
@@ -53,6 +54,7 @@ public:
 		executable(executable),
 		profile(profile),
 		ipc(ipc),
+		message(ipc->getMessage()),
 		process(process),
 		windows(),
 		logs(),
@@ -79,10 +81,10 @@ public:
 	}
 
 	virtual void close() {
-		Ipc::MessageRef msg = Ipc::Message::create();
-		msg->add_str("exit");
-		ipc->send(msg);
-		//ipc->recv(msg); //ACK
+		message->reset();
+		message->add_str("exit");
+		ipc->send(message);
+		//ipc->recv(message); //ACK
 	}
 
 	virtual void update() {
@@ -93,13 +95,13 @@ public:
 			}
 		}
 		ChannelWRefSet copy(channels);
-		Ipc::MessageRef msg = Ipc::Message::create();
 		for(std::set<Ipc::ChannelWRef>::iterator it = copy.begin(); it != copy.end(); it++) {
 			Ipc::ChannelWRef ref = *it;
 			if(ref.expired()) {
 				continue;
 			}
 			Ipc::ChannelRef ir = Ipc::ChannelRef(ref);
+			Ipc::MessageRef msg(ir->getMessage());
 			if(!ir->isEmpty()) {
 				ir->recv(msg);
 				if(msg->length() == 0) {
@@ -199,10 +201,10 @@ public:
 	virtual WindowRef createWindow(bool incognito) {
 		Log::debug() << "create Window start" << std::endl;
 
-		Ipc::MessageRef msg = Ipc::Message::create();
-		msg->add_str("openWindow");
-		msg->add_8(incognito);
-		ipc->send(msg);
+		message->reset();
+		message->add_str("openWindow");
+		message->add_8(incognito);
+		ipc->send(message);
 
 		while(freeWindowChannels.empty()) {
 			update();

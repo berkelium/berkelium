@@ -45,7 +45,7 @@ InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef prof
 	}
 
 	Log::debug() << "awaiting berkelium host process ipc startup message!" << std::endl;
-	Ipc::MessageRef msg(Ipc::Message::create());
+	Ipc::MessageRef msg(ipc->getMessage());
 	while(ipc->isEmpty()) {
 		if(!process->isRunning()) {
 			Log::error() << "berkelium host startup failed!" << std::endl;

@@ -38,7 +38,7 @@ public:
 		channel(channel),
 		incognito(incognito),
 		tabs(),
-		message(Ipc::Message::create()) {
+		message(channel->getMessage()) {
 	}
 
 	virtual ~WindowImpl() {
