@@ -210,6 +210,6 @@ MessageRef Message::create() {
 	return MessageRef(new impl::MessageImpl());
 }
 
-} // namespace impl
+} // namespace Ipc
 
 } // namespace Berkelium

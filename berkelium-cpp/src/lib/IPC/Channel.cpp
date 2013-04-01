@@ -45,6 +45,7 @@ public:
 		server(server),
 		reverse(reverse),
 		reverseRef(),
+		self(),
 		pin(Pipe::getPipe((dir / name).string() + getExt(server, reverse))),
 		pout(Pipe::getPipe((dir / name).string() + getExt(!server, reverse))) {
 	}
@@ -52,17 +53,14 @@ public:
 	virtual ~ChannelImpl() {
 	}
 
-	// Returns true if there are no pending messages to receive.
 	virtual bool isEmpty() {
 		return pin->isEmpty();
 	}
 
-	// Sends this message.
 	virtual void send(Ipc::MessageRef msg) {
 		pout->send(msg);
 	}
 
-	// Receives the next message.
 	virtual void recv(Ipc::MessageRef msg) {
 		pin->recv(msg);
 	}
@@ -119,6 +117,6 @@ ChannelRef Channel::getChannel(const std::string& dir, const std::string& name, 
 	return impl::ChannelImpl::newChannel(dir, name, server);
 }
 
-} // namespace IPC
+} // namespace Ipc
 
 } // namespace Berkelium

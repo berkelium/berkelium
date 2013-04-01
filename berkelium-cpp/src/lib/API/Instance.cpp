@@ -213,7 +213,7 @@ public:
 		Ipc::ChannelRef channel = freeWindowChannels.back();
 		freeWindowChannels.pop_back();
 
-		WindowRef ret(newWindow(InstanceRef(self), channel, incognito));
+		WindowRef ret(newWindow(self.lock(), channel, incognito));
 		windows.insert(ret);
 
 		Log::debug() << "create Window done" << std::endl;
