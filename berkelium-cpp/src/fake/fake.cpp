@@ -50,10 +50,9 @@ int main(int argc, char* argv[])
 	Berkelium::Log::debug() << "starting host fake!" << std::endl;
 	ChannelRef ipc = Channel::getChannel(dir, id, false);
 
-	MessageRef recv = Message::create();
-	MessageRef send = Message::create();
-	send->add_str("berkelium");
-	ipc->send(send);
+	MessageRef msg(ipc->getMessage());
+	msg->add_str("berkelium");
+	ipc->send(msg);
 
 	Berkelium::Log::info() << "host fake started!" << std::endl;
 
@@ -74,8 +73,8 @@ int main(int argc, char* argv[])
 			}
 			empty = false;
 
-			ipc->recv(recv);
-			std::string cmd = recv->get_str();
+			ipc->recv(msg);
+			std::string cmd = msg->get_str();
 			Berkelium::Log::debug() << "recv: '" << cmd << "'" << std::endl;
 
 			if(cmd.compare("exit") == 0) {
@@ -83,27 +82,27 @@ int main(int argc, char* argv[])
 			} else if(cmd.compare("openTab") == 0) {
 				ChannelRef tab(ipc->createSubChannel());
 				channels.push_back(tab);
-				send->reset();
-				send->add_str("addTab");
-				send->add_str(tab->getName());
-				ipc->send(send);
+				msg->reset();
+				msg->add_str("addTab");
+				msg->add_str(tab->getName());
+				ipc->send(msg);
 				Berkelium::Log::info() << "created new tab with id " << tab->getName() << "!" << std::endl;
 				continue;
 			} else if(cmd.compare("openWindow") == 0) {
-				bool incognito = recv->get_8() == 1;
+				bool incognito = msg->get_8() == 1;
 				ChannelRef win(ipc->createSubChannel());
 				channels.push_back(win);
-				send->reset();
-				send->add_str("addWindow");
-				send->add_str(win->getName());
-				ipc->send(send);
+				msg->reset();
+				msg->add_str("addWindow");
+				msg->add_str(win->getName());
+				ipc->send(msg);
 				Berkelium::Log::info() << "created new " << (incognito ? "incognito" : "default") << " window with id "
 						<< win->getName() << "!" << std::endl;
 				continue;
 			}
 
-			send->reset();
-			ipc->send(send); // ACK
+			msg->reset();
+			ipc->send(msg); // ACK
 		}
 		if(empty) {
 			Berkelium::Util::sleep(33);
