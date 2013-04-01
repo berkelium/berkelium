@@ -61,7 +61,7 @@ public:
 	virtual TabRef createTab()  {
 		cleanupTabs();
 		message->reset();
-		message->add_str("openTab");
+		message->add_cmd(Ipc::CommandId::createTab);
 		channel->send(message);
 		channel->recv(message);
 		TabRef ret(newTab(getSelf()));

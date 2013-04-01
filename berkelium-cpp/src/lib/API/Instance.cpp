@@ -82,7 +82,7 @@ public:
 
 	virtual void close() {
 		message->reset();
-		message->add_str("exit");
+		message->add_cmd(Ipc::CommandId::exitHost);
 		ipc->send(message);
 		//ipc->recv(message); //ACK
 	}
@@ -108,21 +108,27 @@ public:
 					// only an ack..
 					continue;
 				}
-				std::string str = msg->get_str();
-				if(str.compare("addWindow") == 0) {
-					std::string id = msg->get_str();
-					Log::debug() << "new window: '" << id << "'!" << std::endl;
-					Ipc::ChannelRef c = ipc->getSubChannel(id);
-					channels.insert(c);
-					freeWindowChannels.push_back(c);
-				} else if(str.compare("OnReady") == 0) {
-					msg->reset();
-					msg->add_str("Navigate");
-					msg->add_str("http://heise.de/");
-					Log::debug() << "sending navigate to heise.de!" << std::endl;
-					ir->send(msg);
-				} else {
-					Log::debug() << "recv from host: '" << str << "'!" << std::endl;
+				switch(Ipc::CommandId cmd = msg->get_cmd()) {
+					default: {
+						Berkelium::Log::error() << "received unknown command '" << cmd << "'" << std::endl;
+						break;
+					}
+					case Ipc::CommandId::newWindow: {
+						std::string id = msg->get_str();
+						Log::debug() << "new window: '" << id << "'!" << std::endl;
+						Ipc::ChannelRef c = ipc->getSubChannel(id);
+						channels.insert(c);
+						freeWindowChannels.push_back(c);
+						break;
+					}
+					case Ipc::CommandId::onReady: {
+						msg->reset();
+						msg->add_cmd(Ipc::CommandId::navigate);
+						msg->add_str("http://heise.de/");
+						Log::debug() << "sending navigate to heise.de!" << std::endl;
+						ir->send(msg);
+						break;
+					}
 				}
 			}
 		}
@@ -202,7 +208,7 @@ public:
 		Log::debug() << "create Window start" << std::endl;
 
 		message->reset();
-		message->add_str("openWindow");
+		message->add_cmd(Ipc::CommandId::createWindow);
 		message->add_8(incognito);
 		ipc->send(message);
 

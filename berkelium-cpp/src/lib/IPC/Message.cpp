@@ -81,6 +81,10 @@ public:
 		resize(wp + add);
 	}
 
+	virtual void add_cmd(CommandId id) {
+		add_32((CommandId)id);
+	}
+
 	virtual void add_8(int8_t data) {
 		increase(1);
 		buffer[wp++] = data;
@@ -128,6 +132,10 @@ public:
 
 	virtual void add_str(const std::string& str) {
 		add_data16(str.size(), str.c_str());
+	}
+
+	virtual CommandId get_cmd() {
+		return (CommandId)get_32();
 	}
 
 	virtual int8_t get_8() {

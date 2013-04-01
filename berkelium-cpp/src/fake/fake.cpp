@@ -17,6 +17,7 @@ using Berkelium::Ipc::Channel;
 using Berkelium::Ipc::ChannelRef;
 using Berkelium::Ipc::Message;
 using Berkelium::Ipc::MessageRef;
+using Berkelium::Ipc::CommandId;
 
 using Berkelium::Util::getOption;
 
@@ -74,35 +75,50 @@ int main(int argc, char* argv[])
 			empty = false;
 
 			ipc->recv(msg);
-			std::string cmd = msg->get_str();
-			Berkelium::Log::debug() << "recv: '" << cmd << "'" << std::endl;
+			bool sendAck = false;
 
-			if(cmd.compare("exit") == 0) {
-				running = false;
-			} else if(cmd.compare("openTab") == 0) {
-				ChannelRef tab(ipc->createSubChannel());
-				channels.push_back(tab);
-				msg->reset();
-				msg->add_str("addTab");
-				msg->add_str(tab->getName());
-				ipc->send(msg);
-				Berkelium::Log::info() << "created new tab with id " << tab->getName() << "!" << std::endl;
-				continue;
-			} else if(cmd.compare("openWindow") == 0) {
-				bool incognito = msg->get_8() == 1;
-				ChannelRef win(ipc->createSubChannel());
-				channels.push_back(win);
-				msg->reset();
-				msg->add_str("addWindow");
-				msg->add_str(win->getName());
-				ipc->send(msg);
-				Berkelium::Log::info() << "created new " << (incognito ? "incognito" : "default") << " window with id "
-						<< win->getName() << "!" << std::endl;
-				continue;
+			switch(CommandId cmd = msg->get_cmd()) {
+				default: {
+					Berkelium::Log::error() << "received unknown command '" << cmd << "'" << std::endl;
+					sendAck = true;
+					break;
+				}
+
+				case CommandId::exitHost: {
+					running = false;
+					sendAck = true;
+					break;
+				}
+
+				case CommandId::createTab: {
+					ChannelRef tab(ipc->createSubChannel());
+					channels.push_back(tab);
+					msg->reset();
+					msg->add_cmd(CommandId::newTab);
+					msg->add_str(tab->getName());
+					ipc->send(msg);
+					Berkelium::Log::info() << "created new tab with id " << tab->getName() << "!" << std::endl;
+					break;
+				}
+
+				case CommandId::createWindow: {
+					bool incognito = msg->get_8() == 1;
+					ChannelRef win(ipc->createSubChannel());
+					channels.push_back(win);
+					msg->reset();
+					msg->add_cmd(CommandId::newWindow);
+					msg->add_str(win->getName());
+					ipc->send(msg);
+					Berkelium::Log::info() << "created new " << (incognito ? "incognito" : "default") << " window with id "
+							<< win->getName() << "!" << std::endl;
+					break;
+				}
 			}
 
-			msg->reset();
-			ipc->send(msg); // ACK
+			if(sendAck) {
+				msg->reset();
+				ipc->send(msg); // ACK
+			}
 		}
 		if(empty) {
 			Berkelium::Util::sleep(33);

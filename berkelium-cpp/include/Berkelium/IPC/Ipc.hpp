@@ -28,6 +28,16 @@ class Pipe;
 typedef std::shared_ptr<Pipe> PipeRef;
 typedef std::weak_ptr<Pipe> PipeWRef;
 
+typedef enum {
+	exitHost,
+	createWindow,
+	createTab,
+	newWindow,
+	newTab,
+	onReady,
+	navigate,
+} CommandId;
+
 } // namespace Ipc
 
 } // namespace Berkelium

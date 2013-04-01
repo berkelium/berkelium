@@ -31,6 +31,7 @@ public:
 	virtual void reset() = 0;
 	virtual void setup(size_t) = 0;
 
+	virtual void add_cmd(CommandId) = 0;
 	virtual void add_8(int8_t) = 0;
 	virtual void add_16(int16_t) = 0;
 	virtual void add_32(int32_t) = 0;
@@ -40,6 +41,7 @@ public:
 	virtual void add_str(const char*) = 0;
 	virtual void add_str(const std::string&) = 0;
 
+	virtual CommandId get_cmd() = 0;
 	virtual int8_t get_8() = 0;
 	virtual int16_t get_16() = 0;
 	virtual int32_t get_32() = 0;
