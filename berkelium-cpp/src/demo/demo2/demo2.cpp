@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 	Berkelium::Log::info() << "waiting 10s..." << std::endl;
 
 	for(int i = 0; i < 10000; i += 100) {
-		instance->update();
+		instance->internalUpdate();
 		Berkelium::Util::sleep(100);
 	}
 

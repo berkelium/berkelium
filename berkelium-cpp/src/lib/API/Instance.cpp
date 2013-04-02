@@ -87,7 +87,7 @@ public:
 		//ipc->recv(message); //ACK
 	}
 
-	virtual void update() {
+	virtual void internalUpdate() {
 		for(std::set<Ipc::ChannelWRef>::iterator it = channels.begin(); it != channels.end(); it++) {
 			Ipc::ChannelWRef ref = *it;
 			if(ref.expired()) {
@@ -213,7 +213,7 @@ public:
 		ipc->send(message);
 
 		while(freeWindowChannels.empty()) {
-			update();
+			internalUpdate();
 			Util::sleep(30);
 		}
 

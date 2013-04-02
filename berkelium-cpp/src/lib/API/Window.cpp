@@ -44,6 +44,9 @@ public:
 	virtual ~WindowImpl() {
 	}
 
+	virtual void internalUpdate() {
+	}
+
 	virtual int32_t getTabCount() {
 		cleanupTabs();
 		return tabs.size();

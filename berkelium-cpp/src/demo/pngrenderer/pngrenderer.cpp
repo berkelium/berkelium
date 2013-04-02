@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 	Berkelium::Log::debug() << "tested!" << std::endl;
 
 	for(int i = 0; i < 2000; i += 100) {
-		instance->update();
+		instance->internalUpdate();
 		Berkelium::Util::sleep(100);
 	}
 

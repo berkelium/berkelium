@@ -36,6 +36,9 @@ public:
 	virtual ~TabImpl() {
 	}
 
+	virtual void internalUpdate() {
+	}
+
 	virtual void close() {
 	}
 
