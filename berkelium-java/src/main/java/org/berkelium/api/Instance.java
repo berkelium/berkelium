@@ -15,7 +15,8 @@ package org.berkelium.api;
 // Represents a running berkelium host instance.
 public interface Instance {
 
-	void update();
+	// Internal Update Function
+	void internalUpdate();
 
 	// Closes all open Windows/Tabs and the profile, terminates the host.
 	void close();

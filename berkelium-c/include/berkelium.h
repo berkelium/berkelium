@@ -179,7 +179,9 @@ void BK_HostDelegate_onClosed(BK_HostDelegate self, BK_Instance instance);
 //
 // Represents a running berkelium host instance.
 // =========================================
-void BK_Instance_update(BK_Instance self);
+
+// Internal Update Function
+void BK_Instance_internalUpdate(BK_Instance self);
 
 // Closes all open Windows/Tabs and the profile, terminates the host.
 void BK_Instance_close(BK_Instance self);
@@ -218,6 +220,9 @@ BK_Window BK_Instance_createWindow(BK_Instance self, bk_bool incognito);
 // interface Window
 // =========================================
 
+// Internal Update Function
+void BK_Window_internalUpdate(BK_Window self);
+
 // Returns the current tab count.
 bk_int32 BK_Window_getTabCount(BK_Window self);
 
@@ -243,6 +248,9 @@ bk_bool BK_Window_isIncognito(BK_Window self);
 // =========================================
 // interface Tab
 // =========================================
+
+// Internal Update Function
+void BK_Tab_internalUpdate(BK_Tab self);
 
 // Closes this tab and removes it from the window.
 void BK_Tab_close(BK_Tab self);

@@ -14,6 +14,9 @@ package org.berkelium.api;
 
 public interface Window {
 
+	// Internal Update Function
+	void internalUpdate();
+
 	// Returns the current tab count.
 	int getTabCount();
 

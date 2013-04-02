@@ -14,6 +14,9 @@ package org.berkelium.api;
 
 public interface Tab {
 
+	// Internal Update Function
+	void internalUpdate();
+
 	// Closes this tab and removes it from the window.
 	void close();
 

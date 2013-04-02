@@ -182,7 +182,9 @@
 	</group>
 	<group type="interface" name="Instance">
 		<short>Represents a running berkelium host instance.</short>
-		<entry name="update"/>
+		<entry name="internalUpdate">
+			<short>Internal Update Function</short>
+		</entry>
 		<entry name="close">
 			<short>Closes all open Windows/Tabs and the profile, terminates the host.</short>
 			<short>Also removes the profile if it is a temporary one.</short>
@@ -231,6 +233,9 @@
 		</entry>
 	</group>
 	<group type="interface" name="Window">
+		<entry name="internalUpdate">
+			<short>Internal Update Function</short>
+		</entry>
 		<entry name="getTabCount" ret="int32">
 			<short>Returns the current tab count.</short>
 		</entry>
@@ -255,6 +260,9 @@
 	<group type="interface" name="WindowDelegate">
 	</group>
 	<group type="interface" name="Tab">
+		<entry name="internalUpdate">
+			<short>Internal Update Function</short>
+		</entry>
 		<entry name="close">
 			<short>Closes this tab and removes it from the window.</short>
 		</entry>

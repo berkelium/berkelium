@@ -25,6 +25,9 @@ protected:
 public:
 	virtual ~Window() = 0;
 
+	// Internal Update Function
+	virtual void internalUpdate() = 0;
+
 	// Returns the current tab count.
 	virtual int32_t getTabCount() = 0;
 

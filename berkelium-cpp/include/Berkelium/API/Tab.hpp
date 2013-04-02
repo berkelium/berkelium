@@ -25,6 +25,9 @@ protected:
 public:
 	virtual ~Tab() = 0;
 
+	// Internal Update Function
+	virtual void internalUpdate() = 0;
+
 	// Closes this tab and removes it from the window.
 	virtual void close() = 0;
 
