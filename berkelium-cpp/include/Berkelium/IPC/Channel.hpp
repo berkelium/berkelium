@@ -21,7 +21,7 @@ protected:
 	Channel();
 
 public:
-	static ChannelRef getChannel(const std::string& dir, const bool server);
+	static ChannelRef createChannel(const std::string& dir, const bool server);
 	static ChannelRef getChannel(const std::string& dir, const std::string& name, const bool server);
 
 	virtual ~Channel() = 0;

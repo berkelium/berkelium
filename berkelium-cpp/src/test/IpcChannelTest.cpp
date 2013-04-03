@@ -35,7 +35,7 @@ TEST_F(ChannelTest, simple) {
 	Berkelium::ProfileRef profile;
 	std::string name = createTempPath(profile);
 
-	ChannelRef server = Channel::getChannel(name, true);
+	ChannelRef server = Channel::createChannel(name, true);
 	ASSERT_NOT_NULL(server);
 	ChannelRef client = Channel::getChannel(name, server->getName(), false);
 	ASSERT_NOT_NULL(client);
@@ -67,7 +67,7 @@ TEST_F(ChannelTest, dual) {
 	Berkelium::ProfileRef profile;
 	std::string name = createTempPath(profile);
 
-	ChannelRef s1 = Channel::getChannel(name, true);
+	ChannelRef s1 = Channel::createChannel(name, true);
 	ASSERT_NOT_NULL(s1);
 	ChannelRef s2 = s1->getReverseChannel();
 	ASSERT_NOT_NULL(s2);
@@ -107,7 +107,7 @@ TEST_F(ChannelTest, free) {
 	Berkelium::ProfileRef profile;
 	std::string name = createTempPath(profile);
 
-	ChannelRef c1 = Channel::getChannel(name, true);
+	ChannelRef c1 = Channel::createChannel(name, true);
 	ASSERT_TRUE(c1.unique());
 	void* org = c1.get();
 	ChannelRef c2 = c1;
@@ -126,7 +126,7 @@ TEST_F(ChannelTest, free) {
 	c2.reset();
 	// new reverse channel object should not be placed on the same location
 	// where c2 was stored before, so a dummy channel is created here
-	ChannelRef dummy = Channel::getChannel(name, true);
+	ChannelRef dummy = Channel::createChannel(name, true);
 
 	c2 = c1->getReverseChannel();
 	// a channel has only a weak ptr to its reverse channel,

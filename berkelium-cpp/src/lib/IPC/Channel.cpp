@@ -72,7 +72,7 @@ public:
 	}
 
 	virtual ChannelRef createSubChannel() {
-		return Channel::getChannel(dir, true);
+		return Channel::createChannel(dir, true);
 	}
 
 	virtual ChannelRef getSubChannel(const std::string& name) {
@@ -115,7 +115,7 @@ Channel::Channel() {
 Channel::~Channel() {
 }
 
-ChannelRef Channel::getChannel(const std::string& dir, const bool server) {
+ChannelRef Channel::createChannel(const std::string& dir, const bool server) {
 	return getChannel(dir, Util::randomId(), server);
 }
 

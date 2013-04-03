@@ -26,7 +26,7 @@ private:
 
 protected:
 	inline Process(const std::string& dir) :
-		ipc(Ipc::Channel::getChannel(dir, true)) {
+		ipc(Ipc::Channel::createChannel(dir, true)) {
 	}
 
 public:
