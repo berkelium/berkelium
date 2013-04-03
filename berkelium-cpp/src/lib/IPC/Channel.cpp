@@ -26,7 +26,8 @@ private:
 	const std::string name;
 	const bool server;
 	const bool reverse;
-	ChannelWRef reverseRef;
+	ChannelRef reverseRef;
+	ChannelWRef reverseWRef;
 	ChannelWRef self;
 	MessageRef message;
 	PipeRef pin;
@@ -80,15 +81,10 @@ public:
 	}
 
 	virtual ChannelRef getReverseChannel() {
-		ChannelRef ret = reverseRef.lock();
-		if(ret) {
-			return ret;
+		if(reverseRef) {
+			return reverseRef;
 		}
-		impl::ChannelImpl* impl = new impl::ChannelImpl(path(dir), name, server, !reverse);
-
-		ret = ChannelRef(impl);
-		reverseRef = ret;
-		return ret;
+		return reverseWRef.lock();
 	}
 
 	virtual std::string getName() {
@@ -100,10 +96,15 @@ public:
 	}
 
 	static ChannelRef newChannel(const std::string& dir, const std::string& name, const bool server) {
-		ChannelImpl* impl = new ChannelImpl(path(dir), name, server, false);
-		ChannelRef ret(impl);
-		impl->self = ret;
-		return ret;
+		ChannelImpl* impl1 = new ChannelImpl(path(dir), name, server, false);
+		ChannelImpl* impl2 = new ChannelImpl(path(dir), name, server, true);
+		ChannelRef ret1(impl1);
+		ChannelRef ret2(impl2);
+		impl1->self = ret1;
+		impl2->self = ret2;
+		impl1->reverseRef = ret2;
+		impl2->reverseWRef = ret1;
+		return ret1;
 	}
 };
 

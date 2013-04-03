@@ -119,7 +119,7 @@ TEST_F(ChannelTest, free) {
 	ASSERT_TRUE(c2.unique());
 
 	c1 = c2->getReverseChannel();
-	ASSERT_TRUE(c1.unique());
+	ASSERT_EQ(2, c1.use_count());
 	ASSERT_TRUE(c2.unique());
 	ASSERT_NE(c1.get(), c2.get());
 
@@ -129,9 +129,7 @@ TEST_F(ChannelTest, free) {
 	ChannelRef dummy = Channel::createChannel(name, true);
 
 	c2 = c1->getReverseChannel();
-	// a channel has only a weak ptr to its reverse channel,
-	// so another instance must be return here and stored in c2.
-	ASSERT_NE(org, c2.get());
+	ASSERT_NULL(c2);
 }
 
 } // namespace
