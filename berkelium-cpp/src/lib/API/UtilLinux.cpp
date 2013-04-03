@@ -6,13 +6,22 @@
 
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
+#include <Berkelium/Impl/Logger.hpp>
 
+#include <sys/time.h>
 #include <cstdlib>
 #include <sys/select.h>
 
 namespace Berkelium {
 
 namespace Util {
+
+int64_t currentTimeMillis() {
+	timeval t;
+	if(gettimeofday( &t, NULL) == -1)
+		Log::systemError("gettimeofday");
+	return int64_t(t.tv_sec) * 1000 + int64_t(t.tv_usec) / 1000;
+}
 
 std::string getEnv(const std::string& env, const std::string& defaultValue) {
 	const char* ret = std::getenv(env.c_str());
