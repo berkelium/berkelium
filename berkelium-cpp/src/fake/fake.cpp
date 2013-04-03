@@ -10,6 +10,7 @@
 #include <Berkelium/Impl/Logger.hpp>
 
 #include <list>
+#include <queue>
 
 using Berkelium::BerkeliumFactory;
 using Berkelium::ProfileRef;
@@ -20,6 +21,28 @@ using Berkelium::Ipc::MessageRef;
 using Berkelium::Ipc::CommandId;
 
 using Berkelium::Util::getOption;
+
+struct Entry {
+	int64_t time;
+	ChannelRef channel;
+	MessageRef msg;
+
+	Entry(int64_t time, ChannelRef channel, MessageRef msg) :
+		time(time + Berkelium::Util::currentTimeMillis()),
+		channel(channel),
+		msg(msg) {
+	}
+};
+
+class EntrySort {
+public:
+	EntrySort() {
+	}
+
+	bool operator() (const Entry& lhs, const Entry& rhs) const {
+		return lhs.time < rhs.time;
+	}
+};
 
 int main(int argc, char* argv[])
 {
@@ -61,8 +84,10 @@ int main(int argc, char* argv[])
 	std::list<ChannelRef> channels;
 	channels.push_front(ipc);
 
+	std::priority_queue<Entry, std::vector<Entry>, EntrySort> todo;
+
 	while(running) {
-		bool empty = true;
+		bool wait = true;
 		for(std::list<ChannelRef>::iterator it = channels.begin(); it != channels.end(); it++) {
 			if(!running) {
 				break;
@@ -72,7 +97,7 @@ int main(int argc, char* argv[])
 			if(ipc->isEmpty()) {
 				continue;
 			}
-			empty = false;
+			wait = false;
 
 			ipc->recv(msg);
 			bool sendAck = false;
@@ -92,12 +117,18 @@ int main(int argc, char* argv[])
 
 				case CommandId::createTab: {
 					ChannelRef tab(ipc->createSubChannel());
+					ChannelRef tab2(tab->getReverseChannel());
 					channels.push_back(tab);
 					msg->reset();
-					msg->add_cmd(CommandId::newTab);
 					msg->add_str(tab->getName());
 					ipc->send(msg);
 					Berkelium::Log::info() << "created new tab with id " << tab->getName() << "!" << std::endl;
+
+					// wait 2s and send onReady
+					MessageRef m = Message::create();
+					m->add_cmd(CommandId::onReady);
+					todo.push(Entry(2000, tab2, m));
+					msg->reset();
 					break;
 				}
 
@@ -106,11 +137,16 @@ int main(int argc, char* argv[])
 					ChannelRef win(ipc->createSubChannel());
 					channels.push_back(win);
 					msg->reset();
-					msg->add_cmd(CommandId::newWindow);
 					msg->add_str(win->getName());
 					ipc->send(msg);
 					Berkelium::Log::info() << "created new " << (incognito ? "incognito" : "default") << " window with id "
 							<< win->getName() << "!" << std::endl;
+					break;
+				}
+
+				case CommandId::navigate: {
+					std::string url(msg->get_str());
+					Berkelium::Log::info() << "navigate to '" << url << "'" << std::endl;
 					break;
 				}
 			}
@@ -120,7 +156,18 @@ int main(int argc, char* argv[])
 				ipc->send(msg); // ACK
 			}
 		}
-		if(empty) {
+
+		while(!todo.empty()) {
+			Entry entry = todo.top();
+			if(entry.time > Berkelium::Util::currentTimeMillis()) {
+				break;
+			}
+			todo.pop();
+			Berkelium::Log::info() << "processing queued task..." << std::endl;
+			entry.channel->send(entry.msg);
+		}
+
+		if(wait) {
 			Berkelium::Util::sleep(33);
 		}
 	}

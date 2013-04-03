@@ -6,6 +6,7 @@
 #include <Berkelium/API/Instance.hpp>
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/LogDelegate.hpp>
+#include <Berkelium/API/Window.hpp>
 #include <Berkelium/IPC/Channel.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Process.hpp>
@@ -33,35 +34,31 @@ struct set {
 typedef set<WindowWRef>::type WindowWRefSet;
 typedef set<LogDelegateWRef>::type LogDelegateWRefSet;
 typedef set<HostDelegateWRef>::type HostDelegateWRefSet;
-typedef set<Ipc::ChannelWRef>::type ChannelWRefSet;
 
 class InstanceImpl : public Instance {
 	InstanceWRef self;
 	HostExecutableRef executable;
 	ProfileRef profile;
-	Ipc::ChannelRef ipc;
+	Ipc::ChannelRef send;
+	Ipc::ChannelRef recv;
 	Ipc::MessageRef message;
 	ProcessRef process;
 	WindowWRefSet windows;
 	LogDelegateWRefSet logs;
 	HostDelegateWRefSet hosts;
-	ChannelWRefSet channels;
-	std::vector<Ipc::ChannelRef> freeWindowChannels;
 
 public:
 	InstanceImpl(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process) :
 		self(),
 		executable(executable),
 		profile(profile),
-		ipc(ipc),
+		send(ipc),
+		recv(ipc->getReverseChannel()),
 		message(ipc->getMessage()),
 		process(process),
 		windows(),
 		logs(),
-		hosts(),
-		channels(),
-		freeWindowChannels() {
-		channels.insert(ipc);
+		hosts() {
 	}
 
 	~InstanceImpl() {
@@ -83,53 +80,30 @@ public:
 	virtual void close() {
 		message->reset();
 		message->add_cmd(Ipc::CommandId::exitHost);
-		ipc->send(message);
+		send->send(message);
 		//ipc->recv(message); //ACK
 	}
 
 	virtual void internalUpdate() {
-		for(std::set<Ipc::ChannelWRef>::iterator it = channels.begin(); it != channels.end(); it++) {
-			Ipc::ChannelWRef ref = *it;
-			if(ref.expired()) {
-				it = channels.erase(it);
+		if(!recv->isEmpty()) {
+			recv->recv(message);
+			if(message->length() == 0) {
+				// only an ack..
+			} else {
+				switch(Ipc::CommandId cmd = message->get_cmd()) {
+					default: {
+						Berkelium::Log::error() << "Instance: received unknown command '" << cmd << "'" << std::endl;
+						break;
+					}
+				}
 			}
 		}
-		ChannelWRefSet copy(channels);
-		for(std::set<Ipc::ChannelWRef>::iterator it = copy.begin(); it != copy.end(); it++) {
-			Ipc::ChannelWRef ref = *it;
-			if(ref.expired()) {
-				continue;
-			}
-			Ipc::ChannelRef ir = Ipc::ChannelRef(ref);
-			Ipc::MessageRef msg(ir->getMessage());
-			if(!ir->isEmpty()) {
-				ir->recv(msg);
-				if(msg->length() == 0) {
-					// only an ack..
-					continue;
-				}
-				switch(Ipc::CommandId cmd = msg->get_cmd()) {
-					default: {
-						Berkelium::Log::error() << "received unknown command '" << cmd << "'" << std::endl;
-						break;
-					}
-					case Ipc::CommandId::newWindow: {
-						std::string id = msg->get_str();
-						Log::debug() << "new window: '" << id << "'!" << std::endl;
-						Ipc::ChannelRef c = ipc->getSubChannel(id);
-						channels.insert(c);
-						freeWindowChannels.push_back(c);
-						break;
-					}
-					case Ipc::CommandId::onReady: {
-						msg->reset();
-						msg->add_cmd(Ipc::CommandId::navigate);
-						msg->add_str("http://heise.de/");
-						Log::debug() << "sending navigate to heise.de!" << std::endl;
-						ir->send(msg);
-						break;
-					}
-				}
+		for(WindowWRefSet::iterator it = windows.begin(); it != windows.end(); it++) {
+			WindowRef win(it->lock());
+			if(win) {
+				win->internalUpdate();
+			} else {
+				it = windows.erase(it);
 			}
 		}
 	}
@@ -210,21 +184,16 @@ public:
 		message->reset();
 		message->add_cmd(Ipc::CommandId::createWindow);
 		message->add_8(incognito);
-		ipc->send(message);
+		send->send(message);
+		send->recv(message);
 
-		while(freeWindowChannels.empty()) {
-			internalUpdate();
-			Util::sleep(30);
-		}
-
-		Log::debug() << "got free window channel" << std::endl;
-		Ipc::ChannelRef channel = freeWindowChannels.back();
-		freeWindowChannels.pop_back();
+		std::string id = message->get_str();
+		Log::debug() << "created window '" << id << "'!" << std::endl;
+		Ipc::ChannelRef channel = send->getSubChannel(id);
 
 		WindowRef ret(newWindow(self.lock(), channel, incognito));
 		windows.insert(ret);
 
-		Log::debug() << "create Window done" << std::endl;
 		return ret;
 	}
 };

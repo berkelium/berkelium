@@ -24,12 +24,18 @@ namespace impl {
 class TabImpl : public Tab {
 private:
 	TabWRef self;
+	Ipc::ChannelRef send;
+	Ipc::ChannelRef recv;
+	Ipc::MessageRef message;
 	WindowRef parent;
 
 public:
-	TabImpl(WindowRef parent) :
+	TabImpl(WindowRef parent, Ipc::ChannelRef ipc) :
 		Tab(),
 		self(),
+		send(ipc),
+		recv(ipc->getReverseChannel()),
+		message(ipc->getMessage()),
 		parent(parent) {
 	}
 
@@ -37,6 +43,27 @@ public:
 	}
 
 	virtual void internalUpdate() {
+		if(!recv->isEmpty()) {
+			recv->recv(message);
+			if(message->length() == 0) {
+				// only an ack..
+			} else {
+				switch(Ipc::CommandId cmd = message->get_cmd()) {
+					default: {
+						Berkelium::Log::error() << "Tab: received unknown command '" << cmd << "'" << std::endl;
+						break;
+					}
+					case Ipc::CommandId::onReady: {
+						message->reset();
+						message->add_cmd(Ipc::CommandId::navigate);
+						message->add_str("http://heise.de/");
+						Log::debug() << "sending navigate to heise.de!" << std::endl;
+						send->send(message);
+						break;
+					}
+				}
+			}
+		}
 	}
 
 	virtual void close() {
@@ -69,16 +96,16 @@ public:
 		return self.lock();
 	}
 
-	static TabRef newTab(WindowRef window) {
-		TabImpl* impl = new TabImpl(window);
+	static TabRef newTab(WindowRef window, Ipc::ChannelRef ipc) {
+		TabImpl* impl = new TabImpl(window, ipc);
 		TabRef ret(impl);
 		impl->self = ret;
 		return ret;
 	}
 };
 
-TabRef newTab(WindowRef window) {
-	return TabImpl::newTab(window);
+TabRef newTab(WindowRef window, Ipc::ChannelRef ipc) {
+	return TabImpl::newTab(window, ipc);
 }
 
 } // namespace impl

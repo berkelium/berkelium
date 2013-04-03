@@ -25,26 +25,60 @@ class WindowImpl : public Window {
 private:
 	WindowWRef self;
 	InstanceRef instance;
-	Ipc::ChannelRef channel;
-	const bool incognito;
-	std::list<TabWRef> tabs;
+	Ipc::ChannelRef send;
+	Ipc::ChannelRef recv;
 	Ipc::MessageRef message;
+	std::list<TabWRef> tabs;
+	const bool incognito;
+	Berkelium::Ipc::ChannelRef x;
 
 public:
 	WindowImpl(InstanceRef instance, Ipc::ChannelRef channel, bool incognito) :
 		Window(),
 		self(),
 		instance(instance),
-		channel(channel),
-		incognito(incognito),
+		send(channel),
+		recv(channel->getReverseChannel()),
+		message(channel->getMessage()),
 		tabs(),
-		message(channel->getMessage()) {
+		incognito(incognito) {
 	}
 
 	virtual ~WindowImpl() {
 	}
 
 	virtual void internalUpdate() {
+		if(!recv->isEmpty()) {
+			recv->recv(message);
+			if(message->length() == 0) {
+				// only an ack..
+			} else {
+				switch(Ipc::CommandId cmd = message->get_cmd()) {
+					default: {
+						Berkelium::Log::error() << "Window: received unknown command '" << cmd << "'" << std::endl;
+						break;
+					}
+					/*
+					case Ipc::CommandId::onReady: {
+						msg->reset();
+						msg->add_cmd(Ipc::CommandId::navigate);
+						msg->add_str("http://heise.de/");
+						Log::debug() << "sending navigate to heise.de!" << std::endl;
+						send->send(msg);
+						break;
+					}
+					*/
+				}
+			}
+		}
+		for(std::list<TabWRef>::iterator it = tabs.begin(); it != tabs.end(); it++) {
+			TabRef tab(it->lock());
+			if(tab) {
+				tab->internalUpdate();
+			} else {
+				it = tabs.erase(it);
+			}
+		}
 	}
 
 	virtual int32_t getTabCount() {
@@ -65,9 +99,13 @@ public:
 		cleanupTabs();
 		message->reset();
 		message->add_cmd(Ipc::CommandId::createTab);
-		channel->send(message);
-		channel->recv(message);
-		TabRef ret(newTab(getSelf()));
+		send->send(message);
+		send->recv(message);
+		std::string id(message->get_str());
+		Berkelium::Log::debug() << "created tab '" << id << "'" << std::endl;
+		Ipc::ChannelRef x = send->getSubChannel(id);
+		Berkelium::Log::debug() << "with channel '" << x->getName() << "'" << std::endl;
+		TabRef ret(newTab(getSelf(), x));
 		tabs.push_back(ret);
 		return ret;
 	}

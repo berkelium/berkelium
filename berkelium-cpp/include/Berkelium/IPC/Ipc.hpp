@@ -32,8 +32,6 @@ typedef enum {
 	exitHost,
 	createWindow,
 	createTab,
-	newWindow,
-	newTab,
 	onReady,
 	navigate,
 } CommandId;
