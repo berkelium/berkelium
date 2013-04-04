@@ -25,6 +25,9 @@ protected:
 public:
 	virtual ~Tab() = 0;
 
+	// Returns the associated Runtime.
+	virtual RuntimeRef getRuntime() = 0;
+
 	// Internal Update Function
 	virtual void internalUpdate() = 0;
 

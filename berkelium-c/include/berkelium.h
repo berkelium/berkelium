@@ -41,6 +41,9 @@ typedef bk_int32 BK_TabDelegate;
 // interface HostVersion
 // =========================================
 
+// Returns the associated Runtime.
+BK_Runtime BK_HostVersion_getRuntime(BK_HostVersion self);
+
 // Returns the berkelium host version e.g. “22.0.1229.94”
 bk_string BK_HostVersion_getVersionString(BK_HostVersion self);
 
@@ -112,6 +115,9 @@ BK_Instance BK_Runtime_open(BK_Runtime self, BK_HostExecutable executable, BK_Pr
 // Represents a reference to the executable file of the berkelium host process.
 // =========================================
 
+// Returns the associated Runtime.
+BK_Runtime BK_HostExecutable_getRuntime(BK_HostExecutable self);
+
 // Returns the full (native) path to the berkelium host executable represented by this object.
 bk_string BK_HostExecutable_getPath(BK_HostExecutable self);
 
@@ -123,6 +129,9 @@ BK_HostVersion BK_HostExecutable_getVersion(BK_HostExecutable self);
 //
 // Represents a berkelium profile on disk.
 // =========================================
+
+// Returns the associated Runtime.
+BK_Runtime BK_Profile_getRuntime(BK_Profile self);
 
 // Returns true if this profile is already in use.
 bk_bool BK_Profile_isInUse(BK_Profile self);
@@ -191,6 +200,9 @@ void BK_HostDelegate_onClosed(BK_HostDelegate self, BK_Instance instance);
 // Represents a running berkelium host instance.
 // =========================================
 
+// Returns the associated Runtime.
+BK_Runtime BK_Instance_getRuntime(BK_Instance self);
+
 // Internal Update Function
 void BK_Instance_internalUpdate(BK_Instance self);
 
@@ -231,6 +243,9 @@ BK_Window BK_Instance_createWindow(BK_Instance self, bk_bool incognito);
 // interface Window
 // =========================================
 
+// Returns the associated Runtime.
+BK_Runtime BK_Window_getRuntime(BK_Window self);
+
 // Internal Update Function
 void BK_Window_internalUpdate(BK_Window self);
 
@@ -259,6 +274,9 @@ bk_bool BK_Window_isIncognito(BK_Window self);
 // =========================================
 // interface Tab
 // =========================================
+
+// Returns the associated Runtime.
+BK_Runtime BK_Tab_getRuntime(BK_Tab self);
 
 // Internal Update Function
 void BK_Tab_internalUpdate(BK_Tab self);

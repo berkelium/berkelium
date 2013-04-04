@@ -25,6 +25,9 @@ protected:
 public:
 	virtual ~HostVersion() = 0;
 
+	// Returns the associated Runtime.
+	virtual RuntimeRef getRuntime() = 0;
+
 	// Returns the berkelium host version e.g. “22.0.1229.94”
 	virtual const std::string& getVersionString() = 0;
 

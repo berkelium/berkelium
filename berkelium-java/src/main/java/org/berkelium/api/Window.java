@@ -14,6 +14,9 @@ package org.berkelium.api;
 
 public interface Window {
 
+	// Returns the associated Runtime.
+	Runtime getRuntime();
+
 	// Internal Update Function
 	void internalUpdate();
 

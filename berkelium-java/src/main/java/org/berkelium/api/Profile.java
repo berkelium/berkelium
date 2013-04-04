@@ -15,6 +15,9 @@ package org.berkelium.api;
 // Represents a berkelium profile on disk.
 public interface Profile {
 
+	// Returns the associated Runtime.
+	Runtime getRuntime();
+
 	// Returns true if this profile is already in use.
 	boolean isInUse();
 

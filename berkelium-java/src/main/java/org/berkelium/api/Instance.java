@@ -15,6 +15,9 @@ package org.berkelium.api;
 // Represents a running berkelium host instance.
 public interface Instance {
 
+	// Returns the associated Runtime.
+	Runtime getRuntime();
+
 	// Internal Update Function
 	void internalUpdate();
 

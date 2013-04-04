@@ -26,6 +26,9 @@
 		<type name="Throwable" value="Throwable"/>
 	</mapping>
 	<group type="interface" name="HostVersion">
+		<entry name="getRuntime" ret="Runtime">
+			<short>Returns the associated Runtime.</short>
+		</entry>
 		<entry name="getVersionString" ret="string">
 			<short>Returns the berkelium host version e.g. “22.0.1229.94”</short>
 		</entry>
@@ -118,6 +121,9 @@
 	</group>
 	<group type="interface" name="HostExecutable">
 		<short>Represents a reference to the executable file of the berkelium host process.</short>
+		<entry name="getRuntime" ret="Runtime">
+			<short>Returns the associated Runtime.</short>
+		</entry>
 		<entry name="getPath" ret="string">
 			<short>Returns the full (native) path to the berkelium host executable represented by this object.</short>
 		</entry>
@@ -127,6 +133,9 @@
 	</group>
 	<group type="interface" name="Profile">
 		<short>Represents a berkelium profile on disk.</short>
+		<entry name="getRuntime" ret="Runtime">
+			<short>Returns the associated Runtime.</short>
+		</entry>
 		<entry name="isInUse" ret="bool">
 			<short>Returns true if this profile is already in use.</short>
 		</entry>
@@ -190,6 +199,9 @@
 	</group>
 	<group type="interface" name="Instance">
 		<short>Represents a running berkelium host instance.</short>
+		<entry name="getRuntime" ret="Runtime">
+			<short>Returns the associated Runtime.</short>
+		</entry>
 		<entry name="internalUpdate">
 			<short>Internal Update Function</short>
 		</entry>
@@ -241,6 +253,9 @@
 		</entry>
 	</group>
 	<group type="interface" name="Window">
+		<entry name="getRuntime" ret="Runtime">
+			<short>Returns the associated Runtime.</short>
+		</entry>
 		<entry name="internalUpdate">
 			<short>Internal Update Function</short>
 		</entry>
@@ -268,6 +283,9 @@
 	<group type="interface" name="WindowDelegate">
 	</group>
 	<group type="interface" name="Tab">
+		<entry name="getRuntime" ret="Runtime">
+			<short>Returns the associated Runtime.</short>
+		</entry>
 		<entry name="internalUpdate">
 			<short>Internal Update Function</short>
 		</entry>

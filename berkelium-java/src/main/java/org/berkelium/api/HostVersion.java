@@ -14,6 +14,9 @@ package org.berkelium.api;
 
 public interface HostVersion {
 
+	// Returns the associated Runtime.
+	Runtime getRuntime();
+
 	// Returns the berkelium host version e.g. “22.0.1229.94”
 	String getVersionString();
 

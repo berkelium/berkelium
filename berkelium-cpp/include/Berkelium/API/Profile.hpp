@@ -26,6 +26,9 @@ protected:
 public:
 	virtual ~Profile() = 0;
 
+	// Returns the associated Runtime.
+	virtual RuntimeRef getRuntime() = 0;
+
 	// Returns true if this profile is already in use.
 	virtual bool isInUse() = 0;
 

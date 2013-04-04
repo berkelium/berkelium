@@ -26,6 +26,9 @@ protected:
 public:
 	virtual ~HostExecutable() = 0;
 
+	// Returns the associated Runtime.
+	virtual RuntimeRef getRuntime() = 0;
+
 	// Returns the full (native) path to the berkelium host executable represented by this object.
 	virtual const std::string& getPath() = 0;
 
