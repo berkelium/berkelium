@@ -28,36 +28,9 @@ public abstract class BerkeliumFactory {
 		return instance;
 	}
 		
-	// Sets the Path to the HostExecutable Object used by forSystemInstalled.
-	public abstract void setDefaultExecutable(String pathTo);
+	// Returns the default Berkelium Runtime Instance.
+	public abstract Runtime getDefaultRuntime();
 
-	// Creates an HostExecutable Object representing the given executable.
-	public abstract HostExecutable forExecutable(String pathTo);
-
-	// Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
-	public abstract HostExecutable forSystemInstalled();
-
-	// Returns the profile for the given application name.
-	public abstract Profile forProfile(String application);
-
-	// Returns a Profile object representing the Google Chrome profile.
-	public abstract Profile getChromeProfile();
-
-	// Returns a Profile object representing the Chromium profile.
-	public abstract Profile getChromiumProfile();
-
-	// Returns the profile located inside the given path.
-	public abstract Profile forProfilePath(String path);
-
-	// Creates a temporary profile that gets automatically removed after use.
-	public abstract Profile createTemporaryProfile();
-
-	// Creates a HostVersion object representing the given version string.
-	public abstract HostVersion forVersion(String version);
-
-	// Creates a HostVersion object representing the given version number.
-	public abstract HostVersion forVersion(int vMajor, int vMinor, int vBuild, int vPatch);
-
-	// Launches a the given berkelium host process using the given profile.
-	public abstract Instance open(HostExecutable executable, Profile profile);
+	// Creates an add additional Berkelium Runtime Instance.
+	public abstract Runtime createRuntime();
 }

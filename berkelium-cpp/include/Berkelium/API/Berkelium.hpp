@@ -44,6 +44,10 @@ class BerkeliumFactory;
 typedef std::shared_ptr<BerkeliumFactory> BerkeliumFactoryRef;
 typedef std::weak_ptr<BerkeliumFactory> BerkeliumFactoryWRef;
 
+class Runtime;
+typedef std::shared_ptr<Runtime> RuntimeRef;
+typedef std::weak_ptr<Runtime> RuntimeWRef;
+
 class HostExecutable;
 typedef std::shared_ptr<HostExecutable> HostExecutableRef;
 typedef std::weak_ptr<HostExecutable> HostExecutableWRef;

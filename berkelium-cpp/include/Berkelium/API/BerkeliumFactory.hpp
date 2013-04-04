@@ -21,38 +21,11 @@ namespace Berkelium {
 class BerkeliumFactory {
 public:
 
-	// Sets the Path to the HostExecutable Object used by forSystemInstalled.
-	static void setDefaultExecutable(const std::string& pathTo);
+	// Returns the default Berkelium Runtime Instance.
+	static RuntimeRef getDefaultRuntime();
 
-	// Creates an HostExecutable Object representing the given executable.
-	static HostExecutableRef forExecutable(const std::string& pathTo);
-
-	// Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
-	static HostExecutableRef forSystemInstalled();
-
-	// Returns the profile for the given application name.
-	static ProfileRef forProfile(const std::string& application);
-
-	// Returns a Profile object representing the Google Chrome profile.
-	static ProfileRef getChromeProfile();
-
-	// Returns a Profile object representing the Chromium profile.
-	static ProfileRef getChromiumProfile();
-
-	// Returns the profile located inside the given path.
-	static ProfileRef forProfilePath(const std::string& path);
-
-	// Creates a temporary profile that gets automatically removed after use.
-	static ProfileRef createTemporaryProfile();
-
-	// Creates a HostVersion object representing the given version string.
-	static HostVersionRef forVersion(const std::string& version);
-
-	// Creates a HostVersion object representing the given version number.
-	static HostVersionRef forVersion(int32_t vMajor, int32_t vMinor, int32_t vBuild, int32_t vPatch);
-
-	// Launches a the given berkelium host process using the given profile.
-	static InstanceRef open(HostExecutableRef executable, ProfileRef profile);
+	// Creates an add additional Berkelium Runtime Instance.
+	static RuntimeRef createRuntime();
 };
 
 } // namespace Berkelium

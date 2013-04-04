@@ -26,6 +26,7 @@ typedef const char* bk_string;
 
 typedef bk_int32 BK_HostVersion;
 typedef bk_int32 BK_BerkeliumFactory;
+typedef bk_int32 BK_Runtime;
 typedef bk_int32 BK_HostExecutable;
 typedef bk_int32 BK_Profile;
 typedef bk_int32 BK_LogDelegate;
@@ -62,38 +63,48 @@ bk_bool BK_HostVersion_isMinVersion(BK_HostVersion self, bk_string version);
 // class BerkeliumFactory
 // =========================================
 
+// Returns the default Berkelium Runtime Instance.
+BK_Runtime BK_BerkeliumFactory_getDefaultRuntime();
+
+// Creates an add additional Berkelium Runtime Instance.
+BK_Runtime BK_BerkeliumFactory_createRuntime();
+
+// =========================================
+// interface Runtime
+// =========================================
+
 // Sets the Path to the HostExecutable Object used by forSystemInstalled.
-void BK_BerkeliumFactory_setDefaultExecutable(bk_string pathTo);
+void BK_Runtime_setDefaultExecutable(BK_Runtime self, bk_string pathTo);
 
 // Creates an HostExecutable Object representing the given executable.
-BK_HostExecutable BK_BerkeliumFactory_forExecutable(bk_string pathTo);
+BK_HostExecutable BK_Runtime_forExecutable(BK_Runtime self, bk_string pathTo);
 
 // Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)
-BK_HostExecutable BK_BerkeliumFactory_forSystemInstalled();
+BK_HostExecutable BK_Runtime_forSystemInstalled(BK_Runtime self);
 
 // Returns the profile for the given application name.
-BK_Profile BK_BerkeliumFactory_forProfile(bk_string application);
+BK_Profile BK_Runtime_forProfile(BK_Runtime self, bk_string application);
 
 // Returns a Profile object representing the Google Chrome profile.
-BK_Profile BK_BerkeliumFactory_getChromeProfile();
+BK_Profile BK_Runtime_getChromeProfile(BK_Runtime self);
 
 // Returns a Profile object representing the Chromium profile.
-BK_Profile BK_BerkeliumFactory_getChromiumProfile();
+BK_Profile BK_Runtime_getChromiumProfile(BK_Runtime self);
 
 // Returns the profile located inside the given path.
-BK_Profile BK_BerkeliumFactory_forProfilePath(bk_string path);
+BK_Profile BK_Runtime_forProfilePath(BK_Runtime self, bk_string path);
 
 // Creates a temporary profile that gets automatically removed after use.
-BK_Profile BK_BerkeliumFactory_createTemporaryProfile();
+BK_Profile BK_Runtime_createTemporaryProfile(BK_Runtime self);
 
 // Creates a HostVersion object representing the given version string.
-BK_HostVersion BK_BerkeliumFactory_forVersion(bk_string version);
+BK_HostVersion BK_Runtime_forVersion(BK_Runtime self, bk_string version);
 
 // Creates a HostVersion object representing the given version number.
-BK_HostVersion BK_BerkeliumFactory_forVersion(bk_int32 vMajor, bk_int32 vMinor, bk_int32 vBuild, bk_int32 vPatch);
+BK_HostVersion BK_Runtime_forVersion(BK_Runtime self, bk_int32 vMajor, bk_int32 vMinor, bk_int32 vBuild, bk_int32 vPatch);
 
 // Launches a the given berkelium host process using the given profile.
-BK_Instance BK_BerkeliumFactory_open(BK_HostExecutable executable, BK_Profile profile);
+BK_Instance BK_Runtime_open(BK_Runtime self, BK_HostExecutable executable, BK_Profile profile);
 
 // =========================================
 // interface HostExecutable

@@ -62,47 +62,55 @@
 		return instance;
 	}
 		]]></implementation>
-		<entry static="true" name="setDefaultExecutable">
+		<entry static="true" name="getDefaultRuntime" ret="Runtime">
+			<short>Returns the default Berkelium Runtime Instance.</short>
+		</entry>
+		<entry static="true" name="createRuntime" ret="Runtime">
+			<short>Creates an add additional Berkelium Runtime Instance.</short>
+		</entry>
+	</group>
+	<group type="interface" name="Runtime">
+		<entry name="setDefaultExecutable">
 			<arg type="string" name="pathTo"/>
 			<short>Sets the Path to the HostExecutable Object used by forSystemInstalled.</short>
 		</entry>
-		<entry static="true" name="forExecutable" ret="HostExecutable">
+		<entry name="forExecutable" ret="HostExecutable">
 			<arg type="string" name="pathTo"/>
 			<short>Creates an HostExecutable Object representing the given executable.</short>
 		</entry>
-		<entry static="true" name="forSystemInstalled" ret="HostExecutable">
+		<entry name="forSystemInstalled" ret="HostExecutable">
 			<short>Creates an HostExecutable, the exectuable is searched through system path or system configuration (e.g. registry on windows)</short>
 			<todo>Maybe a version number should be given here</todo>
 		</entry>
-		<entry static="true" name="forProfile" ret="Profile">
+		<entry name="forProfile" ret="Profile">
 			<arg type="string" name="application"/>
 			<short>Returns the profile for the given application name.</short>
 		</entry>
-		<entry static="true" name="getChromeProfile" ret="Profile">
+		<entry name="getChromeProfile" ret="Profile">
 			<short>Returns a Profile object representing the Google Chrome profile.</short>
 		</entry>
-		<entry static="true" name="getChromiumProfile" ret="Profile">
+		<entry name="getChromiumProfile" ret="Profile">
 			<short>Returns a Profile object representing the Chromium profile.</short>
 		</entry>
-		<entry static="true" name="forProfilePath" ret="Profile">
+		<entry name="forProfilePath" ret="Profile">
 			<arg type="string" name="path"/>
 			<short>Returns the profile located inside the given path.</short>
 		</entry>
-		<entry static="true" name="createTemporaryProfile" ret="Profile">
+		<entry name="createTemporaryProfile" ret="Profile">
 			<short>Creates a temporary profile that gets automatically removed after use.</short>
 		</entry>
-		<entry static="true" name="forVersion" ret="HostVersion">
+		<entry name="forVersion" ret="HostVersion">
 			<arg type="string" name="version"/>
 			<short>Creates a HostVersion object representing the given version string.</short>
 		</entry>
-		<entry static="true" name="forVersion" ret="HostVersion">
+		<entry name="forVersion" ret="HostVersion">
 			<arg type="int32" name="vMajor"/>
 			<arg type="int32" name="vMinor"/>
 			<arg type="int32" name="vBuild"/>
 			<arg type="int32" name="vPatch"/>
 			<short>Creates a HostVersion object representing the given version number.</short>
 		</entry>
-		<entry static="true" name="open" ret="Instance">
+		<entry name="open" ret="Instance">
 			<arg type="HostExecutable" name="executable"/>
 			<arg type="Profile" name="profile"/>
 			<short>Launches a the given berkelium host process using the given profile.</short>
