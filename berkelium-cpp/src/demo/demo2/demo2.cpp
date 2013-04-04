@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/Instance.hpp>
 #include <Berkelium/API/Util.hpp>
@@ -15,17 +16,18 @@
 
 int main(int argc, char* argv[])
 {
-	Berkelium::Util::parseCommandLine(argc, argv);
+	Berkelium::RuntimeRef runtime(Berkelium::BerkeliumFactory::createRuntime());
+	Berkelium::Util::parseCommandLine(runtime, argc, argv);
 
 	Berkelium::Log::info() << "berkelium demo application..." << std::endl;
-	Berkelium::HostExecutableRef host = Berkelium::BerkeliumFactory::forSystemInstalled();
+	Berkelium::HostExecutableRef host(runtime->forSystemInstalled());
 	if(!host) {
 		Berkelium::Log::info() << "berkelium host executable not found!" << std::endl;
 		return 1;
 	}
-	Berkelium::ProfileRef profile = Berkelium::BerkeliumFactory::createTemporaryProfile();
+	Berkelium::ProfileRef profile(runtime->createTemporaryProfile());
 	Berkelium::Log::info() << "starting berkelium browser..." << std::endl;
-	Berkelium::InstanceRef instance = Berkelium::BerkeliumFactory::open(host, profile);
+	Berkelium::InstanceRef instance(runtime->open(host, profile));
 	if(!instance) {
 		Berkelium::Log::info() << "berkelium browser can not be started!" << std::endl;
 		return 1;

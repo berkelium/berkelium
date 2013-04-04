@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/API/HostExecutable.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
@@ -22,16 +23,17 @@ using Berkelium::WindowRef;
 
 int main(int argc, char* argv[])
 {
-	Berkelium::Util::parseCommandLine(argc, argv);
+	Berkelium::RuntimeRef runtime(Berkelium::BerkeliumFactory::createRuntime());
+	Berkelium::Util::parseCommandLine(runtime, argc, argv);
 
 	Berkelium::Log::info() << "running pngrenderer..." << std::endl;
-	HostExecutableRef host = BerkeliumFactory::forSystemInstalled();
+	HostExecutableRef host(runtime->forSystemInstalled());
 
 	Berkelium::Log::debug() << "creating profile..." << std::endl;
-	ProfileRef profile = BerkeliumFactory::createTemporaryProfile();
+	ProfileRef profile(runtime->createTemporaryProfile());
 
 	Berkelium::Log::debug() << "launching berkelium host executable..." << std::endl;
-	InstanceRef instance = BerkeliumFactory::open(host, profile);
+	InstanceRef instance(runtime->open(host, profile));
 
 	Berkelium::Log::debug() << "creating window..." << std::endl;
 	WindowRef window = instance->createWindow(false);

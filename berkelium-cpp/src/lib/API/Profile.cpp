@@ -31,6 +31,8 @@ Profile::~Profile() {
 namespace impl {
 
 class ProfileImpl : public Profile {
+BERKELIUM_IMPL_CLASS(Profile)
+
 private:
 	const boost::filesystem::path path;
 	const std::string pathstr;
@@ -39,7 +41,8 @@ private:
 	const bool temp;
 
 public:
-	ProfileImpl(const boost::filesystem::path& path, const std::string& application, const bool temp) :
+	ProfileImpl(RuntimeRef runtime, const boost::filesystem::path& path, const std::string& application, const bool temp) :
+		BERKELIUM_IMPL_CTOR1(Profile),
 		path(path),
 		pathstr(path.string()),
 		application(application),
@@ -52,7 +55,7 @@ public:
 		boost::filesystem::create_directories(path);
 	}
 
-	~ProfileImpl() {
+	virtual ~ProfileImpl() {
 		if(isLocked()) {
 			setLocked(false);
 		}
@@ -193,7 +196,7 @@ public:
 };
 
 // see http://www.chromium.org/user-experience/user-data-directory (without "Default" at the end)
-ProfileRef newProfile(const boost::filesystem::path& appDir, const std::string& application) {
+ProfileRef newProfile(RuntimeRef runtime, const boost::filesystem::path& appDir, const std::string& application) {
 	boost::filesystem::path path;
 
 #ifdef WIN32
@@ -207,10 +210,10 @@ ProfileRef newProfile(const boost::filesystem::path& appDir, const std::string& 
 #else
 #error "please add path to chrome profile here"
 #endif
-	return ProfileRef(new impl::ProfileImpl(path, application, false));
+	return ProfileRef(new impl::ProfileImpl(runtime, path, application, false));
 }
 
-void cleanup(const boost::filesystem::path& tmp) {
+void cleanup(RuntimeRef runtime, const boost::filesystem::path& tmp) {
 	static bool done = false;
 	if(done) return;
 	done = true;
@@ -219,42 +222,40 @@ void cleanup(const boost::filesystem::path& tmp) {
 			// create temporary profile object
 			// this will remove old profile directory
 			// if they are not used
-			ProfileImpl(*itr, "berkelium", true);
+			ProfileImpl(runtime, *itr, "berkelium", true);
 		}
 	}
 }
 
-} // namespace impl
-
-ProfileRef BerkeliumFactory::forProfile(const std::string& application) {
-	return impl::newProfile(application, application);
+ProfileRef newProfile(RuntimeRef runtime, const std::string& application) {
+	return impl::newProfile(runtime, application, application);
 }
 
-ProfileRef BerkeliumFactory::getChromeProfile() {
+ProfileRef getChromeProfile(RuntimeRef runtime) {
 #ifdef WIN32
-	return impl::newProfile("Google\\Chrome", "Google Chrome");
+	return impl::newProfile(runtime, "Google\\Chrome", "Google Chrome");
 #elif defined(LINUX)
-	return impl::newProfile("google-chrome", "Google Chrome");
+	return impl::newProfile(runtime, "google-chrome", "Google Chrome");
 #else
 #error "please add app path to profile here"
 #endif
 }
 
-ProfileRef BerkeliumFactory::getChromiumProfile() {
+ProfileRef getChromiumProfile(RuntimeRef runtime) {
 #ifdef WIN32
-	return impl::newProfile("Chromium", "Chromium");
+	return impl::newProfile(runtime, "Chromium", "Chromium");
 #elif defined(LINUX)
-	return impl::newProfile("chromium", "Chromium");
+	return impl::newProfile(runtime, "chromium", "Chromium");
 #else
 #error "please add app path to profile here"
 #endif
 }
 
-ProfileRef BerkeliumFactory::forProfilePath(const std::string& path) {
-	return ProfileRef(new impl::ProfileImpl(path, "berkelium", false));
+ProfileRef forProfilePath(RuntimeRef runtime, const std::string& path) {
+	return ProfileRef(new impl::ProfileImpl(runtime, path, "berkelium", false));
 }
 
-ProfileRef BerkeliumFactory::createTemporaryProfile() {
+ProfileRef createTemporaryProfile(RuntimeRef runtime) {
 	boost::filesystem::path path;
 
 #ifdef WIN32
@@ -267,10 +268,12 @@ ProfileRef BerkeliumFactory::createTemporaryProfile() {
 #endif
 
 	path /= "berkelium";
-	impl::cleanup(path);
+	impl::cleanup(runtime, path);
 	path /= Util::randomId();
 
-	return ProfileRef(new impl::ProfileImpl(path, "berkelium", true));
+	return ProfileRef(new impl::ProfileImpl(runtime, path, "berkelium", true));
 }
+
+} // namespace impl
 
 } // namespace Berkelium

@@ -4,6 +4,7 @@
 
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/HostVersion.hpp>
+#include <Berkelium/Impl/Impl.hpp>
 
 #include <sstream>
 
@@ -24,6 +25,8 @@ std::string toVersionString(int32_t vmajor, int32_t vminor, int32_t build, int32
 }
 
 class HostVersionImpl : public HostVersion {
+BERKELIUM_IMPL_CLASS(HostVersion)
+
 private:
 	const int32_t vmajor;
 	const int32_t vminor;
@@ -33,13 +36,13 @@ private:
 	const std::string version;
 
 public:
-	HostVersionImpl(int32_t vmajor, int32_t vminor, int32_t build, int32_t patch)
-		: vmajor(vmajor)
-		, vminor(vminor)
-		, build(build)
-		, patch(patch)
-		, version(toVersionString(vmajor, vminor, build, patch))
-	{
+	HostVersionImpl(RuntimeRef runtime, int32_t vmajor, int32_t vminor, int32_t build, int32_t patch) :
+		BERKELIUM_IMPL_CTOR1(HostVersion),
+		vmajor(vmajor),
+		vminor(vminor),
+		build(build),
+		patch(patch),
+		version(toVersionString(vmajor, vminor, build, patch)) {
 	}
 
 	virtual ~HostVersionImpl() {
@@ -71,13 +74,11 @@ public:
 
 };
 
-} // namespace impl
-
-HostVersionRef BerkeliumFactory::forVersion(int32_t vMajor, int32_t vMinor, int32_t vBuild, int32_t vPatch) {
-	return HostVersionRef(new impl::HostVersionImpl(vMajor, vMinor, vBuild, vPatch));
+HostVersionRef newVersion(RuntimeRef runtime, int32_t vMajor, int32_t vMinor, int32_t vBuild, int32_t vPatch) {
+	return HostVersionRef(new impl::HostVersionImpl(runtime, vMajor, vMinor, vBuild, vPatch));
 }
 
-HostVersionRef BerkeliumFactory::forVersion(const std::string& version) {
+HostVersionRef newVersion(RuntimeRef runtime, const std::string& version) {
 	HostVersionRef ret;
 	std::stringstream ss(version);
 	int8_t dot;
@@ -113,7 +114,9 @@ HostVersionRef BerkeliumFactory::forVersion(const std::string& version) {
 		return ret;
 	}
 
-	return forVersion(vMajor, vMinor, vBuild, vPatch);
+	return newVersion(runtime, vMajor, vMinor, vBuild, vPatch);
 }
+
+} // namespace impl
 
 } // namespace Berkelium

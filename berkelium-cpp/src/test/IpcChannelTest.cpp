@@ -4,6 +4,7 @@
 
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Channel.hpp>
+#include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
@@ -26,7 +27,7 @@ class ChannelTest : public ::testing::Test {
 };
 
 std::string createTempPath(Berkelium::ProfileRef& profile) {
-	profile = Berkelium::BerkeliumFactory::createTemporaryProfile();
+	profile = Berkelium::BerkeliumFactory::getDefaultRuntime()->createTemporaryProfile();
 	path path = profile->getProfilePath();
 	return path.string();
 }

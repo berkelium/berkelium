@@ -24,7 +24,7 @@ std::string getEnv(const std::string&, const std::string& defaultValue);
 #ifdef LINUX
 std::string getOption(int argc, char* argv[], const std::string& option);
 
-void parseCommandLine(int argc, char* argv[]);
+void parseCommandLine(RuntimeRef runtime, int argc, char* argv[]);
 #endif
 
 #ifdef WIN32

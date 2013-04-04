@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
@@ -12,6 +13,7 @@
 #include <list>
 #include <queue>
 
+using Berkelium::RuntimeRef;
 using Berkelium::BerkeliumFactory;
 using Berkelium::ProfileRef;
 using Berkelium::Ipc::Channel;
@@ -46,6 +48,7 @@ public:
 
 int main(int argc, char* argv[])
 {
+	Berkelium::RuntimeRef runtime(Berkelium::BerkeliumFactory::createRuntime());
 	Berkelium::Log::setPrefix("Host");
 
 	std::string dir = getOption(argc, argv, "--user-data-dir=");
@@ -56,7 +59,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	ProfileRef profile = BerkeliumFactory::forProfilePath(dir);
+	ProfileRef profile = runtime->forProfilePath(dir);
 	if(!profile->isFound()) {
 		Berkelium::Log::error() << "profile not found!" << std::endl;
 		return 1;

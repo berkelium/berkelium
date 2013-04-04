@@ -5,6 +5,7 @@
 #ifdef LINUX
 
 #include <Berkelium/API/Util.hpp>
+#include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/Impl/Logger.hpp>
 
@@ -45,10 +46,10 @@ std::string getOption(int argc, char* argv[], const std::string& option) {
 	return "";
 }
 
-void parseCommandLine(int argc, char* argv[]) {
+void parseCommandLine(RuntimeRef runtime, int argc, char* argv[]) {
 	std::string exec = getOption(argc, argv, "--berkelium-host=");
 	if(!exec.empty()) {
-		Berkelium::BerkeliumFactory::setDefaultExecutable(exec);
+		runtime->setDefaultExecutable(exec);
 	}
 }
 

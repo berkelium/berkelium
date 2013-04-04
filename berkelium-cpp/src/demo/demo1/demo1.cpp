@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/API/HostVersion.hpp>
@@ -27,16 +28,17 @@ void dumpProfile(const std::string& name, Berkelium::ProfileRef profile)
 
 int main(int argc, char* argv[])
 {
-	Berkelium::Util::parseCommandLine(argc, argv);
+	Berkelium::RuntimeRef runtime(Berkelium::BerkeliumFactory::createRuntime());
+	Berkelium::Util::parseCommandLine(runtime, argc, argv);
 
 	Berkelium::Log::info() << "berkelium demo application..." << std::endl;
-	Berkelium::HostExecutableRef host = Berkelium::BerkeliumFactory::forSystemInstalled();
+	Berkelium::HostExecutableRef host(runtime->forSystemInstalled());
 
-	Berkelium::HostVersionRef version = host->getVersion();
+	Berkelium::HostVersionRef version(host->getVersion());
 	Berkelium::Log::info() << "host version string: " << version->getVersionString() << std::endl;
 
-	dumpProfile("temporary", Berkelium::BerkeliumFactory::createTemporaryProfile());
-	dumpProfile("Chrome", Berkelium::BerkeliumFactory::getChromeProfile());
-	dumpProfile("Chromium", Berkelium::BerkeliumFactory::getChromiumProfile());
-	dumpProfile("Berkelium", Berkelium::BerkeliumFactory::forProfile("berkelium"));
+	dumpProfile("temporary", runtime->createTemporaryProfile());
+	dumpProfile("Chrome", runtime->getChromeProfile());
+	dumpProfile("Chromium", runtime->getChromiumProfile());
+	dumpProfile("Berkelium", runtime->forProfile("berkelium"));
 }

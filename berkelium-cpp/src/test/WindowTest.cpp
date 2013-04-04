@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/Instance.hpp>
 #include <Berkelium/API/Window.hpp>
@@ -23,16 +24,17 @@ class WindowTest : public ::testing::Test {
 };
 
 void createWindow(WindowRef& ret) {
+	Berkelium::RuntimeRef runtime(Berkelium::BerkeliumFactory::getDefaultRuntime());
 	Berkelium::Log::debug() << "creating host executable..." << std::endl;
-	Berkelium::HostExecutableRef host = Berkelium::BerkeliumFactory::forSystemInstalled();
+	Berkelium::HostExecutableRef host = runtime->forSystemInstalled();
 	ASSERT_NOT_NULL(host);
 
 	Berkelium::Log::debug() << "creating profile..." << std::endl;
-	Berkelium::ProfileRef profile = Berkelium::BerkeliumFactory::createTemporaryProfile();
+	Berkelium::ProfileRef profile = runtime->createTemporaryProfile();
 	ASSERT_NOT_NULL(profile);
 
 	Berkelium::Log::debug() << "launching berkelium host executable..." << std::endl;
-	Berkelium::InstanceRef instance = Berkelium::BerkeliumFactory::open(host, profile);
+	Berkelium::InstanceRef instance = runtime->open(host, profile);
 	ASSERT_NOT_NULL(instance);
 
 	Berkelium::Log::debug() << "creating window..." << std::endl;

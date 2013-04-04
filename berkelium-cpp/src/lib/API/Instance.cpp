@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <Berkelium/API/Profile.hpp>
+#include <Berkelium/API/HostExecutable.hpp>
 #include <Berkelium/API/Instance.hpp>
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/LogDelegate.hpp>
@@ -36,6 +37,9 @@ typedef set<LogDelegateWRef>::type LogDelegateWRefSet;
 typedef set<HostDelegateWRef>::type HostDelegateWRefSet;
 
 class InstanceImpl : public Instance {
+BERKELIUM_IMPL_CLASS(Instance)
+
+private:
 	InstanceWRef self;
 	HostExecutableRef executable;
 	ProfileRef profile;
@@ -49,6 +53,7 @@ class InstanceImpl : public Instance {
 
 public:
 	InstanceImpl(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process) :
+		BERKELIUM_IMPL_CTOR2(Instance, executable),
 		self(),
 		executable(executable),
 		profile(profile),

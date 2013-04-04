@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <Berkelium/API/Util.hpp>
+#include <Berkelium/API/Instance.hpp>
 #include <Berkelium/API/Window.hpp>
 #include <Berkelium/API/Tab.hpp>
 #include <Berkelium/IPC/Message.hpp>
@@ -22,6 +23,8 @@ Window::~Window() {
 namespace impl {
 
 class WindowImpl : public Window {
+BERKELIUM_IMPL_CLASS(Window)
+
 private:
 	WindowWRef self;
 	InstanceRef instance;
@@ -34,7 +37,7 @@ private:
 
 public:
 	WindowImpl(InstanceRef instance, Ipc::ChannelRef channel, bool incognito) :
-		Window(),
+		BERKELIUM_IMPL_CTOR2(Window, instance),
 		self(),
 		instance(instance),
 		send(channel),

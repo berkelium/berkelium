@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <Berkelium/API/BerkeliumFactory.hpp>
+#include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/HostExecutable.hpp>
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/Impl/Impl.hpp>
@@ -19,18 +19,21 @@ HostExecutable::~HostExecutable() {
 
 namespace impl {
 
-HostVersionRef getVersionImpl(const boost::filesystem::path&);
+HostVersionRef getVersionImpl(RuntimeRef runtime, const boost::filesystem::path&);
 
 class HostExecutableImpl : public HostExecutable {
+BERKELIUM_IMPL_CLASS(HostExecutable)
+
 private:
 	const boost::filesystem::path path;
 	const std::string pathStr;
 	HostVersionRef version;
 
 public:
-	HostExecutableImpl(const boost::filesystem::path& path)
-		: path(path)
-		, pathStr(path.string()) {
+	HostExecutableImpl(RuntimeRef runtime, const boost::filesystem::path& path) :
+		BERKELIUM_IMPL_CTOR1(HostExecutable),
+		path(path),
+		pathStr(path.string()) {
 	}
 
 	virtual ~HostExecutableImpl() {
@@ -42,23 +45,23 @@ public:
 
 	virtual HostVersionRef getVersion() {
 		if(!version) {
-			version = getVersionImpl(path);
+			version = getVersionImpl(runtime, path);
 		}
 		return version;
 	}
 };
 
-HostExecutableRef newHostExecutable(const boost::filesystem::path& path) {
-	return HostExecutableRef(new HostExecutableImpl(path));
+HostExecutableRef newHostExecutable(RuntimeRef runtime, const boost::filesystem::path& path) {
+	return HostExecutableRef(new HostExecutableImpl(runtime, path));
 }
 
-HostExecutableRef newHostExecutable(const std::string& path) {
-	return newHostExecutable(boost::filesystem::path(path));
+HostExecutableRef newHostExecutable(RuntimeRef runtime, const std::string& path) {
+	return newHostExecutable(runtime, boost::filesystem::path(path));
 }
 
-HostVersionRef getVersionImpl(const boost::filesystem::path&) {
+HostVersionRef getVersionImpl(RuntimeRef runtime, const boost::filesystem::path&) {
 	HostVersionRef ret;
-	ret = Berkelium::BerkeliumFactory::forVersion("0.0.0.0");
+	ret = runtime->forVersion("0.0.0.0");
 	return ret;
 }
 

@@ -25,8 +25,35 @@ typedef std::shared_ptr<int32_t> Int32Ref;
 
 TabRef newTab(WindowRef window, Ipc::ChannelRef ipc);
 WindowRef newWindow(InstanceRef instance, Ipc::ChannelRef channel, bool incognito);
-HostExecutableRef newHostExecutable(const std::string&);
+HostExecutableRef newHostExecutable(RuntimeRef runtime, const std::string&);
+InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, ProfileRef profile);
 InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process);
+HostVersionRef newVersion(RuntimeRef runtime, int32_t vMajor, int32_t vMinor, int32_t vBuild, int32_t vPatch);
+HostVersionRef newVersion(RuntimeRef runtime, const std::string& version);
+ProfileRef newProfile(RuntimeRef runtime, const std::string& application);
+ProfileRef getChromeProfile(RuntimeRef runtime);
+ProfileRef getChromiumProfile(RuntimeRef runtime);
+ProfileRef forProfilePath(RuntimeRef runtime, const std::string& path);
+ProfileRef createTemporaryProfile(RuntimeRef runtime);
+
+#define BERKELIUM_IMPL_CLASS(TypeName)			\
+private:										\
+	TypeName##Impl(const TypeName##Impl&);		\
+	void operator=(const TypeName##Impl&);	\
+	const RuntimeRef runtime;					\
+												\
+public:											\
+	virtual RuntimeRef getRuntime() {			\
+		return runtime;							\
+	}
+
+#define BERKELIUM_IMPL_CTOR1(TypeName)			\
+	TypeName(),									\
+	runtime(runtime)
+
+#define BERKELIUM_IMPL_CTOR2(TypeName, rt)		\
+	TypeName(),									\
+	runtime(rt->getRuntime())
 
 } // namespace impl
 

@@ -22,6 +22,8 @@ Tab::~Tab() {
 namespace impl {
 
 class TabImpl : public Tab {
+BERKELIUM_IMPL_CLASS(Tab)
+
 private:
 	TabWRef self;
 	Ipc::ChannelRef send;
@@ -31,7 +33,7 @@ private:
 
 public:
 	TabImpl(WindowRef parent, Ipc::ChannelRef ipc) :
-		Tab(),
+		BERKELIUM_IMPL_CTOR2(Tab, parent),
 		self(),
 		send(ipc),
 		recv(ipc->getReverseChannel()),

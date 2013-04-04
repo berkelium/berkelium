@@ -24,7 +24,9 @@ inline std::string enclose(const std::string& str) {
 
 } // namespace
 
-InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef profile) {
+namespace impl {
+
+InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, ProfileRef profile) {
 	if(profile->isInUse()) {
 		return InstanceRef();
 	}
@@ -66,5 +68,7 @@ InstanceRef BerkeliumFactory::open(HostExecutableRef executable, ProfileRef prof
 
 	return impl::newInstance(executable, profile, ipc, process);
 }
+
+} // namespace impl
 
 } // namespace Berkelium
