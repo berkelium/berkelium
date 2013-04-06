@@ -57,6 +57,7 @@ public:
 
 	// Launches a the given berkelium host process using the given profile.
 	virtual InstanceRef open(HostExecutableRef executable, ProfileRef profile) = 0;
+	virtual LoggerRef getLogger(const std::string& clazz, const std::string& name) = 0;
 };
 
 } // namespace Berkelium

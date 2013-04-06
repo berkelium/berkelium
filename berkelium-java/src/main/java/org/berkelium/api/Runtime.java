@@ -46,4 +46,6 @@ public interface Runtime {
 
 	// Launches a the given berkelium host process using the given profile.
 	Instance open(HostExecutable executable, Profile profile);
+
+	Logger getLogger(String clazz, String name);
 }

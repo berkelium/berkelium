@@ -118,6 +118,10 @@
 			<arg type="Profile" name="profile"/>
 			<short>Launches a the given berkelium host process using the given profile.</short>
 		</entry>
+		<entry name="getLogger" ret="Logger">
+			<arg type="string" name="clazz"/>
+			<arg type="string" name="name"/>
+		</entry>
 	</group>
 	<group type="interface" name="HostExecutable">
 		<short>Represents a reference to the executable file of the berkelium host process.</short>
@@ -184,6 +188,29 @@
 		</entry>
 		<entry name="Error">
 			<short>Represents error messages.</short>
+		</entry>
+	</group>
+	<group type="interface" name="Logger">
+		<implementation type="cpp"><![CDATA[public:
+	virtual std::ostream& debug() = 0;
+	virtual std::ostream& info() = 0;
+	virtual std::ostream& warn() = 0;
+	virtual std::ostream& error() = 0;
+
+	virtual void systemError(const std::string& error) = 0;
+	virtual void systemError(const std::string& error, const std::string& arg) = 0;]]>
+</implementation>
+		<entry name="debug">
+			<arg type="string" name="message"/>
+		</entry>
+		<entry name="info">
+			<arg type="string" name="message"/>
+		</entry>
+		<entry name="warn">
+			<arg type="string" name="message"/>
+		</entry>
+		<entry name="error">
+			<arg type="string" name="message"/>
 		</entry>
 	</group>
 	<group type="interface" name="LogDelegate">

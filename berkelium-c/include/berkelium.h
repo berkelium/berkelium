@@ -29,6 +29,7 @@ typedef bk_int32 BK_BerkeliumFactory;
 typedef bk_int32 BK_Runtime;
 typedef bk_int32 BK_HostExecutable;
 typedef bk_int32 BK_Profile;
+typedef bk_int32 BK_Logger;
 typedef bk_int32 BK_LogDelegate;
 typedef bk_int32 BK_HostDelegate;
 typedef bk_int32 BK_Instance;
@@ -108,6 +109,7 @@ BK_HostVersion BK_Runtime_forVersion(BK_Runtime self, bk_int32 vMajor, bk_int32 
 
 // Launches a the given berkelium host process using the given profile.
 BK_Instance BK_Runtime_open(BK_Runtime self, BK_HostExecutable executable, BK_Profile profile);
+BK_Logger BK_Runtime_getLogger(BK_Runtime self, bk_string clazz, bk_string name);
 
 // =========================================
 // interface HostExecutable
@@ -184,6 +186,14 @@ void BK_LogType_Warn(BK_LogType self);
 
 // Represents error messages.
 void BK_LogType_Error(BK_LogType self);
+
+// =========================================
+// interface Logger
+// =========================================
+void BK_Logger_debug(BK_Logger self, bk_string message);
+void BK_Logger_info(BK_Logger self, bk_string message);
+void BK_Logger_warn(BK_Logger self, bk_string message);
+void BK_Logger_error(BK_Logger self, bk_string message);
 
 // =========================================
 // interface LogDelegate

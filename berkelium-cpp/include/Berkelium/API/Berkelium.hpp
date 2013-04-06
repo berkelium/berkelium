@@ -71,6 +71,10 @@ class Profile;
 typedef std::shared_ptr<Profile> ProfileRef;
 typedef std::weak_ptr<Profile> ProfileWRef;
 
+class Logger;
+typedef std::shared_ptr<Logger> LoggerRef;
+typedef std::weak_ptr<Logger> LoggerWRef;
+
 class LogDelegate;
 typedef std::shared_ptr<LogDelegate> LogDelegateRef;
 typedef std::weak_ptr<LogDelegate> LogDelegateWRef;
