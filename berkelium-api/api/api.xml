@@ -270,7 +270,9 @@
 			<short>Remove the given HostDelegate from this Instance.</short>
 		</entry>
 		<entry name="log">
+			<arg type="LogSource" name="source"/>
 			<arg type="LogType" name="type"/>
+			<arg type="string" name="clazz"/>
 			<arg type="string" name="message"/>
 			<short>Forwards the given type/message to all log handlers attached to this instance.</short>
 		</entry>

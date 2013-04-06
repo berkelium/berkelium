@@ -43,7 +43,7 @@ public interface Instance {
 	void removeHostDelegate(HostDelegate delegate);
 
 	// Forwards the given type/message to all log handlers attached to this instance.
-	void log(LogType type, String message);
+	void log(LogSource source, LogType type, String clazz, String message);
 
 	// Error handler used by this instance.
 	void handleThrowable(Throwable t);

@@ -248,7 +248,7 @@ void BK_Instance_addHostDelegate(BK_Instance self, BK_HostDelegate delegate);
 void BK_Instance_removeHostDelegate(BK_Instance self, BK_HostDelegate delegate);
 
 // Forwards the given type/message to all log handlers attached to this instance.
-void BK_Instance_log(BK_Instance self, BK_LogType type, bk_string message);
+void BK_Instance_log(BK_Instance self, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string message);
 
 // Returns the number of active Windows.
 bk_int32 BK_Instance_getWindowCount(BK_Instance self);
