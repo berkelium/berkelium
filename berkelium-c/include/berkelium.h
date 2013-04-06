@@ -158,29 +158,39 @@ void BK_Profile_setLocked(BK_Profile self, bk_bool locked);
 bk_bool BK_Profile_isLocked(BK_Profile self);
 
 // =========================================
+// enum LogSource
+// =========================================
+void BK_LogSource_Host(BK_LogSource self);
+void BK_LogSource_Lib(BK_LogSource self);
+
+// =========================================
 // enum LogType
 // =========================================
 
-// Represents the stdout stream of the berkelium host process.
-void BK_LogType_HostOut(BK_LogType self);
+// Represents the stdout stream.
+void BK_LogType_StdOut(BK_LogType self);
 
-// Represents the stderr stream of the berkelium host process.
-void BK_LogType_HostErr(BK_LogType self);
+// Represents the stderr stream.
+void BK_LogType_StdErr(BK_LogType self);
 
-// Represents debug messages of the berkelium library.
+// Represents debug messages.
 void BK_LogType_Debug(BK_LogType self);
 
-// Represents error messages of the berkelium library.
+// Represents info messages.
+void BK_LogType_Info(BK_LogType self);
+
+// Represents warn messages.
+void BK_LogType_Warn(BK_LogType self);
+
+// Represents error messages.
 void BK_LogType_Error(BK_LogType self);
 
 // =========================================
 // interface LogDelegate
-//
-// Handler for log messages. LogAdapter is an abstract class with empty function definitions for all functions in LogDelegate.
 // =========================================
 
-// Allows the client application to handle berkelium host console messages.
-void BK_LogDelegate_log(BK_LogDelegate self, BK_Instance instance, BK_LogType type, bk_string message);
+// Allows the client application to handle berkelium library and host messages.
+void BK_LogDelegate_log(BK_LogDelegate self, BK_Runtime runtime, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string message);
 
 // =========================================
 // interface HostDelegate

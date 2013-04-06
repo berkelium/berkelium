@@ -18,7 +18,6 @@
 
 namespace Berkelium {
 
-// Handler for log messages. LogAdapter is an abstract class with empty function definitions for all functions in LogDelegate.
 class LogDelegate {
 protected:
 	LogDelegate();
@@ -26,8 +25,8 @@ protected:
 public:
 	virtual ~LogDelegate() = 0;
 
-	// Allows the client application to handle berkelium host console messages.
-	virtual void log(InstanceRef instance, LogType type, const std::string& message) = 0;
+	// Allows the client application to handle berkelium library and host messages.
+	virtual void log(RuntimeRef runtime, LogSource source, LogType type, const std::string& clazz, const std::string& message) = 0;
 };
 
 } // namespace Berkelium

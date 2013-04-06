@@ -21,17 +21,32 @@
 
 namespace Berkelium {
 
+enum LogSource {
+
+	Host,
+
+
+	Lib,
+
+};
+
 enum LogType {
-	// Represents the stdout stream of the berkelium host process.
-	HostOut,
+	// Represents the stdout stream.
+	StdOut,
 
-	// Represents the stderr stream of the berkelium host process.
-	HostErr,
+	// Represents the stderr stream.
+	StdErr,
 
-	// Represents debug messages of the berkelium library.
+	// Represents debug messages.
 	Debug,
 
-	// Represents error messages of the berkelium library.
+	// Represents info messages.
+	Info,
+
+	// Represents warn messages.
+	Warn,
+
+	// Represents error messages.
 	Error,
 
 };

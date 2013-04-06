@@ -12,8 +12,9 @@ package org.berkelium.api;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public interface LogDelegate {
+public enum LogSource {
 
-	// Allows the client application to handle berkelium library and host messages.
-	void log(Runtime runtime, LogSource source, LogType type, String clazz, String message);
+	Host,
+
+	Lib,
 }

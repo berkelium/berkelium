@@ -162,27 +162,38 @@
 			<short>Returns true if this Profile instance holds the Profile lock.</short>
 		</entry>
 	</group>
+	<group type="enum" name="LogSource">
+		<entry name="Host"/>
+		<entry name="Lib"/>
+	</group>
 	<group type="enum" name="LogType">
-		<entry name="HostOut">
-			<short>Represents the stdout stream of the berkelium host process.</short>
+		<entry name="StdOut">
+			<short>Represents the stdout stream.</short>
 		</entry>
-		<entry name="HostErr">
-			<short>Represents the stderr stream of the berkelium host process.</short>
+		<entry name="StdErr">
+			<short>Represents the stderr stream.</short>
 		</entry>
 		<entry name="Debug">
-			<short>Represents debug messages of the berkelium library.</short>
+			<short>Represents debug messages.</short>
+		</entry>
+		<entry name="Info">
+			<short>Represents info messages.</short>
+		</entry>
+		<entry name="Warn">
+			<short>Represents warn messages.</short>
 		</entry>
 		<entry name="Error">
-			<short>Represents error messages of the berkelium library.</short>
+			<short>Represents error messages.</short>
 		</entry>
 	</group>
 	<group type="interface" name="LogDelegate">
-		<short>Handler for log messages. LogAdapter is an abstract class with empty function definitions for all functions in LogDelegate.</short>
 		<entry name="log">
-			<arg type="Instance" name="instance"/>
+			<arg type="Runtime" name="runtime"/>
+			<arg type="LogSource" name="source"/>
 			<arg type="LogType" name="type"/>
+			<arg type="string" name="clazz"/>
 			<arg type="string" name="message"/>
-			<short>Allows the client application to handle berkelium host console messages.</short>
+			<short>Allows the client application to handle berkelium library and host messages.</short>
 		</entry>
 	</group>
 	<group type="interface" name="HostDelegate">
