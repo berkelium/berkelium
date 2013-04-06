@@ -20,34 +20,38 @@ using Berkelium::Util::randomId;
 namespace {
 
 class PipeTest : public ::testing::Test {
+	DEFINE_LOGGER(PipeTest);
 };
 
 TEST_F(PipeTest, create) {
-	ASSERT_NOT_NULL(Pipe::getPipe(randomId()));
+	USE_LOGGER(create);
+	ASSERT_NOT_NULL(Pipe::getPipe(logger, randomId()));
 }
 
 TEST_F(PipeTest, remove) {
+	USE_LOGGER(create);
 	std::string name = "/tmp/berkelium." + randomId();
 	ASSERT_FALSE(boost::filesystem::exists(name));
 	{
-		PipeRef pipe = Pipe::getPipe(name);
+		PipeRef pipe = Pipe::getPipe(getLogger("remove"), name);
 		ASSERT_TRUE(boost::filesystem::exists(name));
 	}
 	ASSERT_FALSE(boost::filesystem::exists(name));
 }
 
 TEST_F(PipeTest, sendRecv) {
+	USE_LOGGER(create);
 	std::string name = "/tmp/berkelium." + randomId();
 	ASSERT_FALSE(boost::filesystem::exists(name));
 	{
-		PipeRef pipe = Pipe::getPipe(name);
+		PipeRef pipe = Pipe::getPipe(getLogger("sendRecv"), name);
 		ASSERT_TRUE(boost::filesystem::exists(name));
 		ASSERT_TRUE(pipe->isEmpty());
-		MessageRef msg(Message::create());
+		MessageRef msg(Message::create(logger));
 		msg->add_str("hello");
 		pipe->send(msg);
 		ASSERT_FALSE(pipe->isEmpty());
-		msg = Message::create();
+		msg = Message::create(logger);
 		pipe->recv(msg);
 		std::string recv = msg->get_str();
 		ASSERT_TRUE(pipe->isEmpty());

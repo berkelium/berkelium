@@ -7,7 +7,7 @@
 #include <Berkelium/API/Instance.hpp>
 #include <Berkelium/API/Window.hpp>
 #include <Berkelium/API/Tab.hpp>
-#include <Berkelium/Impl/Logger.hpp>
+#include <Berkelium/API/Logger.hpp>
 #include "gtest/gtest.h"
 
 #include <list>
@@ -21,23 +21,24 @@ using Berkelium::WindowRef;
 using Berkelium::TabRef;
 
 class WindowTest : public ::testing::Test {
+	DEFINE_LOGGER(IpcMessageTest);
 };
 
-void createWindow(WindowRef& ret) {
+void createWindow(Berkelium::LoggerRef logger, WindowRef& ret) {
 	Berkelium::RuntimeRef runtime(Berkelium::BerkeliumFactory::getDefaultRuntime());
-	Berkelium::Log::debug() << "creating host executable..." << std::endl;
+	logger->debug() << "creating host executable..." << std::endl;
 	Berkelium::HostExecutableRef host = runtime->forSystemInstalled();
 	ASSERT_NOT_NULL(host);
 
-	Berkelium::Log::debug() << "creating profile..." << std::endl;
+	logger->debug() << "creating profile..." << std::endl;
 	Berkelium::ProfileRef profile = runtime->createTemporaryProfile();
 	ASSERT_NOT_NULL(profile);
 
-	Berkelium::Log::debug() << "launching berkelium host executable..." << std::endl;
+	logger->debug() << "launching berkelium host executable..." << std::endl;
 	Berkelium::InstanceRef instance = runtime->open(host, profile);
 	ASSERT_NOT_NULL(instance);
 
-	Berkelium::Log::debug() << "creating window..." << std::endl;
+	logger->debug() << "creating window..." << std::endl;
 	int old = instance->getWindowCount();
 	ret = instance->createWindow(false);
 	ASSERT_EQ(old + 1, instance->getWindowCount());
@@ -45,39 +46,43 @@ void createWindow(WindowRef& ret) {
 }
 
 TEST_F(WindowTest, create) {
+	USE_LOGGER(create);
 	WindowRef subject;
-	createWindow(subject);
+	createWindow(logger, subject);
 	ASSERT_NOT_NULL(subject);
 }
 
 TEST_F(WindowTest, createSecondProcessWindow) {
+	USE_LOGGER(createSecondProcessWindow);
 	WindowRef subject1;
-	createWindow(subject1);
+	createWindow(logger, subject1);
 	WindowRef subject2;
-	createWindow(subject2);
+	createWindow(logger, subject2);
 	ASSERT_NOT_SAME(subject1->getInstance(), subject2->getInstance());
 }
 
 TEST_F(WindowTest, createSecondWindow) {
+	USE_LOGGER(createSecondWindow);
 	WindowRef subject1;
-	createWindow(subject1);
+	createWindow(logger, subject1);
 	ASSERT_NOT_NULL(subject1);
 
-	Berkelium::Log::debug() << "creating second window..." << std::endl;
+	logger->debug() << "creating second window..." << std::endl;
 	WindowRef subject2 = subject1->getInstance()->createWindow(false);
 	ASSERT_NOT_NULL(subject2);
 	ASSERT_SAME(subject1->getInstance(), subject2->getInstance());
 }
 
 TEST_F(WindowTest, createWindows) {
+	USE_LOGGER(createWindows);
 	WindowRef first;
-	createWindow(first);
+	createWindow(logger, first);
 	ASSERT_NOT_NULL(first);
 	InstanceRef instance = first->getInstance();
 
 	std::vector<WindowRef> windows;
 	for(int i = 0; i < 10; i++) {
-		Berkelium::Log::debug() << "creating window" << i << "..." << std::endl;
+		logger->debug() << "creating window" << i << "..." << std::endl;
 		WindowRef other = instance->createWindow(false);
 		ASSERT_NOT_NULL(other);
 		ASSERT_SAME(instance, other	->getInstance());
@@ -86,8 +91,9 @@ TEST_F(WindowTest, createWindows) {
 }
 
 TEST_F(WindowTest, createDeleteRandomWindows) {
+	USE_LOGGER(createDeleteRandomWindows);
 	WindowRef first;
-	createWindow(first);
+	createWindow(logger, first);
 	ASSERT_NOT_NULL(first);
 	InstanceRef instance = first->getInstance();
 
@@ -101,14 +107,14 @@ TEST_F(WindowTest, createDeleteRandomWindows) {
 			int pos = rand() % windows.size();
 			for (std::list<WindowRef>::iterator it = windows.begin(); it != windows.end(); it++) {
 				if(pos == 0) {
-					Berkelium::Log::info() << "removing window..." << std::endl;
+					logger->info() << "removing window..." << std::endl;
 					windows.remove(*it);
 					break;
 				}
 				pos--;
 			}
 		} else {
-			Berkelium::Log::debug() << "creating window..." << std::endl;
+			logger->debug() << "creating window..." << std::endl;
 			WindowRef other = instance->createWindow(rand() % 2 == 0);
 			ASSERT_NOT_NULL(other);
 			ASSERT_SAME(instance, other->getInstance());
@@ -119,8 +125,9 @@ TEST_F(WindowTest, createDeleteRandomWindows) {
 }
 
 TEST_F(WindowTest, createTab) {
+	USE_LOGGER(createTab);
 	WindowRef window;
-	createWindow(window);
+	createWindow(logger, window);
 	ASSERT_NOT_NULL(window);
 
 	ASSERT_EQ(0, window->getTabCount());
@@ -130,8 +137,9 @@ TEST_F(WindowTest, createTab) {
 }
 
 TEST_F(WindowTest, createMultipleTabs) {
+	USE_LOGGER(createMultipleTabs);
 	WindowRef window;
-	createWindow(window);
+	createWindow(logger, window);
 	ASSERT_NOT_NULL(window);
 
 	std::list<TabRef> tabs;
@@ -147,8 +155,9 @@ TEST_F(WindowTest, createMultipleTabs) {
 }
 
 TEST_F(WindowTest, free1) {
+	USE_LOGGER(free1);
 	WindowRef window;
-	createWindow(window);
+	createWindow(logger, window);
 	ASSERT_NOT_NULL(window);
 
 	TabRef tab = window->createTab();
@@ -158,8 +167,9 @@ TEST_F(WindowTest, free1) {
 }
 
 TEST_F(WindowTest, free2) {
+	USE_LOGGER(free2);
 	WindowRef window;
-	createWindow(window);
+	createWindow(logger, window);
 	ASSERT_NOT_NULL(window);
 
 	ASSERT_EQ(0, window->getTabCount());

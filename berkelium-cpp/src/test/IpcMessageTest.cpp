@@ -13,16 +13,19 @@ using Berkelium::Ipc::MessageRef;
 namespace {
 
 class IpcMessageTest : public ::testing::Test {
+	DEFINE_LOGGER(IpcMessageTest);
 };
 
 TEST_F(IpcMessageTest, create) {
-	ASSERT_NOT_NULL(Message::create());
+	USE_LOGGER(create);
+	ASSERT_NOT_NULL(Message::create(logger));
 }
 
 #define TEST_LR(l, r) ASSERT_EQ((size_t)l, m->length()); ASSERT_EQ((size_t)r, m->remaining())
 
 TEST_F(IpcMessageTest, test8) {
-	MessageRef m = Message::create();
+	USE_LOGGER(test8);
+	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
 
 	m->add_8(   0);TEST_LR(1, 1);
@@ -39,7 +42,8 @@ TEST_F(IpcMessageTest, test8) {
 }
 
 TEST_F(IpcMessageTest, test16) {
-	MessageRef m = Message::create();
+	USE_LOGGER(test16);
+	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
 
 	m->add_16(   0);TEST_LR(2, 2);
@@ -56,13 +60,15 @@ TEST_F(IpcMessageTest, test16) {
 }
 
 TEST_F(IpcMessageTest, uint) {
-	MessageRef m = Message::create();
+	USE_LOGGER(uint);
+	MessageRef m = Message::create(logger);
 	m->add_32(1234567890);
 	ASSERT_EQ(1234567890, m->get_32());
 }
 
 TEST_F(IpcMessageTest, test32) {
-	MessageRef m = Message::create();
+	USE_LOGGER(test32);
+	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
 
 	m->add_32(   0);TEST_LR(4, 4);
@@ -79,7 +85,8 @@ TEST_F(IpcMessageTest, test32) {
 }
 
 TEST_F(IpcMessageTest, test_c_str) {
-	MessageRef m = Message::create();
+	USE_LOGGER(test_c_str);
+	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
 
 	const char* TEST_STR = "test";
@@ -96,7 +103,8 @@ TEST_F(IpcMessageTest, test_c_str) {
 }
 
 TEST_F(IpcMessageTest, test_std_str) {
-	MessageRef m = Message::create();
+	USE_LOGGER(test_std_str);
+	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
 
 	std::string TEST_STR = "test";
@@ -113,7 +121,8 @@ TEST_F(IpcMessageTest, test_std_str) {
 }
 
 TEST_F(IpcMessageTest, test_setup) {
-	MessageRef m = Message::create();
+	USE_LOGGER(test_setup);
+	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
 
 	m->setup(6);

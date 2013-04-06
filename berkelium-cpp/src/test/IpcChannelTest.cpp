@@ -8,7 +8,6 @@
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
-#include <Berkelium/Impl/Logger.hpp>
 
 #include "gtest/gtest.h"
 #include "test.h"
@@ -24,6 +23,7 @@ using namespace boost::filesystem;
 namespace {
 
 class ChannelTest : public ::testing::Test {
+	DEFINE_LOGGER(ChannelTest);
 };
 
 std::string createTempPath(Berkelium::ProfileRef& profile) {
@@ -33,17 +33,18 @@ std::string createTempPath(Berkelium::ProfileRef& profile) {
 }
 
 TEST_F(ChannelTest, simple) {
+	USE_LOGGER(simple);
 	Berkelium::ProfileRef profile;
 	std::string name = createTempPath(profile);
 
-	ChannelRef server = Channel::createChannel(name, true);
+	ChannelRef server = Channel::createChannel(logger, name, true);
 	ASSERT_NOT_NULL(server);
-	ChannelRef client = Channel::getChannel(name, server->getName(), false);
+	ChannelRef client = Channel::getChannel(logger, name, server->getName(), false);
 	ASSERT_NOT_NULL(client);
 
 	const int32_t r = 1234;
 
-	MessageRef send(Message::create());
+	MessageRef send(Message::create(logger));
 	ASSERT_EQ(0u, send->length());
 	ASSERT_EQ(0u, send->remaining());
 	send->add_32(r);
@@ -52,7 +53,7 @@ TEST_F(ChannelTest, simple) {
 
 	server->send(send);
 
-	MessageRef recv(Message::create());
+	MessageRef recv(Message::create(logger));
 	ASSERT_EQ(0u, recv->length());
 	ASSERT_EQ(0u, recv->remaining());
 
@@ -65,19 +66,20 @@ TEST_F(ChannelTest, simple) {
 }
 
 TEST_F(ChannelTest, dual) {
+	USE_LOGGER(dual);
 	Berkelium::ProfileRef profile;
 	std::string name = createTempPath(profile);
 
-	ChannelRef s1 = Channel::createChannel(name, true);
+	ChannelRef s1 = Channel::createChannel(logger, name, true);
 	ASSERT_NOT_NULL(s1);
 	ChannelRef s2 = s1->getReverseChannel();
 	ASSERT_NOT_NULL(s2);
-	ChannelRef c1 = Channel::getChannel(name, s1->getName(), false);
+	ChannelRef c1 = Channel::getChannel(logger, name, s1->getName(), false);
 	ASSERT_NOT_NULL(c1);
 	ChannelRef c2 = c1->getReverseChannel();
 	ASSERT_NOT_NULL(c2);
 
-	MessageRef send(Message::create());
+	MessageRef send(Message::create(logger));
 
 	send->add_32(0x1234567);
 	s1->send(send);
@@ -105,10 +107,11 @@ TEST_F(ChannelTest, dual) {
 }
 
 TEST_F(ChannelTest, free) {
+	USE_LOGGER(free);
 	Berkelium::ProfileRef profile;
 	std::string name = createTempPath(profile);
 
-	ChannelRef c1 = Channel::createChannel(name, true);
+	ChannelRef c1 = Channel::createChannel(logger, name, true);
 	ASSERT_TRUE(c1.unique());
 	void* org = c1.get();
 	ChannelRef c2 = c1;
@@ -127,7 +130,7 @@ TEST_F(ChannelTest, free) {
 	c2.reset();
 	// new reverse channel object should not be placed on the same location
 	// where c2 was stored before, so a dummy channel is created here
-	ChannelRef dummy = Channel::createChannel(name, true);
+	ChannelRef dummy = Channel::createChannel(logger, name, true);
 
 	c2 = c1->getReverseChannel();
 	ASSERT_NULL(c2);

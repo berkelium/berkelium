@@ -6,8 +6,8 @@
 
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Runtime.hpp>
+#include <Berkelium/API/Logger.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
-#include <Berkelium/Impl/Logger.hpp>
 
 #include <sys/time.h>
 #include <cstdlib>
@@ -17,10 +17,10 @@ namespace Berkelium {
 
 namespace Util {
 
-int64_t currentTimeMillis() {
+int64_t currentTimeMillis(LoggerRef logger) {
 	timeval t;
 	if(gettimeofday( &t, NULL) == -1)
-		Log::systemError("gettimeofday");
+		logger->systemError("gettimeofday");
 	return int64_t(t.tv_sec) * 1000 + int64_t(t.tv_usec) / 1000;
 }
 

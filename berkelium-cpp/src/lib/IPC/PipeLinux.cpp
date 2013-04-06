@@ -5,9 +5,9 @@
 #ifdef LINUX
 
 #include <Berkelium/API/BerkeliumFactory.hpp>
+#include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
-#include <Berkelium/Impl/Logger.hpp>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -18,7 +18,6 @@
 #include <boost/filesystem.hpp>
 
 using boost::filesystem::path;
-using Berkelium::Log::systemError;
 
 namespace Berkelium {
 
@@ -28,12 +27,15 @@ namespace impl {
 
 class PipeLinuxImpl : public Pipe {
 private:
+	LoggerRef logger;
 	const path name;
 	int fd;
 	fd_set fds;
 
 public:
-	PipeLinuxImpl(const std::string& name) :
+	PipeLinuxImpl(LoggerRef logger, const std::string& name) :
+		Pipe(),
+		logger(logger),
 		name(name) {
 		fd = -1;
 
@@ -45,12 +47,12 @@ public:
 
 		const char* p = name.c_str();
 		if(::access(p, F_OK) != 0 && ::mkfifo(p, 0700) != 0) {
-			systemError("mkfifo", name);
+			logger->systemError("mkfifo", name);
 			return;
 		}
 		fd = ::open(p, O_RDWR);
 		if(fd == -1) {
-			systemError("open", name);
+			logger->systemError("open", name);
 			return;
 		}
 	}
@@ -115,8 +117,8 @@ Pipe::Pipe() {
 Pipe::~Pipe() {
 }
 
-PipeRef Pipe::getPipe(const std::string& name) {
-	return PipeRef(new impl::PipeLinuxImpl(name));
+PipeRef Pipe::getPipe(LoggerRef logger, const std::string& name) {
+	return PipeRef(new impl::PipeLinuxImpl(logger, name));
 }
 
 } // namespace Ipc

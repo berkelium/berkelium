@@ -35,25 +35,34 @@ ProfileRef getChromeProfile(RuntimeRef runtime);
 ProfileRef getChromiumProfile(RuntimeRef runtime);
 ProfileRef forProfilePath(RuntimeRef runtime, const std::string& path);
 ProfileRef createTemporaryProfile(RuntimeRef runtime);
+LoggerRef newLogger(RuntimeRef runtime, const std::string& clazz, const std::string& name);
+void setLoggerPrefix(RuntimeRef runtime, const std::string& name);
 
 #define BERKELIUM_IMPL_CLASS(TypeName)			\
 private:										\
 	TypeName##Impl(const TypeName##Impl&);		\
 	void operator=(const TypeName##Impl&);	\
 	const RuntimeRef runtime;					\
+	const LoggerRef logger;						\
 												\
 public:											\
 	virtual RuntimeRef getRuntime() {			\
 		return runtime;							\
 	}
 
-#define BERKELIUM_IMPL_CTOR1(TypeName)			\
-	TypeName(),									\
-	runtime(runtime)
+#define _BERKELIUM_IMPL_CTOR(TypeName, name, rt)		\
+	TypeName(),											\
+	runtime(rt),										\
+	logger(runtime->getLogger("##TypeName##", name))
 
-#define BERKELIUM_IMPL_CTOR2(TypeName, rt)		\
-	TypeName(),									\
-	runtime(rt->getRuntime())
+#define BERKELIUM_IMPL_CTOR1(TypeName)			\
+	_BERKELIUM_IMPL_CTOR(TypeName, "", runtime)
+
+#define BERKELIUM_IMPL_CTOR2(TypeName, name)			\
+	_BERKELIUM_IMPL_CTOR(TypeName, name, runtime)
+
+#define BERKELIUM_IMPL_CTOR3(TypeName, name, rt)		\
+	_BERKELIUM_IMPL_CTOR(TypeName, name, rt->getRuntime())
 
 } // namespace impl
 

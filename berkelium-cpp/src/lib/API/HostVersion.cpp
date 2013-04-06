@@ -4,6 +4,7 @@
 
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/HostVersion.hpp>
+#include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
 #include <sstream>

@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 #include <Berkelium/API/Util.hpp>
+#include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
-#include <Berkelium/Impl/Logger.hpp>
 
 #include <boost/filesystem.hpp>
-
-#include <iostream>
 
 using boost::filesystem::path;
 
@@ -22,6 +20,7 @@ namespace impl {
 
 class ChannelImpl : public Channel {
 private:
+	LoggerRef logger;
 	const std::string dir;
 	const std::string name;
 	const bool server;
@@ -41,16 +40,18 @@ private:
 	}
 
 public:
-	ChannelImpl(const path& dir, const std::string& name, const bool server, const bool reverse) :
+	ChannelImpl(LoggerRef logger, const path& dir, const std::string& name, const bool server, const bool reverse) :
+		Channel(),
+		logger(logger),
 		dir(dir.string()),
 		name(name),
 		server(server),
 		reverse(reverse),
 		reverseRef(),
 		self(),
-		message(Message::create()),
-		pin(Pipe::getPipe((dir / name).string() + getExt(server, reverse))),
-		pout(Pipe::getPipe((dir / name).string() + getExt(!server, reverse))) {
+		message(Message::create(logger)),
+		pin(Pipe::getPipe(logger, (dir / name).string() + getExt(server, reverse))),
+		pout(Pipe::getPipe(logger, (dir / name).string() + getExt(!server, reverse))) {
 	}
 
 	virtual ~ChannelImpl() {
@@ -73,11 +74,11 @@ public:
 	}
 
 	virtual ChannelRef createSubChannel() {
-		return Channel::createChannel(dir, true);
+		return Channel::createChannel(logger, dir, true);
 	}
 
 	virtual ChannelRef getSubChannel(const std::string& name) {
-		return Channel::getChannel(dir, name, false);
+		return Channel::getChannel(logger, dir, name, false);
 	}
 
 	virtual ChannelRef getReverseChannel() {
@@ -95,9 +96,9 @@ public:
 		return self.lock();
 	}
 
-	static ChannelRef newChannel(const std::string& dir, const std::string& name, const bool server) {
-		ChannelImpl* impl1 = new ChannelImpl(path(dir), name, server, false);
-		ChannelImpl* impl2 = new ChannelImpl(path(dir), name, server, true);
+	static ChannelRef newChannel(LoggerRef logger, const std::string& dir, const std::string& name, const bool server) {
+		ChannelImpl* impl1 = new ChannelImpl(logger, path(dir), name, server, false);
+		ChannelImpl* impl2 = new ChannelImpl(logger, path(dir), name, server, true);
 		ChannelRef ret1(impl1);
 		ChannelRef ret2(impl2);
 		impl1->self = ret1;
@@ -116,12 +117,12 @@ Channel::Channel() {
 Channel::~Channel() {
 }
 
-ChannelRef Channel::createChannel(const std::string& dir, const bool server) {
-	return getChannel(dir, Util::randomId(), server);
+ChannelRef Channel::createChannel(LoggerRef logger, const std::string& dir, const bool server) {
+	return getChannel(logger, dir, Util::randomId(), server);
 }
 
-ChannelRef Channel::getChannel(const std::string& dir, const std::string& name, const bool server) {
-	return impl::ChannelImpl::newChannel(dir, name, server);
+ChannelRef Channel::getChannel(LoggerRef logger, const std::string& dir, const std::string& name, const bool server) {
+	return impl::ChannelImpl::newChannel(logger, dir, name, server);
 }
 
 } // namespace Ipc

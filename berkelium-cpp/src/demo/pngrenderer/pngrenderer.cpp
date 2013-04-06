@@ -9,11 +9,7 @@
 #include <Berkelium/API/Instance.hpp>
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Window.hpp>
-
-// TODO: not the best way...
-#define BERKELIUM_CPP_IMPL
-#include <Berkelium/Impl/Logger.hpp>
-#undef BERKELIUM_CPP_IMPL
+#include <Berkelium/API/Logger.hpp>
 
 using Berkelium::BerkeliumFactory;
 using Berkelium::HostExecutableRef;
@@ -23,43 +19,43 @@ using Berkelium::WindowRef;
 
 int main(int argc, char* argv[])
 {
-	Berkelium::RuntimeRef runtime(Berkelium::BerkeliumFactory::createRuntime());
-	Berkelium::Util::parseCommandLine(runtime, argc, argv);
+	Berkelium::RuntimeRef runtime(Berkelium::Util::createRuntime(argc, argv));
+	Berkelium::LoggerRef logger(Berkelium::Util::createRootLogger(runtime, std::cout));
 
-	Berkelium::Log::info() << "running pngrenderer..." << std::endl;
+	logger->info() << "running pngrenderer..." << std::endl;
 	HostExecutableRef host(runtime->forSystemInstalled());
 
-	Berkelium::Log::debug() << "creating profile..." << std::endl;
+	logger->debug() << "creating profile..." << std::endl;
 	ProfileRef profile(runtime->createTemporaryProfile());
 
-	Berkelium::Log::debug() << "launching berkelium host executable..." << std::endl;
+	logger->debug() << "launching berkelium host executable..." << std::endl;
 	InstanceRef instance(runtime->open(host, profile));
 
-	Berkelium::Log::debug() << "creating window..." << std::endl;
+	logger->debug() << "creating window..." << std::endl;
 	WindowRef window = instance->createWindow(false);
 
-	Berkelium::Log::debug() << "window: " << window.get() << std::endl;
+	logger->debug() << "window: " << window.get() << std::endl;
 
 	window->getTabCount();
 
-	Berkelium::Log::debug() << "tested!" << std::endl;
+	logger->debug() << "tested!" << std::endl;
 
 	for(int i = 0; i < 2000; i += 100) {
 		instance->internalUpdate();
 		Berkelium::Util::sleep(100);
 	}
 
-	Berkelium::Log::debug() << "closing window..." << std::endl;
+	logger->debug() << "closing window..." << std::endl;
 	window.reset();
 
-	Berkelium::Log::debug() << "closing berkelium host executable..." << std::endl;
+	logger->debug() << "closing berkelium host executable..." << std::endl;
 	instance.reset();
 
-	Berkelium::Log::debug() << "closing profile..." << std::endl;
+	logger->debug() << "closing profile..." << std::endl;
 	profile.reset();
 
-	Berkelium::Log::debug() << "closing host..." << std::endl;
+	logger->debug() << "closing host..." << std::endl;
 	host.reset();
 
-	Berkelium::Log::info() << "pngrenderer finished!" << std::endl;
+	logger->info() << "pngrenderer finished!" << std::endl;
 }

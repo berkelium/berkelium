@@ -6,12 +6,14 @@
 #define BERKELIUM_IMPL_PROCESS_HPP_
 #pragma once
 
-#include <Berkelium/API/Berkelium.hpp>
+#include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Channel.hpp>
 
 #ifndef BERKELIUM_CPP_IMPL
 # error "This file is intended for internal use only!"
 #endif
+
+#include <vector>
 
 namespace Berkelium {
 
@@ -25,12 +27,15 @@ private:
 	Ipc::ChannelRef ipc;
 
 protected:
-	inline Process(const std::string& dir) :
-		ipc(Ipc::Channel::createChannel(dir, true)) {
+	const LoggerRef logger;
+
+	inline Process(LoggerRef logger, const std::string& dir) :
+		ipc(Ipc::Channel::createChannel(logger, dir, true)),
+		logger(logger) {
 	}
 
 public:
-	static ProcessRef create(const std::string& dir);
+	static ProcessRef create(LoggerRef logger, const std::string& dir);
 
 	virtual ~Process() = 0;
 

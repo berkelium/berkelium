@@ -6,11 +6,10 @@
 #include <Berkelium/API/Instance.hpp>
 #include <Berkelium/API/Window.hpp>
 #include <Berkelium/API/Tab.hpp>
+#include <Berkelium/API/Runtime.hpp>
+#include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
-#include <Berkelium/Impl/Logger.hpp>
-
-#include <list>
 
 namespace Berkelium {
 
@@ -37,7 +36,7 @@ private:
 
 public:
 	WindowImpl(InstanceRef instance, Ipc::ChannelRef channel, bool incognito) :
-		BERKELIUM_IMPL_CTOR2(Window, instance),
+		BERKELIUM_IMPL_CTOR3(Window, channel->getName(), instance),
 		self(),
 		instance(instance),
 		send(channel),
@@ -58,7 +57,7 @@ public:
 			} else {
 				switch(Ipc::CommandId cmd = message->get_cmd()) {
 					default: {
-						Berkelium::Log::error() << "Window: received unknown command '" << cmd << "'" << std::endl;
+						logger->error() << "Window: received unknown command '" << cmd << "'" << std::endl;
 						break;
 					}
 					/*
@@ -105,9 +104,9 @@ public:
 		send->send(message);
 		send->recv(message);
 		std::string id(message->get_str());
-		Berkelium::Log::debug() << "created tab '" << id << "'" << std::endl;
+		logger->debug() << "created tab '" << id << "'" << std::endl;
 		Ipc::ChannelRef x = send->getSubChannel(id);
-		Berkelium::Log::debug() << "with channel '" << x->getName() << "'" << std::endl;
+		logger->debug() << "with channel '" << x->getName() << "'" << std::endl;
 		TabRef ret(newTab(getSelf(), x));
 		tabs.push_back(ret);
 		return ret;

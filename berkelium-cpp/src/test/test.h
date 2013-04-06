@@ -6,6 +6,17 @@
 #define BERKELIUM_TEST_TEST_H_
 #pragma once
 
+Berkelium::LoggerRef getTestLogger(std::string clazz, std::string name);
+
+#define DEFINE_LOGGER(clazz)								\
+protected:													\
+	Berkelium::LoggerRef getLogger(std::string name) {		\
+		return getTestLogger("##clazz##", name);			\
+	}
+
+#define USE_LOGGER(func)									\
+	Berkelium::LoggerRef logger(getLogger("##func##"));
+
 #define ASSERT_NULL(ptr) ASSERT_EQ((void*)NULL, (void*)(ptr.get()))
 #define ASSERT_NOT_NULL(ptr) ASSERT_TRUE((void*)(ptr.get()) != NULL)
 

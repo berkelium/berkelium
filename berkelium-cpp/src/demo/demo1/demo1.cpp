@@ -8,37 +8,33 @@
 #include <Berkelium/API/HostVersion.hpp>
 #include <Berkelium/API/HostExecutable.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
+#include <Berkelium/API/Logger.hpp>
 
-// TODO: not the best way...
-#define BERKELIUM_CPP_IMPL
-#include <Berkelium/Impl/Logger.hpp>
-#undef BERKELIUM_CPP_IMPL
-
-void dumpProfile(const std::string& name, Berkelium::ProfileRef profile)
+void dumpProfile(Berkelium::LoggerRef logger, const std::string& name, Berkelium::ProfileRef profile)
 {
 	if(!profile) {
-		Berkelium::Log::error() << name << " profile not found!" << std::endl;
+		logger->error() << name << " profile not found!" << std::endl;
 		return;
 	}
-	Berkelium::Log::info() << "profile application: " << profile->getApplicationName() << std::endl;
-	Berkelium::Log::info() << "profile path: " << profile->getProfilePath() << std::endl;
-	Berkelium::Log::info() << "profile is found: " << profile->isFound() << std::endl;
-	Berkelium::Log::info() << "profile in use: " << profile->isInUse() << std::endl;
+	logger->info() << "profile application: " << profile->getApplicationName() << std::endl;
+	logger->debug() << "profile path: " << profile->getProfilePath() << std::endl;
+	logger->debug() << "profile is found: " << profile->isFound() << std::endl;
+	logger->debug() << "profile in use: " << profile->isInUse() << std::endl;
 }
 
 int main(int argc, char* argv[])
 {
-	Berkelium::RuntimeRef runtime(Berkelium::BerkeliumFactory::createRuntime());
-	Berkelium::Util::parseCommandLine(runtime, argc, argv);
+	Berkelium::RuntimeRef runtime(Berkelium::Util::createRuntime(argc, argv));
+	Berkelium::LoggerRef logger(Berkelium::Util::createRootLogger(runtime, std::cout));
 
-	Berkelium::Log::info() << "berkelium demo application..." << std::endl;
+	logger->info() << "berkelium demo application..." << std::endl;
 	Berkelium::HostExecutableRef host(runtime->forSystemInstalled());
 
 	Berkelium::HostVersionRef version(host->getVersion());
-	Berkelium::Log::info() << "host version string: " << version->getVersionString() << std::endl;
+	logger->info() << "host version string: " << version->getVersionString() << std::endl;
 
-	dumpProfile("temporary", runtime->createTemporaryProfile());
-	dumpProfile("Chrome", runtime->getChromeProfile());
-	dumpProfile("Chromium", runtime->getChromiumProfile());
-	dumpProfile("Berkelium", runtime->forProfile("berkelium"));
+	dumpProfile(logger, "temporary", runtime->createTemporaryProfile());
+	dumpProfile(logger, "Chrome", runtime->getChromeProfile());
+	dumpProfile(logger, "Chromium", runtime->getChromiumProfile());
+	dumpProfile(logger, "Berkelium", runtime->forProfile("berkelium"));
 }

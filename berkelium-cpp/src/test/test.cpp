@@ -6,6 +6,10 @@
 
 using Berkelium::Util::getOption;
 
+Berkelium::LoggerRef getTestLogger(std::string clazz, std::string name) {
+	return Berkelium::BerkeliumFactory::getDefaultRuntime()->getLogger(clazz, name);
+}
+
 GTEST_API_ int main(int argc, char **argv) {
 	testing::InitGoogleTest(&argc, argv);
 

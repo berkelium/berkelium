@@ -5,11 +5,10 @@
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Window.hpp>
 #include <Berkelium/API/Tab.hpp>
+#include <Berkelium/API/Runtime.hpp>
+#include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
-#include <Berkelium/Impl/Logger.hpp>
-
-#include <list>
 
 namespace Berkelium {
 
@@ -33,7 +32,7 @@ private:
 
 public:
 	TabImpl(WindowRef parent, Ipc::ChannelRef ipc) :
-		BERKELIUM_IMPL_CTOR2(Tab, parent),
+		BERKELIUM_IMPL_CTOR3(Tab, ipc->getName(), parent),
 		self(),
 		send(ipc),
 		recv(ipc->getReverseChannel()),
@@ -52,14 +51,14 @@ public:
 			} else {
 				switch(Ipc::CommandId cmd = message->get_cmd()) {
 					default: {
-						Berkelium::Log::error() << "Tab: received unknown command '" << cmd << "'" << std::endl;
+						logger->error() << "Tab: received unknown command '" << cmd << "'" << std::endl;
 						break;
 					}
 					case Ipc::CommandId::onReady: {
 						message->reset();
 						message->add_cmd(Ipc::CommandId::navigate);
 						message->add_str("http://heise.de/");
-						Log::debug() << "sending navigate to heise.de!" << std::endl;
+						logger->debug() << "sending navigate to heise.de!" << std::endl;
 						send->send(message);
 						break;
 					}

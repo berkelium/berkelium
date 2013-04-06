@@ -21,7 +21,7 @@ protected:
 	Message();
 
 public:
-	static MessageRef create();
+	static MessageRef create(LoggerRef logger);
 
 	virtual ~Message() = 0;
 

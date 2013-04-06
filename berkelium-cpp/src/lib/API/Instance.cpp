@@ -6,16 +6,16 @@
 #include <Berkelium/API/HostExecutable.hpp>
 #include <Berkelium/API/Instance.hpp>
 #include <Berkelium/API/Util.hpp>
+#include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/LogDelegate.hpp>
+#include <Berkelium/API/Logger.hpp>
 #include <Berkelium/API/Window.hpp>
 #include <Berkelium/IPC/Channel.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Process.hpp>
 #include <Berkelium/Impl/Impl.hpp>
-#include <Berkelium/Impl/Logger.hpp>
 
 #include <set>
-#include <iostream>
 
 namespace Berkelium {
 
@@ -53,7 +53,7 @@ private:
 
 public:
 	InstanceImpl(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process) :
-		BERKELIUM_IMPL_CTOR2(Instance, executable),
+		BERKELIUM_IMPL_CTOR3(Instance, ipc->getName(), executable),
 		self(),
 		executable(executable),
 		profile(profile),
@@ -70,11 +70,11 @@ public:
 		// TODO only call close if ipc is open...
 		close();
 		if(profile->isInUse()) {
-			Log::debug() << "waiting for profile..." << std::endl;
+			logger->debug() << "waiting for profile..." << std::endl;
 			while(profile->isInUse()) {
 				Util::sleep(100);
 			}
-			Log::debug() << "profile closed!" << std::endl;
+			logger->debug() << "profile closed!" << std::endl;
 		}
 	}
 
@@ -97,7 +97,7 @@ public:
 			} else {
 				switch(Ipc::CommandId cmd = message->get_cmd()) {
 					default: {
-						Berkelium::Log::error() << "Instance: received unknown command '" << cmd << "'" << std::endl;
+						logger->error() << "Instance: received unknown command '" << cmd << "'" << std::endl;
 						break;
 					}
 				}
@@ -147,22 +147,14 @@ public:
 		}
 	}
 
-	virtual void log(LogType type, const std::string& message) {
-		InstanceRef instance(self);
-		std::set<LogDelegateRef> copy;
-
-		for(std::set<LogDelegateWRef>::iterator it = logs.begin(); it != logs.end(); it++) {
+	virtual void log(LogSource source, LogType type, const std::string& clazz, const std::string& message) {
+		for(LogDelegateWRefSet::iterator it = logs.begin(); it != logs.end(); it++) {
 			LogDelegateRef ref = it->lock();
 			if(ref) {
-				copy.insert(ref);
+				ref->log(runtime, source, type, clazz, message);
 			} else {
 				it = logs.erase(it);
 			}
-		}
-
-		for(std::set<LogDelegateRef>::iterator it = copy.begin(); it != copy.end(); it++) {
-			LogDelegateRef ref = *it;
-			ref->log(instance, type, message);
 		}
 	}
 
@@ -184,7 +176,7 @@ public:
 	}
 
 	virtual WindowRef createWindow(bool incognito) {
-		Log::debug() << "create Window start" << std::endl;
+		logger->debug() << "create Window start" << std::endl;
 
 		message->reset();
 		message->add_cmd(Ipc::CommandId::createWindow);
@@ -193,7 +185,7 @@ public:
 		send->recv(message);
 
 		std::string id = message->get_str();
-		Log::debug() << "created window '" << id << "'!" << std::endl;
+		logger->debug() << "created window '" << id << "'!" << std::endl;
 		Ipc::ChannelRef channel = send->getSubChannel(id);
 
 		WindowRef ret(newWindow(self.lock(), channel, incognito));

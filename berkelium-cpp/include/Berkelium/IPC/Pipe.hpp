@@ -21,7 +21,7 @@ protected:
 	Pipe();
 
 public:
-	static PipeRef getPipe(const std::string& path);
+	static PipeRef getPipe(LoggerRef logger, const std::string& path);
 
 	virtual ~Pipe() = 0;
 

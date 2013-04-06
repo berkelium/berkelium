@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <Berkelium/API/LogDelegate.hpp>
+#include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
-#include <Berkelium/Impl/Logger.hpp>
-
 #include <cstring>
 
 namespace Berkelium {
@@ -15,13 +15,16 @@ namespace impl {
 
 class MessageImpl : public Message {
 private:
+	LoggerRef logger;
 	size_t capacity;
 	size_t wp;
 	size_t rp;
 	uint8_t* buffer;
 
 public:
-	MessageImpl() :
+	MessageImpl(LoggerRef logger) :
+		Message(),
+		logger(logger),
 		capacity(1024),
 		wp(0),
 		rp(0),
@@ -72,7 +75,7 @@ public:
 
 	void assume(size_t remaining) {
 		if(rp + remaining > wp) {
-			Log::error() << "IpcMessage: buffer underflow! (wp:" << wp << " rp:" << remaining << " capacity:" << capacity << ")" << std::endl;
+			logger->error() << "IpcMessage: buffer underflow! (wp:" << wp << " rp:" << remaining << " capacity:" << capacity << ")" << std::endl;
 			throw "IpcMessage: buffer underflow!";
 		}
 	}
@@ -214,8 +217,8 @@ Message::Message() {
 Message::~Message() {
 }
 
-MessageRef Message::create() {
-	return MessageRef(new impl::MessageImpl());
+MessageRef Message::create(LoggerRef logger) {
+	return MessageRef(new impl::MessageImpl(logger));
 }
 
 } // namespace Ipc

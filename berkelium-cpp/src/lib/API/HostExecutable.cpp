@@ -5,6 +5,7 @@
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/HostExecutable.hpp>
 #include <Berkelium/API/Profile.hpp>
+#include <Berkelium/API/Logger.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
 #include <boost/filesystem.hpp>

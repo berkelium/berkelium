@@ -8,14 +8,14 @@
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Channel.hpp>
-#include <Berkelium/Impl/Logger.hpp>
+#include <Berkelium/Impl/Impl.hpp>
 
-#include <list>
 #include <queue>
 
 using Berkelium::RuntimeRef;
 using Berkelium::BerkeliumFactory;
 using Berkelium::ProfileRef;
+using Berkelium::LoggerRef;
 using Berkelium::Ipc::Channel;
 using Berkelium::Ipc::ChannelRef;
 using Berkelium::Ipc::Message;
@@ -29,8 +29,8 @@ struct Entry {
 	ChannelRef channel;
 	MessageRef msg;
 
-	Entry(int64_t time, ChannelRef channel, MessageRef msg) :
-		time(time + Berkelium::Util::currentTimeMillis()),
+	Entry(LoggerRef logger, int64_t time, ChannelRef channel, MessageRef msg) :
+		time(time + Berkelium::Util::currentTimeMillis(logger)),
 		channel(channel),
 		msg(msg) {
 	}
@@ -48,40 +48,40 @@ public:
 
 int main(int argc, char* argv[])
 {
-	Berkelium::RuntimeRef runtime(Berkelium::BerkeliumFactory::createRuntime());
-	Berkelium::Log::setPrefix("Host");
+	Berkelium::RuntimeRef runtime(Berkelium::Util::createRuntime(argc, argv));
+	Berkelium::LoggerRef logger(runtime->getLogger("main", "main"));
 
 	std::string dir = getOption(argc, argv, "--user-data-dir=");
 	std::string id = getOption(argc, argv, "--berkelium=");
 
 	if(dir.empty() || id.empty()) {
-		Berkelium::Log::error() << "profile or id not given!" << std::endl;
+		logger->error() << "profile or id not given!" << std::endl;
 		return 1;
 	}
 
 	ProfileRef profile = runtime->forProfilePath(dir);
 	if(!profile->isFound()) {
-		Berkelium::Log::error() << "profile not found!" << std::endl;
+		logger->error() << "profile not found!" << std::endl;
 		return 1;
 	}
 	if(profile->isInUse()) {
-		Berkelium::Log::error() << "profile already in use!" << std::endl;
+		logger->error() << "profile already in use!" << std::endl;
 		return 1;
 	}
 	profile->setLocked(true);
 	if(!profile->isLocked()) {
-		Berkelium::Log::error() << "profile can not be locked!" << std::endl;
+		logger->error() << "profile can not be locked!" << std::endl;
 		return 1;
 	}
 
-	Berkelium::Log::debug() << "starting host fake!" << std::endl;
-	ChannelRef ipc = Channel::getChannel(dir, id, false);
+	logger->debug() << "starting host fake!" << std::endl;
+	ChannelRef ipc = Channel::getChannel(logger, dir, id, false);
 
 	MessageRef msg(ipc->getMessage());
 	msg->add_str("berkelium");
 	ipc->send(msg);
 
-	Berkelium::Log::info() << "host fake started!" << std::endl;
+	logger->info() << "host fake started!" << std::endl;
 
 	bool running = true;
 	std::list<ChannelRef> channels;
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
 
 			switch(CommandId cmd = msg->get_cmd()) {
 				default: {
-					Berkelium::Log::error() << "received unknown command '" << cmd << "'" << std::endl;
+					logger->error() << "received unknown command '" << cmd << "'" << std::endl;
 					sendAck = true;
 					break;
 				}
@@ -125,12 +125,12 @@ int main(int argc, char* argv[])
 					msg->reset();
 					msg->add_str(tab->getName());
 					ipc->send(msg);
-					Berkelium::Log::info() << "created new tab with id " << tab->getName() << "!" << std::endl;
+					logger->info() << "created new tab with id " << tab->getName() << "!" << std::endl;
 
 					// wait 2s and send onReady
-					MessageRef m = Message::create();
+					MessageRef m = Message::create(logger);
 					m->add_cmd(CommandId::onReady);
-					todo.push(Entry(2000, tab2, m));
+					todo.push(Entry(logger, 2000, tab2, m));
 					msg->reset();
 					break;
 				}
@@ -142,14 +142,14 @@ int main(int argc, char* argv[])
 					msg->reset();
 					msg->add_str(win->getName());
 					ipc->send(msg);
-					Berkelium::Log::info() << "created new " << (incognito ? "incognito" : "default") << " window with id "
+					logger->info() << "created new " << (incognito ? "incognito" : "default") << " window with id "
 							<< win->getName() << "!" << std::endl;
 					break;
 				}
 
 				case CommandId::navigate: {
 					std::string url(msg->get_str());
-					Berkelium::Log::info() << "navigate to '" << url << "'" << std::endl;
+					logger->info() << "navigate to '" << url << "'" << std::endl;
 					break;
 				}
 			}
@@ -162,11 +162,11 @@ int main(int argc, char* argv[])
 
 		while(!todo.empty()) {
 			Entry entry = todo.top();
-			if(entry.time > Berkelium::Util::currentTimeMillis()) {
+			if(entry.time > Berkelium::Util::currentTimeMillis(logger)) {
 				break;
 			}
 			todo.pop();
-			Berkelium::Log::info() << "processing queued task..." << std::endl;
+			logger->info() << "processing queued task..." << std::endl;
 			entry.channel->send(entry.msg);
 		}
 
@@ -175,7 +175,7 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	Berkelium::Log::info() << "host fake done!" << std::endl;
+	logger->info() << "host fake done!" << std::endl;
 
 	return 0;
 }

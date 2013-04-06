@@ -4,9 +4,9 @@
 
 #ifdef LINUX
 
+#include <Berkelium/API/Logger.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Process.hpp>
-#include <Berkelium/Impl/Logger.hpp>
 
 #include <sys/wait.h>
 
@@ -32,14 +32,15 @@ private:
 	int exit;
 
 public:
-	ProcessLinuxImpl(const std::string& dir) : Process(dir),
+	ProcessLinuxImpl(LoggerRef logger, const std::string& dir) :
+		Process(logger, dir),
 		pid(-1),
 		exit(-1) {
 	}
 
 	virtual ~ProcessLinuxImpl() {
 		if(pid == -1) return;
-		Log::debug() << "waiting for pid " << pid << "..." << std::endl;
+		logger->debug() << "waiting for pid " << pid << "..." << std::endl;
 		wait(0);
 	}
 
@@ -50,13 +51,13 @@ public:
 			if(wp == 0 && options == WNOHANG) {
 				return true;
 			}
-			Log::debug() << "Child exited with status " << status << std::endl;
+			logger->debug() << "Child exited with status " << status << std::endl;
 			exit = status;
 			pid = -1;
-			Log::info() << "berkelium host process terminated!" << std::endl;
+			logger->info() << "berkelium host process terminated!" << std::endl;
 			return false;
 		} else {
-			Log::systemError("waitpid");
+			logger->systemError("waitpid");
 		}
 		return true;
 	}
@@ -73,25 +74,25 @@ public:
 		pid = fork();
 		switch (pid) {
 		case -1: {
-			Log::systemError("fork");
+			logger->systemError("fork");
 			return false;
 		}
 		case 0: {
 			int ret = exec(args);
-			Log::systemError(("launch " + args[0]).c_str());
+			logger->systemError(("launch " + args[0]).c_str());
 			::exit(ret);
 			break;
 		}
 		default: {
-			Log::debug() << "started berkelium host process with pid " << pid << "!" << std::endl;
+			logger->debug() << "started berkelium host process with pid " << pid << "!" << std::endl;
 		}
 		}
 		return true;
 	}
 };
 
-ProcessRef Process::create(const std::string& dir) {
-	return ProcessRef(new ProcessLinuxImpl(dir));
+ProcessRef Process::create(LoggerRef logger, const std::string& dir) {
+	return ProcessRef(new ProcessLinuxImpl(logger, dir));
 }
 
 Process::~Process() {

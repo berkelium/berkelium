@@ -4,8 +4,9 @@
 
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/Runtime.hpp>
+#include <Berkelium/API/Util.hpp>
+#include <Berkelium/API/Logger.hpp>
 #include <Berkelium/Impl/Impl.hpp>
-#include <Berkelium/Impl/Logger.hpp>
 
 #include <boost/filesystem.hpp>
 
@@ -36,10 +37,16 @@ namespace impl {
 
 class RuntimeImpl : public Runtime {
 private:
+	LoggerRef logger;
 	std::string defaultExecutable;
 	RuntimeWRef self;
 
+	RuntimeImpl(const RuntimeImpl&);
+	void operator=(const RuntimeImpl&);
+
 	RuntimeImpl() :
+		Runtime(),
+		logger(),
 		defaultExecutable("") {
 	}
 
@@ -48,6 +55,7 @@ public:
 		RuntimeImpl* impl = new RuntimeImpl();
 		RuntimeRef ret(impl);
 		impl->self = ret;
+		impl->logger = impl::newLogger(ret, "Runtime", "");
 		return ret;
 	}
 
@@ -85,7 +93,7 @@ public:
 #error "please add path to chrome here"
 #endif
 
-		Log::debug() << "using berkelium host executable " << path << std::endl;
+		logger->debug() << "using berkelium host executable " << path << std::endl;
 
 		return newHostExecutable(getSelf(), path);
 	}
@@ -121,6 +129,10 @@ public:
 	virtual InstanceRef open(HostExecutableRef executable, ProfileRef profile) {
 		return impl::newInstance(getSelf(), executable, profile);
 	}
+
+	virtual LoggerRef getLogger(const std::string& clazz, const std::string& name) {
+		return impl::newLogger(getSelf(), clazz, name);
+	}
 };
 
 } // namespace impl
@@ -140,5 +152,15 @@ RuntimeRef BerkeliumFactory::getDefaultRuntime() {
 	}
 	return ret;
 }
+
+namespace Util {
+
+RuntimeRef createRuntime(int argc, char* argv[]) {
+	RuntimeRef ret(BerkeliumFactory::createRuntime());
+	Berkelium::Util::parseCommandLine(ret, argc, argv);
+	return ret;
+}
+
+} // namespace Util
 
 } // namespace Berkelium
