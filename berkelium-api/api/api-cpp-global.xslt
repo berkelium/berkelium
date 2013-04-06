@@ -19,9 +19,10 @@
 	<xsl:call-template name="comment-generated"/>
 
 	<xsl:text>#include &lt;string&gt;
-#include &lt;vector&gt;
+#include &lt;list&gt;
 #include &lt;memory&gt;
 #include &lt;cstdint&gt;
+#include &lt;iostream&gt;
 
 namespace Berkelium {
 
@@ -83,9 +84,9 @@ typedef std::weak_ptr&lt;</xsl:text>
 
 	</xsl:for-each>
 
-	<xsl:text>typedef std::vector&lt;WindowRef&gt; WindowList;
+	<xsl:text>typedef std::list&lt;WindowRef&gt; WindowList;
 
-typedef std::vector&lt;TabRef&gt; TabList;
+typedef std::list&lt;TabRef&gt; TabList;
 
 } // namespace Berkelium
 

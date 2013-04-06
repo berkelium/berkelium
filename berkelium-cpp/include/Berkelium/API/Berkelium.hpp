@@ -15,9 +15,10 @@
 // =========================================
 
 #include <string>
-#include <vector>
+#include <list>
 #include <memory>
 #include <cstdint>
+#include <iostream>
 
 namespace Berkelium {
 
@@ -103,9 +104,9 @@ class TabDelegate;
 typedef std::shared_ptr<TabDelegate> TabDelegateRef;
 typedef std::weak_ptr<TabDelegate> TabDelegateWRef;
 
-typedef std::vector<WindowRef> WindowList;
+typedef std::list<WindowRef> WindowList;
 
-typedef std::vector<TabRef> TabList;
+typedef std::list<TabRef> TabList;
 
 } // namespace Berkelium
 
