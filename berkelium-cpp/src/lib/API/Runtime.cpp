@@ -6,9 +6,12 @@
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Logger.hpp>
+#include <Berkelium/API/LogDelegate.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
 #include <boost/filesystem.hpp>
+
+#include <set>
 
 namespace Berkelium {
 
@@ -35,10 +38,18 @@ bool checkPath(const char* p, std::string& path) {
 
 namespace impl {
 
+template<typename T>
+struct set {
+	typedef std::set<T, std::owner_less<T>> type;
+};
+
+typedef set<LogDelegateWRef>::type LogDelegateWRefSet;
+
 class RuntimeImpl : public Runtime {
 private:
 	LoggerRef logger;
 	std::string defaultExecutable;
+	LogDelegateWRefSet logs;
 	RuntimeWRef self;
 
 	RuntimeImpl(const RuntimeImpl&);
@@ -47,7 +58,9 @@ private:
 	RuntimeImpl() :
 		Runtime(),
 		logger(),
-		defaultExecutable("") {
+		defaultExecutable(""),
+		logs(),
+		self() {
 	}
 
 public:
@@ -132,6 +145,30 @@ public:
 
 	virtual LoggerRef getLogger(const std::string& clazz, const std::string& name) {
 		return impl::newLogger(getSelf(), clazz, name);
+	}
+
+	virtual void addLogDelegate(LogDelegateRef delegate) {
+		logs.insert(delegate);
+	}
+
+	virtual void removeLogDelegate(LogDelegateRef delegate) {
+		for(std::set<LogDelegateWRef>::iterator it = logs.begin(); it != logs.end(); it++) {
+			LogDelegateRef ref = it->lock();
+			if(!ref || ref.get() == delegate.get()) {
+				it = logs.erase(it);
+			}
+		}
+	}
+
+	virtual void log(LogSource source, LogType type, const std::string& clazz, const std::string& name, const std::string& message) {
+		for(LogDelegateWRefSet::iterator it = logs.begin(); it != logs.end(); it++) {
+			LogDelegateRef ref = it->lock();
+			if(ref) {
+				ref->log(getSelf(), source, type, clazz, name, message);
+			} else {
+				it = logs.erase(it);
+			}
+		}
 	}
 };
 

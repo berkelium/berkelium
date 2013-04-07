@@ -7,7 +7,6 @@
 #include <Berkelium/API/Instance.hpp>
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Runtime.hpp>
-#include <Berkelium/API/LogDelegate.hpp>
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/API/Window.hpp>
 #include <Berkelium/IPC/Channel.hpp>
@@ -33,7 +32,6 @@ struct set {
 };
 
 typedef set<WindowWRef>::type WindowWRefSet;
-typedef set<LogDelegateWRef>::type LogDelegateWRefSet;
 typedef set<HostDelegateWRef>::type HostDelegateWRefSet;
 
 class InstanceImpl : public Instance {
@@ -48,7 +46,6 @@ private:
 	Ipc::MessageRef message;
 	ProcessRef process;
 	WindowWRefSet windows;
-	LogDelegateWRefSet logs;
 	HostDelegateWRefSet hosts;
 
 public:
@@ -62,7 +59,6 @@ public:
 		message(ipc->getMessage()),
 		process(process),
 		windows(),
-		logs(),
 		hosts() {
 	}
 
@@ -121,19 +117,6 @@ public:
 		return executable;
 	}
 
-	virtual void addLogDelegate(LogDelegateRef delegate) {
-		logs.insert(delegate);
-	}
-
-	virtual void removeLogDelegate(LogDelegateRef delegate) {
-		for(std::set<LogDelegateWRef>::iterator it = logs.begin(); it != logs.end(); it++) {
-			LogDelegateRef ref = it->lock();
-			if(!ref || ref.get() == delegate.get()) {
-				it = logs.erase(it);
-			}
-		}
-	}
-
 	virtual void addHostDelegate(HostDelegateRef delegate) {
 		hosts.insert(delegate);
 	}
@@ -143,17 +126,6 @@ public:
 			HostDelegateRef ref = it->lock();
 			if(!ref || ref.get() == delegate.get()) {
 				it = hosts.erase(it);
-			}
-		}
-	}
-
-	virtual void log(LogSource source, LogType type, const std::string& clazz, const std::string& message) {
-		for(LogDelegateWRefSet::iterator it = logs.begin(); it != logs.end(); it++) {
-			LogDelegateRef ref = it->lock();
-			if(ref) {
-				ref->log(runtime, source, type, clazz, message);
-			} else {
-				it = logs.erase(it);
 			}
 		}
 	}
