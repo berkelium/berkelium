@@ -23,6 +23,7 @@ typedef std::shared_ptr<int8_t> ByteRef;
 typedef std::shared_ptr<int32_t> Int32Ref;
 #endif
 
+void enableBerkeliumHostMode();
 TabRef newTab(WindowRef window, Ipc::ChannelRef ipc);
 WindowRef newWindow(InstanceRef instance, Ipc::ChannelRef channel, bool incognito);
 HostExecutableRef newHostExecutable(RuntimeRef runtime, const std::string&);

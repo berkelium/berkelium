@@ -6,6 +6,7 @@
 #include <Berkelium/API/Runtime.hpp>
 
 #include <cstring>
+#include <sstream>
 
 namespace Berkelium {
 
@@ -17,55 +18,100 @@ Logger::~Logger() {
 
 namespace impl {
 
-/*
-class LoggerLineBuffer : public std::stringbuf {
+LogSource logSource(Lib);
+
+class LoggerStreamBuffer : public std::stringbuf {
+private:
+	RuntimeRef runtime;
+	LogType type;
+	std::string clazz;
+	std::string name;
+
 public:
-	LoggerLineBuffer() :
-		std::stringbuf() {
+	LoggerStreamBuffer() :
+		std::stringbuf(),
+		runtime(),
+		type(),
+		clazz(),
+		name() {
+	}
+
+	virtual int sync() {
+		std::string msg(str());
+		str(std::string());
+		if(msg.length() > 0) {
+			msg.erase(msg.length() - 1);
+		}
+		runtime->log(logSource, type, clazz, name, msg);
+		return 0;
+	}
+
+	void setMode(RuntimeRef runtime, const LogType type, const std::string& clazz, const std::string& name) {
+		this->runtime = runtime;
+		this->type = type;
+		this->clazz = clazz;
+		this->name = name;
 	}
 };
 
-class LoggerStream : public std::stringstream {
+class LoggerStream : public std::ostream {
+private:
+	LoggerStreamBuffer* buf;
+
 public:
-	LoggerLine() :
-		std::ios(),
-		std::ostream(new std::stringbuf()) {
+	LoggerStream() :
+		std::ostream(new LoggerStreamBuffer()),
+		buf((LoggerStreamBuffer*)rdbuf()) {
 	}
 
-	~LoggerLine() {
-		std::cerr << "'" << "test" << "'" << std::endl;
+	~LoggerStream() {
 		delete rdbuf();
 	}
+
+	void setMode(RuntimeRef runtime, const LogType type, const std::string& clazz, const std::string& name) {
+		buf->setMode(runtime, type, clazz, name);
+	}
 };
-*/
+
+LoggerStream logStream;
 
 class LoggerImpl : public Logger {
 private:
+	RuntimeRef runtime;
+	const std::string clazz;
+	const std::string name;
 	std::string prefix;
 
 public:
 	LoggerImpl(RuntimeRef runtime, const std::string& clazz, const std::string& name) :
 		Logger(),
-		prefix("\033[0;33mLib  "){
+		runtime(runtime),
+		clazz(clazz),
+		name(name),
+		prefix(){
 	}
 
 	virtual ~LoggerImpl() {
 	}
 
 	virtual std::ostream& debug() {
-		return std::cerr << prefix << "\033[1;34mDebug\033[1;33m:\033[0;37m ";
+		logStream.setMode(runtime, Debug, clazz, name);
+		return logStream;
 	}
 
 	virtual std::ostream& info() {
-		return std::cerr << prefix << "\033[1;32mInfo \033[1;33m:\033[1;37m ";
+		logStream.setMode(runtime, Info, clazz, name);
+		return logStream;
 	}
 
 	virtual std::ostream& warn() {
-		return std::cerr << prefix << "\033[1;33mWarn \033[1;33m:\033[1;37m ";
+		logStream.setMode(runtime, Warn, clazz, name);
+		return logStream;
 	}
 
 	virtual std::ostream& error() {
-		return std::cerr << prefix << "\033[1;31mError\033[1;33m:\033[1;37m ";
+		logStream.setMode(runtime, Error, clazz, name);
+		return logStream;
 	}
 
 	virtual void systemError(const std::string& msg) {
@@ -77,28 +123,25 @@ public:
 	}
 
 	virtual void debug(const std::string& message) {
+		runtime->log(logSource, LogType::Debug, clazz, name, message);
 	}
 
 	virtual void info(const std::string& message) {
+		runtime->log(logSource, LogType::Info, clazz, name, message);
 	}
 
 	virtual void warn(const std::string& message) {
+		runtime->log(logSource, LogType::Warn, clazz, name, message);
 	}
 
 	virtual void error(const std::string& message) {
+		runtime->log(logSource, LogType::Error, clazz, name, message);
 	}
 };
-/*
 
-void setLoggerPrefix(const std::string& prefix) {
-	Berkelium::Log::prefix = "\033[0;33m" + prefix + " ";
+void enableBerkeliumHostMode() {
+	logSource = Host;
 }
-
-
-void setLoggerPrefix(RuntimeRef runtime, const std::string& name) {
-}
-
-*/
 
 LoggerRef newLogger(RuntimeRef runtime, const std::string& clazz, const std::string& name) {
 	LoggerImpl* impl = new LoggerImpl(runtime, clazz, name);

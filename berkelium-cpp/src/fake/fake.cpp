@@ -48,6 +48,7 @@ public:
 
 int main(int argc, char* argv[])
 {
+	Berkelium::impl::enableBerkeliumHostMode();
 	Berkelium::RuntimeRef runtime(Berkelium::Util::createRuntime(argc, argv));
 	Berkelium::LoggerRef logger(runtime->getLogger("main", "main"));
 
