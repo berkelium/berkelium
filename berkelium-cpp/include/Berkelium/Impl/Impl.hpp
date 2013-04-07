@@ -37,6 +37,7 @@ ProfileRef getChromiumProfile(RuntimeRef runtime);
 ProfileRef forProfilePath(RuntimeRef runtime, const std::string& path);
 ProfileRef createTemporaryProfile(RuntimeRef runtime);
 LoggerRef newLogger(RuntimeRef runtime, const std::string& clazz, const std::string& name);
+LogDelegateRef newLogDelegate();
 void setLoggerPrefix(RuntimeRef runtime, const std::string& name);
 
 #define BERKELIUM_IMPL_CLASS(TypeName)			\

@@ -43,13 +43,13 @@ struct set {
 	typedef std::set<T, std::owner_less<T>> type;
 };
 
-typedef set<LogDelegateWRef>::type LogDelegateWRefSet;
+typedef set<LogDelegateRef>::type LogDelegateRefSet;
 
 class RuntimeImpl : public Runtime {
 private:
 	LoggerRef logger;
 	std::string defaultExecutable;
-	LogDelegateWRefSet logs;
+	LogDelegateRefSet logs;
 	RuntimeWRef self;
 
 	RuntimeImpl(const RuntimeImpl&);
@@ -152,22 +152,18 @@ public:
 	}
 
 	virtual void removeLogDelegate(LogDelegateRef delegate) {
-		for(std::set<LogDelegateWRef>::iterator it = logs.begin(); it != logs.end(); it++) {
-			LogDelegateRef ref = it->lock();
-			if(!ref || ref.get() == delegate.get()) {
+		for(LogDelegateRefSet::iterator it = logs.begin(); it != logs.end(); it++) {
+			LogDelegateRef ref = *it;
+			if(ref.get() == delegate.get()) {
 				it = logs.erase(it);
 			}
 		}
 	}
 
 	virtual void log(LogSource source, LogType type, const std::string& clazz, const std::string& name, const std::string& message) {
-		for(LogDelegateWRefSet::iterator it = logs.begin(); it != logs.end(); it++) {
-			LogDelegateRef ref = it->lock();
-			if(ref) {
-				ref->log(getSelf(), source, type, clazz, name, message);
-			} else {
-				it = logs.erase(it);
-			}
+		for(LogDelegateRefSet::iterator it = logs.begin(); it != logs.end(); it++) {
+			LogDelegateRef ref = *it;
+			ref->log(getSelf(), source, type, clazz, name, message);
 		}
 	}
 };
@@ -195,6 +191,7 @@ namespace Util {
 RuntimeRef createRuntime(int argc, char* argv[]) {
 	RuntimeRef ret(BerkeliumFactory::createRuntime());
 	Berkelium::Util::parseCommandLine(ret, argc, argv);
+	ret->addLogDelegate(impl::newLogDelegate());
 	return ret;
 }
 

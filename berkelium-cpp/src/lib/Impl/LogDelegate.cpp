@@ -4,32 +4,36 @@
 
 #include <Berkelium/API/LogDelegate.hpp>
 
+#include <sstream>
+
 namespace Berkelium {
+
+LogDelegate::LogDelegate() {
+}
+
+LogDelegate::~LogDelegate() {
+}
 
 namespace impl {
 
-/*
-#include <cstring>
-class LoggerLineBuffer : public std::stringbuf {
-public:
-	LoggerLineBuffer() :
-		std::stringbuf() {
-	}
-};
+const char* COLOR_SRC("\033[0;33m");
+const char* COLOR_SEP("\033[1;33m");
+const char* COLOR_0("\033[0;37m");
+const char* COLOR_1("\033[1;37m");
+const char* DEBUG_MSG ("\033[1;34mDebug");
+const char* INFO_MSG  ("\033[1;32mInfo ");
+const char* WARN_MSG  ("\033[1;33mWarn ");
+const char* ERROR_MSG ("\033[1;31mError");
+const char* STDOUT_MSG("\033[1;32Out   ");
+const char* STDERR_MSG("\033[1;31Err   ");
 
-class LoggerStream : public std::stringstream {
-public:
-	LoggerLine() :
-		std::ios(),
-		std::ostream(new std::stringbuf()) {
+inline std::string pad(std::string n, int s, char p) {
+	int s2 = n.size();
+	if(s2 < s) {
+		n += std::string().insert(0, s - s2, p);
 	}
-
-	~LoggerLine() {
-		std::cerr << "'" << "test" << "'" << std::endl;
-		delete rdbuf();
-	}
-};
-*/
+	return n;
+}
 
 class LogDelegateImpl : public LogDelegate {
 public:
@@ -40,58 +44,52 @@ public:
 	virtual ~LogDelegateImpl() {
 	}
 
-/*
-	virtual std::ostream debug() {
-		return LoggerLine();
-		//return std::cerr << prefix << "\033[1;34mDebug\033[1;33m:\033[0;37m ";
-	}
+	virtual void log(RuntimeRef runtime, LogSource source, LogType type, const std::string& clazz, const std::string& name, const std::string& message) {
+		std::string s(source == Lib ? "Lib  " : "Host ");
 
-	virtual std::ostream info() {
-		return LoggerLine();
-//		return std::cerr << prefix << "\033[1;32mInfo \033[1;33m:\033[1;37m ";
-	}
+		const char* l;
+		const char* c;
+		switch (type) {
+			case Debug:
+				l = DEBUG_MSG;
+				c = COLOR_0;
+				break;
+			case Warn:
+				l = WARN_MSG;
+				c = COLOR_1;
+				break;
+			case Info:
+				l = INFO_MSG;
+				c = COLOR_1;
+				break;
+			case Error:
+				l = ERROR_MSG;
+				c = COLOR_1;
+				break;
+			case StdOut:
+				l = STDOUT_MSG;
+				c = COLOR_1;
+				break;
+			case StdErr:
+				l = STDERR_MSG;
+				c = COLOR_1;
+				break;
+		}
 
-	virtual std::ostream warn() {
-		return LoggerLine();
-//		return std::cerr << prefix << "\033[1;33mWarn \033[1;33m:\033[1;37m ";
+		std::ostringstream o;
+		o << COLOR_SRC << s << l
+			<< COLOR_SEP << " ["
+			<< COLOR_SRC << pad(clazz + " " + name, 25, ' ')
+			<< COLOR_SEP << "] "
+			<< c << message
+			<< COLOR_0 << std::endl;
+		std::cerr << o.str() << std::flush;
 	}
-
-	virtual std::ostream error() {
-		return LoggerLine();
-//		return std::cerr << prefix << "\033[1;31mError\033[1;33m:\033[1;37m ";
-	}
-
-	virtual void systemError(const std::string& error) {
-//		Log::error() << error << ": " << strerror(errno) << std::endl;
-	}
-
-	virtual void systemError(const std::string& error, const std::string& arg) {
-//		Log::error() << error << ": " << strerror(errno) << " " << arg << std::endl;
-	}
-
-	// Allows the client application to handle berkelium host console messages.
-	virtual void log(LogType type, const std::string& message) = 0;
-	virtual void debug(const std::string& message) = 0;
-	virtual void info(const std::string& message) = 0;
-	virtual void warn(const std::string& message) = 0;
-	virtual void error(const std::string& message) = 0;
-*/
 };
-/*
-std::string prefix = "\033[0;33mLib  ";
 
-void setLoggerPrefix(const std::string& prefix) {
-	Berkelium::Log::prefix = "\033[0;33m" + prefix + " ";
+LogDelegateRef newLogDelegate() {
+	return LogDelegateRef(new LogDelegateImpl());
 }
-
-
-void setLoggerPrefix(RuntimeRef runtime, const std::string& name) {
-}
-
-LogDelegateRef newLogger(RuntimeRef runtime, const std::string& name) {
-	return WindowImpl::newWindow(instance, channel, incognito);
-}
-*/
 
 } // namespace impl
 
