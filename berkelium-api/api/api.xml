@@ -122,6 +122,25 @@
 			<arg type="string" name="clazz"/>
 			<arg type="string" name="name"/>
 		</entry>
+		<entry name="addLogDelegate">
+			<arg type="LogDelegate" name="delegate"/>
+			<short>Add the given LogDelegate to this Instance.</short>
+		</entry>
+		<entry name="removeLogDelegate">
+			<arg type="LogDelegate" name="delegate"/>
+			<short>Remove the given LogDelegate from this Instance.</short>
+		</entry>
+		<entry name="log">
+			<arg type="LogSource" name="source"/>
+			<arg type="LogType" name="type"/>
+			<arg type="string" name="clazz"/>
+			<arg type="string" name="message"/>
+			<short>Forwards the given type/message to all log handlers attached to this instance.</short>
+		</entry>
+		<entry name="handleThrowable" type="java">
+			<arg type="Throwable" name="t"/>
+			<short>Error handler used by this instance.</short>
+		</entry>
 	</group>
 	<group type="interface" name="HostExecutable">
 		<short>Represents a reference to the executable file of the berkelium host process.</short>
@@ -253,14 +272,6 @@
 		<entry name="getExecutable" ret="HostExecutable">
 			<short>Returns the executable used to launch this instance.</short>
 		</entry>
-		<entry name="addLogDelegate">
-			<arg type="LogDelegate" name="delegate"/>
-			<short>Add the given LogDelegate to this Instance.</short>
-		</entry>
-		<entry name="removeLogDelegate">
-			<arg type="LogDelegate" name="delegate"/>
-			<short>Remove the given LogDelegate from this Instance.</short>
-		</entry>
 		<entry name="addHostDelegate">
 			<arg type="HostDelegate" name="delegate"/>
 			<short>Add the given HostDelegate to this Instance.</short>
@@ -268,17 +279,6 @@
 		<entry name="removeHostDelegate">
 			<arg type="HostDelegate" name="delegate"/>
 			<short>Remove the given HostDelegate from this Instance.</short>
-		</entry>
-		<entry name="log">
-			<arg type="LogSource" name="source"/>
-			<arg type="LogType" name="type"/>
-			<arg type="string" name="clazz"/>
-			<arg type="string" name="message"/>
-			<short>Forwards the given type/message to all log handlers attached to this instance.</short>
-		</entry>
-		<entry name="handleThrowable" type="java">
-			<arg type="Throwable" name="t"/>
-			<short>Error handler used by this instance.</short>
 		</entry>
 		<entry name="getWindowCount" ret="int32">
 			<short>Returns the number of active Windows.</short>

@@ -48,4 +48,16 @@ public interface Runtime {
 	Instance open(HostExecutable executable, Profile profile);
 
 	Logger getLogger(String clazz, String name);
+
+	// Add the given LogDelegate to this Instance.
+	void addLogDelegate(LogDelegate delegate);
+
+	// Remove the given LogDelegate from this Instance.
+	void removeLogDelegate(LogDelegate delegate);
+
+	// Forwards the given type/message to all log handlers attached to this instance.
+	void log(LogSource source, LogType type, String clazz, String message);
+
+	// Error handler used by this instance.
+	void handleThrowable(Throwable t);
 }

@@ -111,6 +111,15 @@ BK_HostVersion BK_Runtime_forVersion(BK_Runtime self, bk_int32 vMajor, bk_int32 
 BK_Instance BK_Runtime_open(BK_Runtime self, BK_HostExecutable executable, BK_Profile profile);
 BK_Logger BK_Runtime_getLogger(BK_Runtime self, bk_string clazz, bk_string name);
 
+// Add the given LogDelegate to this Instance.
+void BK_Runtime_addLogDelegate(BK_Runtime self, BK_LogDelegate delegate);
+
+// Remove the given LogDelegate from this Instance.
+void BK_Runtime_removeLogDelegate(BK_Runtime self, BK_LogDelegate delegate);
+
+// Forwards the given type/message to all log handlers attached to this instance.
+void BK_Runtime_log(BK_Runtime self, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string message);
+
 // =========================================
 // interface HostExecutable
 //
@@ -235,20 +244,11 @@ BK_Profile BK_Instance_getProfile(BK_Instance self);
 // Returns the executable used to launch this instance.
 BK_HostExecutable BK_Instance_getExecutable(BK_Instance self);
 
-// Add the given LogDelegate to this Instance.
-void BK_Instance_addLogDelegate(BK_Instance self, BK_LogDelegate delegate);
-
-// Remove the given LogDelegate from this Instance.
-void BK_Instance_removeLogDelegate(BK_Instance self, BK_LogDelegate delegate);
-
 // Add the given HostDelegate to this Instance.
 void BK_Instance_addHostDelegate(BK_Instance self, BK_HostDelegate delegate);
 
 // Remove the given HostDelegate from this Instance.
 void BK_Instance_removeHostDelegate(BK_Instance self, BK_HostDelegate delegate);
-
-// Forwards the given type/message to all log handlers attached to this instance.
-void BK_Instance_log(BK_Instance self, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string message);
 
 // Returns the number of active Windows.
 bk_int32 BK_Instance_getWindowCount(BK_Instance self);

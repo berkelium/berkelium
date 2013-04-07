@@ -58,6 +58,15 @@ public:
 	// Launches a the given berkelium host process using the given profile.
 	virtual InstanceRef open(HostExecutableRef executable, ProfileRef profile) = 0;
 	virtual LoggerRef getLogger(const std::string& clazz, const std::string& name) = 0;
+
+	// Add the given LogDelegate to this Instance.
+	virtual void addLogDelegate(LogDelegateRef delegate) = 0;
+
+	// Remove the given LogDelegate from this Instance.
+	virtual void removeLogDelegate(LogDelegateRef delegate) = 0;
+
+	// Forwards the given type/message to all log handlers attached to this instance.
+	virtual void log(LogSource source, LogType type, const std::string& clazz, const std::string& message) = 0;
 };
 
 } // namespace Berkelium

@@ -30,23 +30,11 @@ public interface Instance {
 	// Returns the executable used to launch this instance.
 	HostExecutable getExecutable();
 
-	// Add the given LogDelegate to this Instance.
-	void addLogDelegate(LogDelegate delegate);
-
-	// Remove the given LogDelegate from this Instance.
-	void removeLogDelegate(LogDelegate delegate);
-
 	// Add the given HostDelegate to this Instance.
 	void addHostDelegate(HostDelegate delegate);
 
 	// Remove the given HostDelegate from this Instance.
 	void removeHostDelegate(HostDelegate delegate);
-
-	// Forwards the given type/message to all log handlers attached to this instance.
-	void log(LogSource source, LogType type, String clazz, String message);
-
-	// Error handler used by this instance.
-	void handleThrowable(Throwable t);
 
 	// Returns the number of active Windows.
 	int getWindowCount();

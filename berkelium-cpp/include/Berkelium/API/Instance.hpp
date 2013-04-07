@@ -41,20 +41,11 @@ public:
 	// Returns the executable used to launch this instance.
 	virtual HostExecutableRef getExecutable() = 0;
 
-	// Add the given LogDelegate to this Instance.
-	virtual void addLogDelegate(LogDelegateRef delegate) = 0;
-
-	// Remove the given LogDelegate from this Instance.
-	virtual void removeLogDelegate(LogDelegateRef delegate) = 0;
-
 	// Add the given HostDelegate to this Instance.
 	virtual void addHostDelegate(HostDelegateRef delegate) = 0;
 
 	// Remove the given HostDelegate from this Instance.
 	virtual void removeHostDelegate(HostDelegateRef delegate) = 0;
-
-	// Forwards the given type/message to all log handlers attached to this instance.
-	virtual void log(LogSource source, LogType type, const std::string& clazz, const std::string& message) = 0;
 
 	// Returns the number of active Windows.
 	virtual int32_t getWindowCount() = 0;
