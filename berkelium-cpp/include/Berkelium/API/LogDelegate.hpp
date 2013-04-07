@@ -26,7 +26,7 @@ public:
 	virtual ~LogDelegate() = 0;
 
 	// Allows the client application to handle berkelium library and host messages.
-	virtual void log(RuntimeRef runtime, LogSource source, LogType type, const std::string& clazz, const std::string& message) = 0;
+	virtual void log(RuntimeRef runtime, LogSource source, LogType type, const std::string& clazz, const std::string& name, const std::string& message) = 0;
 };
 
 } // namespace Berkelium

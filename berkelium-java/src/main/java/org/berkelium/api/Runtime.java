@@ -56,7 +56,7 @@ public interface Runtime {
 	void removeLogDelegate(LogDelegate delegate);
 
 	// Forwards the given type/message to all log handlers attached to this instance.
-	void log(LogSource source, LogType type, String clazz, String message);
+	void log(LogSource source, LogType type, String clazz, String name, String message);
 
 	// Error handler used by this instance.
 	void handleThrowable(Throwable t);

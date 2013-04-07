@@ -134,6 +134,7 @@
 			<arg type="LogSource" name="source"/>
 			<arg type="LogType" name="type"/>
 			<arg type="string" name="clazz"/>
+			<arg type="string" name="name"/>
 			<arg type="string" name="message"/>
 			<short>Forwards the given type/message to all log handlers attached to this instance.</short>
 		</entry>
@@ -238,6 +239,7 @@
 			<arg type="LogSource" name="source"/>
 			<arg type="LogType" name="type"/>
 			<arg type="string" name="clazz"/>
+			<arg type="string" name="name"/>
 			<arg type="string" name="message"/>
 			<short>Allows the client application to handle berkelium library and host messages.</short>
 		</entry>

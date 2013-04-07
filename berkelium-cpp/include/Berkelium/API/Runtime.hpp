@@ -66,7 +66,7 @@ public:
 	virtual void removeLogDelegate(LogDelegateRef delegate) = 0;
 
 	// Forwards the given type/message to all log handlers attached to this instance.
-	virtual void log(LogSource source, LogType type, const std::string& clazz, const std::string& message) = 0;
+	virtual void log(LogSource source, LogType type, const std::string& clazz, const std::string& name, const std::string& message) = 0;
 };
 
 } // namespace Berkelium

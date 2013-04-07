@@ -15,5 +15,5 @@ package org.berkelium.api;
 public interface LogDelegate {
 
 	// Allows the client application to handle berkelium library and host messages.
-	void log(Runtime runtime, LogSource source, LogType type, String clazz, String message);
+	void log(Runtime runtime, LogSource source, LogType type, String clazz, String name, String message);
 }

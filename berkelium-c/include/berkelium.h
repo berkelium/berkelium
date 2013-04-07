@@ -118,7 +118,7 @@ void BK_Runtime_addLogDelegate(BK_Runtime self, BK_LogDelegate delegate);
 void BK_Runtime_removeLogDelegate(BK_Runtime self, BK_LogDelegate delegate);
 
 // Forwards the given type/message to all log handlers attached to this instance.
-void BK_Runtime_log(BK_Runtime self, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string message);
+void BK_Runtime_log(BK_Runtime self, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string name, bk_string message);
 
 // =========================================
 // interface HostExecutable
@@ -209,7 +209,7 @@ void BK_Logger_error(BK_Logger self, bk_string message);
 // =========================================
 
 // Allows the client application to handle berkelium library and host messages.
-void BK_LogDelegate_log(BK_LogDelegate self, BK_Runtime runtime, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string message);
+void BK_LogDelegate_log(BK_LogDelegate self, BK_Runtime runtime, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string name, bk_string message);
 
 // =========================================
 // interface HostDelegate
