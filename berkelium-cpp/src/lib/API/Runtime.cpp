@@ -8,10 +8,11 @@
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/API/LogDelegate.hpp>
 #include <Berkelium/Impl/Impl.hpp>
-
-#include <boost/filesystem.hpp>
+#include <Berkelium/Impl/Filesystem.hpp>
 
 #include <set>
+
+using Berkelium::impl::Filesystem;
 
 namespace Berkelium {
 
@@ -26,11 +27,8 @@ namespace {
 RuntimeWRef defaultRuntime;
 
 bool checkPath(const char* p, std::string& path) {
-	boost::system::error_code ec;
-	boost::filesystem::path p2(p);
-	if(!boost::filesystem::exists(p2, ec)) return false;
-	if(ec) return false;
-	path = boost::filesystem::absolute(p2).string();
+	if(!Filesystem::exists(p)) return false;
+	path = Filesystem::absolute(p);
 	return true;
 }
 

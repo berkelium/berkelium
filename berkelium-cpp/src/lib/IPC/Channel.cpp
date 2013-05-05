@@ -7,10 +7,9 @@
 #include <Berkelium/IPC/Pipe.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/Filesystem.hpp>
 
-#include <boost/filesystem.hpp>
-
-using boost::filesystem::path;
+using Berkelium::impl::Filesystem;
 
 namespace Berkelium {
 
@@ -40,18 +39,18 @@ private:
 	}
 
 public:
-	ChannelImpl(LoggerRef logger, const path& dir, const std::string& name, const bool server, const bool reverse) :
+	ChannelImpl(LoggerRef logger, const std::string& dir, const std::string& name, const bool server, const bool reverse) :
 		Channel(),
 		logger(logger),
-		dir(dir.string()),
+		dir(dir),
 		name(name),
 		server(server),
 		reverse(reverse),
 		reverseRef(),
 		self(),
 		message(Message::create(logger)),
-		pin(Pipe::getPipe(logger, (dir / name).string() + getExt(server, reverse))),
-		pout(Pipe::getPipe(logger, (dir / name).string() + getExt(!server, reverse))) {
+		pin(Pipe::getPipe(logger, Filesystem::append(dir, name + getExt(server, reverse)))),
+		pout(Pipe::getPipe(logger, Filesystem::append(dir, name + getExt(!server, reverse)))) {
 	}
 
 	virtual ~ChannelImpl() {
@@ -97,8 +96,8 @@ public:
 	}
 
 	static ChannelRef newChannel(LoggerRef logger, const std::string& dir, const std::string& name, const bool server) {
-		ChannelImpl* impl1 = new ChannelImpl(logger, path(dir), name, server, false);
-		ChannelImpl* impl2 = new ChannelImpl(logger, path(dir), name, server, true);
+		ChannelImpl* impl1 = new ChannelImpl(logger, dir, name, server, false);
+		ChannelImpl* impl2 = new ChannelImpl(logger, dir, name, server, true);
 		ChannelRef ret1(impl1);
 		ChannelRef ret2(impl2);
 		impl1->self = ret1;

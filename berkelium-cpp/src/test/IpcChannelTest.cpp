@@ -12,13 +12,10 @@
 #include "gtest/gtest.h"
 #include "test.h"
 
-#include <boost/filesystem.hpp>
-
 using Berkelium::Ipc::Message;
 using Berkelium::Ipc::MessageRef;
 using Berkelium::Ipc::Channel;
 using Berkelium::Ipc::ChannelRef;
-using namespace boost::filesystem;
 
 namespace {
 
@@ -27,9 +24,7 @@ class ChannelTest : public ::testing::Test {
 };
 
 std::string createTempPath(Berkelium::ProfileRef& profile) {
-	profile = Berkelium::BerkeliumFactory::getDefaultRuntime()->createTemporaryProfile();
-	path path = profile->getProfilePath();
-	return path.string();
+	return Berkelium::BerkeliumFactory::getDefaultRuntime()->createTemporaryProfile()->getProfilePath();
 }
 
 TEST_F(ChannelTest, simple) {

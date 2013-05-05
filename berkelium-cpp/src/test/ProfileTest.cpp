@@ -6,13 +6,12 @@
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/HostExecutable.hpp>
 #include <Berkelium/API/Profile.hpp>
+#include <Berkelium/Impl/Filesystem.hpp>
 
 #include "gtest/gtest.h"
 #include "test.h"
 
-#include "boost/filesystem.hpp"
-
-using namespace boost::filesystem;
+using Berkelium::impl::Filesystem;
 
 namespace {
 
@@ -60,23 +59,23 @@ TEST_F(ProfileTest, extended) {
 	ASSERT_NOT_NULL(executable);
 	Berkelium::ProfileRef profile = runtime->createTemporaryProfile();
 	ASSERT_NOT_NULL(profile);
-	path path = profile->getProfilePath();
-	ASSERT_TRUE(exists(path));
+	std::string path(profile->getProfilePath());
+	ASSERT_TRUE(Filesystem::exists(path));
 	ASSERT_TRUE(profile->isFound());
 	ASSERT_FALSE(profile->isInUse());
 	Berkelium::InstanceRef instance = runtime->open(executable, profile);
 	ASSERT_NOT_NULL(instance);
 	ASSERT_NOT_NULL(instance);
-	ASSERT_TRUE(exists(path));
+	ASSERT_TRUE(Filesystem::exists(path));
 	ASSERT_TRUE(profile->isFound());
 	ASSERT_TRUE(profile->isInUse());
 	instance.reset();
 	ASSERT_NULL(instance);
-	ASSERT_TRUE(exists(path));
+	ASSERT_TRUE(Filesystem::exists(path));
 	ASSERT_TRUE(profile->isFound());
 	ASSERT_FALSE(profile->isInUse());
 	profile.reset();
-	ASSERT_FALSE(exists(path));
+	ASSERT_FALSE(Filesystem::exists(path));
 }
 
 } // namespace

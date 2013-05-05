@@ -8,6 +8,7 @@
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/Impl/Filesystem.hpp>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -15,9 +16,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-#include <boost/filesystem.hpp>
-
-using boost::filesystem::path;
+using Berkelium::impl::Filesystem;
 
 namespace Berkelium {
 
@@ -28,7 +27,7 @@ namespace impl {
 class PipeLinuxImpl : public Pipe {
 private:
 	LoggerRef logger;
-	const path name;
+	const std::string name;
 	int fd;
 	fd_set fds;
 
@@ -39,11 +38,7 @@ public:
 		name(name) {
 		fd = -1;
 
-		path p1(name);
-		path p2(p1.parent_path());
-		if(!exists(p2)) {
-			create_directories(p2);
-		}
+		Filesystem::createDirectoriesFor(name);
 
 		const char* p = name.c_str();
 		if(::access(p, F_OK) != 0 && ::mkfifo(p, 0700) != 0) {
@@ -62,7 +57,7 @@ public:
 			close(fd);
 			fd = -1;
 		}
-		boost::filesystem::remove(name);
+		Filesystem::removeFile(name);
 	}
 
 	virtual bool isEmpty() {
@@ -105,7 +100,7 @@ public:
 	}
 
 	virtual const std::string getPath() {
-		return name.string();
+		return name;
 	}
 };
 

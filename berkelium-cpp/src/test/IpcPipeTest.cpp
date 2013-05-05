@@ -5,17 +5,17 @@
 #include <Berkelium/IPC/Pipe.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/API/Util.hpp>
+#include <Berkelium/Impl/Filesystem.hpp>
 
 #include "gtest/gtest.h"
 #include "test.h"
-
-#include <boost/filesystem.hpp>
 
 using Berkelium::Ipc::Pipe;
 using Berkelium::Ipc::PipeRef;
 using Berkelium::Ipc::Message;
 using Berkelium::Ipc::MessageRef;
 using Berkelium::Util::randomId;
+using Berkelium::impl::Filesystem;
 
 namespace {
 
@@ -31,21 +31,21 @@ TEST_F(PipeTest, create) {
 TEST_F(PipeTest, remove) {
 	USE_LOGGER(create);
 	std::string name = "/tmp/berkelium." + randomId();
-	ASSERT_FALSE(boost::filesystem::exists(name));
+	ASSERT_FALSE(Filesystem::exists(name));
 	{
 		PipeRef pipe = Pipe::getPipe(getLogger("remove"), name);
-		ASSERT_TRUE(boost::filesystem::exists(name));
+		ASSERT_TRUE(Filesystem::exists(name));
 	}
-	ASSERT_FALSE(boost::filesystem::exists(name));
+	ASSERT_FALSE(Filesystem::exists(name));
 }
 
 TEST_F(PipeTest, sendRecv) {
 	USE_LOGGER(create);
 	std::string name = "/tmp/berkelium." + randomId();
-	ASSERT_FALSE(boost::filesystem::exists(name));
+	ASSERT_FALSE(Filesystem::exists(name));
 	{
 		PipeRef pipe = Pipe::getPipe(getLogger("sendRecv"), name);
-		ASSERT_TRUE(boost::filesystem::exists(name));
+		ASSERT_TRUE(Filesystem::exists(name));
 		ASSERT_TRUE(pipe->isEmpty());
 		MessageRef msg(Message::create(logger));
 		msg->add_str("hello");
@@ -57,7 +57,7 @@ TEST_F(PipeTest, sendRecv) {
 		ASSERT_TRUE(pipe->isEmpty());
 		ASSERT_EQ(0, recv.compare("hello"));
 	}
-	ASSERT_FALSE(boost::filesystem::exists(name));
+	ASSERT_FALSE(Filesystem::exists(name));
 }
 
 } // namespace

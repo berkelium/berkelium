@@ -7,8 +7,7 @@
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/Impl/Impl.hpp>
-
-#include <boost/filesystem.hpp>
+#include <Berkelium/Impl/Filesystem.hpp>
 
 namespace Berkelium {
 
@@ -20,28 +19,26 @@ HostExecutable::~HostExecutable() {
 
 namespace impl {
 
-HostVersionRef getVersionImpl(RuntimeRef runtime, const boost::filesystem::path&);
+HostVersionRef getVersionImpl(RuntimeRef runtime, const std::string&);
 
 class HostExecutableImpl : public HostExecutable {
 BERKELIUM_IMPL_CLASS(HostExecutable)
 
 private:
-	const boost::filesystem::path path;
-	const std::string pathStr;
+	const std::string path;
 	HostVersionRef version;
 
 public:
-	HostExecutableImpl(RuntimeRef runtime, const boost::filesystem::path& path) :
+	HostExecutableImpl(RuntimeRef runtime, const std::string& path) :
 		BERKELIUM_IMPL_CTOR1(HostExecutable),
-		path(path),
-		pathStr(path.string()) {
+		path(path) {
 	}
 
 	virtual ~HostExecutableImpl() {
 	}
 
 	virtual const std::string& getPath() {
-		return pathStr;
+		return path;
 	}
 
 	virtual HostVersionRef getVersion() {
@@ -52,15 +49,11 @@ public:
 	}
 };
 
-HostExecutableRef newHostExecutable(RuntimeRef runtime, const boost::filesystem::path& path) {
+HostExecutableRef newHostExecutable(RuntimeRef runtime, const std::string& path) {
 	return HostExecutableRef(new HostExecutableImpl(runtime, path));
 }
 
-HostExecutableRef newHostExecutable(RuntimeRef runtime, const std::string& path) {
-	return newHostExecutable(runtime, boost::filesystem::path(path));
-}
-
-HostVersionRef getVersionImpl(RuntimeRef runtime, const boost::filesystem::path&) {
+HostVersionRef getVersionImpl(RuntimeRef runtime, const std::string&) {
 	HostVersionRef ret;
 	ret = runtime->forVersion("0.0.0.0");
 	return ret;
