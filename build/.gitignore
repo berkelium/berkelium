@@ -14,3 +14,8 @@ eclipse
 *.vcxproj
 *.vcxproj.filters
 *.sln
+*.vcxproj.user
+Win32
+*.opensdf
+*.sdf
+*.suo

@@ -6,6 +6,8 @@
 
 #include <Berkelium/API/Util.hpp>
 
+#include <vector>
+
 #include <Windows.h>
 
 namespace Berkelium {

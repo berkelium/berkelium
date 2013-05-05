@@ -122,7 +122,7 @@ public:
 	}
 
 	virtual void removeHostDelegate(HostDelegateRef delegate) {
-		for(std::set<HostDelegateWRef>::iterator it = hosts.begin(); it != hosts.end(); it++) {
+		for(HostDelegateWRefSet::iterator it(hosts.begin()); it != hosts.end(); it++) {
 			HostDelegateRef ref = it->lock();
 			if(!ref || ref.get() == delegate.get()) {
 				it = hosts.erase(it);
@@ -136,7 +136,7 @@ public:
 
 	virtual WindowList getWindowList() {
 		WindowList ret;
-		for(std::set<WindowWRef>::iterator it = windows.begin(); it != windows.end(); it++) {
+		for(WindowWRefSet::iterator it(windows.begin()); it != windows.end(); it++) {
 			WindowRef ref = it->lock();
 			if(ref) {
 				ret.push_back(ref);

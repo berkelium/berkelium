@@ -252,7 +252,7 @@ ProfileRef createTemporaryProfile(RuntimeRef runtime) {
 	std::string path;
 
 #ifdef WIN32
-	path = impl::getEnv("TEMP", "C:\\WINDOWS\\TEMP");
+	path = Util::getEnv("TEMP", "C:\\WINDOWS\\TEMP");
 #elif defined(LINUX)
 	path = Filesystem::append("/tmp", "berkelium." + Util::getEnv("USER", "user"));
 #else

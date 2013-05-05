@@ -89,7 +89,7 @@ public:
 		std::string path;
 
 #ifdef WIN32
-		path = Berkelium::impl::getEnv("PROGRAMFILES(X86)", "C:\\Program Files") + "\\Google\\Chrome\\Application\\chrome.exe";
+		path = Berkelium::Util::getEnv("PROGRAMFILES(X86)", "C:\\Program Files") + "\\Google\\Chrome\\Application\\chrome.exe";
 #elif defined(LINUX)
 		if(!defaultExecutable.empty() && checkPath(defaultExecutable.c_str(), path)) {
 		} else if(checkPath("berkelium", path)) {
@@ -184,6 +184,8 @@ RuntimeRef BerkeliumFactory::getDefaultRuntime() {
 	return ret;
 }
 
+#ifdef LINUX
+
 namespace Util {
 
 RuntimeRef createRuntime(int argc, char* argv[]) {
@@ -194,5 +196,7 @@ RuntimeRef createRuntime(int argc, char* argv[]) {
 }
 
 } // namespace Util
+
+#endif // LINUX
 
 } // namespace Berkelium

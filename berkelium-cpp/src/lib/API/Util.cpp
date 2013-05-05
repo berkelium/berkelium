@@ -5,7 +5,7 @@
 #include <Berkelium/API/Util.hpp>
 
 #include <cstdlib>
-#include <sys/select.h>
+#include <ctime>
 
 namespace Berkelium {
 
