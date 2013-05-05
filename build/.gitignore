@@ -11,3 +11,6 @@ CTestTestfile.cmake
 Testing/
 *~
 eclipse
+*.vcxproj
+*.vcxproj.filters
+*.sln
