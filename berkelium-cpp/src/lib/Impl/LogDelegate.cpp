@@ -5,6 +5,9 @@
 #include <Berkelium/API/LogDelegate.hpp>
 
 #include <sstream>
+#if OS_WINDOWS
+#include <windows.h>
+#endif
 
 namespace Berkelium {
 
@@ -16,6 +19,7 @@ LogDelegate::~LogDelegate() {
 
 namespace impl {
 
+#if !defined(OS_WINDOWS)
 const char* COLOR_SRC("\033[0;33m");
 const char* COLOR_SEP("\033[1;33m");
 const char* COLOR_0("\033[0;37m");
@@ -26,6 +30,7 @@ const char* WARN_MSG  ("\033[1;33mWarn ");
 const char* ERROR_MSG ("\033[1;31mError");
 const char* STDOUT_MSG("\033[1;32Out   ");
 const char* STDERR_MSG("\033[1;31Err   ");
+#endif
 
 inline std::string pad(std::string n, int s, char p) {
 	int s2 = n.size();
@@ -47,6 +52,48 @@ public:
 	virtual void log(RuntimeRef runtime, LogSource source, LogType type, const std::string& clazz, const std::string& name, const std::string& message) {
 		std::string s(source == Lib ? "Lib  " : "Host ");
 
+#if OS_WINDOWS
+		HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+		SetConsoleTextAttribute(h, 0x07);
+		std::cerr << s;
+		int c = 0x0f;
+		switch (type) {
+			case Debug:
+				SetConsoleTextAttribute(h, 0x09);
+				std::cerr << "Debug";
+				c = 7;
+				break;
+			case Warn:
+				SetConsoleTextAttribute(h, 0x0A);
+				std::cerr << "Info ";
+				break;
+			case Info:
+				SetConsoleTextAttribute(h, 0x0E);
+				std::cerr << "Warn ";
+				break;
+			case Error:
+				SetConsoleTextAttribute(h, 0x0C);
+				std::cerr << "Error";
+				break;
+			case StdOut:
+				SetConsoleTextAttribute(h, 0x02);
+				std::cerr << "Out  ";
+				break;
+			case StdErr:
+				SetConsoleTextAttribute(h, 0x0C);
+				std::cerr << "Err  ";
+				break;
+		}
+
+		SetConsoleTextAttribute(h, 0x06);
+		std::cerr << " [";
+		SetConsoleTextAttribute(h, 0x07);
+		std::cerr << pad(clazz + " " + name, 25, ' ');
+		SetConsoleTextAttribute(h, 0x06);
+		std::cerr << "] ";
+		SetConsoleTextAttribute(h, c);
+		std::cerr << message << std::endl;
+#else
 		const char* l;
 		const char* c;
 		switch (type) {
@@ -84,6 +131,7 @@ public:
 			<< c << message
 			<< COLOR_0 << std::endl;
 		std::cerr << o.str() << std::flush;
+#endif
 	}
 };
 
