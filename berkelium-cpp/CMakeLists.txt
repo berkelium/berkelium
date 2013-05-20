@@ -35,12 +35,34 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 ENDIF()
 
 ################
-## Boost Library
+## MSVC
 ## -------------
-find_package(Boost 1.46 COMPONENTS filesystem system REQUIRED)
-include_directories(${Boost_INCLUDE_DIRS})
+IF(MSVC)
+	# switch statement contains 'default' but no 'case' labels
+	ADD_DEFINITIONS(/wd4065)
+	# nonstandard extension used: enum 'Berkelium::Ipc::CommandId' used in qualified name
+	ADD_DEFINITIONS(/wd4482)
+ENDIF()
 
-SET(BERKELIUM_CPP_LIBS berkelium-cpp ${Boost_LIBRARIES})
+################
+## System #DEFINES
+## -------------
+IF(CMAKE_HOST_WIN32)
+	# win32 AND win64
+	ADD_DEFINITIONS(/DOS_WINDOWS)
+	IF(CMAKE_CL_64)
+		ADD_DEFINITIONS(/DOS_64)
+	ELSE()
+		ADD_DEFINITIONS(/DOS_32)
+	ENDIF()
+ELSE()
+	MESSAGE(FATAL_ERROR "host system not supported!")
+ENDIF()
+
+################
+## Librarys
+## -------------
+SET(BERKELIUM_CPP_LIBS berkelium-cpp)
 
 #################
 ## System Defines

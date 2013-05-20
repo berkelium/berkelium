@@ -184,8 +184,6 @@ RuntimeRef BerkeliumFactory::getDefaultRuntime() {
 	return ret;
 }
 
-#ifdef LINUX
-
 namespace Util {
 
 RuntimeRef createRuntime(int argc, char* argv[]) {
@@ -196,7 +194,5 @@ RuntimeRef createRuntime(int argc, char* argv[]) {
 }
 
 } // namespace Util
-
-#endif // LINUX
 
 } // namespace Berkelium

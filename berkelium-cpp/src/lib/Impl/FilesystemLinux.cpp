@@ -18,21 +18,6 @@ std::string Filesystem::append(const std::string& dir, const std::string& append
 	return boost::filesystem::path(a / b).string();
 }
 
-std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2) {
-	boost::filesystem::path a(dir);
-	boost::filesystem::path b(a1);
-	boost::filesystem::path c(a2);
-	return boost::filesystem::path(a / b / c).string();
-}
-
-std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2, const std::string& a3) {
-	boost::filesystem::path a(dir);
-	boost::filesystem::path b(a1);
-	boost::filesystem::path c(a2);
-	boost::filesystem::path d(a3);
-	return boost::filesystem::path(a / b / c /d).string();
-}
-
 std::string Filesystem::absolute(const std::string& arg) {
 	return boost::filesystem::absolute(boost::filesystem::path(arg)).string();
 }

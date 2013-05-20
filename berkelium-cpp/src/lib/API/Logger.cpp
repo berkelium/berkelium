@@ -114,6 +114,14 @@ public:
 		return logStream;
 	}
 
+#ifdef _MSC_VER
+	inline std::string strerror(int code) {
+		char buffer[256] = "";
+		strerror_s(buffer, sizeof(buffer), code);
+		return buffer;
+	}
+#endif
+
 	virtual void systemError(const std::string& msg) {
 		error() << msg << ": " << strerror(errno) << std::endl;
 	}

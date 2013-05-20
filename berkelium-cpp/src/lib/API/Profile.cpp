@@ -68,10 +68,6 @@ public:
 private:
 	bool warned;
 
-	std::string getLock() {
-		return Filesystem::append(path, "SingletonLock");
-	}
-
 	std::string getHostname() {
 		char tmp[HOST_NAME_MAX];
 		gethostname(tmp, HOST_NAME_MAX);
@@ -79,11 +75,21 @@ private:
 	}
 
 public:
+#elif OS_WINDOWS
+	std::ofstream lockfile;
 #endif
 
+	std::string getLockFile() {
+#ifdef LINUX
+		return Filesystem::append(path, "SingletonLock");
+#elif OS_WINDOWS
+		return Filesystem::append(path, "lockfile");
+#endif
+	}
+
 	bool isInUse() {
-#ifdef WIN32
-		std::string lock(Filesystem::append(path, "lockfile"));
+#ifdef OS_WINDOWS
+		std::string lock(getLockFile());
 		if(!Filesystem::exists(lock)) {
 			return false;
 		}
@@ -91,7 +97,7 @@ public:
 		return !file.is_open();
 #elif defined(LINUX)
 		std::string s;
-		if(!Filesystem::readSymlink(getLock(), s)) {
+		if(!Filesystem::readSymlink(getLockFile(), s)) {
 			warned = false;
 			return false;
 		}
@@ -140,26 +146,28 @@ public:
 			if(isInUse()) {
 				return;
 			}
-#ifdef WIN32
-#error "TODO"
-#elif defined(LINUX)
 			if(!isFound()) {
 				Filesystem::createDirectories(path);
 			}
+#ifdef OS_WINDOWS
+			lockfile.open(getLockFile());
+			this->locked = lockfile.is_open();
+#elif defined(LINUX)
 			std::ostringstream os;
 			os << getHostname() << "-" << getpid();
-			Filesystem::createSymlink(getLock(), os.str());
+			Filesystem::createSymlink(getLockFile(), os.str());
 #else
 #error "TODO"
 #endif
 		} else {
-#ifdef WIN32
-#error "TODO"
+#ifdef OS_WINDOWS
+			lockfile.close();
 #elif defined(LINUX)
-			Filesystem::removeFile(getLock());
+			// nothing to do
 #else
 #error "TODO"
 #endif
+			Filesystem::removeFile(getLockFile());
 		}
 		this->locked = locked;
 	}
@@ -195,7 +203,7 @@ public:
 ProfileRef newProfile(RuntimeRef runtime, const std::string& appDir, const std::string& application) {
 	std::string path;
 
-#ifdef WIN32
+#ifdef OS_WINDOWS
 	path = Filesystem::append(Util::getEnv("LOCALAPPDATA", "C:"), appDir, "User Data");
 #elif defined(LINUX)
 	path = Filesystem::append(Util::getEnv("HOME", "/tmp"), ".config", appDir);
@@ -225,7 +233,7 @@ ProfileRef newProfile(RuntimeRef runtime, const std::string& application) {
 }
 
 ProfileRef getChromeProfile(RuntimeRef runtime) {
-#ifdef WIN32
+#ifdef OS_WINDOWS
 	return impl::newProfile(runtime, "Google\\Chrome", "Google Chrome");
 #elif defined(LINUX)
 	return impl::newProfile(runtime, "google-chrome", "Google Chrome");
@@ -235,7 +243,7 @@ ProfileRef getChromeProfile(RuntimeRef runtime) {
 }
 
 ProfileRef getChromiumProfile(RuntimeRef runtime) {
-#ifdef WIN32
+#ifdef OS_WINDOWS
 	return impl::newProfile(runtime, "Chromium", "Chromium");
 #elif defined(LINUX)
 	return impl::newProfile(runtime, "chromium", "Chromium");
@@ -251,7 +259,7 @@ ProfileRef forProfilePath(RuntimeRef runtime, const std::string& path) {
 ProfileRef createTemporaryProfile(RuntimeRef runtime) {
 	std::string path;
 
-#ifdef WIN32
+#ifdef OS_WINDOWS
 	path = Util::getEnv("TEMP", "C:\\WINDOWS\\TEMP");
 #elif defined(LINUX)
 	path = Filesystem::append("/tmp", "berkelium." + Util::getEnv("USER", "user"));

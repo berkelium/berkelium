@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <Berkelium/API/Util.hpp>
+#include <Berkelium/API/Runtime.hpp>
 
 #include <cstdlib>
 #include <ctime>
@@ -29,6 +30,23 @@ std::string randomId(int length) {
 	}
 
 	return ret;
+}
+
+std::string getOption(int argc, char* argv[], const std::string& option) {
+	for(int i = 0; i < argc; i++) {
+		std::string tmp(argv[i]);
+		if(tmp.compare(0, option.length(), option) == 0) {
+			return tmp.substr(option.length());
+		}
+	}
+	return "";
+}
+
+void parseCommandLine(RuntimeRef runtime, int argc, char* argv[]) {
+	std::string exec = getOption(argc, argv, "--berkelium-host=");
+	if(!exec.empty()) {
+		runtime->setDefaultExecutable(exec);
+	}
 }
 
 } // namespace Util

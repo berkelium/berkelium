@@ -14,6 +14,16 @@ namespace Berkelium {
 
 namespace Util {
 
+int64_t currentTimeMillis(LoggerRef logger) {
+	FILETIME wt;
+	GetSystemTimeAsFileTime(&wt);
+	int64_t ret = (int64_t)wt.dwHighDateTime << 32;
+	ret += wt.dwLowDateTime;
+	ret -= 116444736000000000;
+	ret /= 1000;
+	return ret;
+}
+
 std::wstring getEnv(const std::wstring& env, const std::wstring& defaultValue) {
 	DWORD bufferSize = 65535;
 	std::wstring buffer;

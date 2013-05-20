@@ -23,13 +23,11 @@ std::string getEnv(const std::string&, const std::string& defaultValue);
 
 LoggerRef createRootLogger(RuntimeRef runtime, std::ostream& out);
 
-#ifdef LINUX
 RuntimeRef createRuntime(int argc, char* argv[]);
 
 std::string getOption(int argc, char* argv[], const std::string& option);
 
 void parseCommandLine(RuntimeRef runtime, int argc, char* argv[]);
-#endif
 
 #ifdef WIN32
 std::string ws2s(const std::wstring&);

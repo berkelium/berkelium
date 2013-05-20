@@ -5,9 +5,7 @@
 #ifdef LINUX
 
 #include <Berkelium/API/Util.hpp>
-#include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Logger.hpp>
-#include <Berkelium/API/BerkeliumFactory.hpp>
 
 #include <sys/time.h>
 #include <cstdlib>
@@ -34,23 +32,6 @@ std::string getEnv(const std::string& env, const std::string& defaultValue) {
 
 void sleep(int32_t ms) {
 	usleep(1000 * ms);
-}
-
-std::string getOption(int argc, char* argv[], const std::string& option) {
-	for(int i = 0; i < argc; i++) {
-		std::string tmp(argv[i]);
-		if(tmp.compare(0, option.length(), option) == 0) {
-			return tmp.substr(option.length());
-		}
-	}
-	return "";
-}
-
-void parseCommandLine(RuntimeRef runtime, int argc, char* argv[]) {
-	std::string exec = getOption(argc, argv, "--berkelium-host=");
-	if(!exec.empty()) {
-		runtime->setDefaultExecutable(exec);
-	}
 }
 
 } // namespace Util
