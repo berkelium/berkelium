@@ -42,6 +42,9 @@ IF(MSVC)
 	ADD_DEFINITIONS(/wd4065)
 	# nonstandard extension used: enum 'Berkelium::Ipc::CommandId' used in qualified name
 	ADD_DEFINITIONS(/wd4482)
+	# use gtest as dll on windows
+	SET(gtest_force_shared_crt on CACHE BOOL
+		"Use shared (DLL) run-time lib even when Google Test is built as static lib.")
 ENDIF()
 
 ################
