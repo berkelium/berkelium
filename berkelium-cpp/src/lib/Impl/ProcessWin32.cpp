@@ -21,7 +21,7 @@ namespace impl {
 
 class ProcessImpl : public Process {
 private:
-	STARTUPINFO si;
+	STARTUPINFOW si;
 	PROCESS_INFORMATION pi;
 	bool started;
 
@@ -56,8 +56,8 @@ public:
 		std::wcerr << "wcmd:" << wcmd << std::endl;
 
 		// Start the child process. 
-		if( !CreateProcess( NULL,   // No module name (use command line)
-			(LPTSTR)wcmd.c_str(),   // Command line
+		if( !CreateProcessW( NULL,   // No module name (use command line)
+			(LPWSTR)wcmd.c_str(),   // Command line
 			NULL,           // Process handle not inheritable
 			NULL,           // Thread handle not inheritable
 			FALSE,          // Set handle inheritance to FALSE
