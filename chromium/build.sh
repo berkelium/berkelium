@@ -1,6 +1,6 @@
 #!/bin/bash
 if [ "$1" = "checkout" ]; then
-	git clone https://git.chromium.org/chromium/tools/depot_tools.git
+	git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 elif [ "$1" = "update" ]; then
 	depot_tools/gclient sync
 elif [ "$1" = "debug" ]; then

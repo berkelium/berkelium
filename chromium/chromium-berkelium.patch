@@ -1,8 +1,8 @@
 Index: src/chrome/browser/ui/gtk/browser_window_gtk.cc
 ===================================================================
---- src/chrome/browser/ui/gtk/browser_window_gtk.cc	(revision 186726)
+--- src/chrome/browser/ui/gtk/browser_window_gtk.cc	(revision 202711)
 +++ src/chrome/browser/ui/gtk/browser_window_gtk.cc	(working copy)
-@@ -2411,7 +2411,11 @@
+@@ -2376,7 +2376,11 @@
  }
  
  // static
@@ -16,14 +16,16 @@ Index: src/chrome/browser/ui/gtk/browser_window_gtk.cc
    return browser_window_gtk;
 Index: src/chrome/app/chrome_main.cc
 ===================================================================
---- src/chrome/app/chrome_main.cc	(revision 186726)
+--- src/chrome/app/chrome_main.cc	(revision 202711)
 +++ src/chrome/app/chrome_main.cc	(working copy)
-@@ -32,3 +32,11 @@
+@@ -32,3 +32,13 @@
    return content::ContentMain(argc, argv, &chrome_main_delegate);
  #endif
  }
 +
 +#if 1 // berkelium patch: added
++#include "chrome/browser/ui/browser_window.h"
++
 +BrowserWindow* BerkeliumCreateBrowserWindow(Browser*);
 +
 +BrowserWindow* BrowserWindow::CreateBrowserWindow(Browser* browser) {
