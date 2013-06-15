@@ -15,6 +15,12 @@ namespace impl {
 
 class Filesystem {
 public:
+	static std::string getTemp();
+
+	static std::vector<std::string> split(const std::string& arg);
+
+	static std::string dirname(const std::string& arg);
+
 	static std::string append(const std::string& dir, const std::string& append);
 
 	static std::string append(const std::string& dir, const std::string& a1, const std::string& a2);

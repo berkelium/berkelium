@@ -26,6 +26,10 @@ std::string Filesystem::absolute(const std::string& arg) {
 	return buffer;
 }
 
+std::string Filesystem::getTemp() {
+	return append(Util::getEnv("TEMP", "C:\\WINDOWS\\TEMP"), "berkelium." + Util::getEnv("USERNAME", "User"));
+}
+
 void Filesystem::createDirectories(const std::string& dir) {
 }
 
