@@ -35,7 +35,7 @@ public:
 		capacity = 0;
 		wp = 0;
 		rp = 0;
-		delete buffer;
+		delete[] buffer;
 		buffer = 0;
 	}
 
@@ -67,7 +67,7 @@ public:
 			size += 1024;
 			uint8_t* tmp = new uint8_t[size];
 			memcpy(tmp, buffer, wp);
-			delete buffer;
+			delete[] buffer;
 			buffer = tmp;
 			capacity = size;
 		}

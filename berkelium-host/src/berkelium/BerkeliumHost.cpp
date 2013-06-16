@@ -14,21 +14,26 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#include <Berkelium/API/Logger.hpp>
+#include <Berkelium/API/Util.hpp>
 #include <Berkelium/IPC/Channel.hpp>
 #include <Berkelium/IPC/Message.hpp>
+#include <Berkelium/Impl/Impl.hpp>
 
 #include <set>
 #include <iostream>
 
 namespace Berkelium {
 
+using Ipc::CommandId;
 using Ipc::Channel;
 using Ipc::ChannelRef;
 using Ipc::Message;
 using Ipc::MessageRef;
 
+LoggerRef logger;
 ChannelRef ipc;
-MessageRef msg = Message::create();
+MessageRef msg;
 
 std::set<BerkeliumTab*> allWindows;
 
@@ -57,6 +62,7 @@ void BerkeliumHost::removeWindow(BerkeliumTab* window) {
 
 void update() {
 	static bool started_send = false;
+	bool running = true;
 
 	if(!started_send) {
 		started_send = true;
@@ -73,18 +79,68 @@ void update() {
 
 	if(!ipc->isEmpty()) {
 		ipc->recv(msg);
-		std::string cmd = msg->get_str();
-		std::cout << "recv: '" << cmd << "'" << std::endl;
-		msg->reset();
-		ipc->send(msg); // ACK
+		bool sendAck = false;
 
-		if(cmd.compare("exit") == 0){
-			fprintf(stderr, "berkelium update done!\n");
-			for(std::set<BerkeliumTab*>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
-				(*it)->Close();
+		switch(CommandId cmd = msg->get_cmd()) {
+			default: {
+				logger->error() << "received unknown command '" << cmd << "'" << std::endl;
+				sendAck = true;
+				break;
 			}
-			return;
+
+			case CommandId::exitHost: {
+				fprintf(stderr, "berkelium update done!\n");
+				for(std::set<BerkeliumTab*>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
+					(*it)->Close();
+				}
+				running = false;
+				sendAck = true;
+				break;
+			}
+
+			case CommandId::createTab: {
+				ChannelRef tab(ipc->createSubChannel());
+				ChannelRef tab2(tab->getReverseChannel());
+				//channels.push_back(tab);
+				msg->reset();
+				msg->add_str(tab->getName());
+				ipc->send(msg);
+				logger->info() << "created new tab with id " << tab->getName() << "!" << std::endl;
+
+				// wait 2s and send onReady
+				//MessageRef m = Message::create(logger);
+				//m->add_cmd(CommandId::onReady);
+				//todo.push(Entry(logger, 2000, tab2, m));
+				//msg->reset();
+				break;
+			}
+
+			case CommandId::createWindow: {
+				bool incognito = msg->get_8() == 1;
+				ChannelRef win(ipc->createSubChannel());
+				//channels.push_back(win);
+				msg->reset();
+				msg->add_str(win->getName());
+				ipc->send(msg);
+				logger->info() << "created new " << (incognito ? "incognito" : "default") << " window with id "
+						<< win->getName() << "!" << std::endl;
+				break;
+			}
+
+			case CommandId::navigate: {
+				std::string url(msg->get_str());
+				logger->info() << "navigate to '" << url << "'" << std::endl;
+				break;
+			}
 		}
+		if(sendAck) {
+			msg->reset();
+			ipc->send(msg); // ACK
+		}
+	}
+
+	if(!running) {
+		return;
 	}
 
 	content::BrowserThread::PostDelayedTask(content::BrowserThread::UI, FROM_HERE, base::Bind(&update), base::TimeDelta::FromMilliseconds(10));
@@ -98,7 +154,10 @@ bool BerkeliumHost::init(const std::string& dir, const std::string& name) {
 		fprintf(stderr, "berkelium init double call!\n");
 	} else {
 		initialised = 1;
-		ipc = Channel::getChannel(dir, name, false);
+		Berkelium::impl::enableBerkeliumHostMode();
+		logger = Berkelium::Util::createRootLogger(NULL);
+		ipc = Channel::getChannel(logger, dir, name, false);
+		msg = ipc->getMessage();
 		return true;
 		/*
 		int p = atoi(port.c_str());

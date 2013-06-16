@@ -20,7 +20,7 @@ using Berkelium::WindowRef;
 int main(int argc, char* argv[])
 {
 	Berkelium::RuntimeRef runtime(Berkelium::Util::createRuntime(argc, argv));
-	Berkelium::LoggerRef logger(Berkelium::Util::createRootLogger(runtime, std::cout));
+	Berkelium::LoggerRef logger(Berkelium::Util::createRootLogger(runtime));
 
 	logger->info() << "running pngrenderer..." << std::endl;
 	HostExecutableRef host(runtime->forSystemInstalled());

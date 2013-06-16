@@ -21,7 +21,9 @@ int64_t currentTimeMillis(LoggerRef logger);
 
 std::string getEnv(const std::string&, const std::string& defaultValue);
 
-LoggerRef createRootLogger(RuntimeRef runtime, std::ostream& out);
+LoggerRef createRootLogger(RuntimeRef runtime);
+
+LoggerRef createRootLogger(LogDelegateRef target, RuntimeRef runtime);
 
 RuntimeRef createRuntime(int argc, char* argv[]);
 

@@ -66,7 +66,7 @@ public:
 		// TODO only call close if ipc is open...
 		close();
 		if(profile->isInUse()) {
-			logger->debug() << "waiting for profile..." << std::endl;
+			logger->debug() << "closing instance: waiting for profile..." << std::endl;
 			while(profile->isInUse()) {
 				Util::sleep(100);
 			}

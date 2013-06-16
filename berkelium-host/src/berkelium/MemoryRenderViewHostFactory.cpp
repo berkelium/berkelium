@@ -61,9 +61,10 @@ public:
 	session_storage_namespace(session_storage_namespace),
 	started(false),
 	ipc(),
-	msg(Message::create())
+	msg()
 	{
 		ipc = BerkeliumHost::addWindow(this);
+		msg = ipc->getMessage();
 	}
 
 	virtual ~MemoryRenderViewHost() {

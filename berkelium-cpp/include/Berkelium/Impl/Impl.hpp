@@ -36,7 +36,7 @@ ProfileRef getChromeProfile(RuntimeRef runtime);
 ProfileRef getChromiumProfile(RuntimeRef runtime);
 ProfileRef forProfilePath(RuntimeRef runtime, const std::string& path);
 ProfileRef createTemporaryProfile(RuntimeRef runtime);
-LoggerRef newLogger(RuntimeRef runtime, const std::string& clazz, const std::string& name);
+LoggerRef newLogger(LogDelegateRef target, RuntimeRef runtime, const std::string& clazz, const std::string& name);
 LogDelegateRef newLogDelegate();
 void setLoggerPrefix(RuntimeRef runtime, const std::string& name);
 

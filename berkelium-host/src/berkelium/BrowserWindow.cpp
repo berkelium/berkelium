@@ -74,6 +74,7 @@ private:
 	virtual void EnterFullscreen(const GURL&, FullscreenExitBubbleType) {X;}
 	virtual void ExitFullscreen() {X;}
 	virtual void UpdateFullscreenExitBubbleContent(const GURL&, FullscreenExitBubbleType) {X;}
+	virtual bool ShouldHideUIForFullscreen() const {X;return true;}
 	virtual bool IsFullscreenBubbleVisible() const {X;return false;}
 	virtual LocationBar* GetLocationBar() const {X;return NULL;}
 	virtual void SetFocusToLocationBar(bool) {X;}

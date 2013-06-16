@@ -4,6 +4,8 @@
 
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/API/Runtime.hpp>
+#include <Berkelium/API/LogDelegate.hpp>
+#include <Berkelium/Impl/Impl.hpp>
 
 #include <cstring>
 #include <sstream>
@@ -22,6 +24,7 @@ LogSource logSource(Lib);
 
 class LoggerStreamBuffer : public std::stringbuf {
 private:
+	LogDelegateRef target;
 	RuntimeRef runtime;
 	LogType type;
 	std::string clazz;
@@ -30,6 +33,7 @@ private:
 public:
 	LoggerStreamBuffer() :
 		std::stringbuf(),
+		target(),
 		runtime(),
 		type(),
 		clazz(),
@@ -42,11 +46,12 @@ public:
 		if(msg.length() > 0) {
 			msg.erase(msg.length() - 1);
 		}
-		runtime->log(logSource, type, clazz, name, msg);
+		target->log(runtime, logSource, type, clazz, name, msg);
 		return 0;
 	}
 
-	void setMode(RuntimeRef runtime, const LogType type, const std::string& clazz, const std::string& name) {
+	void setMode(LogDelegateRef target, RuntimeRef runtime, const LogType type, const std::string& clazz, const std::string& name) {
+		this->target = target;
 		this->runtime = runtime;
 		this->type = type;
 		this->clazz = clazz;
@@ -68,8 +73,8 @@ public:
 		delete rdbuf();
 	}
 
-	void setMode(RuntimeRef runtime, const LogType type, const std::string& clazz, const std::string& name) {
-		buf->setMode(runtime, type, clazz, name);
+	void setMode(LogDelegateRef target, RuntimeRef runtime, const LogType type, const std::string& clazz, const std::string& name) {
+		buf->setMode(target, runtime, type, clazz, name);
 	}
 };
 
@@ -77,14 +82,16 @@ LoggerStream logStream;
 
 class LoggerImpl : public Logger {
 private:
+	LogDelegateRef target;
 	RuntimeRef runtime;
 	const std::string clazz;
 	const std::string name;
 	std::string prefix;
 
 public:
-	LoggerImpl(RuntimeRef runtime, const std::string& clazz, const std::string& name) :
+	LoggerImpl(LogDelegateRef target, RuntimeRef runtime, const std::string& clazz, const std::string& name) :
 		Logger(),
+		target(target),
 		runtime(runtime),
 		clazz(clazz),
 		name(name),
@@ -95,22 +102,22 @@ public:
 	}
 
 	virtual std::ostream& debug() {
-		logStream.setMode(runtime, Debug, clazz, name);
+		logStream.setMode(target, runtime, Debug, clazz, name);
 		return logStream;
 	}
 
 	virtual std::ostream& info() {
-		logStream.setMode(runtime, Info, clazz, name);
+		logStream.setMode(target, runtime, Info, clazz, name);
 		return logStream;
 	}
 
 	virtual std::ostream& warn() {
-		logStream.setMode(runtime, Warn, clazz, name);
+		logStream.setMode(target, runtime, Warn, clazz, name);
 		return logStream;
 	}
 
 	virtual std::ostream& error() {
-		logStream.setMode(runtime, Error, clazz, name);
+		logStream.setMode(target, runtime, Error, clazz, name);
 		return logStream;
 	}
 
@@ -131,19 +138,19 @@ public:
 	}
 
 	virtual void debug(const std::string& message) {
-		runtime->log(logSource, LogType::Debug, clazz, name, message);
+		target->log(runtime, logSource, LogType::Debug, clazz, name, message);
 	}
 
 	virtual void info(const std::string& message) {
-		runtime->log(logSource, LogType::Info, clazz, name, message);
+		target->log(runtime, logSource, LogType::Info, clazz, name, message);
 	}
 
 	virtual void warn(const std::string& message) {
-		runtime->log(logSource, LogType::Warn, clazz, name, message);
+		target->log(runtime, logSource, LogType::Warn, clazz, name, message);
 	}
 
 	virtual void error(const std::string& message) {
-		runtime->log(logSource, LogType::Error, clazz, name, message);
+		target->log(runtime, logSource, LogType::Error, clazz, name, message);
 	}
 };
 
@@ -151,8 +158,8 @@ void enableBerkeliumHostMode() {
 	logSource = Host;
 }
 
-LoggerRef newLogger(RuntimeRef runtime, const std::string& clazz, const std::string& name) {
-	LoggerImpl* impl = new LoggerImpl(runtime, clazz, name);
+LoggerRef newLogger(LogDelegateRef target, RuntimeRef runtime, const std::string& clazz, const std::string& name) {
+	LoggerImpl* impl = new LoggerImpl(target, runtime, clazz, name);
 	LoggerRef ret(impl);
 	return ret;
 }
@@ -161,10 +168,12 @@ LoggerRef newLogger(RuntimeRef runtime, const std::string& clazz, const std::str
 
 namespace Util {
 
-LoggerRef createRootLogger(RuntimeRef runtime, std::ostream& out) {
-	LoggerRef ret(runtime->getLogger("Root", "Logger"));
+LoggerRef createRootLogger(RuntimeRef runtime) {
+	return impl::newLogger(impl::newLogDelegate(), runtime, "Root", "Logger");
+}
 
-	return ret;
+LoggerRef createRootLogger(LogDelegateRef target, RuntimeRef runtime) {
+	return impl::newLogger(target, runtime, "Root", "Logger");
 }
 
 } // namespace Util

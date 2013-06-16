@@ -25,7 +25,7 @@ void dumpProfile(Berkelium::LoggerRef logger, const std::string& name, Berkelium
 int main(int argc, char* argv[])
 {
 	Berkelium::RuntimeRef runtime(Berkelium::Util::createRuntime(argc, argv));
-	Berkelium::LoggerRef logger(Berkelium::Util::createRootLogger(runtime, std::cout));
+	Berkelium::LoggerRef logger(Berkelium::Util::createRootLogger(runtime));
 
 	logger->info() << "berkelium demo application..." << std::endl;
 	Berkelium::HostExecutableRef host(runtime->forSystemInstalled());

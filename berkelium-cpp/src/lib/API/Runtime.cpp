@@ -43,11 +43,28 @@ struct set {
 
 typedef set<LogDelegateRef>::type LogDelegateRefSet;
 
+class RuntimeLogDelegate : public LogDelegate {
+public:
+	RuntimeLogDelegate() :
+		LogDelegate() {
+	}
+
+	virtual ~RuntimeLogDelegate() {
+	}
+
+	virtual void log(RuntimeRef runtime, LogSource source, LogType type, const std::string& clazz, const std::string& name, const std::string& message) {
+		if(runtime) {
+			runtime->log(source, type, clazz, name, message);
+		}
+	}
+};
+
 class RuntimeImpl : public Runtime {
 private:
 	LoggerRef logger;
 	std::string defaultExecutable;
 	LogDelegateRefSet logs;
+	LogDelegateRef target;
 	RuntimeWRef self;
 
 	RuntimeImpl(const RuntimeImpl&);
@@ -58,6 +75,7 @@ private:
 		logger(),
 		defaultExecutable(""),
 		logs(),
+		target(new RuntimeLogDelegate()),
 		self() {
 	}
 
@@ -66,7 +84,7 @@ public:
 		RuntimeImpl* impl = new RuntimeImpl();
 		RuntimeRef ret(impl);
 		impl->self = ret;
-		impl->logger = impl::newLogger(ret, "Runtime", "");
+		impl->logger = impl::newLogger(impl->target, ret, "Runtime", "");
 		return ret;
 	}
 
@@ -142,7 +160,7 @@ public:
 	}
 
 	virtual LoggerRef getLogger(const std::string& clazz, const std::string& name) {
-		return impl::newLogger(getSelf(), clazz, name);
+		return impl::newLogger(target, getSelf(), clazz, name);
 	}
 
 	virtual void addLogDelegate(LogDelegateRef delegate) {
