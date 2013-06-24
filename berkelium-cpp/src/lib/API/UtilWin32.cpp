@@ -14,6 +14,15 @@ namespace Berkelium {
 
 namespace Util {
 
+void initRandom() {
+	static bool initialised = false;
+	if(!initialised) {
+		initialised = true;
+		// TODO this should be done better...
+		srand((unsigned)time(0));
+	}
+}
+
 int64_t currentTimeMillis(LoggerRef logger) {
 	FILETIME wt;
 	GetSystemTimeAsFileTime(&wt);

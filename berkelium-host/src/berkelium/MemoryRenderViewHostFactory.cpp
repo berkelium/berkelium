@@ -4,7 +4,6 @@
 
 #include "BerkeliumHost.hpp"
 #include "MemoryRenderViewHostFactory.hpp"
-#include "BerkeliumTab.hpp"
 
 #include "base/command_line.h"
 #include "base/utf_string_conversions.h"
@@ -25,13 +24,7 @@ using Ipc::ChannelRef;
 using Ipc::Message;
 using Ipc::MessageRef;
 
-BerkeliumTab::BerkeliumTab() {
-}
-
-BerkeliumTab::~BerkeliumTab() {
-}
-
-class MemoryRenderViewHost : public content::RenderViewHostImpl, BerkeliumTab {
+class MemoryRenderViewHost : public content::RenderViewHostImpl {
 private:
 	content::SiteInstance* instance;
 	content::RenderViewHostDelegate* delegate;
@@ -52,7 +45,6 @@ public:
 		bool swapped_out,
 		content::SessionStorageNamespace* session_storage_namespace)
 	: content::RenderViewHostImpl(instance, delegate, widget_delegate, routing_id, swapped_out, session_storage_namespace),
-	BerkeliumTab(),
 	instance(instance),
 	delegate(delegate),
 	widget_delegate(widget_delegate),
@@ -60,15 +52,15 @@ public:
 	swapped_out(swapped_out),
 	session_storage_namespace(session_storage_namespace),
 	started(false),
-	ipc(),
-	msg()
+	ipc(BerkeliumHost::addTab(this)),
+	msg(ipc->getMessage())
 	{
-		ipc = BerkeliumHost::addWindow(this);
-		msg = ipc->getMessage();
+		printf("new MemoryRenderViewHost!\n");
 	}
 
 	virtual ~MemoryRenderViewHost() {
-		BerkeliumHost::removeWindow(this);
+		printf("delete MemoryRenderViewHost!\n");
+		BerkeliumHost::removeTab(this);
 	}
 
 	virtual bool OnMessageReceived(const IPC::Message& msg) {
@@ -118,7 +110,7 @@ public:
 	}
 
 private: // BerkeliumTab impl
-	virtual void Close() {
+	virtual void CloseTab() {
 		content::RenderViewHostImpl::ClosePage();
 	}
 

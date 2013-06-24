@@ -3,8 +3,12 @@
 // found in the LICENSE file.
 
 #include "BerkeliumHost.hpp"
-#include "BerkeliumTab.hpp"
 
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/browser_thread.h"
 #include "base/message_loop.h"
 
@@ -31,33 +35,88 @@ using Ipc::ChannelRef;
 using Ipc::Message;
 using Ipc::MessageRef;
 
-LoggerRef logger;
+LoggerRef logger = Berkelium::Util::createRootLogger(NULL);
 ChannelRef ipc;
 MessageRef msg;
 
-std::set<BerkeliumTab*> allWindows;
+std::set<Browser*> newBrowsers;
+std::set<Browser*> browsers;
+std::set<Browser*> closed;
+Browser* any;
 
-ChannelRef BerkeliumHost::addWindow(BerkeliumTab* window) {
-	ChannelRef ret(ipc->createSubChannel());
-	fprintf(stderr, "berkelium tab added!\n");
-	allWindows.insert(window);
-	msg->reset();
-	msg->add_str("addWindow");
-	msg->add_str(ret->getName());
-	//std::cerr << "send: addWindow" << " " << ret->getName() << std::endl;
-	ipc->send(msg);
+class BerkeliumBrowserListObserver : public chrome::BrowserListObserver {
+public:
+	BerkeliumBrowserListObserver() :
+		chrome::BrowserListObserver() {
+	}
 
-	return ret;
+	virtual ~BerkeliumBrowserListObserver() {
+	}
+
+	virtual void OnBrowserAdded(::Browser* browser) {
+		bool incognito(browser->profile()->IsOffTheRecord());
+		logger->info() << "OnBrowserAdded: incognito: " << incognito << std::endl;
+
+		if(!any) {
+			any = browser;
+		}
+
+		newBrowsers.insert(browser);
+	}
+
+	virtual void OnBrowserRemoved(::Browser* browser) {
+		logger->info("OnBrowserRemoved");
+		newBrowsers.erase(browser);
+		browsers.erase(browser);
+		if(any == browser) {
+			if(browsers.empty()) {
+				if(newBrowsers.empty()) {
+					any = NULL;
+				} else {
+					any = *(newBrowsers.begin());
+				}
+			} else {
+				any = *(browsers.begin());
+			}
+		}
+	}
+};
+
+BerkeliumBrowserListObserver observer;
+
+Ipc::ChannelRef BerkeliumHost::addWindow(void*) {
+	logger->info("addWindow");
+	return ipc->createSubChannel();
 }
 
-void BerkeliumHost::removeWindow(BerkeliumTab* window) {
-	allWindows.erase(window);
-	if(allWindows.empty()) {
-		fprintf(stderr, "last berkelium tab closed!\n");
-		content::BrowserThread::UnsafeGetMessageLoopForThread(content::BrowserThread::UI)->QuitWhenIdle();
-	} else {
-		fprintf(stderr, "closed berkelium tab!\n");
+void BerkeliumHost::removeWindow(void*) {
+	logger->info("removeWindow");
+}
+
+Ipc::ChannelRef BerkeliumHost::addTab(void*) {
+	logger->info("addTab");
+	return ipc->createSubChannel();
+}
+
+void BerkeliumHost::removeTab(void*) {
+	logger->info("removeTab");
+}
+
+
+void CreateWindow(Ipc::ChannelRef win, bool incognito) {
+	if(!any) {
+		logger->error("no window found!");
+		return;
 	}
+	::Profile* profile;
+	if(incognito) {
+		profile = any->profile()->GetOffTheRecordProfile();
+	} else {
+		profile = any->profile()->GetOriginalProfile();
+	}
+	Browser* browser(chrome::OpenEmptyWindow(profile, any->host_desktop_type()));
+	newBrowsers.erase(browser);
+	browsers.insert(browser);
 }
 
 void update() {
@@ -65,19 +124,41 @@ void update() {
 	bool running = true;
 
 	if(!started_send) {
+		// send berkelium ipc startup message
+		logger->info("berkelium host is up and running!");
 		started_send = true;
 		msg->add_str("berkelium");
 		ipc->send(msg);
 	}
 
-	// call update on all tabs
+	for(std::set<Browser*>::iterator it(closed.begin()); it != closed.end(); it++) {
+		Browser* browser(*it);
+		delete browser;
+	}
+	closed.clear();
+
+	/*
+	if(!blocked)
 	{
-		for(std::set<BerkeliumTab*>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
+		bool active = false;
+		// call update on all windows and tabs
+		for(std::set<BerkeliumChromiumWindowRef>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
 			(*it)->Update();
+			active = true;
+		}
+		for(std::set<BerkeliumChromiumTabRef>::iterator it = allTabs.begin(); it != allTabs.end(); it++) {
+			(*it)->Update();
+			active = true;
+		}
+		if(!active) {
+			fprintf(stderr, "update done...\n");
+			return;
 		}
 	}
+	*/
 
 	if(!ipc->isEmpty()) {
+		fprintf(stderr, "ipc\n");
 		ipc->recv(msg);
 		bool sendAck = false;
 
@@ -89,11 +170,17 @@ void update() {
 			}
 
 			case CommandId::exitHost: {
-				fprintf(stderr, "berkelium update done!\n");
-				for(std::set<BerkeliumTab*>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
-					(*it)->Close();
+				logger->info() << "berkelium host shutdown started!" << std::endl;
+				chrome::Exit();
+				/*
+				for(std::set<BerkeliumChromiumTabRef>::iterator it = allTabs.begin(); it != allTabs.end(); it++) {
+					(*it)->CloseTab();142
 				}
-				running = false;
+				for(std::set<BerkeliumChromiumWindowRef>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
+					(*it)->CloseWindow();
+				}
+				*/
+				//running = false;
 				sendAck = true;
 				break;
 			}
@@ -118,10 +205,12 @@ void update() {
 			case CommandId::createWindow: {
 				bool incognito = msg->get_8() == 1;
 				ChannelRef win(ipc->createSubChannel());
-				//channels.push_back(win);
+				CreateWindow(win, incognito);
+
 				msg->reset();
 				msg->add_str(win->getName());
 				ipc->send(msg);
+
 				logger->info() << "created new " << (incognito ? "incognito" : "default") << " window with id "
 						<< win->getName() << "!" << std::endl;
 				break;
@@ -150,56 +239,28 @@ void update() {
 static int initialised = 0;
 
 bool BerkeliumHost::init(const std::string& dir, const std::string& name) {
-	if(initialised != 0) {
+	if(isActive()) {
 		fprintf(stderr, "berkelium init double call!\n");
-	} else {
-		initialised = 1;
-		Berkelium::impl::enableBerkeliumHostMode();
-		logger = Berkelium::Util::createRootLogger(NULL);
-		ipc = Channel::getChannel(logger, dir, name, false);
-		msg = ipc->getMessage();
-		return true;
-		/*
-		int p = atoi(port.c_str());
-		fifo_out = open(FIFO_OUT_NAME, O_WRONLY);
-		if(fifo_out == -1) {
-			fprintf(stderr, "can't open '" FIFO_OUT_NAME "'!\n");
-			exit(0);
-		}
-		fifo_in = open(FIFO_IN_NAME, O_RDONLY | O_NONBLOCK);
-		if(fifo_in == -1) {
-			fprintf(stderr, "can't open '" FIFO_IN_NAME "'!\n");
-			close(fifo_out);
-			exit(0);
-		}
-		IpcSocket* sock = new IpcSocket();
-		int code = sock->connect("127.0.0.1", p);
-		if(code <= 0) {
-			fprintf(stderr, "berkelium: failed to connect to port %d: %d\n", p, code);
-			exit(0);
-		}
-		//fprintf(stderr, "berkelium: connected to port %d!\n", p);
-		ipcSocket = sock;
-		packetWriter = new PacketWriter(ipcSocket, 1000);
-		*/
+		return false;
 	}
-	return false;
+	initialised = 1;
+	Berkelium::impl::enableBerkeliumHostMode();
+	BrowserList::GetInstance(chrome::HOST_DESKTOP_TYPE_NATIVE)->AddObserver(&observer);
+	ipc = Channel::getChannel(logger, dir, name, false);
+	msg = ipc->getMessage();
+	return true;
 }
 
 void BerkeliumHost::lasyInit() {
-	if(initialised == 1) {
-		initialised = 2;
-		//fprintf(stderr, "berkelium update loop started!\n");
+	static bool started = false;
+	if(!started) {
+		started = true;
 		update();
-	} else if(initialised == 2) {
-		// everything is ok
-		//fprintf(stderr, "berkelium: running!\n");
-	} else {
-		fprintf(stderr, "berkelium init error!\n");
 	}
 }
 
 void BerkeliumHost::destory() {
+	BrowserList::GetInstance(chrome::HOST_DESKTOP_TYPE_NATIVE)->RemoveObserver(&observer);
 	ipc.reset();
 	fprintf(stderr, "berkelium closed!\n");
 }

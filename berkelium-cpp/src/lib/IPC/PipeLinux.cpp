@@ -69,12 +69,27 @@ public:
 		return select(fd + 1, &fds, NULL, NULL, &tv) != 1;
 	}
 
+	/*
+	inline void dump(const char* msg, char* data, size_t size) {
+		fprintf(stderr, "%s: ", msg);
+		for(size_t i = 0; i < size; i++) {
+		    fprintf(stderr, "%02X ", data[i]);
+		}
+		fprintf(stderr, " ");
+		for(size_t i = 0; i < size; i++) {
+		    fprintf(stderr, "%c", data[i]);
+		}
+		fprintf(stderr, "\n");
+	}
+	*/
+
 	virtual void send(MessageRef msg) {
 		if(fd == -1) return;
 		int32_t size = msg->length();
 		//fprintf(stderr, "send: 4 bytes '%d'!\n", size);
 		::write(fd, &size, 4);
 		//fprintf(stderr, "send: data...\n");
+		//dump("send", (char*)msg->data(), size);
 		::write(fd, msg->data(), size);
 		//fprintf(stderr, "send: done!\n");
 		msg->reset();
@@ -86,6 +101,7 @@ public:
 		//fprintf(stderr, "recv: %d bytes!\n", size);
 		msg->setup(size);
 		recv((char*)msg->data(), size);
+		//dump("recv", (char*)msg->data(), size);
 	}
 
 	void recv(char* to, size_t size) {

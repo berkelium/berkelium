@@ -2,17 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BERKELIUM_HPP_
-#define BERKELIUM_HPP_
+#ifndef BERKELIUM_HOST_HPP_
+#define BERKELIUM_HOST_HPP_
 #pragma once
 
 #include <string>
+#include <memory>
 
 #include <Berkelium/IPC/Ipc.hpp>
 
 namespace Berkelium {
 
-class BerkeliumTab;
+/*
+class BerkeliumChromiumWindow;
+typedef std::shared_ptr<BerkeliumChromiumWindow> BerkeliumChromiumWindowRef;
+typedef std::weak_ptr<BerkeliumChromiumWindow> BerkeliumChromiumWindowWRef;
+
+class BerkeliumChromiumTab;
+typedef std::shared_ptr<BerkeliumChromiumTab> BerkeliumChromiumTabRef;
+typedef std::weak_ptr<BerkeliumChromiumTab> BerkeliumChromiumTabWRef;
+*/
 
 class BerkeliumHost {
 public:
@@ -24,11 +33,17 @@ public:
 
 	static bool isActive();
 
-	static Ipc::ChannelRef addWindow(BerkeliumTab*);
+	//static void CloseWindow();
 
-	static void removeWindow(BerkeliumTab*);
+	static Ipc::ChannelRef addWindow(void*);
+
+	static void removeWindow(void*);
+
+	static Ipc::ChannelRef addTab(void*);
+
+	static void removeTab(void*);
 };
 
 } // namespace Berkelium
 
-#endif // BERKELIUM_HPP_
+#endif // BERKELIUM_HOST_HPP_

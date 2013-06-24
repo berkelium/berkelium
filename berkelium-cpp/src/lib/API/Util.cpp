@@ -20,11 +20,7 @@ std::string randomId(int length) {
 	static const std::string CHARS("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890");
 	const int to = CHARS.size();
 	std::string ret;
-	static bool initialised = false;
-	if(!initialised) {
-		initialised = true;
-		srand((unsigned)time(0));
-	}
+	initRandom();
 	for(int i = 0; i < length; i++) {
 		ret += CHARS[std::rand() % to];
 	}

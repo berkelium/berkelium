@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Berkelium Authors. All rights reserved.
+	// Copyright (c) 2012 The Berkelium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,25 +11,143 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view.h"
+#include "chrome/browser/profiles/profile.h"
+
+#include <Berkelium/IPC/Channel.hpp>
+#include <Berkelium/IPC/Message.hpp>
 
 #include "ui/gfx/rect.h"
 
 #define X //fprintf(stderr, "BerkeliumBrowserWindow::%s\n", __func__)
 
-class BerkeliumBrowserWindow : public BrowserWindow, public TabStripModelObserver {
+namespace Berkelium {
+
+extern std::set<Browser*> closed;
+
+} // namespace Berkelium
+
+/*
+using Berkelium::BerkeliumChromiumWindow;
+using Berkelium::BerkeliumChromiumWindowRef;
+
+BerkeliumChromiumWindow::BerkeliumChromiumWindow() {
+}
+
+BerkeliumChromiumWindow::~BerkeliumChromiumWindow() {
+}
+
+class BerkeliumChromiumWindowDelegate : public BerkeliumChromiumWindow {
+private:
+	BerkeliumChromiumWindow* delegate;
+
 public:
-	BerkeliumBrowserWindow(Browser* browser) : browser(browser) {
+	BerkeliumChromiumWindowDelegate(BerkeliumChromiumWindow* delegate) :
+		BerkeliumChromiumWindow(),
+		delegate(delegate) {
+		fprintf(stderr, "BerkeliumChromiumWindowDelegate created!\n");
+	}
+
+	virtual ~BerkeliumChromiumWindowDelegate() {
+		fprintf(stderr, "BerkeliumChromiumWindowDelegate removed!\n");
+	}
+
+	virtual void RemoveDelegate() {
+		delegate = NULL;
+	}
+
+	virtual void CloseWindow() {
+		if(delegate) {
+			delegate->CloseWindow();
+		}
+	}
+
+	virtual void SetChannel(Berkelium::Ipc::ChannelRef channel) {
+		if(delegate) {
+			delegate->SetChannel(channel);
+		}
+	}
+	virtual Berkelium::Ipc::ChannelRef GetChannel() {
+		if(delegate) {
+			return delegate->GetChannel();
+		}
+		return Berkelium::Ipc::ChannelRef();
+	}
+
+	virtual void Update() {
+		if(delegate) {
+			delegate->Update();
+		}
+	}
+
+	virtual void Exit() {
+		if(delegate) {
+			delegate->Exit();
+		}
+	}
+
+	virtual void RequestNewWindow(bool incognito) {
+		if(delegate) {
+			delegate->RequestNewWindow(incognito);
+		}
+	}
+};
+
+*/
+
+class BerkeliumBrowserWindow : public BrowserWindow, public TabStripModelObserver/*, public BerkeliumChromiumWindow*/ {
+public:
+	BerkeliumBrowserWindow(Browser* browser) :
+		browser(browser),
+		ipc(Berkelium::BerkeliumHost::addWindow(browser)),
+		msg(ipc->getMessage()) {
 		fprintf(stderr, "this: %p\n", this);
 		fprintf(stderr, "browser: %p\n", browser);
 		fprintf(stderr, "tab_strip_model: %p\n", browser->tab_strip_model());
+
 		//browser->tab_strip_model()->AddObserver(this);
 	}
 
 	virtual ~BerkeliumBrowserWindow() {
+		fprintf(stderr, "test1\n");
+		Berkelium::BerkeliumHost::removeWindow(browser);
+		ipc.reset();
+	}
+
+	/*
+	virtual void SetChannel(Berkelium::Ipc::ChannelRef channel) {
+		ipc = channel;
+	}
+
+	virtual Berkelium::Ipc::ChannelRef GetChannel() {
+		return ipc;
+	}
+
+	virtual void CloseWindow() {
+		delete browser;
+	}
+
+	virtual void Update() {
+	}
+	*/
+
+	virtual void Close() {
+		browser->tab_strip_model()->CloseAllTabs();
+		Berkelium::closed.insert(browser);
+	}
+
+	virtual void TabInsertedAt(content::WebContents* contents, int index, bool foreground) {
+		fprintf(stderr, "TabInsertedAt %d fg:%d\n", index, foreground);
 	}
 
 private:
 	Browser* browser;
+	Berkelium::Ipc::ChannelRef ipc;
+	Berkelium::Ipc::MessageRef msg;
+
+	/*
+	BerkeliumChromiumWindowDelegate* bcwd;
+	BerkeliumChromiumWindowRef bcw;
+	*/
 
 /*
 	virtual void ActiveTabChanged(TabContents* old_contents, TabContents* new_contents, int index, bool user_gesture) {
@@ -54,7 +172,6 @@ private:
 	}
 	virtual void Hide() {X;}
 	virtual void ShowInactive() {X;}
-	virtual void Close() {X;}
 	virtual void Activate() {X;}
 	virtual void Deactivate() {X;}
 	virtual void Maximize() {X;}

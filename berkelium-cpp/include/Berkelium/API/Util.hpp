@@ -12,6 +12,7 @@ namespace Berkelium {
 
 namespace Util {
 
+void initRandom();
 std::string randomId();
 std::string randomId(int length);
 

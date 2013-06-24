@@ -15,6 +15,16 @@ namespace Berkelium {
 
 namespace Util {
 
+void initRandom() {
+	static bool initialised = false;
+	if(!initialised) {
+		initialised = true;
+		timeval t;
+		gettimeofday( &t, NULL);
+		srand((unsigned)time(0) + getpid() + t.tv_usec);
+	}
+}
+
 int64_t currentTimeMillis(LoggerRef logger) {
 	timeval t;
 	if(gettimeofday( &t, NULL) == -1)
