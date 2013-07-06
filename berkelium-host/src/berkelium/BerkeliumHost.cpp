@@ -25,6 +25,7 @@
 #include <Berkelium/Impl/Impl.hpp>
 
 #include <set>
+#include <map>
 #include <iostream>
 
 namespace Berkelium {
@@ -43,6 +44,7 @@ std::set<Browser*> newBrowsers;
 std::set<Browser*> browsers;
 std::set<Browser*> closed;
 Browser* any;
+std::map<Browser*,ChannelRef> browserMap;
 
 class BerkeliumBrowserListObserver : public chrome::BrowserListObserver {
 public:
@@ -68,6 +70,12 @@ public:
 		logger->info("OnBrowserRemoved");
 		newBrowsers.erase(browser);
 		browsers.erase(browser);
+
+		std::map<Browser*,ChannelRef>::iterator it(browserMap.find(browser));
+		if(it != browserMap.end()) {
+			browserMap.erase(it);
+		}
+
 		if(any == browser) {
 			if(browsers.empty()) {
 				if(newBrowsers.empty()) {
@@ -84,9 +92,19 @@ public:
 
 BerkeliumBrowserListObserver observer;
 
-Ipc::ChannelRef BerkeliumHost::addWindow(void*) {
-	logger->info("addWindow");
-	return ipc->createSubChannel();
+ChannelRef nextWindowChannel;
+
+ChannelRef BerkeliumHost::addWindow(void* browser) {
+	if(nextWindowChannel) {
+		logger->debug("addWindow: requested ID");
+	} else {
+		logger->info("addWindow: new ID");
+		nextWindowChannel = ipc->createSubChannel();
+	}
+	ChannelRef ret(nextWindowChannel);
+	nextWindowChannel.reset();
+	browserMap.insert(browserMap.end(), std::pair<Browser*,ChannelRef>((Browser*)browser, ret));
+	return ret;
 }
 
 void BerkeliumHost::removeWindow(void*) {
@@ -114,14 +132,17 @@ void CreateWindow(Ipc::ChannelRef win, bool incognito) {
 	} else {
 		profile = any->profile()->GetOriginalProfile();
 	}
+	nextWindowChannel = win;
 	Browser* browser(chrome::OpenEmptyWindow(profile, any->host_desktop_type()));
+	nextWindowChannel.reset();
 	newBrowsers.erase(browser);
 	browsers.insert(browser);
 }
 
+void process(ChannelRef ipc, Browser* browser);
+
 void update() {
 	static bool started_send = false;
-	bool running = true;
 
 	if(!started_send) {
 		// send berkelium ipc startup message
@@ -137,26 +158,18 @@ void update() {
 	}
 	closed.clear();
 
-	/*
-	if(!blocked)
-	{
-		bool active = false;
-		// call update on all windows and tabs
-		for(std::set<BerkeliumChromiumWindowRef>::iterator it = allWindows.begin(); it != allWindows.end(); it++) {
-			(*it)->Update();
-			active = true;
-		}
-		for(std::set<BerkeliumChromiumTabRef>::iterator it = allTabs.begin(); it != allTabs.end(); it++) {
-			(*it)->Update();
-			active = true;
-		}
-		if(!active) {
-			fprintf(stderr, "update done...\n");
-			return;
-		}
+	for(std::map<Browser*,ChannelRef>::iterator it = browserMap.begin(); it != browserMap.end(); it++) {
+		process(it->second, it->first);
+		//process(it->second->getReverseChannel(), it->first);
+		//fprintf(stderr, "browser %s\n", it->second->getName().c_str());
 	}
-	*/
 
+	process(ipc, NULL);
+
+	content::BrowserThread::PostDelayedTask(content::BrowserThread::UI, FROM_HERE, base::Bind(&update), base::TimeDelta::FromMilliseconds(10));
+}
+
+void process(ChannelRef ipc, Browser* browser) {
 	if(!ipc->isEmpty()) {
 		fprintf(stderr, "ipc\n");
 		ipc->recv(msg);
@@ -227,13 +240,6 @@ void update() {
 			ipc->send(msg); // ACK
 		}
 	}
-
-	if(!running) {
-		return;
-	}
-
-	content::BrowserThread::PostDelayedTask(content::BrowserThread::UI, FROM_HERE, base::Bind(&update), base::TimeDelta::FromMilliseconds(10));
-
 }
 
 static int initialised = 0;

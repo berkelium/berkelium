@@ -71,7 +71,7 @@ public:
 
 	/*
 	inline void dump(const char* msg, char* data, size_t size) {
-		fprintf(stderr, "%s: ", msg);
+		fprintf(stderr, "%s: %s ", msg, name.c_str());
 		for(size_t i = 0; i < size; i++) {
 		    fprintf(stderr, "%02X ", data[i]);
 		}
