@@ -63,8 +63,10 @@ TEST_F(WindowTest, createSecondProcessWindow) {
 	USE_LOGGER(createSecondProcessWindow);
 	WindowRef subject1;
 	createWindow(logger, subject1, false);
+	ASSERT_NOT_NULL(subject1);
 	WindowRef subject2;
 	createWindow(logger, subject2, false);
+	ASSERT_NOT_NULL(subject2);
 	ASSERT_NOT_SAME(subject1->getInstance(), subject2->getInstance());
 }
 
