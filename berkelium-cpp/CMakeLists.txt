@@ -3,6 +3,11 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 PROJECT(berkelium-cpp)
 
 ####################
+## Berkelium Build
+## -----------------
+SET(BERKELIUM_BUILD true)
+
+####################
 ## Output Directorys
 ## -----------------
 SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/out")
@@ -86,6 +91,21 @@ ADD_SUBDIRECTORY(src/lib build/lib)
 ADD_SUBDIRECTORY(src/fake build/fake)
 ADD_SUBDIRECTORY(src/test build/test)
 ADD_SUBDIRECTORY(src/demo build/demo)
+
+###########
+## Berkelium-Java JNI
+## --------
+FIND_PACKAGE(JNI)
+
+IF(JNI_FOUND)
+	# Eclipse: Find JNI Includes...
+	INCLUDE_DIRECTORIES(${JNI_INCLUDE_DIRS})
+	#MESSAGE(STATUS "JNI_INCLUDE_DIRS=${JNI_INCLUDE_DIRS}")
+	#MESSAGE(STATUS "JNI_LIBRARIES=${JNI_LIBRARIES}")
+	ADD_SUBDIRECTORY(../berkelium-java build/berkelium-java)
+ELSE()
+	MESSAGE(WARNING "No JDK found: skipping berkelium-java!")
+ENDIF()
 
 ENABLE_TESTING(TRUE)
 ADD_TEST(test-fake run/berkelium-cpp-test --berkelium-host=run/host-fake)
