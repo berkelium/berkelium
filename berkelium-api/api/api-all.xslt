@@ -56,6 +56,20 @@
 </xsl:text>
 	</xsl:for-each>
 	<xsl:text>
+#
+# Java Implementation
+#
+</xsl:text>
+	<xsl:for-each select="/api/group">
+		<xsl:text>/usr/bin/xsltproc --stringparam class </xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text> -o ../berkelium-java/src/main/java/org/berkelium/impl/</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>Impl.java api/api-java-impl.xslt api/api.xml</xsl:text>
+	<xsl:text>
+</xsl:text>
+	</xsl:for-each>
+	<xsl:text>
 
 </xsl:text>
 </xsl:template>
