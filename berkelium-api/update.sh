@@ -13,5 +13,5 @@
 
 /usr/bin/xsltproc api/api-all.xslt api/api.xml | while read line; do
 	echo $line
-	bash -c "$line"
+	bash -c "$line" || exit $?
 done

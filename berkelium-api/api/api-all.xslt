@@ -60,7 +60,7 @@
 # Java Implementation
 #
 </xsl:text>
-	<xsl:for-each select="/api/group">
+	<xsl:for-each select="/api/group[@type!='enum']">
 		<xsl:text>/usr/bin/xsltproc --stringparam class </xsl:text>
 		<xsl:value-of select="@name"/>
 		<xsl:text> -o ../berkelium-java/src/main/java/org/berkelium/impl/</xsl:text>

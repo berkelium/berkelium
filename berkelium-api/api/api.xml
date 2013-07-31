@@ -20,7 +20,7 @@
 		<type name="int32" value="int"/>
 		<type name="bool" value="boolean"/>
 		<type name="string" value="String"/>
-		<type name="Rect" value="Rect"/>
+		<type name="Rect" value="Rect" import="org.berkelium.api."/>
 		<type name="WindowList" value="java.util.List&lt;Window&gt;"/>
 		<type name="TabList" value="java.util.List&lt;Tab&gt;"/>
 		<type name="Throwable" value="Throwable"/>

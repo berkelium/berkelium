@@ -17,15 +17,10 @@ public final class BerkeliumImpl implements Berkelium, Runnable {
 	private final AtomicBoolean destroyed = new AtomicBoolean(false);
 	private final AtomicBoolean updateRunning = new AtomicBoolean(false);
 	private final Thread thread;
-	private final BerkeliumServer server;
-	private final BerkeliumProcess process;
 
 	private RuntimeException initRuntimeException;
 
 	BerkeliumImpl(String app, String profile) {
-		server = new BerkeliumServer(this);
-		System.err.println("listing on port " + server.getPort());
-		process = new BerkeliumProcess(server.getPort(), this);
 		System.err.println("berkelium is running!");
 
 		thread = new Thread(this, "berkelium thread " + app + " " + profile);
@@ -71,12 +66,6 @@ public final class BerkeliumImpl implements Berkelium, Runnable {
 	}
 
 	private void shutdownThread() {
-		try {
-			server.destory();
-		} catch (IOException e) {
-			handleThrowable(e);
-		}
-		process.destroy();
 	}
 
 	private void update() throws IOException {
@@ -84,14 +73,7 @@ public final class BerkeliumImpl implements Berkelium, Runnable {
 			throw new IllegalStateException("update() can not call itself!");
 
 		try {
-			process.update();
-			server.update();
-			/*
-			byte[] bytes = ipc.readPackage();
-			if(bytes != null) {
-				root.dispatch(new PackageReader(ipc, bytes));
-			}
-			*/
+			// TODO
 		} finally {
 			updateRunning.set(false);
 		}
