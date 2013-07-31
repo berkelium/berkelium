@@ -56,6 +56,7 @@
 </xsl:text>
 	</xsl:for-each>
 	<xsl:text>
+
 #
 # Java Implementation
 #
@@ -69,6 +70,13 @@
 	<xsl:text>
 </xsl:text>
 	</xsl:for-each>
+	<xsl:text>
+
+#
+# JNI Implementation
+#
+</xsl:text>
+	<xsl:text>/usr/bin/xsltproc -o ../berkelium-java/src/main/cpp/berkelium-jni.hpp api/api-jni.xslt api/api.xml</xsl:text>
 	<xsl:text>
 
 </xsl:text>
