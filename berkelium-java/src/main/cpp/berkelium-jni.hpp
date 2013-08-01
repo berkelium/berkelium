@@ -34,113 +34,486 @@ extern "C" {
 inline jobject bk_new_JNI_BerkeliumFactory(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/BerkeliumFactoryImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_HostDelegate(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/HostDelegateImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_HostExecutable(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/HostExecutableImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_HostVersion(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/HostVersionImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_Instance(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/InstanceImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_LogDelegate(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/LogDelegateImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_LogSource(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/LogSourceImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_LogType(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/LogTypeImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_Logger(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/LoggerImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_Profile(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/ProfileImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_Rect(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/RectImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_Runtime(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/RuntimeImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_Tab(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/TabImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_TabDelegate(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/TabDelegateImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_Window(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/WindowImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
 }
 
 inline jobject bk_new_JNI_WindowDelegate(JNIEnv* env)
 {
 	jclass cls = env->FindClass("org/berkelium/impl/WindowDelegateImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "V");
+	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
 	return env->NewObject(cls, ctor);
+}
+
+// =========================================
+//
+//	BerkeliumFactory
+//
+// =========================================
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_BerkeliumFactoryImpl_createRuntime(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_BerkeliumFactoryImpl_getDefaultRuntime(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+// =========================================
+//
+//	HostExecutable
+//
+// =========================================
+
+JNIEXPORT jstring JNICALL Java_org_berkelium_impl_HostExecutableImpl_getPath(JNIEnv* env, jobject _this)
+{
+	return env->NewStringUTF("");
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_HostExecutableImpl_getRuntime(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_HostExecutableImpl_getVersion(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+// =========================================
+//
+//	HostVersion
+//
+// =========================================
+
+JNIEXPORT jint JNICALL Java_org_berkelium_impl_HostVersionImpl_getBuild(JNIEnv* env, jobject _this)
+{
+	return 0;
+}
+
+JNIEXPORT jint JNICALL Java_org_berkelium_impl_HostVersionImpl_getMajor(JNIEnv* env, jobject _this)
+{
+	return 0;
+}
+
+JNIEXPORT jint JNICALL Java_org_berkelium_impl_HostVersionImpl_getMinor(JNIEnv* env, jobject _this)
+{
+	return 0;
+}
+
+JNIEXPORT jint JNICALL Java_org_berkelium_impl_HostVersionImpl_getPatch(JNIEnv* env, jobject _this)
+{
+	return 0;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_HostVersionImpl_getRuntime(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jstring JNICALL Java_org_berkelium_impl_HostVersionImpl_getVersionString(JNIEnv* env, jobject _this)
+{
+	return env->NewStringUTF("");
+}
+
+JNIEXPORT jboolean JNICALL Java_org_berkelium_impl_HostVersionImpl_isMinVersion(JNIEnv* env, jobject _this, jstring version)
+{
+	return false;
+}
+
+// =========================================
+//
+//	Instance
+//
+// =========================================
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_InstanceImpl_addHostDelegate(JNIEnv* env, jobject _this, jobject delegate)
+{
+	// return void...
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_InstanceImpl_close(JNIEnv* env, jobject _this)
+{
+	// return void...
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_createWindow(JNIEnv* env, jobject _this, jboolean incognito)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getExecutable(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getProfile(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getRuntime(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jint JNICALL Java_org_berkelium_impl_InstanceImpl_getWindowCount(JNIEnv* env, jobject _this)
+{
+	return 0;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getWindowList(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_InstanceImpl_internalUpdate(JNIEnv* env, jobject _this)
+{
+	// return void...
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_InstanceImpl_removeHostDelegate(JNIEnv* env, jobject _this, jobject delegate)
+{
+	// return void...
+}
+
+// =========================================
+//
+//	Profile
+//
+// =========================================
+
+JNIEXPORT jstring JNICALL Java_org_berkelium_impl_ProfileImpl_getApplicationName(JNIEnv* env, jobject _this)
+{
+	return env->NewStringUTF("");
+}
+
+JNIEXPORT jstring JNICALL Java_org_berkelium_impl_ProfileImpl_getProfilePath(JNIEnv* env, jobject _this)
+{
+	return env->NewStringUTF("");
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_ProfileImpl_getRuntime(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_berkelium_impl_ProfileImpl_isFound(JNIEnv* env, jobject _this)
+{
+	return false;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_berkelium_impl_ProfileImpl_isInUse(JNIEnv* env, jobject _this)
+{
+	return false;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_berkelium_impl_ProfileImpl_isLocked(JNIEnv* env, jobject _this)
+{
+	return false;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_berkelium_impl_ProfileImpl_isSameVersion(JNIEnv* env, jobject _this)
+{
+	return false;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_berkelium_impl_ProfileImpl_isTooNew(JNIEnv* env, jobject _this)
+{
+	return false;
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_ProfileImpl_setLocked(JNIEnv* env, jobject _this, jboolean locked)
+{
+	// return void...
+}
+
+// =========================================
+//
+//	Runtime
+//
+// =========================================
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_addLogDelegate(JNIEnv* env, jobject _this, jobject delegate)
+{
+	// return void...
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_createTemporaryProfile(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forExecutable(JNIEnv* env, jobject _this, jstring pathTo)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forProfile(JNIEnv* env, jobject _this, jstring application)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forProfilePath(JNIEnv* env, jobject _this, jstring path)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forSystemInstalled(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forVersion__Ljava_lang_String_2(JNIEnv* env, jobject _this, jstring version)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forVersion__IIII(JNIEnv* env, jobject _this, jint vMajor, jint vMinor, jint vBuild, jint vPatch)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_getChromeProfile(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_getChromiumProfile(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_getLogger(JNIEnv* env, jobject _this, jstring clazz, jstring name)
+{
+	return NULL;
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_handleThrowable(JNIEnv* env, jobject _this, jthrowable t)
+{
+	// return void...
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_log(JNIEnv* env, jobject _this, jobject source, jobject type, jstring clazz, jstring name, jstring message)
+{
+	// return void...
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_open(JNIEnv* env, jobject _this, jobject executable, jobject profile)
+{
+	return NULL;
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_removeLogDelegate(JNIEnv* env, jobject _this, jobject delegate)
+{
+	// return void...
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_setDefaultExecutable(JNIEnv* env, jobject _this, jstring pathTo)
+{
+	// return void...
+}
+
+// =========================================
+//
+//	Tab
+//
+// =========================================
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_addTabDelegate(JNIEnv* env, jobject _this, jobject delegate)
+{
+	// return void...
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_close(JNIEnv* env, jobject _this)
+{
+	// return void...
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getRuntime(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getTabDelegate(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getWindow(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_internalUpdate(JNIEnv* env, jobject _this)
+{
+	// return void...
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_navigateTo(JNIEnv* env, jobject _this, jstring url)
+{
+	// return void...
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_removeTabDelegate(JNIEnv* env, jobject _this, jobject delegate)
+{
+	// return void...
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_resize(JNIEnv* env, jobject _this, jint width, jint height)
+{
+	// return void...
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_sync(JNIEnv* env, jobject _this)
+{
+	// return void...
+}
+
+// =========================================
+//
+//	Window
+//
+// =========================================
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_WindowImpl_createTab(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_WindowImpl_getInstance(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_WindowImpl_getRuntime(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT jint JNICALL Java_org_berkelium_impl_WindowImpl_getTabCount(JNIEnv* env, jobject _this)
+{
+	return 0;
+}
+
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_WindowImpl_getTabList(JNIEnv* env, jobject _this)
+{
+	return NULL;
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_WindowImpl_internalUpdate(JNIEnv* env, jobject _this)
+{
+	// return void...
+}
+
+JNIEXPORT jboolean JNICALL Java_org_berkelium_impl_WindowImpl_isIncognito(JNIEnv* env, jobject _this)
+{
+	return false;
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_WindowImpl_moveTo(JNIEnv* env, jobject _this, jobject tab, jint index)
+{
+	// return void...
 }
 
 

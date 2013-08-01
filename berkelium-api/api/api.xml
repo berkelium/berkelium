@@ -25,6 +25,14 @@
 		<type name="TabList" value="java.util.List&lt;Tab&gt;"/>
 		<type name="Throwable" value="Throwable"/>
 	</mapping>
+	<mapping type="jni" class="jobject">
+		<type name="string" value="jstring"/>
+		<type name="int32" value="jint"/>
+		<type name="bool" value="jboolean"/>
+		<type name="WindowList" value="jobject"/>
+		<type name="TabList" value="jobject"/>
+		<type name="Throwable" value="jthrowable"/>
+	</mapping>
 	<group type="interface" name="HostVersion">
 		<entry name="getRuntime" ret="Runtime">
 			<short>Returns the associated Runtime.</short>
@@ -102,11 +110,11 @@
 		<entry name="createTemporaryProfile" ret="Profile">
 			<short>Creates a temporary profile that gets automatically removed after use.</short>
 		</entry>
-		<entry name="forVersion" ret="HostVersion">
+		<entry name="forVersion" ret="HostVersion" jni-suffix="__Ljava_lang_String_2">
 			<arg type="string" name="version"/>
 			<short>Creates a HostVersion object representing the given version string.</short>
 		</entry>
-		<entry name="forVersion" ret="HostVersion">
+		<entry name="forVersion" ret="HostVersion" jni-suffix="__IIII">
 			<arg type="int32" name="vMajor"/>
 			<arg type="int32" name="vMinor"/>
 			<arg type="int32" name="vBuild"/>
@@ -210,7 +218,7 @@
 			<short>Represents error messages.</short>
 		</entry>
 	</group>
-	<group type="interface" name="Logger">
+	<group type="interface" name="Logger" jni="false">
 		<implementation type="cpp"><![CDATA[public:
 	virtual std::ostream& debug() = 0;
 	virtual std::ostream& info() = 0;
@@ -233,7 +241,7 @@
 			<arg type="string" name="message"/>
 		</entry>
 	</group>
-	<group type="interface" name="LogDelegate">
+	<group type="interface" name="LogDelegate" jni="false">
 		<entry name="log">
 			<arg type="Runtime" name="runtime"/>
 			<arg type="LogSource" name="source"/>
@@ -244,7 +252,7 @@
 			<short>Allows the client application to handle berkelium library and host messages.</short>
 		</entry>
 	</group>
-	<group type="interface" name="HostDelegate">
+	<group type="interface" name="HostDelegate" jni="false">
 		<short>Handler for events concerning the berkelium host process.</short>
 		<short>HostAdapter is an abstract class with empty function definitions for all functions in HostDelegate.</short>
 		<entry name="onCrashed">
@@ -322,7 +330,7 @@
 			<short>Returns true if this is a incognito window.</short>
 		</entry>
 	</group>
-	<group type="interface" name="WindowDelegate">
+	<group type="interface" name="WindowDelegate" jni="false">
 	</group>
 	<group type="interface" name="Tab">
 		<entry name="getRuntime" ret="Runtime">
@@ -363,7 +371,7 @@
 			<short>This function should be called after all event listeners are registered.</short>
 		</entry>
 	</group>
-	<group type="interface" name="TabDelegate">
+	<group type="interface" name="TabDelegate" jni="false">
 		<short>Handler for events concerning tab content.</short>
 		<short>TabAdapter is an abstract class with empty function definitions for all functions in TabDelegate.</short>
 		<entry name="onClosed">

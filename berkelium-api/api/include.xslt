@@ -35,25 +35,42 @@
 <!-- ============================================================= -->
 <xsl:template name="type">
 	<xsl:param name="name" select="''"/>
-	<xsl:variable name="node" select="/api/mapping[@type=$lang]/type[@name = $name]"/>
+	<xsl:param name="lang" select="$lang"/>
+	<xsl:variable name="mapping" select="/api/mapping[@type=$lang]"/>
+	<xsl:variable name="type" select="$mapping/type[@name = $name]"/>
 	<xsl:variable name="group" select="/api/group[@name = $name]"/>
 	<xsl:choose>
-		<xsl:when test="$node/@value">
-			<xsl:value-of select="$node/@value"/>
+		<xsl:when test="$type/@value">
+			<!-- mapping/type -->
+			<xsl:value-of select="$type/@value"/>
 		</xsl:when>
 		<xsl:when test="$group">
-			<xsl:value-of select="/api/mapping[@type=$lang]/@prefix"/>
+			<xsl:value-of select="$mapping/@prefix"/>
 			<xsl:choose>
 				<xsl:when test="$group[@type='class']|$group[@type='interface']">
-					<xsl:value-of select="/api/mapping[@type=$lang]/@class-prefix"/>
-					<xsl:value-of select="$name"/>
-					<xsl:value-of select="/api/mapping[@type=$lang]/@class-postfix"/>
+					<xsl:value-of select="$mapping/@class-prefix"/>
+					<xsl:choose>
+						<xsl:when test="$mapping/@class">
+							<xsl:value-of select="$mapping/@class"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$name"/>
+						</xsl:otherwise>
+					</xsl:choose>
+					<xsl:value-of select="$mapping/@class-postfix"/>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:value-of select="$name"/>
+					<xsl:choose>
+						<xsl:when test="$mapping/@class">
+							<xsl:value-of select="$mapping/@class"/>
+						</xsl:when>
+						<xsl:otherwise>
+							<xsl:value-of select="$name"/>
+						</xsl:otherwise>
+					</xsl:choose>
 				</xsl:otherwise>
 			</xsl:choose>
-			<xsl:value-of select="/api/mapping[@type=$lang]/@postfix"/>
+			<xsl:value-of select="$mapping/@postfix"/>
 		</xsl:when>
 		<xsl:when test="not($name)">
 			<xsl:text>void</xsl:text>
@@ -70,9 +87,11 @@
 <!-- Argument List                                                 -->
 <!-- ============================================================= -->
 <xsl:template name="arguments">
+	<xsl:param name="lang" select="$lang"/>
 	<xsl:for-each select="arg">
 		<xsl:call-template name="type">
 			<xsl:with-param name="name" select="@type"/>
+			<xsl:with-param name="lang" select="$lang"/>
 		</xsl:call-template>
 		<xsl:text> </xsl:text>
 		<xsl:value-of select="@name"/>
