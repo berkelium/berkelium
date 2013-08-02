@@ -1,4 +1,4 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.8.3)
 
 PROJECT(berkelium)
 
@@ -83,6 +83,11 @@ SET(BERKELIUM_CPP_LIBS berkelium-cpp)
 IF("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 	ADD_DEFINITIONS(-DLINUX)
 ENDIF()
+
+###########
+## Berkelium API
+## --------
+ADD_SUBDIRECTORY(../berkelium-api build/berkelium-api)
 
 ###########
 ## Berkelium C++ API
