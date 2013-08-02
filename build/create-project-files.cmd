@@ -1,3 +1,3 @@
 @echo off
-cmake ..\berkelium-cpp
+cmake ..
 pause
