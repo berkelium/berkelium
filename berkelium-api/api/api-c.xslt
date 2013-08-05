@@ -26,14 +26,22 @@
 extern "C" {
 #endif
 
-typedef int32_t bk_int32;
-typedef int32_t bk_bool;
-typedef const char* bk_string;
-
 </xsl:text>
 
-	<xsl:for-each select="/api/group[@type='class' or @type='interface']">
-		<xsl:text>typedef bk_int32 BK_</xsl:text>
+	<xsl:for-each select="/api/mapping[@type='c']/type">
+		<xsl:text>typedef </xsl:text>
+		<xsl:value-of select="@impl"/>
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="@value"/>
+		<xsl:text>;
+</xsl:text>
+	</xsl:for-each>
+
+	<xsl:text>
+</xsl:text
+>
+	<xsl:for-each select="/api/group">
+		<xsl:text>typedef void* BK_</xsl:text>
 		<xsl:value-of select="@name"/>
 		<xsl:text>;
 </xsl:text>
@@ -107,7 +115,14 @@ typedef const char* bk_string;
 		<xsl:with-param name="name" select="@ret"/>
 	</xsl:call-template>
 	<xsl:text> BK_</xsl:text>
-	<xsl:value-of select="../@name"/>_<xsl:value-of select="@name"/>(<xsl:call-template name="arguments-self"/>);
+	<xsl:value-of select="../@name"/>
+	<xsl:text>_</xsl:text>
+	<xsl:value-of select="@name"/>
+	<xsl:value-of select="@c-suffix"/>
+	<xsl:text>(</xsl:text>
+	<xsl:call-template name="arguments-self"/>
+	<xsl:text>);
+</xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>

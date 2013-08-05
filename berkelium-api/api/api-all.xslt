@@ -44,9 +44,4 @@
 	</xsl:for-each>
 </xsl:template>
 
-<xsl:template name="jni">
-	<xsl:text>src/main/cpp/berkelium-jni.hpp
-</xsl:text>
-</xsl:template>
-
 </xsl:stylesheet>

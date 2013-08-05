@@ -15,18 +15,7 @@
 	<!-- header -->
 	<xsl:call-template name="comment-header"/>
 
-	<xsl:text>#ifndef BERKELIUM_JNI_HPP_
-#define BERKELIUM_JNI_HPP_
-
-</xsl:text>
-
 	<xsl:call-template name="comment-generated"/>
-
-	<xsl:text>#ifdef __cplusplus
-extern "C" {
-#endif
-
-</xsl:text>
 
 	<xsl:for-each select="/api/group[@type!='enum']">
 		<xsl:text>#include "org_berkelium_impl_</xsl:text>
@@ -37,7 +26,12 @@ extern "C" {
 </xsl:text>
 	</xsl:for-each>
 
-		<xsl:text>
+	<xsl:text>
+#include "berkelium.h"
+
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
 </xsl:text>
 
 	<xsl:for-each select="/api/group|/api/mapping[@type='java']/type[@import]">
@@ -63,6 +57,41 @@ extern "C" {
 </xsl:text>
 	</xsl:for-each>
 
+	<xsl:text>// =========================================
+//
+//	Berkelium to JNI #defines
+//
+// =========================================
+
+#define BK_TO_JOBECT(X) (jobject)(X)
+#define BK_TO_JBOOLEAN(X) ((X) ? JNI_TRUE : JNI_FALSE)
+
+inline jstring BK_TO_JSTRING(JNIEnv* env, char* str)
+{
+	if(str == NULL) {
+		return NULL;
+	}
+	jstring ret = (jstring)env->NewGlobalRef(env->NewStringUTF(str));
+	free(str);
+	return ret;
+}
+
+inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
+{
+	if(str == NULL) {
+		return NULL;
+	}
+	jboolean iscopy = false;
+	const char* tmp = env->GetStringUTFChars(str, &amp;iscopy);
+	jint len = env->GetStringUTFLength(str);
+	char* ret = (char*)malloc(len);
+	memcpy(ret, tmp, len);
+	env->ReleaseStringUTFChars(str, tmp);
+	return ret;
+}
+
+</xsl:text>
+
 	<xsl:for-each select="/api/group[not(@type='enum') and not(@jni='false')]">
 		<xsl:sort select="@name"/>
 		<xsl:variable name="class" select="@name"/>
@@ -77,7 +106,7 @@ extern "C" {
 // =========================================
 </xsl:text>
 
-		<xsl:for-each select="entry">
+		<xsl:for-each select="entry[not(@type)]">
 			<xsl:sort select="@name"/>
 
 			<xsl:text>
@@ -117,19 +146,18 @@ extern "C" {
 
 			<xsl:choose>
 				<xsl:when test="$ret='void'">
-					<xsl:text>// return void...</xsl:text>
 				</xsl:when>
 				<xsl:when test="$ret='jint'">
-					<xsl:text>return 0;</xsl:text>
+					<xsl:text>return </xsl:text>
 				</xsl:when>
 				<xsl:when test="$ret='jboolean'">
-					<xsl:text>return false;</xsl:text>
+					<xsl:text>return BK_TO_JBOOLEAN(</xsl:text>
 				</xsl:when>
 				<xsl:when test="$ret='jstring'">
-					<xsl:text>return env->NewStringUTF("");</xsl:text>
+					<xsl:text>return BK_TO_JSTRING(env, </xsl:text>
 				</xsl:when>
 				<xsl:when test="$ret='jobject'">
-					<xsl:text>return NULL;</xsl:text>
+					<xsl:text>return BK_TO_JOBECT(</xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:text>!!ERROR: Return Statement of '</xsl:text>
@@ -138,9 +166,60 @@ extern "C" {
 				</xsl:otherwise>
 			</xsl:choose>
 
+			<xsl:text>BK_</xsl:text>
+			<xsl:value-of select="$class"/>
+			<xsl:text>_</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:value-of select="@c-suffix"/>
+			<xsl:text>(</xsl:text>
 
-			<xsl:text>
-}
+			<xsl:if test="not(@static='true')">
+				<xsl:text>(</xsl:text>
+				<xsl:call-template name="type">
+					<xsl:with-param name="name" select="$class"/>
+					<xsl:with-param name="lang" select="'c'"/>
+				</xsl:call-template>
+				<xsl:text>)_this</xsl:text>
+			</xsl:if>
+
+			<xsl:for-each select="arg">
+				<xsl:text>, </xsl:text>
+				<xsl:variable name="type">
+					<xsl:call-template name="type">
+						<xsl:with-param name="name" select="@type"/>
+						<xsl:with-param name="lang" select="'jni'"/>
+					</xsl:call-template>
+				</xsl:variable>
+				<xsl:if test="$type='jobject'">
+					<xsl:text>(</xsl:text>
+					<xsl:call-template name="type">
+						<xsl:with-param name="name" select="@type"/>
+						<xsl:with-param name="lang" select="'c'"/>
+					</xsl:call-template>
+					<xsl:text>)</xsl:text>
+				</xsl:if>
+
+				<xsl:if test="$type='jstring'">
+					<xsl:text>JSTRING_TO_BK(env, </xsl:text>
+				</xsl:if>
+
+				<xsl:value-of select="@name"/>
+
+				<xsl:if test="$type='jstring'">
+					<xsl:text>)</xsl:text>
+				</xsl:if>
+			</xsl:for-each>
+
+			<xsl:text>)</xsl:text>
+
+			<xsl:if test="$ret!='void' and $ret!='jint'">
+				<xsl:text>)</xsl:text>
+			</xsl:if>
+
+			<xsl:text>;
+</xsl:text>
+
+			<xsl:text>}
 </xsl:text>
 		</xsl:for-each>
 
@@ -149,12 +228,6 @@ extern "C" {
 
 	</xsl:for-each>
 
-	<xsl:text>
-#ifdef __cplusplus
-}
-#endif
-#endif // BERKELIUM_JNI_HPP_
-</xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>

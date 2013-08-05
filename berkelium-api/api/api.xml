@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <api>
 	<mapping type="c" prefix="BK_">
-		<type name="int32" value="bk_int32"/>
-		<type name="bool" value="bk_bool"/>
-		<type name="string" value="bk_string"/>
-		<type name="Rect" value="BK_Rect"/>
-		<type name="WindowList" value="BK_WindowList"/>
-		<type name="TabList" value="BK_TabList"/>
+		<type name="int32" value="bk_int32" impl="int32_t"/>
+		<type name="bool" value="bk_bool" impl="int32_t"/>
+		<type name="string" value="bk_string" impl="char*"/>
+		<type name="Rect" value="BK_Rect"  impl="void*"/>
+		<type name="WindowList" value="BK_WindowList" impl="void*"/>
+		<type name="TabList" value="BK_TabList" impl="void*"/>
 	</mapping>
 	<mapping type="cpp" class-postfix="Ref">
 		<type name="int32" value="int32_t"/>
@@ -110,11 +110,11 @@
 		<entry name="createTemporaryProfile" ret="Profile">
 			<short>Creates a temporary profile that gets automatically removed after use.</short>
 		</entry>
-		<entry name="forVersion" ret="HostVersion" jni-suffix="__Ljava_lang_String_2">
+		<entry name="forVersion" ret="HostVersion" c-suffix="S" jni-suffix="__Ljava_lang_String_2">
 			<arg type="string" name="version"/>
 			<short>Creates a HostVersion object representing the given version string.</short>
 		</entry>
-		<entry name="forVersion" ret="HostVersion" jni-suffix="__IIII">
+		<entry name="forVersion" ret="HostVersion" c-suffix="4I" jni-suffix="__IIII">
 			<arg type="int32" name="vMajor"/>
 			<arg type="int32" name="vMinor"/>
 			<arg type="int32" name="vBuild"/>

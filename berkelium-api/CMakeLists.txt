@@ -12,11 +12,7 @@ FIND_PROGRAM(XSLTPROC xsltproc DOC "xsltproc transforms XML via XSLT")
 
 SET(API ${CMAKE_CURRENT_SOURCE_DIR}/api CACHE PATH "berkelium api files")
 
-SET(API_DEPS "${API}/api.xml")
-
-#find_package(Java REQUIRED)
-
-#${Java_JAVA_EXECUTABLE} -jar xslt.jar
+SET_DIRECTORY_PROPERTIES(PROPERTIES CLEAN_NO_CUSTOM 1)
 
 MACRO(XSLT TARGET XSLT XML)
 	CMAKE_PARSE_ARGUMENTS(ARG "" "" "ARGS" ${ARGN})
@@ -53,22 +49,53 @@ ENDMACRO()
 MACRO(API TARGET XSLT)
 	GET_FILENAME_COMPONENT(FILE "${TARGET}" ABSOLUTE)
 	CMAKE_PARSE_ARGUMENTS(ARG "" "" "ARGS" ${ARGN})
-	LIST(APPEND API_DEPS "${FILE}")
 	XSLT("${FILE}" "${XSLT}" "${API}/api.xml" ARGS "${ARG_ARGS}")
 ENDMACRO()
 
 ###########
 ## Build API Dependencies
 ## --------
-MACRO(BUILD_API_DEPS TARGET LANG)
+SET(API_DEPS "")
+
+MACRO(BUILD_API_DEPS VAR TARGET LANG)
+	# build absolute path
 	GET_FILENAME_COMPONENT(FILE "${TARGET}" ABSOLUTE)
+	# append to API_DEPS
 	LIST(APPEND API_DEPS "${FILE}")
 	XSLT("${FILE}" "${API}/api-all.xslt" "${API}/api.xml" ARGS "list" "${LANG}")
+
+	# read deps into VAR
+	# you need to recall cmake if you added new files to the api!!
+	FILE(STRINGS "${FILE}" "${VAR}")
+	SET("${VAR}" "${${VAR}}" CACHE STRING "cached source deps" FORCE)
 ENDMACRO()
 
-BUILD_API_DEPS(deps/c.txt c)
-BUILD_API_DEPS(deps/cpp.txt cpp)
-BUILD_API_DEPS(deps/java-impl.txt java-impl)
-BUILD_API_DEPS(deps/jni.txt jni)
+BUILD_API_DEPS(BERKELIUM_SRC_CPP deps/cpp.txt cpp)
+BUILD_API_DEPS(BERKELIUM_SRC_JAVA_IMPL deps/java-impl.txt java-impl)
 
-ADD_CUSTOM_TARGET(berkelium-api DEPENDS ${API_DEPS})
+###########
+## Build JNI Implementation
+## --------
+MACRO(BUILD_API_IMPL TARGET XSLT)
+	# build absolute path
+	GET_FILENAME_COMPONENT(FILE "${TARGET}" ABSOLUTE)
+	# append to API_DEPS
+	LIST(APPEND API_DEPS "${FILE}")
+	XSLT("${FILE}" "${API}/${XSLT}" "${API}/api.xml")
+ENDMACRO()
+
+BUILD_API_IMPL("../berkelium-c/include/berkelium.h" "api-c.xslt")
+BUILD_API_IMPL("../berkelium-java/src/main/cpp/berkelium-jni.cpp" "api-jni.xslt")
+
+###########
+## Note: rerun cmake
+## --------
+ADD_CUSTOM_COMMAND(
+	OUTPUT rerun-cmake
+	COMMAND ${CMAKE_COMMAND} -E echo_append
+	COMMENT "You need to rerun cmake if you added new files!"
+)
+
+# this is not part of the default build
+# call this command by hand if you changed the api
+ADD_CUSTOM_TARGET(berkelium-api DEPENDS ${API_DEPS} rerun-cmake)

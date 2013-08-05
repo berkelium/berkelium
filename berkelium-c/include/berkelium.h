@@ -22,21 +22,26 @@ extern "C" {
 
 typedef int32_t bk_int32;
 typedef int32_t bk_bool;
-typedef const char* bk_string;
+typedef char* bk_string;
+typedef void* BK_Rect;
+typedef void* BK_WindowList;
+typedef void* BK_TabList;
 
-typedef bk_int32 BK_HostVersion;
-typedef bk_int32 BK_BerkeliumFactory;
-typedef bk_int32 BK_Runtime;
-typedef bk_int32 BK_HostExecutable;
-typedef bk_int32 BK_Profile;
-typedef bk_int32 BK_Logger;
-typedef bk_int32 BK_LogDelegate;
-typedef bk_int32 BK_HostDelegate;
-typedef bk_int32 BK_Instance;
-typedef bk_int32 BK_Window;
-typedef bk_int32 BK_WindowDelegate;
-typedef bk_int32 BK_Tab;
-typedef bk_int32 BK_TabDelegate;
+typedef void* BK_HostVersion;
+typedef void* BK_BerkeliumFactory;
+typedef void* BK_Runtime;
+typedef void* BK_HostExecutable;
+typedef void* BK_Profile;
+typedef void* BK_LogSource;
+typedef void* BK_LogType;
+typedef void* BK_Logger;
+typedef void* BK_LogDelegate;
+typedef void* BK_HostDelegate;
+typedef void* BK_Instance;
+typedef void* BK_Window;
+typedef void* BK_WindowDelegate;
+typedef void* BK_Tab;
+typedef void* BK_TabDelegate;
 
 // =========================================
 // interface HostVersion
@@ -102,10 +107,10 @@ BK_Profile BK_Runtime_forProfilePath(BK_Runtime self, bk_string path);
 BK_Profile BK_Runtime_createTemporaryProfile(BK_Runtime self);
 
 // Creates a HostVersion object representing the given version string.
-BK_HostVersion BK_Runtime_forVersion(BK_Runtime self, bk_string version);
+BK_HostVersion BK_Runtime_forVersionS(BK_Runtime self, bk_string version);
 
 // Creates a HostVersion object representing the given version number.
-BK_HostVersion BK_Runtime_forVersion(BK_Runtime self, bk_int32 vMajor, bk_int32 vMinor, bk_int32 vBuild, bk_int32 vPatch);
+BK_HostVersion BK_Runtime_forVersion4I(BK_Runtime self, bk_int32 vMajor, bk_int32 vMinor, bk_int32 vBuild, bk_int32 vPatch);
 
 // Launches a the given berkelium host process using the given profile.
 BK_Instance BK_Runtime_open(BK_Runtime self, BK_HostExecutable executable, BK_Profile profile);
