@@ -92,7 +92,7 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 
 </xsl:text>
 
-	<xsl:for-each select="/api/group[not(@type='enum') and not(@jni='false')]">
+	<xsl:for-each select="/api/group[not(@type='enum') and not(@delegate='true')]">
 		<xsl:sort select="@name"/>
 		<xsl:variable name="class" select="@name"/>
 

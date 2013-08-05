@@ -218,7 +218,7 @@
 			<short>Represents error messages.</short>
 		</entry>
 	</group>
-	<group type="interface" name="Logger" jni="false">
+	<group type="interface" name="Logger" delegate="true">
 		<implementation type="cpp"><![CDATA[public:
 	virtual std::ostream& debug() = 0;
 	virtual std::ostream& info() = 0;
@@ -241,7 +241,7 @@
 			<arg type="string" name="message"/>
 		</entry>
 	</group>
-	<group type="interface" name="LogDelegate" jni="false">
+	<group type="interface" name="LogDelegate" delegate="true">
 		<entry name="log">
 			<arg type="Runtime" name="runtime"/>
 			<arg type="LogSource" name="source"/>
@@ -252,7 +252,7 @@
 			<short>Allows the client application to handle berkelium library and host messages.</short>
 		</entry>
 	</group>
-	<group type="interface" name="HostDelegate" jni="false">
+	<group type="interface" name="HostDelegate" delegate="true">
 		<short>Handler for events concerning the berkelium host process.</short>
 		<short>HostAdapter is an abstract class with empty function definitions for all functions in HostDelegate.</short>
 		<entry name="onCrashed">
@@ -330,7 +330,7 @@
 			<short>Returns true if this is a incognito window.</short>
 		</entry>
 	</group>
-	<group type="interface" name="WindowDelegate" jni="false">
+	<group type="interface" name="WindowDelegate" delegate="true">
 	</group>
 	<group type="interface" name="Tab">
 		<entry name="getRuntime" ret="Runtime">
@@ -371,7 +371,7 @@
 			<short>This function should be called after all event listeners are registered.</short>
 		</entry>
 	</group>
-	<group type="interface" name="TabDelegate" jni="false">
+	<group type="interface" name="TabDelegate" delegate="true">
 		<short>Handler for events concerning tab content.</short>
 		<short>TabAdapter is an abstract class with empty function definitions for all functions in TabDelegate.</short>
 		<entry name="onClosed">

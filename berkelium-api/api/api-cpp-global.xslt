@@ -26,6 +26,9 @@
 
 namespace Berkelium {
 
+class Rect {
+};
+
 </xsl:text>
 
 	<!-- enums -->

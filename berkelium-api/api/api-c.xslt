@@ -38,16 +38,39 @@ extern "C" {
 	</xsl:for-each>
 
 	<xsl:text>
-</xsl:text
->
-	<xsl:for-each select="/api/group">
+</xsl:text>
+	<xsl:for-each select="/api/group[@type!='enum']">
 		<xsl:text>typedef void* BK_</xsl:text>
 		<xsl:value-of select="@name"/>
 		<xsl:text>;
 </xsl:text>
 	</xsl:for-each>
 
-	<xsl:apply-templates select="group"/>
+	<xsl:text>
+</xsl:text>
+
+	<xsl:for-each select="/api/group[@type='enum']">
+		<xsl:text>typedef enum {
+</xsl:text>
+
+		<xsl:for-each select="entry">
+			<xsl:text>	</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:if test="position() != last()">
+				<xsl:text>,</xsl:text>
+			</xsl:if>
+			<xsl:text>
+</xsl:text>
+		</xsl:for-each>
+
+		<xsl:text>} BK_</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>;
+
+</xsl:text>
+	</xsl:for-each>
+
+	<xsl:apply-templates select="group[@type!='enum']"/>
 	<xsl:text>
 #ifdef __cplusplus
 }

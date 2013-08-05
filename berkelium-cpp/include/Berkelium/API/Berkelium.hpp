@@ -22,6 +22,9 @@
 
 namespace Berkelium {
 
+class Rect {
+};
+
 enum LogSource {
 
 	Host,

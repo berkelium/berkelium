@@ -84,7 +84,9 @@ MACRO(BUILD_API_IMPL TARGET XSLT)
 	XSLT("${FILE}" "${API}/${XSLT}" "${API}/api.xml")
 ENDMACRO()
 
-BUILD_API_IMPL("../berkelium-c/include/berkelium.h" "api-c.xslt")
+BUILD_API_IMPL("../berkelium-cpp/include/berkelium.h" "api-c.xslt")
+BUILD_API_IMPL("../berkelium-cpp/include/Berkelium/API/Berkelium.hpp" "api-cpp-global.xslt")
+BUILD_API_IMPL("../berkelium-cpp/src/lib/Impl/BerkeliumC.cpp" "api-c-impl.xslt")
 BUILD_API_IMPL("../berkelium-java/src/main/cpp/berkelium-jni.cpp" "api-jni.xslt")
 
 ###########

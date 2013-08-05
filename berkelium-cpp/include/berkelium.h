@@ -32,8 +32,6 @@ typedef void* BK_BerkeliumFactory;
 typedef void* BK_Runtime;
 typedef void* BK_HostExecutable;
 typedef void* BK_Profile;
-typedef void* BK_LogSource;
-typedef void* BK_LogType;
 typedef void* BK_Logger;
 typedef void* BK_LogDelegate;
 typedef void* BK_HostDelegate;
@@ -42,6 +40,21 @@ typedef void* BK_Window;
 typedef void* BK_WindowDelegate;
 typedef void* BK_Tab;
 typedef void* BK_TabDelegate;
+
+typedef enum {
+	Host,
+	Lib
+} BK_LogSource;
+
+typedef enum {
+	StdOut,
+	StdErr,
+	Debug,
+	Info,
+	Warn,
+	Error
+} BK_LogType;
+
 
 // =========================================
 // interface HostVersion
@@ -172,34 +185,6 @@ void BK_Profile_setLocked(BK_Profile self, bk_bool locked);
 
 // Returns true if this Profile instance holds the Profile lock.
 bk_bool BK_Profile_isLocked(BK_Profile self);
-
-// =========================================
-// enum LogSource
-// =========================================
-void BK_LogSource_Host(BK_LogSource self);
-void BK_LogSource_Lib(BK_LogSource self);
-
-// =========================================
-// enum LogType
-// =========================================
-
-// Represents the stdout stream.
-void BK_LogType_StdOut(BK_LogType self);
-
-// Represents the stderr stream.
-void BK_LogType_StdErr(BK_LogType self);
-
-// Represents debug messages.
-void BK_LogType_Debug(BK_LogType self);
-
-// Represents info messages.
-void BK_LogType_Info(BK_LogType self);
-
-// Represents warn messages.
-void BK_LogType_Warn(BK_LogType self);
-
-// Represents error messages.
-void BK_LogType_Error(BK_LogType self);
 
 // =========================================
 // interface Logger

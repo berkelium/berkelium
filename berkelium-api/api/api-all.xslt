@@ -6,24 +6,13 @@
 
 <xsl:template match="/">
 	<xsl:choose>
-		<xsl:when test="$list='c'">
-			<xsl:call-template name="c"/>
-		</xsl:when>
 		<xsl:when test="$list='cpp'">
 			<xsl:call-template name="cpp"/>
 		</xsl:when>
 		<xsl:when test="$list='java-impl'">
 			<xsl:call-template name="java-impl"/>
 		</xsl:when>
-		<xsl:when test="$list='jni'">
-			<xsl:call-template name="jni"/>
-		</xsl:when>
 	</xsl:choose>
-</xsl:template>
-
-<xsl:template name="c">
-	<xsl:text>include/berkelium.h
-</xsl:text>
 </xsl:template>
 
 <xsl:template name="cpp">
