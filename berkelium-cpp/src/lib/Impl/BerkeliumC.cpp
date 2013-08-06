@@ -171,6 +171,36 @@ inline void* mapTabDelegateRef2Id(Berkelium::TabDelegateRef bk)
 	return NULL;
 }
 
+inline BK_WindowList* mapWindowList2Id(Berkelium::WindowList& list)
+{
+	BK_WindowList* ret = (BK_WindowList*)malloc(sizeof(BK_WindowList));
+
+	ret->size = list.size();
+	ret->entrys = (BK_Window**)malloc(sizeof(BK_Window*) * ret->size);
+
+	int i = 0;
+	for(Berkelium::WindowList::iterator it(list.begin()); it != list.end(); i++, it++) {
+		ret->entrys[i] = mapWindowListRef2Id(*it);
+	}
+
+	return ret;
+}
+
+inline BK_TabList* mapTabList2Id(Berkelium::TabList& list)
+{
+	BK_TabList* ret = (BK_TabList*)malloc(sizeof(BK_TabList));
+
+	ret->size = list.size();
+	ret->entrys = (BK_Tab**)malloc(sizeof(BK_Tab*) * ret->size);
+
+	int i = 0;
+	for(Berkelium::TabList::iterator it(list.begin()); it != list.end(); i++, it++) {
+		ret->entrys[i] = mapTabListRef2Id(*it);
+	}
+
+	return ret;
+}
+
 // =========================================
 // interface HostVersion
 // =========================================
@@ -488,7 +518,7 @@ extern "C" bk_int32 BK_Instance_getWindowCount(BK_Instance self)
 extern "C" BK_WindowList BK_Instance_getWindowList(BK_Instance self)
 {
 	Berkelium::InstanceRef _this(mapId2InstanceRef(self));
-	return mapWindowListRef2Id(_this->getWindowList());
+	return mapWindowList2Id(_this->getWindowList());
 }
 
 extern "C" BK_Window BK_Instance_createWindow(BK_Instance self, bk_bool incognito)
@@ -522,7 +552,7 @@ extern "C" bk_int32 BK_Window_getTabCount(BK_Window self)
 extern "C" BK_TabList BK_Window_getTabList(BK_Window self)
 {
 	Berkelium::WindowRef _this(mapId2WindowRef(self));
-	return mapTabListRef2Id(_this->getTabList());
+	return mapTabList2Id(_this->getTabList());
 }
 
 extern "C" BK_Tab BK_Window_createTab(BK_Window self)

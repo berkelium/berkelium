@@ -28,7 +28,7 @@ extern "C" {
 
 </xsl:text>
 
-	<xsl:for-each select="/api/mapping[@type='c']/type">
+	<xsl:for-each select="/api/mapping[@type='c']/type[@impl]">
 		<xsl:text>typedef </xsl:text>
 		<xsl:value-of select="@impl"/>
 		<xsl:text> </xsl:text>
@@ -66,6 +66,19 @@ extern "C" {
 		<xsl:text>} BK_</xsl:text>
 		<xsl:value-of select="@name"/>
 		<xsl:text>;
+
+</xsl:text>
+	</xsl:for-each>
+
+	<xsl:for-each select="/api/mapping[@type='c']/type[@list]">
+		<xsl:text>typedef struct {
+	bk_int32 size;
+	BK_</xsl:text>
+		<xsl:value-of select="@list"/>
+	<xsl:text>** entrys;
+} BK_</xsl:text>
+		<xsl:value-of select="@list"/>
+		<xsl:text>List;
 
 </xsl:text>
 	</xsl:for-each>

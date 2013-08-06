@@ -24,8 +24,6 @@ typedef int32_t bk_int32;
 typedef int32_t bk_bool;
 typedef char* bk_string;
 typedef void* BK_Rect;
-typedef void* BK_WindowList;
-typedef void* BK_TabList;
 
 typedef void* BK_HostVersion;
 typedef void* BK_BerkeliumFactory;
@@ -54,6 +52,16 @@ typedef enum {
 	Warn,
 	Error
 } BK_LogType;
+
+typedef struct {
+	bk_int32 size;
+	BK_Window** entrys;
+} BK_WindowList;
+
+typedef struct {
+	bk_int32 size;
+	BK_Tab** entrys;
+} BK_TabList;
 
 
 // =========================================

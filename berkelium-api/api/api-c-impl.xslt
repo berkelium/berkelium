@@ -45,6 +45,10 @@ inline char* newString(const std::string&amp; str)
 		<xsl:call-template name="mapBk2Id"/>
 	</xsl:for-each>
 
+	<xsl:for-each select="/api/mapping[@type='c']/type[@list]">
+		<xsl:call-template name="mapList"/>
+	</xsl:for-each>
+
 	<xsl:apply-templates select="/api/group[@type!='enum']"/>
 </xsl:template>
 
@@ -135,6 +139,10 @@ inline char* newString(const std::string&amp; str)
 <!-- Functions for c and all languages                             -->
 <!-- ============================================================= -->
 <xsl:template match="entry[@type='c']|entry[not(@type)]">
+	<xsl:variable name="ret">
+		<xsl:value-of select="@ret"/>
+	</xsl:variable>
+
 	<xsl:text>
 </xsl:text>
 	<xsl:text>extern "C" </xsl:text>
@@ -177,6 +185,13 @@ inline char* newString(const std::string&amp; str)
 				</xsl:when>
 				<xsl:when test="@ret='string'">
 					<xsl:text>newString(</xsl:text>
+					<xsl:call-template name="invoke"/>
+					<xsl:text>);</xsl:text>
+				</xsl:when>
+				<xsl:when test="/api/mapping[@type='c']/type[@name=$ret]">
+					<xsl:text>map</xsl:text>
+					<xsl:value-of select="@ret"/>
+					<xsl:text>2Id(</xsl:text>
 					<xsl:call-template name="invoke"/>
 					<xsl:text>);</xsl:text>
 				</xsl:when>
@@ -235,7 +250,54 @@ inline Berkelium::</xsl:text>
 	<xsl:text>Ref();
 }
 </xsl:text>
+</xsl:template>
 
+<xsl:template name="mapList">
+	<xsl:variable name="name">
+		<xsl:text>BK_</xsl:text>
+		<xsl:value-of select="@list"/>
+	</xsl:variable>
+
+	<xsl:text>
+inline </xsl:text>
+	<xsl:value-of select="$name"/>
+	<xsl:text>List* map</xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text>2Id(Berkelium::</xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text>&amp; list)
+{
+	</xsl:text>
+	<xsl:value-of select="$name"/>
+	<xsl:text>List* ret = (</xsl:text>
+	<xsl:value-of select="$name"/>
+	<xsl:text>List*)malloc(sizeof(</xsl:text>
+	<xsl:value-of select="$name"/>
+	<xsl:text>List));
+
+	ret->size = list.size();
+	ret->entrys = (</xsl:text>
+	<xsl:value-of select="$name"/>
+	<xsl:text>**)malloc(sizeof(</xsl:text>
+	<xsl:value-of select="$name"/>
+	<xsl:text>*) * ret-&gt;size);
+
+	int i = 0;
+	for(Berkelium::</xsl:text>
+	<xsl:value-of select="@name"/>
+	<xsl:text>::iterator it(list.begin()); it != list.end(); i++, it++) {
+		ret-&gt;entrys[i] = map</xsl:text>
+	<xsl:value-of select="@name"/>
+	<xsl:text>Ref2Id(*it);
+	}
+
+	return ret;
+}
+</xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>

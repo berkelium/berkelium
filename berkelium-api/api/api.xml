@@ -5,8 +5,8 @@
 		<type name="bool" value="bk_bool" impl="int32_t"/>
 		<type name="string" value="bk_string" impl="char*"/>
 		<type name="Rect" value="BK_Rect"  impl="void*"/>
-		<type name="WindowList" value="BK_WindowList" impl="void*"/>
-		<type name="TabList" value="BK_TabList" impl="void*"/>
+		<type name="WindowList" value="BK_WindowList" list="Window"/>
+		<type name="TabList" value="BK_TabList" list="Tab"/>
 	</mapping>
 	<mapping type="cpp" class-postfix="Ref">
 		<type name="int32" value="int32_t"/>
