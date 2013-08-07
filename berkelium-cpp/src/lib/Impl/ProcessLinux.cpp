@@ -9,6 +9,7 @@
 #include <Berkelium/Impl/Process.hpp>
 
 #include <sys/wait.h>
+#include <unistd.h>
 
 namespace Berkelium {
 

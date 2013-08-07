@@ -10,6 +10,8 @@
 #include <sys/time.h>
 #include <cstdlib>
 #include <sys/select.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 namespace Berkelium {
 
