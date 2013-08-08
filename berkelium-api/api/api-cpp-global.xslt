@@ -88,8 +88,10 @@ typedef std::weak_ptr&lt;</xsl:text>
 	</xsl:for-each>
 
 	<xsl:text>typedef std::list&lt;WindowRef&gt; WindowList;
+typedef std::shared_ptr&lt;WindowList&gt; WindowListRef;
 
 typedef std::list&lt;TabRef&gt; TabList;
+typedef std::shared_ptr&lt;TabList&gt; TabListRef;
 
 } // namespace Berkelium
 

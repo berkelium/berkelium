@@ -171,31 +171,31 @@ inline void* mapTabDelegateRef2Id(Berkelium::TabDelegateRef bk)
 	return NULL;
 }
 
-inline BK_WindowList* mapWindowList2Id(Berkelium::WindowList& list)
+inline BK_WindowList* mapWindowList2Id(Berkelium::WindowListRef list)
 {
 	BK_WindowList* ret = (BK_WindowList*)malloc(sizeof(BK_WindowList));
 
-	ret->size = list.size();
-	ret->entrys = (BK_Window**)malloc(sizeof(BK_Window*) * ret->size);
+	ret->size = list->size();
+	ret->entrys = (BK_Window*)malloc(sizeof(BK_Window) * ret->size);
 
 	int i = 0;
-	for(Berkelium::WindowList::iterator it(list.begin()); it != list.end(); i++, it++) {
-		ret->entrys[i] = mapWindowListRef2Id(*it);
+	for(Berkelium::WindowList::iterator it(list->begin()); it != list->end(); i++, it++) {
+		ret->entrys[i] = mapWindowRef2Id(*it);
 	}
 
 	return ret;
 }
 
-inline BK_TabList* mapTabList2Id(Berkelium::TabList& list)
+inline BK_TabList* mapTabList2Id(Berkelium::TabListRef list)
 {
 	BK_TabList* ret = (BK_TabList*)malloc(sizeof(BK_TabList));
 
-	ret->size = list.size();
-	ret->entrys = (BK_Tab**)malloc(sizeof(BK_Tab*) * ret->size);
+	ret->size = list->size();
+	ret->entrys = (BK_Tab*)malloc(sizeof(BK_Tab) * ret->size);
 
 	int i = 0;
-	for(Berkelium::TabList::iterator it(list.begin()); it != list.end(); i++, it++) {
-		ret->entrys[i] = mapTabListRef2Id(*it);
+	for(Berkelium::TabList::iterator it(list->begin()); it != list->end(); i++, it++) {
+		ret->entrys[i] = mapTabRef2Id(*it);
 	}
 
 	return ret;
@@ -515,7 +515,7 @@ extern "C" bk_int32 BK_Instance_getWindowCount(BK_Instance self)
 	return _this->getWindowCount();
 }
 
-extern "C" BK_WindowList BK_Instance_getWindowList(BK_Instance self)
+extern "C" BK_WindowList* BK_Instance_getWindowList(BK_Instance self)
 {
 	Berkelium::InstanceRef _this(mapId2InstanceRef(self));
 	return mapWindowList2Id(_this->getWindowList());
@@ -549,7 +549,7 @@ extern "C" bk_int32 BK_Window_getTabCount(BK_Window self)
 	return _this->getTabCount();
 }
 
-extern "C" BK_TabList BK_Window_getTabList(BK_Window self)
+extern "C" BK_TabList* BK_Window_getTabList(BK_Window self)
 {
 	Berkelium::WindowRef _this(mapId2WindowRef(self));
 	return mapTabList2Id(_this->getTabList());

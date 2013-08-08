@@ -35,7 +35,7 @@ public:
 	virtual int32_t getTabCount() = 0;
 
 	// Returns an ordered list of all tabs in this window.
-	virtual TabList getTabList() = 0;
+	virtual TabListRef getTabList() = 0;
 
 	// Creates a new (about:blank) Tab.
 	virtual TabRef createTab() = 0;

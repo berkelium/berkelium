@@ -134,12 +134,12 @@ public:
 		return windows.size();
 	}
 
-	virtual WindowList getWindowList() {
-		WindowList ret;
+	virtual WindowListRef getWindowList() {
+		WindowListRef ret(new WindowList());
 		for(WindowWRefSet::iterator it(windows.begin()); it != windows.end(); it++) {
 			WindowRef ref = it->lock();
 			if(ref) {
-				ret.push_back(ref);
+				ret->push_back(ref);
 			} else {
 				it = windows.erase(it);
 			}

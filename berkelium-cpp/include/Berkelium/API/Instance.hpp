@@ -51,7 +51,7 @@ public:
 	virtual int32_t getWindowCount() = 0;
 
 	// Returns a list of all active windows.
-	virtual WindowList getWindowList() = 0;
+	virtual WindowListRef getWindowList() = 0;
 
 	// Open a new window.
 	virtual WindowRef createWindow(bool incognito) = 0;

@@ -75,7 +75,7 @@ extern "C" {
 	bk_int32 size;
 	BK_</xsl:text>
 		<xsl:value-of select="@list"/>
-	<xsl:text>** entrys;
+	<xsl:text>* entrys;
 } BK_</xsl:text>
 		<xsl:value-of select="@list"/>
 		<xsl:text>List;

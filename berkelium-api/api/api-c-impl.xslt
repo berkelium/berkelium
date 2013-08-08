@@ -269,7 +269,7 @@ inline </xsl:text>
 
 	<xsl:value-of select="@name"/>
 
-	<xsl:text>&amp; list)
+	<xsl:text>Ref list)
 {
 	</xsl:text>
 	<xsl:value-of select="$name"/>
@@ -279,19 +279,19 @@ inline </xsl:text>
 	<xsl:value-of select="$name"/>
 	<xsl:text>List));
 
-	ret->size = list.size();
+	ret->size = list-&gt;size();
 	ret->entrys = (</xsl:text>
 	<xsl:value-of select="$name"/>
-	<xsl:text>**)malloc(sizeof(</xsl:text>
+	<xsl:text>*)malloc(sizeof(</xsl:text>
 	<xsl:value-of select="$name"/>
-	<xsl:text>*) * ret-&gt;size);
+	<xsl:text>) * ret-&gt;size);
 
 	int i = 0;
 	for(Berkelium::</xsl:text>
 	<xsl:value-of select="@name"/>
-	<xsl:text>::iterator it(list.begin()); it != list.end(); i++, it++) {
+	<xsl:text>::iterator it(list-&gt;begin()); it != list-&gt;end(); i++, it++) {
 		ret-&gt;entrys[i] = map</xsl:text>
-	<xsl:value-of select="@name"/>
+	<xsl:value-of select="@list"/>
 	<xsl:text>Ref2Id(*it);
 	}
 

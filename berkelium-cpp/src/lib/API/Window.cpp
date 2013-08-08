@@ -88,11 +88,11 @@ public:
 		return tabs.size();
 	}
 
-	virtual TabList getTabList()  {
+	virtual TabListRef getTabList()  {
 		cleanupTabs();
-		TabList ret;
+		TabListRef ret(new TabList());
 		for(std::list<TabWRef>::iterator it = tabs.begin(); it != tabs.end(); it++) {
-			ret.push_back(it->lock());
+			ret->push_back(it->lock());
 		}
 		return ret;
 	}

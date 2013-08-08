@@ -55,12 +55,12 @@ typedef enum {
 
 typedef struct {
 	bk_int32 size;
-	BK_Window** entrys;
+	BK_Window* entrys;
 } BK_WindowList;
 
 typedef struct {
 	bk_int32 size;
-	BK_Tab** entrys;
+	BK_Tab* entrys;
 } BK_TabList;
 
 
@@ -252,7 +252,7 @@ void BK_Instance_removeHostDelegate(BK_Instance self, BK_HostDelegate delegate);
 bk_int32 BK_Instance_getWindowCount(BK_Instance self);
 
 // Returns a list of all active windows.
-BK_WindowList BK_Instance_getWindowList(BK_Instance self);
+BK_WindowList* BK_Instance_getWindowList(BK_Instance self);
 
 // Open a new window.
 BK_Window BK_Instance_createWindow(BK_Instance self, bk_bool incognito);
@@ -271,7 +271,7 @@ void BK_Window_internalUpdate(BK_Window self);
 bk_int32 BK_Window_getTabCount(BK_Window self);
 
 // Returns an ordered list of all tabs in this window.
-BK_TabList BK_Window_getTabList(BK_Window self);
+BK_TabList* BK_Window_getTabList(BK_Window self);
 
 // Creates a new (about:blank) Tab.
 BK_Tab BK_Window_createTab(BK_Window self);

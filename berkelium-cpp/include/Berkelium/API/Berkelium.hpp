@@ -108,8 +108,10 @@ typedef std::shared_ptr<TabDelegate> TabDelegateRef;
 typedef std::weak_ptr<TabDelegate> TabDelegateWRef;
 
 typedef std::list<WindowRef> WindowList;
+typedef std::shared_ptr<WindowList> WindowListRef;
 
 typedef std::list<TabRef> TabList;
+typedef std::shared_ptr<TabList> TabListRef;
 
 } // namespace Berkelium
 
