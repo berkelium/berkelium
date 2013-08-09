@@ -66,6 +66,11 @@
 #define BK_TO_JOBECT(X) (jobject)(X)
 #define BK_TO_JBOOLEAN(X) ((X) ? JNI_TRUE : JNI_FALSE)
 
+inline void setupBkEnv(BK_Env&amp; bkenv, JNIEnv* env)
+{
+	// TODO
+}
+
 inline jstring BK_TO_JSTRING(JNIEnv* env, char* str)
 {
 	if(str == NULL) {
@@ -165,6 +170,8 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 
 			<xsl:text>
 {
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
 </xsl:text>
 
 			<xsl:text>	</xsl:text>
@@ -196,10 +203,10 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 			<xsl:text>_</xsl:text>
 			<xsl:value-of select="@name"/>
 			<xsl:value-of select="@c-suffix"/>
-			<xsl:text>(</xsl:text>
+			<xsl:text>(&amp;bkenv</xsl:text>
 
 			<xsl:if test="not(@static='true')">
-				<xsl:text>(</xsl:text>
+				<xsl:text>, (</xsl:text>
 				<xsl:call-template name="type">
 					<xsl:with-param name="name" select="$class"/>
 					<xsl:with-param name="lang" select="'c'"/>

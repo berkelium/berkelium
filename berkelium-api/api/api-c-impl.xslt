@@ -159,7 +159,7 @@ inline char* newString(const std::string&amp; str)
 	<xsl:text>_</xsl:text>
 	<xsl:value-of select="@name"/>
 	<xsl:value-of select="@c-suffix"/>
-	<xsl:text>(</xsl:text>
+	<xsl:text>(BK_Env* env, </xsl:text>
 	<xsl:call-template name="arguments-self"/>
 	<xsl:text>)
 {

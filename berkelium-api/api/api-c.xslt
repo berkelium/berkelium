@@ -26,6 +26,29 @@
 extern "C" {
 #endif
 
+typedef enum {
+</xsl:text>
+	<xsl:for-each select="/api/group[@type!='enum']">
+		<xsl:text>	</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:if test="position() != last()">
+			<xsl:text>,</xsl:text>
+		</xsl:if>
+		<xsl:text>
+</xsl:text>
+	</xsl:for-each>
+	<xsl:text>} BK_Env_Enum;
+
+typedef void* BK_Env_createId(BK_Env_Enum type, void* data);
+
+typedef void BK_Env_releaseId(BK_Env_Enum type, void* id, void* data);
+
+typedef struct {
+	BK_Env_createId* create;
+	BK_Env_releaseId* release;
+	void* data;
+} BK_Env;
+
 </xsl:text>
 
 	<xsl:for-each select="/api/mapping[@type='c']/type[@impl]">
@@ -120,7 +143,7 @@ extern "C" {
 <!-- ============================================================= -->
 <xsl:template name="arguments-self">
 	<xsl:if test="not(@static='true')">
-		<xsl:text>BK_</xsl:text>
+		<xsl:text>, BK_</xsl:text>
 		<xsl:value-of select="../@name"/>
 		<xsl:text> self</xsl:text>
 		<xsl:if test="arg">
@@ -155,7 +178,7 @@ extern "C" {
 	<xsl:text>_</xsl:text>
 	<xsl:value-of select="@name"/>
 	<xsl:value-of select="@c-suffix"/>
-	<xsl:text>(</xsl:text>
+	<xsl:text>(BK_Env* env</xsl:text>
 	<xsl:call-template name="arguments-self"/>
 	<xsl:text>);
 </xsl:text>
