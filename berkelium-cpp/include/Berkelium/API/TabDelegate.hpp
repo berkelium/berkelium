@@ -28,7 +28,7 @@ public:
 	virtual void onClosed(TabRef tab) = 0;
 	virtual void onTitleChanged(TabRef tab, const std::string& title) = 0;
 	virtual void onPaint(TabRef tab) = 0;
-	virtual void onPaintDone(TabRef tab, const Rect& rect) = 0;
+	virtual void onPaintDone(TabRef tab, RectRef rect) = 0;
 };
 
 } // namespace Berkelium

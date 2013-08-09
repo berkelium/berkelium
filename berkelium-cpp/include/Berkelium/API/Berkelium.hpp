@@ -25,6 +25,8 @@ namespace Berkelium {
 class Rect {
 };
 
+typedef std::shared_ptr<Rect> RectRef;
+
 enum LogSource {
 
 	Host,

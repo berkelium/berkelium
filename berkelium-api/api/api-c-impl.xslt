@@ -45,6 +45,11 @@ inline char* newString(const std::string&amp; str)
 		<xsl:call-template name="mapBk2Id"/>
 	</xsl:for-each>
 
+	<xsl:for-each select="/api/mapping[@type=$lang]/type[@map]">
+		<xsl:call-template name="mapId2Bk"/>
+		<xsl:call-template name="mapBk2Id"/>
+	</xsl:for-each>
+
 	<xsl:for-each select="/api/mapping[@type='c']/type[@list]">
 		<xsl:call-template name="mapList"/>
 	</xsl:for-each>

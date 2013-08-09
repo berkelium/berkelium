@@ -171,6 +171,16 @@ inline void* mapTabDelegateRef2Id(Berkelium::TabDelegateRef bk)
 	return NULL;
 }
 
+inline Berkelium::RectRef mapId2RectRef(void* id)
+{
+	return Berkelium::RectRef();
+}
+
+inline void* mapRectRef2Id(Berkelium::RectRef bk)
+{
+	return NULL;
+}
+
 inline BK_WindowList* mapWindowList2Id(Berkelium::WindowListRef list)
 {
 	BK_WindowList* ret = (BK_WindowList*)malloc(sizeof(BK_WindowList));

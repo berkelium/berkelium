@@ -174,6 +174,22 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 	return ret;
 }
 
+inline BK_LogSource LogSource_TO_BK(JNIEnv* env, jobject instance)
+{
+	jclass cls = env->FindClass("org/berkelium/api/LogSource");
+
+	jmethodID ordinal(env->GetMethodID(cls, "ordinal", "()I"));
+	return (BK_LogSource)env->CallIntMethod(instance, ordinal);
+}
+
+inline BK_LogType LogType_TO_BK(JNIEnv* env, jobject instance)
+{
+	jclass cls = env->FindClass("org/berkelium/api/LogType");
+
+	jmethodID ordinal(env->GetMethodID(cls, "ordinal", "()I"));
+	return (BK_LogType)env->CallIntMethod(instance, ordinal);
+}
+
 // =========================================
 //
 //	BerkeliumFactory
@@ -422,7 +438,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_getLogger(JNIEnv* 
 
 JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_log(JNIEnv* env, jobject _this, jobject source, jobject type, jstring clazz, jstring name, jstring message)
 {
-	BK_Runtime_log((BK_Runtime)_this, (BK_LogSource)source, (BK_LogType)type, JSTRING_TO_BK(env, clazz), JSTRING_TO_BK(env, name), JSTRING_TO_BK(env, message));
+	BK_Runtime_log((BK_Runtime)_this, LogSource_TO_BK(env, source), LogType_TO_BK(env, type), JSTRING_TO_BK(env, clazz), JSTRING_TO_BK(env, name), JSTRING_TO_BK(env, message));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_open(JNIEnv* env, jobject _this, jobject executable, jobject profile)

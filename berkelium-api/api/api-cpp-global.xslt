@@ -29,6 +29,8 @@ namespace Berkelium {
 class Rect {
 };
 
+typedef std::shared_ptr&lt;Rect&gt; RectRef;
+
 </xsl:text>
 
 	<!-- enums -->

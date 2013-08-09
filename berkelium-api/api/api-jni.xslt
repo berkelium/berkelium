@@ -92,6 +92,31 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 
 </xsl:text>
 
+	<xsl:for-each select="/api/group[@type='enum']">
+		<xsl:text>inline BK_</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>_TO_BK(JNIEnv* env, jobject instance)
+{
+	jclass cls = env-&gt;FindClass("org/berkelium/api/</xsl:text>
+
+		<xsl:value-of select="@name"/>
+
+		<xsl:text>");
+
+	jmethodID ordinal(env-&gt;GetMethodID(cls, "ordinal", "()I"));
+	return (BK_</xsl:text>
+
+		<xsl:value-of select="@name"/>
+
+		<xsl:text>)env-&gt;CallIntMethod(instance, ordinal);
+}
+
+</xsl:text>
+	</xsl:for-each>
+
+
 	<xsl:for-each select="/api/group[not(@type='enum') and not(@delegate='true')]">
 		<xsl:sort select="@name"/>
 		<xsl:variable name="class" select="@name"/>
@@ -184,30 +209,41 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 
 			<xsl:for-each select="arg">
 				<xsl:text>, </xsl:text>
+				<xsl:variable name="t">
+					<xsl:value-of select="@type"/>
+				</xsl:variable>
 				<xsl:variable name="type">
 					<xsl:call-template name="type">
 						<xsl:with-param name="name" select="@type"/>
 						<xsl:with-param name="lang" select="'jni'"/>
 					</xsl:call-template>
 				</xsl:variable>
-				<xsl:if test="$type='jobject'">
-					<xsl:text>(</xsl:text>
-					<xsl:call-template name="type">
-						<xsl:with-param name="name" select="@type"/>
-						<xsl:with-param name="lang" select="'c'"/>
-					</xsl:call-template>
-					<xsl:text>)</xsl:text>
-				</xsl:if>
 
-				<xsl:if test="$type='jstring'">
-					<xsl:text>JSTRING_TO_BK(env, </xsl:text>
-				</xsl:if>
-
-				<xsl:value-of select="@name"/>
-
-				<xsl:if test="$type='jstring'">
-					<xsl:text>)</xsl:text>
-				</xsl:if>
+				<xsl:choose>
+					<xsl:when test="/api/group[@type='enum' and @name=$t]">
+						<xsl:value-of select="$t"/>
+						<xsl:text>_TO_BK(env, </xsl:text>
+						<xsl:value-of select="@name"/>
+						<xsl:text>)</xsl:text>
+					</xsl:when>
+					<xsl:when test="$type='jobject'">
+						<xsl:text>(</xsl:text>
+						<xsl:call-template name="type">
+							<xsl:with-param name="name" select="@type"/>
+							<xsl:with-param name="lang" select="'c'"/>
+						</xsl:call-template>
+						<xsl:text>)</xsl:text>
+						<xsl:value-of select="@name"/>
+					</xsl:when>
+					<xsl:when test="$type='jstring'">
+						<xsl:text>JSTRING_TO_BK(env, </xsl:text>
+						<xsl:value-of select="@name"/>
+						<xsl:text>)</xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="@name"/>
+					</xsl:otherwise>
+				</xsl:choose>
 			</xsl:for-each>
 
 			<xsl:text>)</xsl:text>

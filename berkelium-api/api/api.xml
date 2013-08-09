@@ -4,7 +4,7 @@
 		<type name="int32" value="bk_int32" impl="int32_t"/>
 		<type name="bool" value="bk_bool" impl="int32_t"/>
 		<type name="string" value="bk_string" impl="char*"/>
-		<type name="Rect" value="BK_Rect"  impl="void*"/>
+		<type name="Rect" value="BK_Rect"  impl="void*" map="true"/>
 		<type name="WindowList" value="BK_WindowList*" list="Window"/>
 		<type name="TabList" value="BK_TabList*" list="Tab"/>
 	</mapping>
@@ -12,7 +12,7 @@
 		<type name="int32" value="int32_t"/>
 		<type name="bool" value="bool"/>
 		<type name="string" value="const std::string&amp;"/>
-		<type name="Rect" value="const Rect&amp;"/>
+		<type name="Rect" value="RectRef"/>
 		<type name="WindowList" value="WindowListRef"/>
 		<type name="TabList" value="TabListRef"/>
 	</mapping>
