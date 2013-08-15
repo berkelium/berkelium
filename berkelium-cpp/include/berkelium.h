@@ -36,15 +36,10 @@ typedef enum {
 	TabDelegate
 } BK_Env_Enum;
 
-typedef void* BK_Env_createId(BK_Env_Enum type, void* data);
+const char* BK_Env_Enum_To_String_Or_Null(BK_Env_Enum type);
+const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type);
 
-typedef void BK_Env_releaseId(BK_Env_Enum type, void* id, void* data);
-
-typedef struct {
-	BK_Env_createId* create;
-	BK_Env_releaseId* release;
-	void* data;
-} BK_Env;
+#define BK_Env_Enum_MAX 13
 
 typedef int32_t bk_int32;
 typedef int32_t bk_bool;
@@ -78,6 +73,28 @@ typedef enum {
 	Warn,
 	Error
 } BK_LogType;
+
+typedef void* bk_bk_obj;
+typedef void* bk_ext_obj;
+
+typedef bk_bk_obj BK_Env_mapIn(BK_Env_Enum type, bk_ext_obj id, void* data);
+
+typedef bk_ext_obj BK_Env_mapOut(BK_Env_Enum type, bk_bk_obj id, void* data);
+
+typedef bk_ext_obj BK_Env_mapNew(BK_Env_Enum type, bk_bk_obj id, void* obj, void* data);
+
+typedef void BK_Env_release(BK_Env_Enum type, void* id, void* data);
+
+typedef void BK_Env_mapInError(BK_Env_Enum expected, BK_Env_Enum actual, bk_ext_obj id, void* data);
+
+typedef struct {
+	BK_Env_mapIn* mapIn;
+	BK_Env_mapOut* mapOut;
+	BK_Env_mapNew* mapNew;
+	BK_Env_release* release;
+	BK_Env_mapInError* mapInError;
+	void* data;
+} BK_Env;
 
 typedef struct {
 	bk_int32 size;

@@ -27,32 +27,76 @@
 #include &lt;stdlib.h&gt;
 #include &lt;string.h&gt;
 
+//#include &lt;map&gt;
+
 // =========================================
 // C / C++ converter functions
 // =========================================
 
+//typedef std::pair&lt;bk_ext_obj, BK_Env_Enum&gt; bk_type_pair;
+//typedef std::map&lt;bk_ext_obj, BK_Env_Enum&gt; bk_type_map;
+//bk_type_map bk_types;
+
 inline char* newString(const std::string&amp; str)
 {
-	int len = str.length();
+	int len = str.length() + 1;
 	char* ret = (char*)malloc(len);
 	memcpy(ret, str.c_str(), len);
 	return ret;
 }
+
+inline Berkelium::RectRef mapInRectRef(BK_Env* env, BK_Rect&amp; rect)
+{
+	// TODO
+	return Berkelium::RectRef();
+}
+
 </xsl:text>
 
 	<xsl:for-each select="/api/group[@type!='enum']">
-		<xsl:call-template name="mapId2Bk"/>
-		<xsl:call-template name="mapBk2Id"/>
-	</xsl:for-each>
-
-	<xsl:for-each select="/api/mapping[@type=$lang]/type[@map]">
-		<xsl:call-template name="mapId2Bk"/>
-		<xsl:call-template name="mapBk2Id"/>
+		<xsl:call-template name="mapIn"/>
+		<xsl:call-template name="mapOut"/>
 	</xsl:for-each>
 
 	<xsl:for-each select="/api/mapping[@type='c']/type[@list]">
 		<xsl:call-template name="mapList"/>
 	</xsl:for-each>
+
+	<xsl:text>
+// =========================================
+// BK_Env_Enum to String
+// =========================================
+
+const char* BK_Env_Enum_To_String_Or_Null(BK_Env_Enum type)
+{
+	switch(type) {
+</xsl:text>
+
+	<xsl:for-each select="/api/group[@type!='enum']">
+		<xsl:text>		case </xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>:
+			return "</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>";
+
+</xsl:text>
+	</xsl:for-each>
+
+		<xsl:text>		default:
+			return NULL;
+	}
+}
+
+const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type)
+{
+	const char* ret = BK_Env_Enum_To_String_Or_Null(type);
+	if(ret == NULL) {
+		return "Error";
+	}
+	return ret;
+}
+</xsl:text>
 
 	<xsl:apply-templates select="/api/group[@type!='enum']"/>
 </xsl:template>
@@ -62,7 +106,7 @@ inline char* newString(const std::string&amp; str)
 <!-- ============================================================= -->
 <xsl:template match="group[not(@type='enum') and not(@delegate='true')]">
 	<xsl:variable name="gen">
-		<xsl:apply-templates select="entry[not(@static)]"/>
+		<xsl:apply-templates select="entry"/>
 	</xsl:variable>
 
 	<xsl:if test="$gen!=''">
@@ -104,7 +148,16 @@ inline char* newString(const std::string&amp; str)
 <!-- Skip doc                                                      -->
 <!-- ============================================================= -->
 <xsl:template name="invoke">
-	<xsl:text>_this-></xsl:text>
+	<xsl:choose>
+		<xsl:when test="@static">
+			<xsl:text>Berkelium::</xsl:text>
+			<xsl:value-of select="../@name"/>
+			<xsl:text>::</xsl:text>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:text>_this-></xsl:text>
+		</xsl:otherwise>
+	</xsl:choose>
 	<xsl:value-of select="@name"/>
 
 	<xsl:text>(</xsl:text>
@@ -124,9 +177,9 @@ inline char* newString(const std::string&amp; str)
 				<xsl:value-of select="@name"/>
 			</xsl:when>
 			<xsl:otherwise>
-				<xsl:text>mapId2</xsl:text>
+				<xsl:text>mapIn</xsl:text>
 				<xsl:value-of select="@type"/>
-				<xsl:text>Ref(</xsl:text>
+				<xsl:text>Ref(env, </xsl:text>
 				<xsl:value-of select="@name"/>
 				<xsl:text>)</xsl:text>
 			</xsl:otherwise>
@@ -159,20 +212,48 @@ inline char* newString(const std::string&amp; str)
 	<xsl:text>_</xsl:text>
 	<xsl:value-of select="@name"/>
 	<xsl:value-of select="@c-suffix"/>
-	<xsl:text>(BK_Env* env, </xsl:text>
+	<xsl:text>(BK_Env* env</xsl:text>
+	<xsl:if test="not(@static)">
+		<xsl:text>, </xsl:text>
+	</xsl:if>
 	<xsl:call-template name="arguments-self"/>
 	<xsl:text>)
 {
+</xsl:text>
+	<xsl:if test="not(@static)">
+		<xsl:text>
 	Berkelium::</xsl:text>
 
-	<xsl:value-of select="../@name"/>
+		<xsl:value-of select="../@name"/>
 
-	<xsl:text>Ref _this(mapId2</xsl:text>
+		<xsl:text>Ref _this(mapIn</xsl:text>
 
-	<xsl:value-of select="../@name"/>
+		<xsl:value-of select="../@name"/>
 
-	<xsl:text>Ref(self));
+		<xsl:text>Ref(env, self));
+
+	if(!_this) {
+		return</xsl:text>
+
+		<xsl:choose>
+			<xsl:when test="not(@ret)">
+			</xsl:when>
+			<xsl:when test="@ret='int32'">
+				<xsl:text> 0</xsl:text>
+			</xsl:when>
+			<xsl:when test="@ret='int32' or @ret='bool'">
+				<xsl:text> false</xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text> NULL</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
+
+		<xsl:text>;
+	}
+
 </xsl:text>
+	</xsl:if>
 
 	<xsl:choose>
 		<xsl:when test="not(@ret)">
@@ -194,16 +275,16 @@ inline char* newString(const std::string&amp; str)
 					<xsl:text>);</xsl:text>
 				</xsl:when>
 				<xsl:when test="/api/mapping[@type='c']/type[@name=$ret]">
-					<xsl:text>map</xsl:text>
+					<xsl:text>mapOut</xsl:text>
 					<xsl:value-of select="@ret"/>
-					<xsl:text>2Id(</xsl:text>
+					<xsl:text>(env, </xsl:text>
 					<xsl:call-template name="invoke"/>
 					<xsl:text>);</xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:text>map</xsl:text>
+					<xsl:text>mapOut</xsl:text>
 					<xsl:value-of select="@ret"/>
-					<xsl:text>Ref2Id(</xsl:text>
+					<xsl:text>Ref(env, </xsl:text>
 					<xsl:call-template name="invoke"/>
 					<xsl:text>);</xsl:text>
 				</xsl:otherwise>
@@ -219,40 +300,106 @@ inline char* newString(const std::string&amp; str)
 <!-- ============================================================= -->
 <!-- Mappings                                                      -->
 <!-- ============================================================= -->
-<xsl:template name="mapBk2Id">
+<xsl:template name="mapOut">
 	<xsl:text>
-inline void* map</xsl:text>
+inline bk_ext_obj mapOut</xsl:text>
 
 	<xsl:value-of select="@name"/>
 
-	<xsl:text>Ref2Id(Berkelium::</xsl:text>
+	<xsl:text>Ref(BK_Env* env, Berkelium::</xsl:text>
 
 	<xsl:value-of select="@name"/>
 
 	<xsl:text>Ref bk)
 {
-	return NULL;
+	BK_Env_Enum type(</xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text>);
+
+	bk_ext_obj ret = env-&gt;mapOut(type, bk.get(), env->data);
+
+	if(ret == NULL) {
+		void* tmp = new Berkelium::</xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text>Ref(bk);
+		ret = env-&gt;mapNew(type, bk.get(), tmp, env->data);
+		//bk_types.insert(bk_type_pair(ret, type));
+		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
+	}
+
+	//fprintf(stderr, "mapOut </xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text> bk:%p ext:%p\n", bk.get(), ret);
+
+	return ret;
 }
 </xsl:text>
 </xsl:template>
 
-<xsl:template name="mapId2Bk">
+<xsl:template name="mapIn">
 	<xsl:text>
 inline Berkelium::</xsl:text>
 
 	<xsl:value-of select="@name"/>
 
-	<xsl:text>Ref mapId2</xsl:text>
+	<xsl:text>Ref mapIn</xsl:text>
 
 	<xsl:value-of select="@name"/>
 
-	<xsl:text>Ref(void* id)
+	<xsl:text>Ref(BK_Env* env, bk_ext_obj extId)
 {
-	return Berkelium::</xsl:text>
+	BK_Env_Enum type(</xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text>);
+
+	/*bk_type_map::iterator it(bk_types.find(extId));
+	if(it == bk_types.end()) {
+		fprintf(stderr, "mapIn </xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text> ext:%p not found\n", extId);
+		return Berkelium::</xsl:text>
 
 	<xsl:value-of select="@name"/>
 
 	<xsl:text>Ref();
+	} else if(it->second != type) {
+		env-&gt;mapInError(type, it-&gt;second, extId, env-&gt;data);
+		return Berkelium::</xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text>Ref();
+	}
+	fprintf(stderr, "mapIn %p found\n", extId);*/
+
+	void* tmp = env->mapIn(type, extId, env->data);
+	//fprintf(stderr, "mapIn %p\n", tmp);
+
+	Berkelium::</xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text>Ref* ret((Berkelium::</xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text>Ref*)tmp);
+
+	return Berkelium::</xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text>Ref(*ret);
 }
 </xsl:text>
 </xsl:template>
@@ -266,11 +413,11 @@ inline Berkelium::</xsl:text>
 	<xsl:text>
 inline </xsl:text>
 	<xsl:value-of select="$name"/>
-	<xsl:text>List* map</xsl:text>
+	<xsl:text>List* mapOut</xsl:text>
 
 	<xsl:value-of select="@name"/>
 
-	<xsl:text>2Id(Berkelium::</xsl:text>
+	<xsl:text>(BK_Env* env, Berkelium::</xsl:text>
 
 	<xsl:value-of select="@name"/>
 
@@ -295,9 +442,9 @@ inline </xsl:text>
 	for(Berkelium::</xsl:text>
 	<xsl:value-of select="@name"/>
 	<xsl:text>::iterator it(list-&gt;begin()); it != list-&gt;end(); i++, it++) {
-		ret-&gt;entrys[i] = map</xsl:text>
+		ret-&gt;entrys[i] = mapOut</xsl:text>
 	<xsl:value-of select="@list"/>
-	<xsl:text>Ref2Id(*it);
+	<xsl:text>Ref(env, *it);
 	}
 
 	return ret;
