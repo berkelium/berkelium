@@ -17,7 +17,9 @@
 
 	<xsl:call-template name="comment-generated"/>
 
-	<xsl:for-each select="/api/group[@type!='enum']">
+	<xsl:variable name="all" select="/api/group[@type!='enum']"/>
+
+	<xsl:for-each select="$all">
 		<xsl:text>#include "org_berkelium_impl_</xsl:text>
 
 		<xsl:value-of select="@name"/>
@@ -26,38 +28,100 @@
 </xsl:text>
 	</xsl:for-each>
 
-	<xsl:text>
+	<xsl:text>#include "org_berkelium_impl_BerkeliumJavaImpl.h"
+
 #include "berkelium.h"
 
 #include &lt;stdlib.h&gt;
 #include &lt;string.h&gt;
 
+#include &lt;sstream&gt;
+
+jclass IllegalArgumentException;
+
+jclass BerkeliumJavaImpl;
+jmethodID BerkeliumJavaImpl_mapIn;
+jmethodID BerkeliumJavaImpl_mapOut;
+jmethodID BerkeliumJavaImpl_mapNew;
+
+jclass BK_Java_Classes[BK_Env_Enum_MAX];
+jmethodID BK_Java_Class_ctors[BK_Env_Enum_MAX];
+jfieldID BK_Java_Class_IDs[BK_Env_Enum_MAX];
+
+const char* BK_Java_Class_Names[] = {
 </xsl:text>
 
-	<xsl:for-each select="/api/group|/api/mapping[@type='java']/type[@import]">
-		<xsl:sort select="@name"/>
+	<xsl:for-each select="$all">
+		<xsl:text>      "org/berkelium/impl/</xsl:text>
 
-		<xsl:variable name="name" select="@name"/>
+		<xsl:value-of select="@name"/>
 
-		<xsl:text>inline jobject bk_new_JNI_</xsl:text>
-
-		<xsl:value-of select="$name"/>
-
-		<xsl:text>(JNIEnv* env)
-{
-	jclass cls = env-&gt;FindClass("org/berkelium/impl/</xsl:text>
-
-		<xsl:value-of select="$name"/>
-
-		<xsl:text>Impl");
-	jmethodID ctor = env->GetMethodID(cls, "&lt;init&gt;", "()V");
-	return env->NewObject(cls, ctor);
-}
-
+		<xsl:text>Impl"</xsl:text>
+		<xsl:text>,
 </xsl:text>
 	</xsl:for-each>
 
-	<xsl:text>// =========================================
+	<xsl:text>};
+
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
+{
+	JNIEnv* env;
+
+	if(jvm-&gt;GetEnv((void**)&amp;env, JNI_VERSION_1_1)) {
+		return JNI_ERR;
+	}
+
+	jclass c = env-&gt;FindClass("org/berkelium/impl/BerkeliumJavaImpl");
+	if(c == NULL) {
+		return JNI_ERR;
+	}
+	c = (jclass)env-&gt;NewGlobalRef(c);
+	jmethodID mi = env-&gt;GetStaticMethodID(c, "mapIn", "(ILorg/berkelium/impl/BerkeliumObject;)J");
+	if(mi == NULL) {
+		return JNI_ERR;
+	}
+	jmethodID mo = env-&gt;GetStaticMethodID(c, "mapOut", "(IJ)Lorg/berkelium/impl/BerkeliumObject;");
+	if(mo == NULL) {
+		return JNI_ERR;
+	}
+	jmethodID mn = env-&gt;GetStaticMethodID(c, "mapNew", "(IJJLorg/berkelium/impl/BerkeliumObject;)V");
+	if(mn == NULL) {
+		return JNI_ERR;
+	}
+	BerkeliumJavaImpl = c;
+	BerkeliumJavaImpl_mapIn = mi;
+	BerkeliumJavaImpl_mapOut = mo;
+	BerkeliumJavaImpl_mapNew = mn;
+
+	c = env-&gt;FindClass("java/lang/IllegalArgumentException");
+	if(c == NULL) {
+		return JNI_ERR;
+	}
+	IllegalArgumentException = c;
+
+	for(int i = 0; i &lt; BK_Env_Enum_MAX; i++) {
+		c = env-&gt;FindClass(BK_Java_Class_Names[i]);
+		if(c == NULL) {
+			return JNI_ERR;
+		}
+		c = (jclass)env-&gt;NewGlobalRef(c);
+		BK_Java_Classes[i] = c;
+		jmethodID m = env-&gt;GetMethodID(c, "&lt;init&gt;", "()V");
+		if(m == NULL) {
+			return JNI_ERR;
+		}
+		BK_Java_Class_ctors[i] = m;
+		jfieldID f = env->GetFieldID(c, "id", "I");
+		if(f == NULL) {
+			return JNI_ERR;
+		}
+		BK_Java_Class_IDs[i] = f;
+	}
+
+	return JNI_VERSION_1_1;
+}
+
+// =========================================
 //
 //	Berkelium to JNI #defines
 //
@@ -66,9 +130,61 @@
 #define BK_TO_JOBECT(X) (jobject)(X)
 #define BK_TO_JBOOLEAN(X) ((X) ? JNI_TRUE : JNI_FALSE)
 
+bk_bk_obj Berkelium_Java_MapIn(BK_Env_Enum type, bk_ext_obj bkJavaId, void* data)
+{
+	//fprintf(stderr, "Berkelium_Java_MapIn\n");
+	JNIEnv* env = (JNIEnv*)data;
+	bk_bk_obj ret((bk_bk_obj)env->CallStaticLongMethod(BerkeliumJavaImpl, BerkeliumJavaImpl_mapIn, type, bkJavaId));
+	//fprintf(stderr, "MapIn: %p\n", ret);
+	return ret;
+}
+
+bk_ext_obj Berkelium_Java_MapOut(BK_Env_Enum type, bk_bk_obj bkNativeId, void* data)
+{
+	//fprintf(stderr, "Berkelium_Java_MapOut\n");
+	JNIEnv* env = (JNIEnv*)data;
+	return env->CallStaticObjectMethod(BerkeliumJavaImpl, BerkeliumJavaImpl_mapOut, type, bkNativeId);
+}
+
+bk_ext_obj Berkelium_Java_MapNew(BK_Env_Enum type, bk_bk_obj bkNativeId, void* obj, void* data)
+{
+	//fprintf(stderr, "Berkelium_Java_MapNew\n");
+	JNIEnv* env = (JNIEnv*)data;
+	if(type &lt; 0 || type &gt;= BK_Env_Enum_MAX) {
+		return NULL;
+	}
+	bk_ext_obj bkJavaId = env->NewObject(BK_Java_Classes[type], BK_Java_Class_ctors[type]);
+	env->CallStaticVoidMethod(BerkeliumJavaImpl, BerkeliumJavaImpl_mapNew, type, bkNativeId, obj, bkJavaId);
+	return bkJavaId;
+}
+
+void Berkelium_Java_Release(BK_Env_Enum type, void* id, void* data)
+{
+	fprintf(stderr, "Berkelium_Java_Release\n");
+}
+
+void Berkelium_Java_MapInError(BK_Env_Enum expected, BK_Env_Enum actual, bk_ext_obj id, void* data)
+{
+	std::stringstream ss;
+
+	ss &lt;&lt; "Expected " &lt;&lt; BK_Env_Enum_To_String_Or_Err(expected) &lt;&lt; "(" &lt;&lt; expected &lt;&lt; ")";
+	ss &lt;&lt; " but got " &lt;&lt; BK_Env_Enum_To_String_Or_Err(actual) &lt;&lt; "(" &lt;&lt; actual &lt;&lt; ")";
+	ss &lt;&lt; " for id " &lt;&lt; id;
+
+	std::string str(ss.str());
+	fprintf(stderr, "Berkelium_Java_MapInError %s\n", str.c_str());
+	JNIEnv* env = (JNIEnv*)data;
+	env-&gt;ThrowNew(IllegalArgumentException, str.c_str());
+}
+
 inline void setupBkEnv(BK_Env&amp; bkenv, JNIEnv* env)
 {
-	// TODO
+	bkenv.mapIn = Berkelium_Java_MapIn;
+	bkenv.mapOut = Berkelium_Java_MapOut;
+	bkenv.mapNew = Berkelium_Java_MapNew;
+	bkenv.release = Berkelium_Java_Release;
+	bkenv.mapInError = Berkelium_Java_MapInError;
+	bkenv.data = env;
 }
 
 inline jstring BK_TO_JSTRING(JNIEnv* env, char* str)
@@ -76,7 +192,7 @@ inline jstring BK_TO_JSTRING(JNIEnv* env, char* str)
 	if(str == NULL) {
 		return NULL;
 	}
-	jstring ret = (jstring)env->NewGlobalRef(env->NewStringUTF(str));
+	jstring ret = (jstring)env-&gt;NewGlobalRef(env-&gt;NewStringUTF(str));
 	free(str);
 	return ret;
 }
@@ -87,16 +203,15 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 		return NULL;
 	}
 	jboolean iscopy = false;
-	const char* tmp = env->GetStringUTFChars(str, &amp;iscopy);
-	jint len = env->GetStringUTFLength(str);
+	const char* tmp = env-&gt;GetStringUTFChars(str, &amp;iscopy);
+	jint len = env-&gt;GetStringUTFLength(str);
 	char* ret = (char*)malloc(len);
 	memcpy(ret, tmp, len);
-	env->ReleaseStringUTFChars(str, tmp);
+	env-&gt;ReleaseStringUTFChars(str, tmp);
 	return ret;
 }
 
 </xsl:text>
-
 	<xsl:for-each select="/api/group[@type='enum']">
 		<xsl:text>inline BK_</xsl:text>
 		<xsl:value-of select="@name"/>
@@ -172,9 +287,7 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 {
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
-</xsl:text>
-
-			<xsl:text>	</xsl:text>
+	</xsl:text>
 
 			<xsl:choose>
 				<xsl:when test="$ret='void'">

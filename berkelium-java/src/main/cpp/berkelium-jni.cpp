@@ -23,122 +23,98 @@
 #include "org_berkelium_impl_WindowDelegateImpl.h"
 #include "org_berkelium_impl_TabImpl.h"
 #include "org_berkelium_impl_TabDelegateImpl.h"
+#include "org_berkelium_impl_BerkeliumJavaImpl.h"
 
 #include "berkelium.h"
 
 #include <stdlib.h>
 #include <string.h>
 
-inline jobject bk_new_JNI_BerkeliumFactory(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/BerkeliumFactoryImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
+#include <sstream>
 
-inline jobject bk_new_JNI_HostDelegate(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/HostDelegateImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
+jclass IllegalArgumentException;
 
-inline jobject bk_new_JNI_HostExecutable(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/HostExecutableImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
+jclass BerkeliumJavaImpl;
+jmethodID BerkeliumJavaImpl_mapIn;
+jmethodID BerkeliumJavaImpl_mapOut;
+jmethodID BerkeliumJavaImpl_mapNew;
 
-inline jobject bk_new_JNI_HostVersion(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/HostVersionImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
+jclass BK_Java_Classes[BK_Env_Enum_MAX];
+jmethodID BK_Java_Class_ctors[BK_Env_Enum_MAX];
+jfieldID BK_Java_Class_IDs[BK_Env_Enum_MAX];
 
-inline jobject bk_new_JNI_Instance(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/InstanceImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
+const char* BK_Java_Class_Names[] = {
+      "org/berkelium/impl/HostVersionImpl",
+      "org/berkelium/impl/BerkeliumFactoryImpl",
+      "org/berkelium/impl/RuntimeImpl",
+      "org/berkelium/impl/HostExecutableImpl",
+      "org/berkelium/impl/ProfileImpl",
+      "org/berkelium/impl/LoggerImpl",
+      "org/berkelium/impl/LogDelegateImpl",
+      "org/berkelium/impl/HostDelegateImpl",
+      "org/berkelium/impl/InstanceImpl",
+      "org/berkelium/impl/WindowImpl",
+      "org/berkelium/impl/WindowDelegateImpl",
+      "org/berkelium/impl/TabImpl",
+      "org/berkelium/impl/TabDelegateImpl",
+};
 
-inline jobject bk_new_JNI_LogDelegate(JNIEnv* env)
+JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
 {
-	jclass cls = env->FindClass("org/berkelium/impl/LogDelegateImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
+	JNIEnv* env;
 
-inline jobject bk_new_JNI_LogSource(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/LogSourceImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
+	if(jvm->GetEnv((void**)&env, JNI_VERSION_1_1)) {
+		return JNI_ERR;
+	}
 
-inline jobject bk_new_JNI_LogType(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/LogTypeImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
+	jclass c = env->FindClass("org/berkelium/impl/BerkeliumJavaImpl");
+	if(c == NULL) {
+		return JNI_ERR;
+	}
+	c = (jclass)env->NewGlobalRef(c);
+	jmethodID mi = env->GetStaticMethodID(c, "mapIn", "(ILorg/berkelium/impl/BerkeliumObject;)J");
+	if(mi == NULL) {
+		return JNI_ERR;
+	}
+	jmethodID mo = env->GetStaticMethodID(c, "mapOut", "(IJ)Lorg/berkelium/impl/BerkeliumObject;");
+	if(mo == NULL) {
+		return JNI_ERR;
+	}
+	jmethodID mn = env->GetStaticMethodID(c, "mapNew", "(IJJLorg/berkelium/impl/BerkeliumObject;)V");
+	if(mn == NULL) {
+		return JNI_ERR;
+	}
+	BerkeliumJavaImpl = c;
+	BerkeliumJavaImpl_mapIn = mi;
+	BerkeliumJavaImpl_mapOut = mo;
+	BerkeliumJavaImpl_mapNew = mn;
 
-inline jobject bk_new_JNI_Logger(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/LoggerImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
+	c = env->FindClass("java/lang/IllegalArgumentException");
+	if(c == NULL) {
+		return JNI_ERR;
+	}
+	IllegalArgumentException = c;
 
-inline jobject bk_new_JNI_Profile(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/ProfileImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
+	for(int i = 0; i < BK_Env_Enum_MAX; i++) {
+		c = env->FindClass(BK_Java_Class_Names[i]);
+		if(c == NULL) {
+			return JNI_ERR;
+		}
+		c = (jclass)env->NewGlobalRef(c);
+		BK_Java_Classes[i] = c;
+		jmethodID m = env->GetMethodID(c, "<init>", "()V");
+		if(m == NULL) {
+			return JNI_ERR;
+		}
+		BK_Java_Class_ctors[i] = m;
+		jfieldID f = env->GetFieldID(c, "id", "I");
+		if(f == NULL) {
+			return JNI_ERR;
+		}
+		BK_Java_Class_IDs[i] = f;
+	}
 
-inline jobject bk_new_JNI_Rect(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/RectImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
-
-inline jobject bk_new_JNI_Runtime(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/RuntimeImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
-
-inline jobject bk_new_JNI_Tab(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/TabImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
-
-inline jobject bk_new_JNI_TabDelegate(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/TabDelegateImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
-
-inline jobject bk_new_JNI_Window(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/WindowImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
-}
-
-inline jobject bk_new_JNI_WindowDelegate(JNIEnv* env)
-{
-	jclass cls = env->FindClass("org/berkelium/impl/WindowDelegateImpl");
-	jmethodID ctor = env->GetMethodID(cls, "<init>", "()V");
-	return env->NewObject(cls, ctor);
+	return JNI_VERSION_1_1;
 }
 
 // =========================================
@@ -150,9 +126,61 @@ inline jobject bk_new_JNI_WindowDelegate(JNIEnv* env)
 #define BK_TO_JOBECT(X) (jobject)(X)
 #define BK_TO_JBOOLEAN(X) ((X) ? JNI_TRUE : JNI_FALSE)
 
+bk_bk_obj Berkelium_Java_MapIn(BK_Env_Enum type, bk_ext_obj bkJavaId, void* data)
+{
+	//fprintf(stderr, "Berkelium_Java_MapIn\n");
+	JNIEnv* env = (JNIEnv*)data;
+	bk_bk_obj ret((bk_bk_obj)env->CallStaticLongMethod(BerkeliumJavaImpl, BerkeliumJavaImpl_mapIn, type, bkJavaId));
+	//fprintf(stderr, "MapIn: %p\n", ret);
+	return ret;
+}
+
+bk_ext_obj Berkelium_Java_MapOut(BK_Env_Enum type, bk_bk_obj bkNativeId, void* data)
+{
+	//fprintf(stderr, "Berkelium_Java_MapOut\n");
+	JNIEnv* env = (JNIEnv*)data;
+	return env->CallStaticObjectMethod(BerkeliumJavaImpl, BerkeliumJavaImpl_mapOut, type, bkNativeId);
+}
+
+bk_ext_obj Berkelium_Java_MapNew(BK_Env_Enum type, bk_bk_obj bkNativeId, void* obj, void* data)
+{
+	//fprintf(stderr, "Berkelium_Java_MapNew\n");
+	JNIEnv* env = (JNIEnv*)data;
+	if(type < 0 || type >= BK_Env_Enum_MAX) {
+		return NULL;
+	}
+	bk_ext_obj bkJavaId = env->NewObject(BK_Java_Classes[type], BK_Java_Class_ctors[type]);
+	env->CallStaticVoidMethod(BerkeliumJavaImpl, BerkeliumJavaImpl_mapNew, type, bkNativeId, obj, bkJavaId);
+	return bkJavaId;
+}
+
+void Berkelium_Java_Release(BK_Env_Enum type, void* id, void* data)
+{
+	fprintf(stderr, "Berkelium_Java_Release\n");
+}
+
+void Berkelium_Java_MapInError(BK_Env_Enum expected, BK_Env_Enum actual, bk_ext_obj id, void* data)
+{
+	std::stringstream ss;
+
+	ss << "Expected " << BK_Env_Enum_To_String_Or_Err(expected) << "(" << expected << ")";
+	ss << " but got " << BK_Env_Enum_To_String_Or_Err(actual) << "(" << actual << ")";
+	ss << " for id " << id;
+
+	std::string str(ss.str());
+	fprintf(stderr, "Berkelium_Java_MapInError %s\n", str.c_str());
+	JNIEnv* env = (JNIEnv*)data;
+	env->ThrowNew(IllegalArgumentException, str.c_str());
+}
+
 inline void setupBkEnv(BK_Env& bkenv, JNIEnv* env)
 {
-	// TODO
+	bkenv.mapIn = Berkelium_Java_MapIn;
+	bkenv.mapOut = Berkelium_Java_MapOut;
+	bkenv.mapNew = Berkelium_Java_MapNew;
+	bkenv.release = Berkelium_Java_Release;
+	bkenv.mapInError = Berkelium_Java_MapInError;
+	bkenv.data = env;
 }
 
 inline jstring BK_TO_JSTRING(JNIEnv* env, char* str)
