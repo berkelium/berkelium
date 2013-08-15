@@ -71,7 +71,9 @@ MACRO(BUILD_API_DEPS VAR TARGET LANG)
 ENDMACRO()
 
 BUILD_API_DEPS(BERKELIUM_SRC_CPP deps/cpp.txt cpp)
+BUILD_API_DEPS(BERKELIUM_SRC_JAVA deps/java.txt java)
 BUILD_API_DEPS(BERKELIUM_SRC_JAVA_IMPL deps/java-impl.txt java-impl)
+BUILD_API_DEPS(BERKELIUM_SRC_JNI deps/jni.txt jni)
 
 ###########
 ## Build JNI Implementation
@@ -88,6 +90,20 @@ BUILD_API_IMPL("../berkelium-cpp/include/berkelium.h" "api-c.xslt")
 BUILD_API_IMPL("../berkelium-cpp/include/Berkelium/API/Berkelium.hpp" "api-cpp-global.xslt")
 BUILD_API_IMPL("../berkelium-cpp/src/lib/Impl/BerkeliumC.cpp" "api-c-impl.xslt")
 BUILD_API_IMPL("../berkelium-java/src/main/cpp/berkelium-jni.cpp" "api-jni.xslt")
+
+###########
+## Build Java Files with xslt
+## --------
+FOREACH(CLASS ${BERKELIUM_SRC_JAVA})
+	GET_FILENAME_COMPONENT(FILE "../berkelium-java/src/main/java/org/berkelium/api/${CLASS}.java" ABSOLUTE)
+	LIST(APPEND API_DEPS "${FILE}")
+	XSLT("${FILE}" "${API}/api-java.xslt" "${API}/api.xml" ARGS "class" "${CLASS}")
+ENDFOREACH()
+FOREACH(CLASS ${BERKELIUM_SRC_JAVA_IMPL})
+	GET_FILENAME_COMPONENT(FILE "../berkelium-java/src/main/java/org/berkelium/impl/${CLASS}Impl.java" ABSOLUTE)
+	LIST(APPEND API_DEPS "${FILE}")
+	XSLT("${FILE}" "${API}/api-java-impl.xslt" "${API}/api.xml" ARGS "class" "${CLASS}")
+ENDFOREACH()
 
 ###########
 ## Note: rerun cmake

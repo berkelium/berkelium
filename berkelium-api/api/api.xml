@@ -4,7 +4,7 @@
 		<type name="int32" value="bk_int32" impl="int32_t"/>
 		<type name="bool" value="bk_bool" impl="int32_t"/>
 		<type name="string" value="bk_string" impl="char*"/>
-		<type name="Rect" value="BK_Rect"  impl="void*" map="true"/>
+		<type name="Rect" value="BK_Rect" impl="void*"/>
 		<type name="WindowList" value="BK_WindowList*" list="Window"/>
 		<type name="TabList" value="BK_TabList*" list="Tab"/>
 	</mapping>
@@ -63,6 +63,7 @@
 	public synchronized static BerkeliumFactory getInstance() {
 		if(instance == null) {
 			try {
+				System.loadLibrary("berkelium-java");
 				Class<?> c = BerkeliumFactory.class.getClassLoader().loadClass(
 					"org.berkelium.impl.BerkeliumFactoryImpl");
 				instance = (BerkeliumFactory)c.getConstructor().newInstance();
