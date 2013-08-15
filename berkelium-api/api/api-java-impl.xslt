@@ -48,16 +48,24 @@
 	<xsl:choose>
 		<xsl:when test="$group/@type='class'">
 			<xsl:text>extends </xsl:text>
+			<xsl:value-of select="$class"/>
+			<xsl:text> implements BerkeliumObject</xsl:text>
 		</xsl:when>
 		<xsl:when test="$group/@type='interface'">
 			<xsl:text>implements </xsl:text>
+			<xsl:value-of select="$class"/>
+			<xsl:text>, BerkeliumObject</xsl:text>
 		</xsl:when>
 		<xsl:otherwise>
 			!!ERROR!!
 		</xsl:otherwise>
 	</xsl:choose>
-	<xsl:value-of select="$class"/>
 	<xsl:text> {
+	private final int id = BerkeliumJavaImpl.createId();
+
+	public int getBerkeliumId() {
+		return id;
+	}
 </xsl:text>
 
 	<!-- class implementation -->

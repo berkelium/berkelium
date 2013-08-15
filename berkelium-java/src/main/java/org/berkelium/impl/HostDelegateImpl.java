@@ -15,7 +15,12 @@ import org.berkelium.api.Instance;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class HostDelegateImpl implements HostDelegate {
+public class HostDelegateImpl implements HostDelegate, BerkeliumObject {
+	private final int id = BerkeliumJavaImpl.createId();
+
+	public int getBerkeliumId() {
+		return id;
+	}
 
 	@Override
 	public native void onCrashed(Instance instance);

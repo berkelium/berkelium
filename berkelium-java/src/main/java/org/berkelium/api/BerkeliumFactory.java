@@ -18,6 +18,7 @@ public abstract class BerkeliumFactory {
 	public synchronized static BerkeliumFactory getInstance() {
 		if(instance == null) {
 			try {
+				System.loadLibrary("berkelium-java");
 				Class<?> c = BerkeliumFactory.class.getClassLoader().loadClass(
 					"org.berkelium.impl.BerkeliumFactoryImpl");
 				instance = (BerkeliumFactory)c.getConstructor().newInstance();

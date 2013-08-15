@@ -1,5 +1,6 @@
 package org.berkelium.demo.demo1;
 
+import org.berkelium.api.BerkeliumFactory;
 import org.berkelium.api.HostExecutable;
 import org.berkelium.api.HostVersion;
 import org.berkelium.api.Runtime;
@@ -20,7 +21,9 @@ public class Demo1 {
 	}
 
 	public static void main(String[] args) {
-		Runtime runtime = Util.createRuntime(args);
+		final BerkeliumFactory instance = BerkeliumFactory.getInstance();
+		Runtime runtime =  instance.createRuntime();
+
 		Logger logger = Util.createRootLogger(runtime);
 
 		logger.info("berkelium demo application...");

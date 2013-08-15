@@ -15,7 +15,12 @@ import org.berkelium.api.Runtime;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class ProfileImpl implements Profile {
+public class ProfileImpl implements Profile, BerkeliumObject {
+	private final int id = BerkeliumJavaImpl.createId();
+
+	public int getBerkeliumId() {
+		return id;
+	}
 
 	@Override
 	public native Runtime getRuntime();

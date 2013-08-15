@@ -14,7 +14,12 @@ import org.berkelium.api.Logger;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class LoggerImpl implements Logger {
+public class LoggerImpl implements Logger, BerkeliumObject {
+	private final int id = BerkeliumJavaImpl.createId();
+
+	public int getBerkeliumId() {
+		return id;
+	}
 
 	@Override
 	public native void debug(String message);
