@@ -154,11 +154,6 @@ bk_ext_obj Berkelium_Java_MapNew(BK_Env_Enum type, bk_bk_obj bkNativeId, void* o
 	return bkJavaId;
 }
 
-void Berkelium_Java_Release(BK_Env_Enum type, void* id, void* data)
-{
-	fprintf(stderr, "Berkelium_Java_Release\n");
-}
-
 void Berkelium_Java_MapInError(BK_Env_Enum expected, BK_Env_Enum actual, bk_ext_obj id, void* data)
 {
 	std::stringstream ss;
@@ -178,7 +173,6 @@ inline void setupBkEnv(BK_Env& bkenv, JNIEnv* env)
 	bkenv.mapIn = Berkelium_Java_MapIn;
 	bkenv.mapOut = Berkelium_Java_MapOut;
 	bkenv.mapNew = Berkelium_Java_MapNew;
-	bkenv.release = Berkelium_Java_Release;
 	bkenv.mapInError = Berkelium_Java_MapInError;
 	bkenv.data = env;
 }

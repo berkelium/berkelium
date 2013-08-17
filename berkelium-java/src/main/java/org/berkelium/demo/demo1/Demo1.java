@@ -21,8 +21,7 @@ public class Demo1 {
 	}
 
 	public static void main(String[] args) {
-		final BerkeliumFactory instance = BerkeliumFactory.getInstance();
-		Runtime runtime =  instance.createRuntime();
+		Runtime runtime = BerkeliumFactory.getInstance().createRuntime();
 
 		Logger logger = Util.createRootLogger(runtime);
 

@@ -99,15 +99,12 @@ typedef bk_ext_obj BK_Env_mapOut(BK_Env_Enum type, bk_bk_obj id, void* data);
 
 typedef bk_ext_obj BK_Env_mapNew(BK_Env_Enum type, bk_bk_obj id, void* obj, void* data);
 
-typedef void BK_Env_release(BK_Env_Enum type, void* id, void* data);
-
 typedef void BK_Env_mapInError(BK_Env_Enum expected, BK_Env_Enum actual, bk_ext_obj id, void* data);
 
 typedef struct {
 	BK_Env_mapIn* mapIn;
 	BK_Env_mapOut* mapOut;
 	BK_Env_mapNew* mapNew;
-	BK_Env_release* release;
 	BK_Env_mapInError* mapInError;
 	void* data;
 } BK_Env;
