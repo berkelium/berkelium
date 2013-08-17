@@ -23,9 +23,8 @@
 
 <xsl:template name="cpp">
 	<xsl:for-each select="/api/group[@type!='enum']">
-		<xsl:text>include/Berkelium/API/</xsl:text>
 		<xsl:value-of select="@name"/>
-		<xsl:text>.hpp
+		<xsl:text>
 </xsl:text>
 	</xsl:for-each>
 </xsl:template>
