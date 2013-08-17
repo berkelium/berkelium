@@ -15,7 +15,7 @@ import org.berkelium.api.Runtime;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class HostVersionImpl implements HostVersion, BerkeliumObject {
+public class HostVersionImpl implements HostVersion, BerkeliumObjectImpl {
 	private final int id = BerkeliumJavaImpl.createId();
 
 	public int getBerkeliumId() {

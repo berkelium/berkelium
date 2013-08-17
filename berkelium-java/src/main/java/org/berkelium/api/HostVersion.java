@@ -12,7 +12,7 @@ package org.berkelium.api;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public interface HostVersion {
+public interface HostVersion extends BerkeliumObject  {
 
 	// Returns the associated Runtime.
 	Runtime getRuntime();

@@ -16,7 +16,7 @@ import org.berkelium.api.Runtime;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class HostExecutableImpl implements HostExecutable, BerkeliumObject {
+public class HostExecutableImpl implements HostExecutable, BerkeliumObjectImpl {
 	private final int id = BerkeliumJavaImpl.createId();
 
 	public int getBerkeliumId() {

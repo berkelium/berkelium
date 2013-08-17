@@ -13,7 +13,7 @@ package org.berkelium.api;
 // =========================================
 
 // Represents a reference to the executable file of the berkelium host process.
-public interface HostExecutable {
+public interface HostExecutable extends BerkeliumObject  {
 
 	// Returns the associated Runtime.
 	Runtime getRuntime();

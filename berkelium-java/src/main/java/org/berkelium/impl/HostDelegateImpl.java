@@ -15,7 +15,7 @@ import org.berkelium.api.Instance;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class HostDelegateImpl implements HostDelegate, BerkeliumObject {
+public class HostDelegateImpl implements HostDelegate, BerkeliumObjectImpl {
 	private final int id = BerkeliumJavaImpl.createId();
 
 	public int getBerkeliumId() {

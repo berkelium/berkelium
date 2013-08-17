@@ -17,7 +17,7 @@ import org.berkelium.api.Runtime;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class LogDelegateImpl implements LogDelegate, BerkeliumObject {
+public class LogDelegateImpl implements LogDelegate, BerkeliumObjectImpl {
 	private final int id = BerkeliumJavaImpl.createId();
 
 	public int getBerkeliumId() {

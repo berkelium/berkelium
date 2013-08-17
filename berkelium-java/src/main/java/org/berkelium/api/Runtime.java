@@ -12,7 +12,7 @@ package org.berkelium.api;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public interface Runtime {
+public interface Runtime extends BerkeliumObject  {
 
 	// Sets the Path to the HostExecutable Object used by forSystemInstalled.
 	void setDefaultExecutable(String pathTo);

@@ -15,7 +15,7 @@ import org.berkelium.api.Runtime;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class BerkeliumFactoryImpl extends BerkeliumFactory implements BerkeliumObject {
+public class BerkeliumFactoryImpl extends BerkeliumFactory implements BerkeliumObjectImpl {
 	private final int id = BerkeliumJavaImpl.createId();
 
 	public int getBerkeliumId() {

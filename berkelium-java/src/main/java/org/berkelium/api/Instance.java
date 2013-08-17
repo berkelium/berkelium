@@ -13,7 +13,7 @@ package org.berkelium.api;
 // =========================================
 
 // Represents a running berkelium host instance.
-public interface Instance {
+public interface Instance extends BerkeliumObject  {
 
 	// Returns the associated Runtime.
 	Runtime getRuntime();

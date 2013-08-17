@@ -22,7 +22,7 @@ import org.berkelium.api.Runtime;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class RuntimeImpl implements Runtime, BerkeliumObject {
+public class RuntimeImpl implements Runtime, BerkeliumObjectImpl {
 	private final int id = BerkeliumJavaImpl.createId();
 
 	public int getBerkeliumId() {

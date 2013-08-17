@@ -16,7 +16,7 @@ import org.berkelium.api.TabDelegate;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class TabDelegateImpl implements TabDelegate, BerkeliumObject {
+public class TabDelegateImpl implements TabDelegate, BerkeliumObjectImpl {
 	private final int id = BerkeliumJavaImpl.createId();
 
 	public int getBerkeliumId() {

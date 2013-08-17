@@ -34,18 +34,23 @@
 	<xsl:choose>
 		<xsl:when test="$group/@type='class'">
 			<xsl:text>abstract class </xsl:text>
+			<xsl:value-of select="$class"/>
 		</xsl:when>
 		<xsl:when test="$group/@type='interface'">
 			<xsl:text>interface </xsl:text>
+			<xsl:value-of select="$class"/>
+			<xsl:if test="$group[not(@delegate='true')]">
+				<xsl:text> extends BerkeliumObject </xsl:text>
+			</xsl:if>
 		</xsl:when>
 		<xsl:when test="$group/@type='enum'">
 			<xsl:text>enum </xsl:text>
+			<xsl:value-of select="$class"/>
 		</xsl:when>
 		<xsl:otherwise>
 			!!ERROR!!
 		</xsl:otherwise>
 	</xsl:choose>
-	<xsl:value-of select="$class"/>
 	<xsl:text> {
 </xsl:text>
 

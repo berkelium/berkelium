@@ -49,12 +49,12 @@
 		<xsl:when test="$group/@type='class'">
 			<xsl:text>extends </xsl:text>
 			<xsl:value-of select="$class"/>
-			<xsl:text> implements BerkeliumObject</xsl:text>
+			<xsl:text> implements BerkeliumObjectImpl</xsl:text>
 		</xsl:when>
 		<xsl:when test="$group/@type='interface'">
 			<xsl:text>implements </xsl:text>
 			<xsl:value-of select="$class"/>
-			<xsl:text>, BerkeliumObject</xsl:text>
+			<xsl:text>, BerkeliumObjectImpl</xsl:text>
 		</xsl:when>
 		<xsl:otherwise>
 			!!ERROR!!

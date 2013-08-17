@@ -14,7 +14,7 @@ import org.berkelium.api.WindowDelegate;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class WindowDelegateImpl implements WindowDelegate, BerkeliumObject {
+public class WindowDelegateImpl implements WindowDelegate, BerkeliumObjectImpl {
 	private final int id = BerkeliumJavaImpl.createId();
 
 	public int getBerkeliumId() {

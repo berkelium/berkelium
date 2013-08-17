@@ -13,7 +13,7 @@ package org.berkelium.api;
 // =========================================
 
 // Represents a berkelium profile on disk.
-public interface Profile {
+public interface Profile extends BerkeliumObject  {
 
 	// Returns the associated Runtime.
 	Runtime getRuntime();

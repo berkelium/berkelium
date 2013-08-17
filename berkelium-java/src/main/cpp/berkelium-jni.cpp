@@ -72,15 +72,15 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
 		return JNI_ERR;
 	}
 	c = (jclass)env->NewGlobalRef(c);
-	jmethodID mi = env->GetStaticMethodID(c, "mapIn", "(ILorg/berkelium/impl/BerkeliumObject;)J");
+	jmethodID mi = env->GetStaticMethodID(c, "mapIn", "(ILorg/berkelium/impl/BerkeliumObjectImpl;)J");
 	if(mi == NULL) {
 		return JNI_ERR;
 	}
-	jmethodID mo = env->GetStaticMethodID(c, "mapOut", "(IJ)Lorg/berkelium/impl/BerkeliumObject;");
+	jmethodID mo = env->GetStaticMethodID(c, "mapOut", "(IJ)Lorg/berkelium/impl/BerkeliumObjectImpl;");
 	if(mo == NULL) {
 		return JNI_ERR;
 	}
-	jmethodID mn = env->GetStaticMethodID(c, "mapNew", "(IJJLorg/berkelium/impl/BerkeliumObject;)V");
+	jmethodID mn = env->GetStaticMethodID(c, "mapNew", "(IJJLorg/berkelium/impl/BerkeliumObjectImpl;)V");
 	if(mn == NULL) {
 		return JNI_ERR;
 	}

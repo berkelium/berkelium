@@ -12,7 +12,7 @@ package org.berkelium.api;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public interface Window {
+public interface Window extends BerkeliumObject  {
 
 	// Returns the associated Runtime.
 	Runtime getRuntime();

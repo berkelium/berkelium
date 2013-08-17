@@ -17,7 +17,7 @@ import org.berkelium.api.Window;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class TabImpl implements Tab, BerkeliumObject {
+public class TabImpl implements Tab, BerkeliumObjectImpl {
 	private final int id = BerkeliumJavaImpl.createId();
 
 	public int getBerkeliumId() {
