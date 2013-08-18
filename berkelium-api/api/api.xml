@@ -78,7 +78,11 @@
 			<short>Returns the default Berkelium Runtime Instance.</short>
 		</entry>
 		<entry static="true" name="createRuntime" ret="Runtime">
-			<short>Creates an add additional Berkelium Runtime Instance.</short>
+			<short>Creates an add additional Berkelium Runtime Instance with default LogDelegate.</short>
+		</entry>
+		<entry static="true" name="createRuntimeWithLog" ret="Runtime">
+			<arg type="LogDelegate" name="log"/>
+			<short>Creates an add additional Berkelium Runtime Instance with given LogDelegate.</short>
 		</entry>
 	</group>
 	<group type="interface" name="Runtime">
@@ -219,7 +223,7 @@
 			<short>Represents error messages.</short>
 		</entry>
 	</group>
-	<group type="interface" name="Logger" delegate="true">
+	<group type="interface" name="Logger">
 		<implementation type="cpp"><![CDATA[public:
 	virtual std::ostream& debug() = 0;
 	virtual std::ostream& info() = 0;

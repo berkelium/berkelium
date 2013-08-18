@@ -22,7 +22,10 @@
 	</xsl:for-each>
 
 	<xsl:text>
-#include "berkelium.h"
+#include &lt;berkelium.h&gt;
+
+#include &lt;Berkelium/Impl/Impl.hpp&gt;
+#include &lt;Berkelium/Impl/Manager.hpp&gt;
 
 #include &lt;stdlib.h&gt;
 #include &lt;string.h&gt;
@@ -53,9 +56,16 @@ inline Berkelium::RectRef mapInRectRef(BK_Env* env, BK_Rect&amp; rect)
 
 </xsl:text>
 
-	<xsl:for-each select="/api/group[@type!='enum']">
+	<xsl:for-each select="/api/group[@type='interface']">
 		<xsl:call-template name="mapIn"/>
-		<xsl:call-template name="mapOut"/>
+
+		<xsl:variable name="name">
+			<xsl:value-of select="@name"/>
+		</xsl:variable>
+
+		<xsl:if test="/api/group/entry[@ret=$name]">
+			<xsl:call-template name="mapOut"/>
+		</xsl:if>
 	</xsl:for-each>
 
 	<xsl:for-each select="/api/mapping[@type='c']/type[@list]">
@@ -72,7 +82,7 @@ const char* BK_Env_Enum_To_String_Or_Null(BK_Env_Enum type)
 	switch(type) {
 </xsl:text>
 
-	<xsl:for-each select="/api/group[@type!='enum']">
+	<xsl:for-each select="/api/group[@type='interface']">
 		<xsl:text>		case </xsl:text>
 		<xsl:value-of select="@name"/>
 		<xsl:text>:
@@ -107,6 +117,66 @@ const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type)
 <xsl:template match="group[not(@type='enum') and not(@delegate='true')]">
 	<xsl:variable name="gen">
 		<xsl:apply-templates select="entry"/>
+
+		<xsl:if test="@type='interface' and not(@delegate)">
+			<xsl:text>
+extern "C" void BK_</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>_free(BK_Env* env, BK_</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text> self)
+{
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
+	Berkelium::</xsl:text>
+
+			<xsl:value-of select="@name"/>
+
+			<xsl:text>Ref _this(mapIn</xsl:text>
+
+			<xsl:value-of select="@name"/>
+
+			<xsl:text>Ref(env, self));
+
+	if(!_this) {
+		fprintf(stderr, "already freed </xsl:text>
+
+			<xsl:value-of select="@name"/>
+
+			<xsl:text> %p!\n", self);
+		return;
+	}
+
+	void* result = manager->unlock(self);
+
+	if(result == NULL) {
+		fprintf(stderr, "can't free </xsl:text>
+
+			<xsl:value-of select="@name"/>
+
+			<xsl:text> %p!\n", self);
+	} else {
+		delete (Berkelium::</xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text>Ref*)result;
+		/*
+		fprintf(stderr, "freed </xsl:text>
+
+			<xsl:value-of select="@name"/>
+
+			<xsl:text> %p!\n", self);
+		*/
+	}
+
+</xsl:text>
+			<xsl:if test="@name='Runtime'">
+				<xsl:text>	manager.reset();
+</xsl:text>
+			</xsl:if>
+			<xsl:text>}
+</xsl:text>
+		</xsl:if>
 	</xsl:variable>
 
 	<xsl:if test="$gen!=''">
@@ -213,7 +283,7 @@ const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type)
 	<xsl:value-of select="@name"/>
 	<xsl:value-of select="@c-suffix"/>
 	<xsl:text>(BK_Env* env</xsl:text>
-	<xsl:if test="not(@static)">
+	<xsl:if test="not(@static) or arg">
 		<xsl:text>, </xsl:text>
 	</xsl:if>
 	<xsl:call-template name="arguments-self"/>
@@ -221,8 +291,7 @@ const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type)
 {
 </xsl:text>
 	<xsl:if test="not(@static)">
-		<xsl:text>
-	Berkelium::</xsl:text>
+		<xsl:text>	Berkelium::</xsl:text>
 
 		<xsl:value-of select="../@name"/>
 
@@ -233,6 +302,7 @@ const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type)
 		<xsl:text>Ref(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return</xsl:text>
 
 		<xsl:choose>
@@ -312,6 +382,18 @@ inline bk_ext_obj mapOut</xsl:text>
 
 	<xsl:text>Ref bk)
 {
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
+
+	if(!manager->locked(bk.get())) {
+		manager->lock(bk.get(), new Berkelium::</xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text>Ref(bk));
+	}
+</xsl:text>
+
+	<xsl:text>
 	BK_Env_Enum type(</xsl:text>
 
 	<xsl:value-of select="@name"/>
@@ -321,21 +403,16 @@ inline bk_ext_obj mapOut</xsl:text>
 	bk_ext_obj ret = env-&gt;mapOut(type, bk.get(), env->data);
 
 	if(ret == NULL) {
-		void* tmp = new Berkelium::</xsl:text>
-
-	<xsl:value-of select="@name"/>
-
-	<xsl:text>Ref(bk);
-		ret = env-&gt;mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
+		ret = env-&gt;mapNew(type, bk.get(), env->data);
 	}
 
-	//fprintf(stderr, "mapOut </xsl:text>
+	/*
+	fprintf(stderr, "mapOut </xsl:text>
 
 	<xsl:value-of select="@name"/>
 
 	<xsl:text> bk:%p ext:%p\n", bk.get(), ret);
+	*/
 
 	return ret;
 }
@@ -354,54 +431,64 @@ inline Berkelium::</xsl:text>
 
 	<xsl:text>Ref(BK_Env* env, bk_ext_obj extId)
 {
-	BK_Env_Enum type(</xsl:text>
+	</xsl:text>
 
-	<xsl:value-of select="@name"/>
+	<xsl:choose>
+		<xsl:when test="@delegate">
 
-	<xsl:text>);
+			<xsl:text>BK_Env_Enum type(</xsl:text>
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn </xsl:text>
+			<xsl:value-of select="@name"/>
 
-	<xsl:value-of select="@name"/>
-
-	<xsl:text> ext:%p not found\n", extId);
-		return Berkelium::</xsl:text>
-
-	<xsl:value-of select="@name"/>
-
-	<xsl:text>Ref();
-	} else if(it->second != type) {
-		env-&gt;mapInError(type, it-&gt;second, extId, env-&gt;data);
-		return Berkelium::</xsl:text>
-
-	<xsl:value-of select="@name"/>
-
-	<xsl:text>Ref();
-	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
+			<xsl:text>);
 
 	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
 
 	Berkelium::</xsl:text>
 
-	<xsl:value-of select="@name"/>
+			<xsl:value-of select="@name"/>
 
-	<xsl:text>Ref* ret((Berkelium::</xsl:text>
+			<xsl:text>Ref* ret((Berkelium::</xsl:text>
 
-	<xsl:value-of select="@name"/>
+			<xsl:value-of select="@name"/>
 
-	<xsl:text>Ref*)tmp);
+			<xsl:text>Ref*)tmp);
 
 	return Berkelium::</xsl:text>
 
-	<xsl:value-of select="@name"/>
+			<xsl:value-of select="@name"/>
 
-	<xsl:text>Ref(*ret);
+			<xsl:text>Ref(*ret);
 }
 </xsl:text>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:text>bk_bk_obj intId = env->mapIn(</xsl:text>
+
+		<xsl:value-of select="@name"/>
+
+		<xsl:text>, extId, env->data);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
+
+	if(!manager) {
+		fprintf(stderr, "error: manager in '%s' %p not found!\n", __FUNCTION__, intId);
+		return Berkelium::</xsl:text>
+
+		<xsl:value-of select="@name"/>
+
+		<xsl:text>Ref();
+	}
+
+	return manager->get</xsl:text>
+
+	<xsl:value-of select="@name"/>
+
+	<xsl:text>(intId);
+}
+</xsl:text>
+		</xsl:otherwise>
+	</xsl:choose>
+
 </xsl:template>
 
 <xsl:template name="mapList">

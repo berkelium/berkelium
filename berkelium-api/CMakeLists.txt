@@ -94,7 +94,6 @@ BUILD_API_IMPL("../berkelium-java/src/main/cpp/berkelium-jni.cpp" "api-jni.xslt"
 ###########
 ## Build c++ Header Files with xslt
 ## --------
-MESSAGE(${BERKELIUM_SRC_CPP})
 FOREACH(CLASS ${BERKELIUM_SRC_CPP})
 	GET_FILENAME_COMPONENT(FILE "../berkelium-cpp/include/Berkelium/API/${CLASS}.hpp" ABSOLUTE)
 	LIST(APPEND API_DEPS "${FILE}")

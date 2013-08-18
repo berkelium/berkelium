@@ -9,6 +9,7 @@
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
+#include <Berkelium/Impl/Manager.hpp>
 
 #include <algorithm>
 #include <cstdlib>
@@ -55,6 +56,7 @@ public:
 	}
 
 	virtual ~ProfileImpl() {
+		getManager()->unregisterProfile();
 		if(isLocked()) {
 			setLocked(false);
 		}
@@ -210,7 +212,11 @@ ProfileRef newProfile(RuntimeRef runtime, const std::string& appDir, const std::
 #else
 #error "please add path to chrome profile here"
 #endif
-	return ProfileRef(new impl::ProfileImpl(runtime, path, application, false));
+
+	impl::ProfileImpl* impl = new impl::ProfileImpl(runtime, path, application, false);
+	ProfileRef ret(impl);
+	impl->getManager()->registerProfile(ret);
+	return ret;
 }
 
 void cleanup(RuntimeRef runtime, const std::string& tmp) {
@@ -226,6 +232,19 @@ void cleanup(RuntimeRef runtime, const std::string& tmp) {
 			ProfileImpl(runtime, *it, "berkelium", true);
 		}
 	}
+}
+
+ManagerRef getManager(ProfileRef profile)
+{
+	if(!profile) {
+		fprintf(stderr, "getManagerForProfile: null!\n");
+		return ManagerRef();
+	}
+	/*
+	fprintf(stderr, "getManagerrForProfile: %p\n", profile.get());
+	*/
+	ProfileImpl* impl = (ProfileImpl*)profile.get();
+	return impl->getManager();
 }
 
 ProfileRef newProfile(RuntimeRef runtime, const std::string& application) {
@@ -253,7 +272,10 @@ ProfileRef getChromiumProfile(RuntimeRef runtime) {
 }
 
 ProfileRef forProfilePath(RuntimeRef runtime, const std::string& path) {
-	return ProfileRef(new impl::ProfileImpl(runtime, path, "berkelium", false));
+	impl::ProfileImpl* impl = new impl::ProfileImpl(runtime, path, "berkelium", false);
+	ProfileRef ret(impl);
+	impl->getManager()->registerProfile(ret);
+	return ret;
 }
 
 ProfileRef createTemporaryProfile(RuntimeRef runtime) {
@@ -262,7 +284,10 @@ ProfileRef createTemporaryProfile(RuntimeRef runtime) {
 	impl::cleanup(runtime, path);
 	path = Filesystem::append(path, Util::randomId());
 
-	return ProfileRef(new impl::ProfileImpl(runtime, path, "berkelium", true));
+	impl::ProfileImpl* impl = new impl::ProfileImpl(runtime, path, "berkelium", true);
+	ProfileRef ret(impl);
+	impl->getManager()->registerProfile(ret);
+	return ret;
 }
 
 } // namespace impl

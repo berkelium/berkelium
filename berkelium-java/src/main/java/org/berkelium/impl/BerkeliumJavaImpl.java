@@ -7,20 +7,25 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BerkeliumJavaImpl {
 	private final static Map<Long, BerkeliumObjectImpl> n2j = new HashMap<Long, BerkeliumObjectImpl>();
 	private final static Map<BerkeliumObjectImpl, Long> j2n = new HashMap<BerkeliumObjectImpl, Long>();
-	private final static Map<Long, Long> n2o = new HashMap<Long, Long>();
 
 	static synchronized long mapIn(int type, BerkeliumObjectImpl bkJavaId) {
 		if(bkJavaId == null) {
 			throw new NullPointerException("BerkeliumObject");
 		}
 		Long bkNativeId = j2n.get(bkJavaId);
+		/*
 		if(bkNativeId == null) {
-			//System.err.printf("mapIn : %d	j:0x%x (new)\n", type, bkJavaId.getBerkeliumId());
+			System.err.printf("mapIn : %d	j:0x%x (new)\n", type, bkJavaId.getBerkeliumId());
 			return 0;
 		}
+		System.err.printf("mapIn : %d	j:0x%x = id:0x%x\n", type, bkJavaId.getBerkeliumId(), bkNativeId);
+		*/
+		return bkNativeId;
+		/*
 		Long obj = n2o.get(bkNativeId);
-		//System.err.printf("mapIn : %d	j:0x%x = id:%x obj=%x\n", type, bkJavaId.getBerkeliumId(), bkNativeId, obj);
+		System.err.printf("mapIn : %d	j:0x%x = id:%x obj=%x\n", type, bkJavaId.getBerkeliumId(), bkNativeId, obj);
 		return obj;
+		*/
 	}
 
 	static synchronized BerkeliumObjectImpl mapOut(int type, long bkNativeId) {
@@ -35,12 +40,13 @@ public class BerkeliumJavaImpl {
 		return bkJavaId;
 	}
 
-	static synchronized void mapNew(int type, long bkNativeId, long obj, BerkeliumObjectImpl bkJavaId) {
+	static synchronized void mapNew(int type, long bkNativeId, BerkeliumObjectImpl bkJavaId) {
 		if(bkJavaId == null) {
 			throw new NullPointerException("BerkeliumObject");
 		}
-		//System.err.printf("mapNew: %d	id:0x%x = j:0x%x(new)\n", type, bkNativeId, bkJavaId.getBerkeliumId());
-		n2o.put(bkNativeId, obj);
+		/*
+		System.err.printf("mapNew: %d	id:0x%x = j:0x%x(new)\n", type, bkNativeId, bkJavaId.getBerkeliumId());
+		*/
 		n2j.put(bkNativeId, bkJavaId);
 		j2n.put(bkJavaId, bkNativeId);
 	}

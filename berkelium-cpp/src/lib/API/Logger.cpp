@@ -83,7 +83,7 @@ LoggerStream logStream;
 class LoggerImpl : public Logger {
 private:
 	LogDelegateRef target;
-	RuntimeRef runtime;
+	RuntimeWRef runtime;
 	const std::string clazz;
 	const std::string name;
 	std::string prefix;
@@ -102,22 +102,22 @@ public:
 	}
 
 	virtual std::ostream& debug() {
-		logStream.setMode(target, runtime, Debug, clazz, name);
+		logStream.setMode(target, runtime.lock(), Debug, clazz, name);
 		return logStream;
 	}
 
 	virtual std::ostream& info() {
-		logStream.setMode(target, runtime, Info, clazz, name);
+		logStream.setMode(target, runtime.lock(), Info, clazz, name);
 		return logStream;
 	}
 
 	virtual std::ostream& warn() {
-		logStream.setMode(target, runtime, Warn, clazz, name);
+		logStream.setMode(target, runtime.lock(), Warn, clazz, name);
 		return logStream;
 	}
 
 	virtual std::ostream& error() {
-		logStream.setMode(target, runtime, Error, clazz, name);
+		logStream.setMode(target, runtime.lock(), Error, clazz, name);
 		return logStream;
 	}
 
@@ -138,19 +138,19 @@ public:
 	}
 
 	virtual void debug(const std::string& message) {
-		target->log(runtime, logSource, LogType::Debug, clazz, name, message);
+		target->log(runtime.lock(), logSource, LogType::Debug, clazz, name, message);
 	}
 
 	virtual void info(const std::string& message) {
-		target->log(runtime, logSource, LogType::Info, clazz, name, message);
+		target->log(runtime.lock(), logSource, LogType::Info, clazz, name, message);
 	}
 
 	virtual void warn(const std::string& message) {
-		target->log(runtime, logSource, LogType::Warn, clazz, name, message);
+		target->log(runtime.lock(), logSource, LogType::Warn, clazz, name, message);
 	}
 
 	virtual void error(const std::string& message) {
-		target->log(runtime, logSource, LogType::Error, clazz, name, message);
+		target->log(runtime.lock(), logSource, LogType::Error, clazz, name, message);
 	}
 };
 

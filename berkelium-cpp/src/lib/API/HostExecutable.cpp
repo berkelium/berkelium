@@ -8,6 +8,7 @@
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
+#include <Berkelium/Impl/Manager.hpp>
 
 namespace Berkelium {
 
@@ -35,6 +36,7 @@ public:
 	}
 
 	virtual ~HostExecutableImpl() {
+		manager->unregisterHostExecutable();
 	}
 
 	virtual const std::string& getPath() {
@@ -49,8 +51,20 @@ public:
 	}
 };
 
+ManagerRef getManager(HostExecutableRef host)
+{
+	if(!host) {
+		return ManagerRef();
+	}
+	HostExecutableImpl* impl = (HostExecutableImpl*)host.get();
+	return impl->getManager();
+}
+
 HostExecutableRef newHostExecutable(RuntimeRef runtime, const std::string& path) {
-	return HostExecutableRef(new HostExecutableImpl(runtime, path));
+	HostExecutableImpl* impl = new HostExecutableImpl(runtime, path);
+	HostExecutableRef ret(impl);
+	impl->getManager()->registerHostExecutable(ret);
+	return ret;
 }
 
 HostVersionRef getVersionImpl(RuntimeRef runtime, const std::string&) {

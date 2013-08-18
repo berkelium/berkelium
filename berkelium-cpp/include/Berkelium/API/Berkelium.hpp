@@ -61,10 +61,6 @@ class HostVersion;
 typedef std::shared_ptr<HostVersion> HostVersionRef;
 typedef std::weak_ptr<HostVersion> HostVersionWRef;
 
-class BerkeliumFactory;
-typedef std::shared_ptr<BerkeliumFactory> BerkeliumFactoryRef;
-typedef std::weak_ptr<BerkeliumFactory> BerkeliumFactoryWRef;
-
 class Runtime;
 typedef std::shared_ptr<Runtime> RuntimeRef;
 typedef std::weak_ptr<Runtime> RuntimeWRef;

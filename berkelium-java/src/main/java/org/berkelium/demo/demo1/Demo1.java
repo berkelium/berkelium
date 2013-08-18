@@ -3,6 +3,7 @@ package org.berkelium.demo.demo1;
 import org.berkelium.api.BerkeliumFactory;
 import org.berkelium.api.HostExecutable;
 import org.berkelium.api.HostVersion;
+import org.berkelium.api.LogDelegate;
 import org.berkelium.api.Runtime;
 import org.berkelium.api.Logger;
 import org.berkelium.api.Profile;

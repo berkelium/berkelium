@@ -10,6 +10,7 @@
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/Manager.hpp>
 
 namespace Berkelium {
 
@@ -47,6 +48,7 @@ public:
 	}
 
 	virtual ~WindowImpl() {
+		getManager()->unregisterWindow();
 	}
 
 	virtual void internalUpdate() {
@@ -139,9 +141,19 @@ public:
 		WindowImpl* impl = new WindowImpl(instance, channel, incognito);
 		WindowRef ret(impl);
 		impl->self = ret;
+		impl->manager->registerWindow(ret);
 		return ret;
 	}
 };
+
+ManagerRef getManager(WindowRef window)
+{
+	if(!window) {
+		return ManagerRef();
+	}
+	WindowImpl* impl = (WindowImpl*)window.get();
+	return impl->getManager();
+}
 
 WindowRef newWindow(InstanceRef instance, Ipc::ChannelRef channel, bool incognito) {
 	return WindowImpl::newWindow(instance, channel, incognito);

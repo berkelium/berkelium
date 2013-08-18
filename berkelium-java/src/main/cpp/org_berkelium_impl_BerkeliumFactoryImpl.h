@@ -23,6 +23,14 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_BerkeliumFactoryImpl_getDefaul
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_BerkeliumFactoryImpl_createRuntime
   (JNIEnv *, jobject);
 
+/*
+ * Class:     org_berkelium_impl_BerkeliumFactoryImpl
+ * Method:    createRuntimeWithLog
+ * Signature: (Lorg/berkelium/api/LogDelegate;)Lorg/berkelium/api/Runtime;
+ */
+JNIEXPORT jobject JNICALL Java_org_berkelium_impl_BerkeliumFactoryImpl_createRuntimeWithLog
+  (JNIEnv *, jobject, jobject);
+
 #ifdef __cplusplus
 }
 #endif

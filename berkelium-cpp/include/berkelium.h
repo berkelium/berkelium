@@ -81,7 +81,7 @@ typedef bk_bk_obj BK_Env_mapIn(BK_Env_Enum type, bk_ext_obj id, void* data);
 
 typedef bk_ext_obj BK_Env_mapOut(BK_Env_Enum type, bk_bk_obj id, void* data);
 
-typedef bk_ext_obj BK_Env_mapNew(BK_Env_Enum type, bk_bk_obj id, void* obj, void* data);
+typedef bk_ext_obj BK_Env_mapNew(BK_Env_Enum type, bk_bk_obj id, void* data);
 
 typedef void BK_Env_mapInError(BK_Env_Enum expected, BK_Env_Enum actual, bk_ext_obj id, void* data);
 
@@ -128,6 +128,7 @@ bk_int32 BK_HostVersion_getPatch(BK_Env* env, BK_HostVersion self);
 
 // Returns true if the given Version is less or equal to the version of the executable represented by this executable object.
 bk_bool BK_HostVersion_isMinVersion(BK_Env* env, BK_HostVersion self, bk_string version);
+void BK_HostVersion_free(BK_Env*, BK_HostVersion self);
 
 // =========================================
 // class BerkeliumFactory
@@ -136,8 +137,11 @@ bk_bool BK_HostVersion_isMinVersion(BK_Env* env, BK_HostVersion self, bk_string 
 // Returns the default Berkelium Runtime Instance.
 BK_Runtime BK_BerkeliumFactory_getDefaultRuntime(BK_Env* env);
 
-// Creates an add additional Berkelium Runtime Instance.
+// Creates an add additional Berkelium Runtime Instance with default LogDelegate.
 BK_Runtime BK_BerkeliumFactory_createRuntime(BK_Env* env);
+
+// Creates an add additional Berkelium Runtime Instance with given LogDelegate.
+BK_Runtime BK_BerkeliumFactory_createRuntimeWithLog(BK_Env* env, BK_LogDelegate log);
 
 // =========================================
 // interface Runtime
@@ -185,6 +189,7 @@ void BK_Runtime_removeLogDelegate(BK_Env* env, BK_Runtime self, BK_LogDelegate d
 
 // Forwards the given type/message to all log handlers attached to this instance.
 void BK_Runtime_log(BK_Env* env, BK_Runtime self, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string name, bk_string message);
+void BK_Runtime_free(BK_Env*, BK_Runtime self);
 
 // =========================================
 // interface HostExecutable
@@ -200,6 +205,7 @@ bk_string BK_HostExecutable_getPath(BK_Env* env, BK_HostExecutable self);
 
 // Returns the version of this berkelium host executable.
 BK_HostVersion BK_HostExecutable_getVersion(BK_Env* env, BK_HostExecutable self);
+void BK_HostExecutable_free(BK_Env*, BK_HostExecutable self);
 
 // =========================================
 // interface Profile
@@ -233,6 +239,7 @@ void BK_Profile_setLocked(BK_Env* env, BK_Profile self, bk_bool locked);
 
 // Returns true if this Profile instance holds the Profile lock.
 bk_bool BK_Profile_isLocked(BK_Env* env, BK_Profile self);
+void BK_Profile_free(BK_Env*, BK_Profile self);
 
 // =========================================
 // interface Logger
@@ -241,6 +248,7 @@ void BK_Logger_debug(BK_Env* env, BK_Logger self, bk_string message);
 void BK_Logger_info(BK_Env* env, BK_Logger self, bk_string message);
 void BK_Logger_warn(BK_Env* env, BK_Logger self, bk_string message);
 void BK_Logger_error(BK_Env* env, BK_Logger self, bk_string message);
+void BK_Logger_free(BK_Env*, BK_Logger self);
 
 // =========================================
 // interface LogDelegate
@@ -296,6 +304,7 @@ BK_WindowList* BK_Instance_getWindowList(BK_Env* env, BK_Instance self);
 
 // Open a new window.
 BK_Window BK_Instance_createWindow(BK_Env* env, BK_Instance self, bk_bool incognito);
+void BK_Instance_free(BK_Env*, BK_Instance self);
 
 // =========================================
 // interface Window
@@ -324,6 +333,7 @@ void BK_Window_moveTo(BK_Env* env, BK_Window self, BK_Tab tab, bk_int32 index);
 
 // Returns true if this is a incognito window.
 bk_bool BK_Window_isIncognito(BK_Env* env, BK_Window self);
+void BK_Window_free(BK_Env*, BK_Window self);
 
 // =========================================
 // interface WindowDelegate
@@ -362,6 +372,7 @@ void BK_Tab_resize(BK_Env* env, BK_Tab self, bk_int32 width, bk_int32 height);
 
 // Set the URL of this tab. A new tab has the url “about:blank”.
 void BK_Tab_navigateTo(BK_Env* env, BK_Tab self, bk_string url);
+void BK_Tab_free(BK_Env*, BK_Tab self);
 
 // =========================================
 // interface TabDelegate

@@ -23,6 +23,21 @@ typedef std::shared_ptr<int8_t> ByteRef;
 typedef std::shared_ptr<int32_t> Int32Ref;
 #endif
 
+class Manager;
+typedef std::shared_ptr<Manager> ManagerRef;
+typedef std::weak_ptr<Manager> ManagerWRef;
+
+ManagerRef getManager(void* ptr);
+ManagerRef getManager(HostVersionRef id);
+ManagerRef getManager(RuntimeRef id);
+ManagerRef getManager(HostExecutableRef id);
+ManagerRef getManager(ProfileRef id);
+ManagerRef getManager(LoggerRef id);
+ManagerRef getManager(InstanceRef id);
+ManagerRef getManager(WindowRef id);
+ManagerRef getManager(TabRef id);
+ManagerRef getManager(TabDelegateRef id);
+
 void enableBerkeliumHostMode();
 TabRef newTab(WindowRef window, Ipc::ChannelRef ipc);
 WindowRef newWindow(InstanceRef instance, Ipc::ChannelRef channel, bool incognito);
@@ -31,6 +46,7 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process);
 HostVersionRef newVersion(RuntimeRef runtime, int32_t vMajor, int32_t vMinor, int32_t vBuild, int32_t vPatch);
 HostVersionRef newVersion(RuntimeRef runtime, const std::string& version);
+ManagerRef newManager(LogDelegateRef log);
 ProfileRef newProfile(RuntimeRef runtime, const std::string& application);
 ProfileRef getChromeProfile(RuntimeRef runtime);
 ProfileRef getChromiumProfile(RuntimeRef runtime);
@@ -45,9 +61,13 @@ private:										\
 	TypeName##Impl(const TypeName##Impl&);		\
 	void operator=(const TypeName##Impl&);	\
 	const RuntimeRef runtime;					\
+	const ManagerRef manager;					\
 	const LoggerRef logger;						\
 												\
 public:											\
+	ManagerRef getManager() {					\
+		return manager;							\
+	}											\
 	virtual RuntimeRef getRuntime() {			\
 		return runtime;							\
 	}
@@ -55,6 +75,7 @@ public:											\
 #define _BERKELIUM_IMPL_CTOR(TypeName, name, rt)		\
 	TypeName(),											\
 	runtime(rt),										\
+	manager(Berkelium::impl::getManager(runtime)),		\
 	logger(runtime->getLogger("##TypeName##", name))
 
 #define BERKELIUM_IMPL_CTOR1(TypeName)			\

@@ -12,7 +12,7 @@ package org.berkelium.api;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public interface Logger {
+public interface Logger extends BerkeliumObject  {
 
 	void debug(String message);
 

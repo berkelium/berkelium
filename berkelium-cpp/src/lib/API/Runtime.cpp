@@ -9,6 +9,7 @@
 #include <Berkelium/API/LogDelegate.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
+#include <Berkelium/Impl/Manager.hpp>
 
 #include <set>
 
@@ -65,30 +66,40 @@ private:
 	std::string defaultExecutable;
 	LogDelegateRefSet logs;
 	LogDelegateRef target;
+	ManagerRef manager;
 	RuntimeWRef self;
 
 	RuntimeImpl(const RuntimeImpl&);
 	void operator=(const RuntimeImpl&);
 
-	RuntimeImpl() :
+	RuntimeImpl(LogDelegateRef master, ManagerRef manager) :
 		Runtime(),
 		logger(),
 		defaultExecutable(""),
 		logs(),
 		target(new RuntimeLogDelegate()),
+		manager(manager),
 		self() {
+		addLogDelegate(master);
 	}
 
 public:
-	static RuntimeRef createRuntime() {
-		RuntimeImpl* impl = new RuntimeImpl();
+	inline ManagerRef getManager() {
+		return manager;
+	}
+
+	static RuntimeRef createRuntime(LogDelegateRef logger) {
+		ManagerRef manager = newManager(logger);
+		RuntimeImpl* impl = new RuntimeImpl(logger, manager);
 		RuntimeRef ret(impl);
 		impl->self = ret;
 		impl->logger = impl::newLogger(impl->target, ret, "Runtime", "");
+		manager->registerRuntime(ret);
 		return ret;
 	}
 
 	virtual ~RuntimeImpl() {
+		manager->unregisterRuntime();
 	}
 
 	RuntimeRef getSelf() {
@@ -184,10 +195,23 @@ public:
 	}
 };
 
+ManagerRef getManager(RuntimeRef runtime)
+{
+	if(!runtime) {
+		return ManagerRef();
+	}
+	RuntimeImpl* impl = (RuntimeImpl*)runtime.get();
+	return impl->getManager();
+}
+
 } // namespace impl
 
 RuntimeRef BerkeliumFactory::createRuntime() {
-	RuntimeRef ret(impl::RuntimeImpl::createRuntime());
+	return createRuntimeWithLog(Berkelium::impl::newLogDelegate());
+}
+
+RuntimeRef BerkeliumFactory::createRuntimeWithLog(LogDelegateRef log) {
+	RuntimeRef ret(impl::RuntimeImpl::createRuntime(log));
 	if(defaultRuntime.expired()) {
 		defaultRuntime = ret;
 	}
@@ -207,7 +231,6 @@ namespace Util {
 RuntimeRef createRuntime(int argc, char* argv[]) {
 	RuntimeRef ret(BerkeliumFactory::createRuntime());
 	Berkelium::Util::parseCommandLine(ret, argc, argv);
-	ret->addLogDelegate(impl::newLogDelegate());
 	return ret;
 }
 

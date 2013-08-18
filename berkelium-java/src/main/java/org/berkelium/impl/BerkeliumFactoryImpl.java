@@ -5,6 +5,7 @@
 package org.berkelium.impl;
 
 import org.berkelium.api.BerkeliumFactory;
+import org.berkelium.api.LogDelegate;
 import org.berkelium.api.Runtime;
 
 // =========================================
@@ -27,4 +28,7 @@ public class BerkeliumFactoryImpl extends BerkeliumFactory implements BerkeliumO
 
 	@Override
 	public native Runtime createRuntime();
+
+	@Override
+	public native Runtime createRuntimeWithLog(LogDelegate log);
 }

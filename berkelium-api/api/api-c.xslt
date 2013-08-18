@@ -97,7 +97,7 @@ typedef bk_bk_obj BK_Env_mapIn(BK_Env_Enum type, bk_ext_obj id, void* data);
 
 typedef bk_ext_obj BK_Env_mapOut(BK_Env_Enum type, bk_bk_obj id, void* data);
 
-typedef bk_ext_obj BK_Env_mapNew(BK_Env_Enum type, bk_bk_obj id, void* obj, void* data);
+typedef bk_ext_obj BK_Env_mapNew(BK_Env_Enum type, bk_bk_obj id, void* data);
 
 typedef void BK_Env_mapInError(BK_Env_Enum expected, BK_Env_Enum actual, bk_ext_obj id, void* data);
 
@@ -154,6 +154,15 @@ typedef struct {
 // =========================================
 </xsl:text>
 	<xsl:apply-templates select="entry"/>
+
+	<xsl:if test="@type='interface' and not(@delegate)">
+		<xsl:text>void BK_</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>_free(BK_Env*, BK_</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text> self);
+</xsl:text>
+	</xsl:if>
 </xsl:template>
 
 <!-- ============================================================= -->
@@ -167,6 +176,9 @@ typedef struct {
 		<xsl:if test="arg">
 			<xsl:text>, </xsl:text>
 		</xsl:if>
+	</xsl:if>
+	<xsl:if test="@static and arg">
+		<xsl:text>, </xsl:text>
 	</xsl:if>
 	<xsl:call-template name="arguments"/>
 </xsl:template>

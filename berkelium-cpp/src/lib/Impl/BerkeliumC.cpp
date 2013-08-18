@@ -24,7 +24,10 @@
 #include <Berkelium/API/Tab.hpp>
 #include <Berkelium/API/TabDelegate.hpp>
 
-#include "berkelium.h"
+#include <berkelium.h>
+
+#include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/Manager.hpp>
 
 #include <stdlib.h>
 #include <string.h>
@@ -56,240 +59,180 @@ inline Berkelium::RectRef mapInRectRef(BK_Env* env, BK_Rect& rect)
 
 inline Berkelium::HostVersionRef mapInHostVersionRef(BK_Env* env, bk_ext_obj extId)
 {
-	BK_Env_Enum type(HostVersion);
+	bk_bk_obj intId = env->mapIn(HostVersion, extId, env->data);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn HostVersion ext:%p not found\n", extId);
-		return Berkelium::HostVersionRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
+	if(!manager) {
+		fprintf(stderr, "error: manager in '%s' %p not found!\n", __FUNCTION__, intId);
 		return Berkelium::HostVersionRef();
 	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
 
-	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
-
-	Berkelium::HostVersionRef* ret((Berkelium::HostVersionRef*)tmp);
-
-	return Berkelium::HostVersionRef(*ret);
+	return manager->getHostVersion(intId);
 }
 
 inline bk_ext_obj mapOutHostVersionRef(BK_Env* env, Berkelium::HostVersionRef bk)
 {
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
+
+	if(!manager->locked(bk.get())) {
+		manager->lock(bk.get(), new Berkelium::HostVersionRef(bk));
+	}
+
 	BK_Env_Enum type(HostVersion);
 
 	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
 
 	if(ret == NULL) {
-		void* tmp = new Berkelium::HostVersionRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
+		ret = env->mapNew(type, bk.get(), env->data);
 	}
 
-	//fprintf(stderr, "mapOut HostVersion bk:%p ext:%p\n", bk.get(), ret);
-
-	return ret;
-}
-
-inline Berkelium::BerkeliumFactoryRef mapInBerkeliumFactoryRef(BK_Env* env, bk_ext_obj extId)
-{
-	BK_Env_Enum type(BerkeliumFactory);
-
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn BerkeliumFactory ext:%p not found\n", extId);
-		return Berkelium::BerkeliumFactoryRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
-		return Berkelium::BerkeliumFactoryRef();
-	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
-
-	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
-
-	Berkelium::BerkeliumFactoryRef* ret((Berkelium::BerkeliumFactoryRef*)tmp);
-
-	return Berkelium::BerkeliumFactoryRef(*ret);
-}
-
-inline bk_ext_obj mapOutBerkeliumFactoryRef(BK_Env* env, Berkelium::BerkeliumFactoryRef bk)
-{
-	BK_Env_Enum type(BerkeliumFactory);
-
-	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
-
-	if(ret == NULL) {
-		void* tmp = new Berkelium::BerkeliumFactoryRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
-	}
-
-	//fprintf(stderr, "mapOut BerkeliumFactory bk:%p ext:%p\n", bk.get(), ret);
+	/*
+	fprintf(stderr, "mapOut HostVersion bk:%p ext:%p\n", bk.get(), ret);
+	*/
 
 	return ret;
 }
 
 inline Berkelium::RuntimeRef mapInRuntimeRef(BK_Env* env, bk_ext_obj extId)
 {
-	BK_Env_Enum type(Runtime);
+	bk_bk_obj intId = env->mapIn(Runtime, extId, env->data);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn Runtime ext:%p not found\n", extId);
-		return Berkelium::RuntimeRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
+	if(!manager) {
+		fprintf(stderr, "error: manager in '%s' %p not found!\n", __FUNCTION__, intId);
 		return Berkelium::RuntimeRef();
 	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
 
-	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
-
-	Berkelium::RuntimeRef* ret((Berkelium::RuntimeRef*)tmp);
-
-	return Berkelium::RuntimeRef(*ret);
+	return manager->getRuntime(intId);
 }
 
 inline bk_ext_obj mapOutRuntimeRef(BK_Env* env, Berkelium::RuntimeRef bk)
 {
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
+
+	if(!manager->locked(bk.get())) {
+		manager->lock(bk.get(), new Berkelium::RuntimeRef(bk));
+	}
+
 	BK_Env_Enum type(Runtime);
 
 	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
 
 	if(ret == NULL) {
-		void* tmp = new Berkelium::RuntimeRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
+		ret = env->mapNew(type, bk.get(), env->data);
 	}
 
-	//fprintf(stderr, "mapOut Runtime bk:%p ext:%p\n", bk.get(), ret);
+	/*
+	fprintf(stderr, "mapOut Runtime bk:%p ext:%p\n", bk.get(), ret);
+	*/
 
 	return ret;
 }
 
 inline Berkelium::HostExecutableRef mapInHostExecutableRef(BK_Env* env, bk_ext_obj extId)
 {
-	BK_Env_Enum type(HostExecutable);
+	bk_bk_obj intId = env->mapIn(HostExecutable, extId, env->data);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn HostExecutable ext:%p not found\n", extId);
-		return Berkelium::HostExecutableRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
+	if(!manager) {
+		fprintf(stderr, "error: manager in '%s' %p not found!\n", __FUNCTION__, intId);
 		return Berkelium::HostExecutableRef();
 	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
 
-	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
-
-	Berkelium::HostExecutableRef* ret((Berkelium::HostExecutableRef*)tmp);
-
-	return Berkelium::HostExecutableRef(*ret);
+	return manager->getHostExecutable(intId);
 }
 
 inline bk_ext_obj mapOutHostExecutableRef(BK_Env* env, Berkelium::HostExecutableRef bk)
 {
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
+
+	if(!manager->locked(bk.get())) {
+		manager->lock(bk.get(), new Berkelium::HostExecutableRef(bk));
+	}
+
 	BK_Env_Enum type(HostExecutable);
 
 	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
 
 	if(ret == NULL) {
-		void* tmp = new Berkelium::HostExecutableRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
+		ret = env->mapNew(type, bk.get(), env->data);
 	}
 
-	//fprintf(stderr, "mapOut HostExecutable bk:%p ext:%p\n", bk.get(), ret);
+	/*
+	fprintf(stderr, "mapOut HostExecutable bk:%p ext:%p\n", bk.get(), ret);
+	*/
 
 	return ret;
 }
 
 inline Berkelium::ProfileRef mapInProfileRef(BK_Env* env, bk_ext_obj extId)
 {
-	BK_Env_Enum type(Profile);
+	bk_bk_obj intId = env->mapIn(Profile, extId, env->data);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn Profile ext:%p not found\n", extId);
-		return Berkelium::ProfileRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
+	if(!manager) {
+		fprintf(stderr, "error: manager in '%s' %p not found!\n", __FUNCTION__, intId);
 		return Berkelium::ProfileRef();
 	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
 
-	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
-
-	Berkelium::ProfileRef* ret((Berkelium::ProfileRef*)tmp);
-
-	return Berkelium::ProfileRef(*ret);
+	return manager->getProfile(intId);
 }
 
 inline bk_ext_obj mapOutProfileRef(BK_Env* env, Berkelium::ProfileRef bk)
 {
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
+
+	if(!manager->locked(bk.get())) {
+		manager->lock(bk.get(), new Berkelium::ProfileRef(bk));
+	}
+
 	BK_Env_Enum type(Profile);
 
 	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
 
 	if(ret == NULL) {
-		void* tmp = new Berkelium::ProfileRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
+		ret = env->mapNew(type, bk.get(), env->data);
 	}
 
-	//fprintf(stderr, "mapOut Profile bk:%p ext:%p\n", bk.get(), ret);
+	/*
+	fprintf(stderr, "mapOut Profile bk:%p ext:%p\n", bk.get(), ret);
+	*/
 
 	return ret;
 }
 
 inline Berkelium::LoggerRef mapInLoggerRef(BK_Env* env, bk_ext_obj extId)
 {
-	BK_Env_Enum type(Logger);
+	bk_bk_obj intId = env->mapIn(Logger, extId, env->data);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn Logger ext:%p not found\n", extId);
-		return Berkelium::LoggerRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
+	if(!manager) {
+		fprintf(stderr, "error: manager in '%s' %p not found!\n", __FUNCTION__, intId);
 		return Berkelium::LoggerRef();
 	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
 
-	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
-
-	Berkelium::LoggerRef* ret((Berkelium::LoggerRef*)tmp);
-
-	return Berkelium::LoggerRef(*ret);
+	return manager->getLogger(intId);
 }
 
 inline bk_ext_obj mapOutLoggerRef(BK_Env* env, Berkelium::LoggerRef bk)
 {
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
+
+	if(!manager->locked(bk.get())) {
+		manager->lock(bk.get(), new Berkelium::LoggerRef(bk));
+	}
+
 	BK_Env_Enum type(Logger);
 
 	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
 
 	if(ret == NULL) {
-		void* tmp = new Berkelium::LoggerRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
+		ret = env->mapNew(type, bk.get(), env->data);
 	}
 
-	//fprintf(stderr, "mapOut Logger bk:%p ext:%p\n", bk.get(), ret);
+	/*
+	fprintf(stderr, "mapOut Logger bk:%p ext:%p\n", bk.get(), ret);
+	*/
 
 	return ret;
 }
@@ -298,158 +241,92 @@ inline Berkelium::LogDelegateRef mapInLogDelegateRef(BK_Env* env, bk_ext_obj ext
 {
 	BK_Env_Enum type(LogDelegate);
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn LogDelegate ext:%p not found\n", extId);
-		return Berkelium::LogDelegateRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
-		return Berkelium::LogDelegateRef();
-	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
-
 	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
 
 	Berkelium::LogDelegateRef* ret((Berkelium::LogDelegateRef*)tmp);
 
 	return Berkelium::LogDelegateRef(*ret);
 }
 
-inline bk_ext_obj mapOutLogDelegateRef(BK_Env* env, Berkelium::LogDelegateRef bk)
-{
-	BK_Env_Enum type(LogDelegate);
-
-	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
-
-	if(ret == NULL) {
-		void* tmp = new Berkelium::LogDelegateRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
-	}
-
-	//fprintf(stderr, "mapOut LogDelegate bk:%p ext:%p\n", bk.get(), ret);
-
-	return ret;
-}
-
 inline Berkelium::HostDelegateRef mapInHostDelegateRef(BK_Env* env, bk_ext_obj extId)
 {
 	BK_Env_Enum type(HostDelegate);
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn HostDelegate ext:%p not found\n", extId);
-		return Berkelium::HostDelegateRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
-		return Berkelium::HostDelegateRef();
-	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
-
 	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
 
 	Berkelium::HostDelegateRef* ret((Berkelium::HostDelegateRef*)tmp);
 
 	return Berkelium::HostDelegateRef(*ret);
 }
 
-inline bk_ext_obj mapOutHostDelegateRef(BK_Env* env, Berkelium::HostDelegateRef bk)
-{
-	BK_Env_Enum type(HostDelegate);
-
-	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
-
-	if(ret == NULL) {
-		void* tmp = new Berkelium::HostDelegateRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
-	}
-
-	//fprintf(stderr, "mapOut HostDelegate bk:%p ext:%p\n", bk.get(), ret);
-
-	return ret;
-}
-
 inline Berkelium::InstanceRef mapInInstanceRef(BK_Env* env, bk_ext_obj extId)
 {
-	BK_Env_Enum type(Instance);
+	bk_bk_obj intId = env->mapIn(Instance, extId, env->data);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn Instance ext:%p not found\n", extId);
-		return Berkelium::InstanceRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
+	if(!manager) {
+		fprintf(stderr, "error: manager in '%s' %p not found!\n", __FUNCTION__, intId);
 		return Berkelium::InstanceRef();
 	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
 
-	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
-
-	Berkelium::InstanceRef* ret((Berkelium::InstanceRef*)tmp);
-
-	return Berkelium::InstanceRef(*ret);
+	return manager->getInstance(intId);
 }
 
 inline bk_ext_obj mapOutInstanceRef(BK_Env* env, Berkelium::InstanceRef bk)
 {
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
+
+	if(!manager->locked(bk.get())) {
+		manager->lock(bk.get(), new Berkelium::InstanceRef(bk));
+	}
+
 	BK_Env_Enum type(Instance);
 
 	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
 
 	if(ret == NULL) {
-		void* tmp = new Berkelium::InstanceRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
+		ret = env->mapNew(type, bk.get(), env->data);
 	}
 
-	//fprintf(stderr, "mapOut Instance bk:%p ext:%p\n", bk.get(), ret);
+	/*
+	fprintf(stderr, "mapOut Instance bk:%p ext:%p\n", bk.get(), ret);
+	*/
 
 	return ret;
 }
 
 inline Berkelium::WindowRef mapInWindowRef(BK_Env* env, bk_ext_obj extId)
 {
-	BK_Env_Enum type(Window);
+	bk_bk_obj intId = env->mapIn(Window, extId, env->data);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn Window ext:%p not found\n", extId);
-		return Berkelium::WindowRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
+	if(!manager) {
+		fprintf(stderr, "error: manager in '%s' %p not found!\n", __FUNCTION__, intId);
 		return Berkelium::WindowRef();
 	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
 
-	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
-
-	Berkelium::WindowRef* ret((Berkelium::WindowRef*)tmp);
-
-	return Berkelium::WindowRef(*ret);
+	return manager->getWindow(intId);
 }
 
 inline bk_ext_obj mapOutWindowRef(BK_Env* env, Berkelium::WindowRef bk)
 {
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
+
+	if(!manager->locked(bk.get())) {
+		manager->lock(bk.get(), new Berkelium::WindowRef(bk));
+	}
+
 	BK_Env_Enum type(Window);
 
 	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
 
 	if(ret == NULL) {
-		void* tmp = new Berkelium::WindowRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
+		ret = env->mapNew(type, bk.get(), env->data);
 	}
 
-	//fprintf(stderr, "mapOut Window bk:%p ext:%p\n", bk.get(), ret);
+	/*
+	fprintf(stderr, "mapOut Window bk:%p ext:%p\n", bk.get(), ret);
+	*/
 
 	return ret;
 }
@@ -458,78 +335,45 @@ inline Berkelium::WindowDelegateRef mapInWindowDelegateRef(BK_Env* env, bk_ext_o
 {
 	BK_Env_Enum type(WindowDelegate);
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn WindowDelegate ext:%p not found\n", extId);
-		return Berkelium::WindowDelegateRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
-		return Berkelium::WindowDelegateRef();
-	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
-
 	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
 
 	Berkelium::WindowDelegateRef* ret((Berkelium::WindowDelegateRef*)tmp);
 
 	return Berkelium::WindowDelegateRef(*ret);
 }
 
-inline bk_ext_obj mapOutWindowDelegateRef(BK_Env* env, Berkelium::WindowDelegateRef bk)
-{
-	BK_Env_Enum type(WindowDelegate);
-
-	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
-
-	if(ret == NULL) {
-		void* tmp = new Berkelium::WindowDelegateRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
-	}
-
-	//fprintf(stderr, "mapOut WindowDelegate bk:%p ext:%p\n", bk.get(), ret);
-
-	return ret;
-}
-
 inline Berkelium::TabRef mapInTabRef(BK_Env* env, bk_ext_obj extId)
 {
-	BK_Env_Enum type(Tab);
+	bk_bk_obj intId = env->mapIn(Tab, extId, env->data);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn Tab ext:%p not found\n", extId);
-		return Berkelium::TabRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
+	if(!manager) {
+		fprintf(stderr, "error: manager in '%s' %p not found!\n", __FUNCTION__, intId);
 		return Berkelium::TabRef();
 	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
 
-	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
-
-	Berkelium::TabRef* ret((Berkelium::TabRef*)tmp);
-
-	return Berkelium::TabRef(*ret);
+	return manager->getTab(intId);
 }
 
 inline bk_ext_obj mapOutTabRef(BK_Env* env, Berkelium::TabRef bk)
 {
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
+
+	if(!manager->locked(bk.get())) {
+		manager->lock(bk.get(), new Berkelium::TabRef(bk));
+	}
+
 	BK_Env_Enum type(Tab);
 
 	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
 
 	if(ret == NULL) {
-		void* tmp = new Berkelium::TabRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
+		ret = env->mapNew(type, bk.get(), env->data);
 	}
 
-	//fprintf(stderr, "mapOut Tab bk:%p ext:%p\n", bk.get(), ret);
+	/*
+	fprintf(stderr, "mapOut Tab bk:%p ext:%p\n", bk.get(), ret);
+	*/
 
 	return ret;
 }
@@ -538,18 +382,7 @@ inline Berkelium::TabDelegateRef mapInTabDelegateRef(BK_Env* env, bk_ext_obj ext
 {
 	BK_Env_Enum type(TabDelegate);
 
-	/*bk_type_map::iterator it(bk_types.find(extId));
-	if(it == bk_types.end()) {
-		fprintf(stderr, "mapIn TabDelegate ext:%p not found\n", extId);
-		return Berkelium::TabDelegateRef();
-	} else if(it->second != type) {
-		env->mapInError(type, it->second, extId, env->data);
-		return Berkelium::TabDelegateRef();
-	}
-	fprintf(stderr, "mapIn %p found\n", extId);*/
-
 	void* tmp = env->mapIn(type, extId, env->data);
-	//fprintf(stderr, "mapIn %p\n", tmp);
 
 	Berkelium::TabDelegateRef* ret((Berkelium::TabDelegateRef*)tmp);
 
@@ -558,18 +391,23 @@ inline Berkelium::TabDelegateRef mapInTabDelegateRef(BK_Env* env, bk_ext_obj ext
 
 inline bk_ext_obj mapOutTabDelegateRef(BK_Env* env, Berkelium::TabDelegateRef bk)
 {
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
+
+	if(!manager->locked(bk.get())) {
+		manager->lock(bk.get(), new Berkelium::TabDelegateRef(bk));
+	}
+
 	BK_Env_Enum type(TabDelegate);
 
 	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
 
 	if(ret == NULL) {
-		void* tmp = new Berkelium::TabDelegateRef(bk);
-		ret = env->mapNew(type, bk.get(), tmp, env->data);
-		//bk_types.insert(bk_type_pair(ret, type));
-		//fprintf(stderr, "mapNew %p = %d (%p)\n", ret, type, tmp);
+		ret = env->mapNew(type, bk.get(), env->data);
 	}
 
-	//fprintf(stderr, "mapOut TabDelegate bk:%p ext:%p\n", bk.get(), ret);
+	/*
+	fprintf(stderr, "mapOut TabDelegate bk:%p ext:%p\n", bk.get(), ret);
+	*/
 
 	return ret;
 }
@@ -613,9 +451,6 @@ const char* BK_Env_Enum_To_String_Or_Null(BK_Env_Enum type)
 	switch(type) {
 		case HostVersion:
 			return "HostVersion";
-
-		case BerkeliumFactory:
-			return "BerkeliumFactory";
 
 		case Runtime:
 			return "Runtime";
@@ -670,10 +505,10 @@ const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type)
 
 extern "C" BK_Runtime BK_HostVersion_getRuntime(BK_Env* env, BK_HostVersion self)
 {
-
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -682,10 +517,10 @@ extern "C" BK_Runtime BK_HostVersion_getRuntime(BK_Env* env, BK_HostVersion self
 
 extern "C" bk_string BK_HostVersion_getVersionString(BK_Env* env, BK_HostVersion self)
 {
-
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -694,10 +529,10 @@ extern "C" bk_string BK_HostVersion_getVersionString(BK_Env* env, BK_HostVersion
 
 extern "C" bk_int32 BK_HostVersion_getMajor(BK_Env* env, BK_HostVersion self)
 {
-
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return 0;
 	}
 
@@ -706,10 +541,10 @@ extern "C" bk_int32 BK_HostVersion_getMajor(BK_Env* env, BK_HostVersion self)
 
 extern "C" bk_int32 BK_HostVersion_getMinor(BK_Env* env, BK_HostVersion self)
 {
-
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return 0;
 	}
 
@@ -718,10 +553,10 @@ extern "C" bk_int32 BK_HostVersion_getMinor(BK_Env* env, BK_HostVersion self)
 
 extern "C" bk_int32 BK_HostVersion_getBuild(BK_Env* env, BK_HostVersion self)
 {
-
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return 0;
 	}
 
@@ -730,10 +565,10 @@ extern "C" bk_int32 BK_HostVersion_getBuild(BK_Env* env, BK_HostVersion self)
 
 extern "C" bk_int32 BK_HostVersion_getPatch(BK_Env* env, BK_HostVersion self)
 {
-
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return 0;
 	}
 
@@ -742,14 +577,37 @@ extern "C" bk_int32 BK_HostVersion_getPatch(BK_Env* env, BK_HostVersion self)
 
 extern "C" bk_bool BK_HostVersion_isMinVersion(BK_Env* env, BK_HostVersion self, bk_string version)
 {
-
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return false;
 	}
 
 	return _this->isMinVersion(version);
+}
+
+extern "C" void BK_HostVersion_free(BK_Env* env, BK_HostVersion self)
+{
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
+	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
+
+	if(!_this) {
+		fprintf(stderr, "already freed HostVersion %p!\n", self);
+		return;
+	}
+
+	void* result = manager->unlock(self);
+
+	if(result == NULL) {
+		fprintf(stderr, "can't free HostVersion %p!\n", self);
+	} else {
+		delete (Berkelium::HostVersionRef*)result;
+		/*
+		fprintf(stderr, "freed HostVersion %p!\n", self);
+		*/
+	}
+
 }
 
 // =========================================
@@ -766,16 +624,21 @@ extern "C" BK_Runtime BK_BerkeliumFactory_createRuntime(BK_Env* env)
 	return mapOutRuntimeRef(env, Berkelium::BerkeliumFactory::createRuntime());
 }
 
+extern "C" BK_Runtime BK_BerkeliumFactory_createRuntimeWithLog(BK_Env* env, BK_LogDelegate log)
+{
+	return mapOutRuntimeRef(env, Berkelium::BerkeliumFactory::createRuntimeWithLog(mapInLogDelegateRef(env, log)));
+}
+
 // =========================================
 // interface Runtime
 // =========================================
 
 extern "C" void BK_Runtime_setDefaultExecutable(BK_Env* env, BK_Runtime self, bk_string pathTo)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -784,10 +647,10 @@ extern "C" void BK_Runtime_setDefaultExecutable(BK_Env* env, BK_Runtime self, bk
 
 extern "C" BK_HostExecutable BK_Runtime_forExecutable(BK_Env* env, BK_Runtime self, bk_string pathTo)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -796,10 +659,10 @@ extern "C" BK_HostExecutable BK_Runtime_forExecutable(BK_Env* env, BK_Runtime se
 
 extern "C" BK_HostExecutable BK_Runtime_forSystemInstalled(BK_Env* env, BK_Runtime self)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -808,10 +671,10 @@ extern "C" BK_HostExecutable BK_Runtime_forSystemInstalled(BK_Env* env, BK_Runti
 
 extern "C" BK_Profile BK_Runtime_forProfile(BK_Env* env, BK_Runtime self, bk_string application)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -820,10 +683,10 @@ extern "C" BK_Profile BK_Runtime_forProfile(BK_Env* env, BK_Runtime self, bk_str
 
 extern "C" BK_Profile BK_Runtime_getChromeProfile(BK_Env* env, BK_Runtime self)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -832,10 +695,10 @@ extern "C" BK_Profile BK_Runtime_getChromeProfile(BK_Env* env, BK_Runtime self)
 
 extern "C" BK_Profile BK_Runtime_getChromiumProfile(BK_Env* env, BK_Runtime self)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -844,10 +707,10 @@ extern "C" BK_Profile BK_Runtime_getChromiumProfile(BK_Env* env, BK_Runtime self
 
 extern "C" BK_Profile BK_Runtime_forProfilePath(BK_Env* env, BK_Runtime self, bk_string path)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -856,10 +719,10 @@ extern "C" BK_Profile BK_Runtime_forProfilePath(BK_Env* env, BK_Runtime self, bk
 
 extern "C" BK_Profile BK_Runtime_createTemporaryProfile(BK_Env* env, BK_Runtime self)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -868,10 +731,10 @@ extern "C" BK_Profile BK_Runtime_createTemporaryProfile(BK_Env* env, BK_Runtime 
 
 extern "C" BK_HostVersion BK_Runtime_forVersionS(BK_Env* env, BK_Runtime self, bk_string version)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -880,10 +743,10 @@ extern "C" BK_HostVersion BK_Runtime_forVersionS(BK_Env* env, BK_Runtime self, b
 
 extern "C" BK_HostVersion BK_Runtime_forVersion4I(BK_Env* env, BK_Runtime self, bk_int32 vMajor, bk_int32 vMinor, bk_int32 vBuild, bk_int32 vPatch)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -892,10 +755,10 @@ extern "C" BK_HostVersion BK_Runtime_forVersion4I(BK_Env* env, BK_Runtime self, 
 
 extern "C" BK_Instance BK_Runtime_open(BK_Env* env, BK_Runtime self, BK_HostExecutable executable, BK_Profile profile)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -904,10 +767,10 @@ extern "C" BK_Instance BK_Runtime_open(BK_Env* env, BK_Runtime self, BK_HostExec
 
 extern "C" BK_Logger BK_Runtime_getLogger(BK_Env* env, BK_Runtime self, bk_string clazz, bk_string name)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -916,10 +779,10 @@ extern "C" BK_Logger BK_Runtime_getLogger(BK_Env* env, BK_Runtime self, bk_strin
 
 extern "C" void BK_Runtime_addLogDelegate(BK_Env* env, BK_Runtime self, BK_LogDelegate delegate)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -928,10 +791,10 @@ extern "C" void BK_Runtime_addLogDelegate(BK_Env* env, BK_Runtime self, BK_LogDe
 
 extern "C" void BK_Runtime_removeLogDelegate(BK_Env* env, BK_Runtime self, BK_LogDelegate delegate)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -940,14 +803,38 @@ extern "C" void BK_Runtime_removeLogDelegate(BK_Env* env, BK_Runtime self, BK_Lo
 
 extern "C" void BK_Runtime_log(BK_Env* env, BK_Runtime self, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string name, bk_string message)
 {
-
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
 	_this->log((Berkelium::LogSource)source, (Berkelium::LogType)type, clazz, name, message);
+}
+
+extern "C" void BK_Runtime_free(BK_Env* env, BK_Runtime self)
+{
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
+	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
+
+	if(!_this) {
+		fprintf(stderr, "already freed Runtime %p!\n", self);
+		return;
+	}
+
+	void* result = manager->unlock(self);
+
+	if(result == NULL) {
+		fprintf(stderr, "can't free Runtime %p!\n", self);
+	} else {
+		delete (Berkelium::RuntimeRef*)result;
+		/*
+		fprintf(stderr, "freed Runtime %p!\n", self);
+		*/
+	}
+
+	manager.reset();
 }
 
 // =========================================
@@ -956,10 +843,10 @@ extern "C" void BK_Runtime_log(BK_Env* env, BK_Runtime self, BK_LogSource source
 
 extern "C" BK_Runtime BK_HostExecutable_getRuntime(BK_Env* env, BK_HostExecutable self)
 {
-
 	Berkelium::HostExecutableRef _this(mapInHostExecutableRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -968,10 +855,10 @@ extern "C" BK_Runtime BK_HostExecutable_getRuntime(BK_Env* env, BK_HostExecutabl
 
 extern "C" bk_string BK_HostExecutable_getPath(BK_Env* env, BK_HostExecutable self)
 {
-
 	Berkelium::HostExecutableRef _this(mapInHostExecutableRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -980,14 +867,37 @@ extern "C" bk_string BK_HostExecutable_getPath(BK_Env* env, BK_HostExecutable se
 
 extern "C" BK_HostVersion BK_HostExecutable_getVersion(BK_Env* env, BK_HostExecutable self)
 {
-
 	Berkelium::HostExecutableRef _this(mapInHostExecutableRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
 	return mapOutHostVersionRef(env, _this->getVersion());
+}
+
+extern "C" void BK_HostExecutable_free(BK_Env* env, BK_HostExecutable self)
+{
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
+	Berkelium::HostExecutableRef _this(mapInHostExecutableRef(env, self));
+
+	if(!_this) {
+		fprintf(stderr, "already freed HostExecutable %p!\n", self);
+		return;
+	}
+
+	void* result = manager->unlock(self);
+
+	if(result == NULL) {
+		fprintf(stderr, "can't free HostExecutable %p!\n", self);
+	} else {
+		delete (Berkelium::HostExecutableRef*)result;
+		/*
+		fprintf(stderr, "freed HostExecutable %p!\n", self);
+		*/
+	}
+
 }
 
 // =========================================
@@ -996,10 +906,10 @@ extern "C" BK_HostVersion BK_HostExecutable_getVersion(BK_Env* env, BK_HostExecu
 
 extern "C" BK_Runtime BK_Profile_getRuntime(BK_Env* env, BK_Profile self)
 {
-
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1008,10 +918,10 @@ extern "C" BK_Runtime BK_Profile_getRuntime(BK_Env* env, BK_Profile self)
 
 extern "C" bk_bool BK_Profile_isInUse(BK_Env* env, BK_Profile self)
 {
-
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return false;
 	}
 
@@ -1020,10 +930,10 @@ extern "C" bk_bool BK_Profile_isInUse(BK_Env* env, BK_Profile self)
 
 extern "C" bk_bool BK_Profile_isFound(BK_Env* env, BK_Profile self)
 {
-
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return false;
 	}
 
@@ -1032,10 +942,10 @@ extern "C" bk_bool BK_Profile_isFound(BK_Env* env, BK_Profile self)
 
 extern "C" bk_bool BK_Profile_isSameVersion(BK_Env* env, BK_Profile self)
 {
-
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return false;
 	}
 
@@ -1044,10 +954,10 @@ extern "C" bk_bool BK_Profile_isSameVersion(BK_Env* env, BK_Profile self)
 
 extern "C" bk_bool BK_Profile_isTooNew(BK_Env* env, BK_Profile self)
 {
-
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return false;
 	}
 
@@ -1056,10 +966,10 @@ extern "C" bk_bool BK_Profile_isTooNew(BK_Env* env, BK_Profile self)
 
 extern "C" bk_string BK_Profile_getApplicationName(BK_Env* env, BK_Profile self)
 {
-
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1068,10 +978,10 @@ extern "C" bk_string BK_Profile_getApplicationName(BK_Env* env, BK_Profile self)
 
 extern "C" bk_string BK_Profile_getProfilePath(BK_Env* env, BK_Profile self)
 {
-
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1080,10 +990,10 @@ extern "C" bk_string BK_Profile_getProfilePath(BK_Env* env, BK_Profile self)
 
 extern "C" void BK_Profile_setLocked(BK_Env* env, BK_Profile self, bk_bool locked)
 {
-
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1092,22 +1002,49 @@ extern "C" void BK_Profile_setLocked(BK_Env* env, BK_Profile self, bk_bool locke
 
 extern "C" bk_bool BK_Profile_isLocked(BK_Env* env, BK_Profile self)
 {
-
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return false;
 	}
 
 	return _this->isLocked();
 }
 
+extern "C" void BK_Profile_free(BK_Env* env, BK_Profile self)
+{
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
+	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
+
+	if(!_this) {
+		fprintf(stderr, "already freed Profile %p!\n", self);
+		return;
+	}
+
+	void* result = manager->unlock(self);
+
+	if(result == NULL) {
+		fprintf(stderr, "can't free Profile %p!\n", self);
+	} else {
+		delete (Berkelium::ProfileRef*)result;
+		/*
+		fprintf(stderr, "freed Profile %p!\n", self);
+		*/
+	}
+
+}
+
+// =========================================
+// interface Logger
+// =========================================
+
 extern "C" void BK_Logger_debug(BK_Env* env, BK_Logger self, bk_string message)
 {
-
 	Berkelium::LoggerRef _this(mapInLoggerRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1116,10 +1053,10 @@ extern "C" void BK_Logger_debug(BK_Env* env, BK_Logger self, bk_string message)
 
 extern "C" void BK_Logger_info(BK_Env* env, BK_Logger self, bk_string message)
 {
-
 	Berkelium::LoggerRef _this(mapInLoggerRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1128,10 +1065,10 @@ extern "C" void BK_Logger_info(BK_Env* env, BK_Logger self, bk_string message)
 
 extern "C" void BK_Logger_warn(BK_Env* env, BK_Logger self, bk_string message)
 {
-
 	Berkelium::LoggerRef _this(mapInLoggerRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1140,22 +1077,45 @@ extern "C" void BK_Logger_warn(BK_Env* env, BK_Logger self, bk_string message)
 
 extern "C" void BK_Logger_error(BK_Env* env, BK_Logger self, bk_string message)
 {
-
 	Berkelium::LoggerRef _this(mapInLoggerRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
 	_this->error(message);
 }
 
+extern "C" void BK_Logger_free(BK_Env* env, BK_Logger self)
+{
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
+	Berkelium::LoggerRef _this(mapInLoggerRef(env, self));
+
+	if(!_this) {
+		fprintf(stderr, "already freed Logger %p!\n", self);
+		return;
+	}
+
+	void* result = manager->unlock(self);
+
+	if(result == NULL) {
+		fprintf(stderr, "can't free Logger %p!\n", self);
+	} else {
+		delete (Berkelium::LoggerRef*)result;
+		/*
+		fprintf(stderr, "freed Logger %p!\n", self);
+		*/
+	}
+
+}
+
 extern "C" void BK_LogDelegate_log(BK_Env* env, BK_LogDelegate self, BK_Runtime runtime, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string name, bk_string message)
 {
-
 	Berkelium::LogDelegateRef _this(mapInLogDelegateRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1164,10 +1124,10 @@ extern "C" void BK_LogDelegate_log(BK_Env* env, BK_LogDelegate self, BK_Runtime 
 
 extern "C" void BK_HostDelegate_onCrashed(BK_Env* env, BK_HostDelegate self, BK_Instance instance)
 {
-
 	Berkelium::HostDelegateRef _this(mapInHostDelegateRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1176,10 +1136,10 @@ extern "C" void BK_HostDelegate_onCrashed(BK_Env* env, BK_HostDelegate self, BK_
 
 extern "C" void BK_HostDelegate_onClosed(BK_Env* env, BK_HostDelegate self, BK_Instance instance)
 {
-
 	Berkelium::HostDelegateRef _this(mapInHostDelegateRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1192,10 +1152,10 @@ extern "C" void BK_HostDelegate_onClosed(BK_Env* env, BK_HostDelegate self, BK_I
 
 extern "C" BK_Runtime BK_Instance_getRuntime(BK_Env* env, BK_Instance self)
 {
-
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1204,10 +1164,10 @@ extern "C" BK_Runtime BK_Instance_getRuntime(BK_Env* env, BK_Instance self)
 
 extern "C" void BK_Instance_internalUpdate(BK_Env* env, BK_Instance self)
 {
-
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1216,10 +1176,10 @@ extern "C" void BK_Instance_internalUpdate(BK_Env* env, BK_Instance self)
 
 extern "C" void BK_Instance_close(BK_Env* env, BK_Instance self)
 {
-
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1228,10 +1188,10 @@ extern "C" void BK_Instance_close(BK_Env* env, BK_Instance self)
 
 extern "C" BK_Profile BK_Instance_getProfile(BK_Env* env, BK_Instance self)
 {
-
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1240,10 +1200,10 @@ extern "C" BK_Profile BK_Instance_getProfile(BK_Env* env, BK_Instance self)
 
 extern "C" BK_HostExecutable BK_Instance_getExecutable(BK_Env* env, BK_Instance self)
 {
-
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1252,10 +1212,10 @@ extern "C" BK_HostExecutable BK_Instance_getExecutable(BK_Env* env, BK_Instance 
 
 extern "C" void BK_Instance_addHostDelegate(BK_Env* env, BK_Instance self, BK_HostDelegate delegate)
 {
-
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1264,10 +1224,10 @@ extern "C" void BK_Instance_addHostDelegate(BK_Env* env, BK_Instance self, BK_Ho
 
 extern "C" void BK_Instance_removeHostDelegate(BK_Env* env, BK_Instance self, BK_HostDelegate delegate)
 {
-
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1276,10 +1236,10 @@ extern "C" void BK_Instance_removeHostDelegate(BK_Env* env, BK_Instance self, BK
 
 extern "C" bk_int32 BK_Instance_getWindowCount(BK_Env* env, BK_Instance self)
 {
-
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return 0;
 	}
 
@@ -1288,10 +1248,10 @@ extern "C" bk_int32 BK_Instance_getWindowCount(BK_Env* env, BK_Instance self)
 
 extern "C" BK_WindowList* BK_Instance_getWindowList(BK_Env* env, BK_Instance self)
 {
-
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1300,14 +1260,37 @@ extern "C" BK_WindowList* BK_Instance_getWindowList(BK_Env* env, BK_Instance sel
 
 extern "C" BK_Window BK_Instance_createWindow(BK_Env* env, BK_Instance self, bk_bool incognito)
 {
-
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
 	return mapOutWindowRef(env, _this->createWindow(incognito));
+}
+
+extern "C" void BK_Instance_free(BK_Env* env, BK_Instance self)
+{
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
+	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
+
+	if(!_this) {
+		fprintf(stderr, "already freed Instance %p!\n", self);
+		return;
+	}
+
+	void* result = manager->unlock(self);
+
+	if(result == NULL) {
+		fprintf(stderr, "can't free Instance %p!\n", self);
+	} else {
+		delete (Berkelium::InstanceRef*)result;
+		/*
+		fprintf(stderr, "freed Instance %p!\n", self);
+		*/
+	}
+
 }
 
 // =========================================
@@ -1316,10 +1299,10 @@ extern "C" BK_Window BK_Instance_createWindow(BK_Env* env, BK_Instance self, bk_
 
 extern "C" BK_Runtime BK_Window_getRuntime(BK_Env* env, BK_Window self)
 {
-
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1328,10 +1311,10 @@ extern "C" BK_Runtime BK_Window_getRuntime(BK_Env* env, BK_Window self)
 
 extern "C" void BK_Window_internalUpdate(BK_Env* env, BK_Window self)
 {
-
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1340,10 +1323,10 @@ extern "C" void BK_Window_internalUpdate(BK_Env* env, BK_Window self)
 
 extern "C" bk_int32 BK_Window_getTabCount(BK_Env* env, BK_Window self)
 {
-
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return 0;
 	}
 
@@ -1352,10 +1335,10 @@ extern "C" bk_int32 BK_Window_getTabCount(BK_Env* env, BK_Window self)
 
 extern "C" BK_TabList* BK_Window_getTabList(BK_Env* env, BK_Window self)
 {
-
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1364,10 +1347,10 @@ extern "C" BK_TabList* BK_Window_getTabList(BK_Env* env, BK_Window self)
 
 extern "C" BK_Tab BK_Window_createTab(BK_Env* env, BK_Window self)
 {
-
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1376,10 +1359,10 @@ extern "C" BK_Tab BK_Window_createTab(BK_Env* env, BK_Window self)
 
 extern "C" BK_Instance BK_Window_getInstance(BK_Env* env, BK_Window self)
 {
-
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1388,10 +1371,10 @@ extern "C" BK_Instance BK_Window_getInstance(BK_Env* env, BK_Window self)
 
 extern "C" void BK_Window_moveTo(BK_Env* env, BK_Window self, BK_Tab tab, bk_int32 index)
 {
-
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1400,14 +1383,37 @@ extern "C" void BK_Window_moveTo(BK_Env* env, BK_Window self, BK_Tab tab, bk_int
 
 extern "C" bk_bool BK_Window_isIncognito(BK_Env* env, BK_Window self)
 {
-
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return false;
 	}
 
 	return _this->isIncognito();
+}
+
+extern "C" void BK_Window_free(BK_Env* env, BK_Window self)
+{
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
+	Berkelium::WindowRef _this(mapInWindowRef(env, self));
+
+	if(!_this) {
+		fprintf(stderr, "already freed Window %p!\n", self);
+		return;
+	}
+
+	void* result = manager->unlock(self);
+
+	if(result == NULL) {
+		fprintf(stderr, "can't free Window %p!\n", self);
+	} else {
+		delete (Berkelium::WindowRef*)result;
+		/*
+		fprintf(stderr, "freed Window %p!\n", self);
+		*/
+	}
+
 }
 
 // =========================================
@@ -1416,10 +1422,10 @@ extern "C" bk_bool BK_Window_isIncognito(BK_Env* env, BK_Window self)
 
 extern "C" BK_Runtime BK_Tab_getRuntime(BK_Env* env, BK_Tab self)
 {
-
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1428,10 +1434,10 @@ extern "C" BK_Runtime BK_Tab_getRuntime(BK_Env* env, BK_Tab self)
 
 extern "C" void BK_Tab_internalUpdate(BK_Env* env, BK_Tab self)
 {
-
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1440,10 +1446,10 @@ extern "C" void BK_Tab_internalUpdate(BK_Env* env, BK_Tab self)
 
 extern "C" void BK_Tab_close(BK_Env* env, BK_Tab self)
 {
-
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1452,10 +1458,10 @@ extern "C" void BK_Tab_close(BK_Env* env, BK_Tab self)
 
 extern "C" void BK_Tab_sync(BK_Env* env, BK_Tab self)
 {
-
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1464,10 +1470,10 @@ extern "C" void BK_Tab_sync(BK_Env* env, BK_Tab self)
 
 extern "C" BK_TabDelegate BK_Tab_getTabDelegate(BK_Env* env, BK_Tab self)
 {
-
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1476,10 +1482,10 @@ extern "C" BK_TabDelegate BK_Tab_getTabDelegate(BK_Env* env, BK_Tab self)
 
 extern "C" void BK_Tab_addTabDelegate(BK_Env* env, BK_Tab self, BK_TabDelegate delegate)
 {
-
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1488,10 +1494,10 @@ extern "C" void BK_Tab_addTabDelegate(BK_Env* env, BK_Tab self, BK_TabDelegate d
 
 extern "C" void BK_Tab_removeTabDelegate(BK_Env* env, BK_Tab self, BK_TabDelegate delegate)
 {
-
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1500,10 +1506,10 @@ extern "C" void BK_Tab_removeTabDelegate(BK_Env* env, BK_Tab self, BK_TabDelegat
 
 extern "C" BK_Window BK_Tab_getWindow(BK_Env* env, BK_Tab self)
 {
-
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return NULL;
 	}
 
@@ -1512,10 +1518,10 @@ extern "C" BK_Window BK_Tab_getWindow(BK_Env* env, BK_Tab self)
 
 extern "C" void BK_Tab_resize(BK_Env* env, BK_Tab self, bk_int32 width, bk_int32 height)
 {
-
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1524,22 +1530,45 @@ extern "C" void BK_Tab_resize(BK_Env* env, BK_Tab self, bk_int32 width, bk_int32
 
 extern "C" void BK_Tab_navigateTo(BK_Env* env, BK_Tab self, bk_string url)
 {
-
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
 	_this->navigateTo(url);
 }
 
+extern "C" void BK_Tab_free(BK_Env* env, BK_Tab self)
+{
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
+	Berkelium::TabRef _this(mapInTabRef(env, self));
+
+	if(!_this) {
+		fprintf(stderr, "already freed Tab %p!\n", self);
+		return;
+	}
+
+	void* result = manager->unlock(self);
+
+	if(result == NULL) {
+		fprintf(stderr, "can't free Tab %p!\n", self);
+	} else {
+		delete (Berkelium::TabRef*)result;
+		/*
+		fprintf(stderr, "freed Tab %p!\n", self);
+		*/
+	}
+
+}
+
 extern "C" void BK_TabDelegate_onClosed(BK_Env* env, BK_TabDelegate self, BK_Tab tab)
 {
-
 	Berkelium::TabDelegateRef _this(mapInTabDelegateRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1548,10 +1577,10 @@ extern "C" void BK_TabDelegate_onClosed(BK_Env* env, BK_TabDelegate self, BK_Tab
 
 extern "C" void BK_TabDelegate_onTitleChanged(BK_Env* env, BK_TabDelegate self, BK_Tab tab, bk_string title)
 {
-
 	Berkelium::TabDelegateRef _this(mapInTabDelegateRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1560,10 +1589,10 @@ extern "C" void BK_TabDelegate_onTitleChanged(BK_Env* env, BK_TabDelegate self, 
 
 extern "C" void BK_TabDelegate_onPaint(BK_Env* env, BK_TabDelegate self, BK_Tab tab)
 {
-
 	Berkelium::TabDelegateRef _this(mapInTabDelegateRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 
@@ -1572,10 +1601,10 @@ extern "C" void BK_TabDelegate_onPaint(BK_Env* env, BK_TabDelegate self, BK_Tab 
 
 extern "C" void BK_TabDelegate_onPaintDone(BK_Env* env, BK_TabDelegate self, BK_Tab tab, BK_Rect rect)
 {
-
 	Berkelium::TabDelegateRef _this(mapInTabDelegateRef(env, self));
 
 	if(!_this) {
+		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
 		return;
 	}
 

@@ -13,6 +13,7 @@
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Process.hpp>
 #include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/Manager.hpp>
 
 #include <set>
 
@@ -63,6 +64,7 @@ public:
 	}
 
 	~InstanceImpl() {
+		getManager()->unregisterInstance();
 		// TODO only call close if ipc is open...
 		close();
 		if(profile->isInUse()) {
@@ -167,10 +169,20 @@ public:
 	}
 };
 
+ManagerRef getManager(InstanceRef instance)
+{
+	if(!instance) {
+		return ManagerRef();
+	}
+	InstanceImpl* impl = (InstanceImpl*)instance.get();
+	return impl->getManager();
+}
+
 InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process) {
 	InstanceImpl* impl = new InstanceImpl(executable, profile, ipc, process);
 	InstanceRef ret(impl);
 	impl->setSelf(ret);
+	impl->getManager()->registerInstance(ret);
 	//impl->createWindow(false);
 	return ret;
 }

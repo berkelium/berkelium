@@ -32,6 +32,9 @@ public abstract class BerkeliumFactory {
 	// Returns the default Berkelium Runtime Instance.
 	public abstract Runtime getDefaultRuntime();
 
-	// Creates an add additional Berkelium Runtime Instance.
+	// Creates an add additional Berkelium Runtime Instance with default LogDelegate.
 	public abstract Runtime createRuntime();
+
+	// Creates an add additional Berkelium Runtime Instance with given LogDelegate.
+	public abstract Runtime createRuntimeWithLog(LogDelegate log);
 }

@@ -24,8 +24,11 @@ public:
 	// Returns the default Berkelium Runtime Instance.
 	static RuntimeRef getDefaultRuntime();
 
-	// Creates an add additional Berkelium Runtime Instance.
+	// Creates an add additional Berkelium Runtime Instance with default LogDelegate.
 	static RuntimeRef createRuntime();
+
+	// Creates an add additional Berkelium Runtime Instance with given LogDelegate.
+	static RuntimeRef createRuntimeWithLog(LogDelegateRef log);
 };
 
 } // namespace Berkelium

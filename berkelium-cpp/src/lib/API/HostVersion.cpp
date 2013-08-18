@@ -75,6 +75,15 @@ public:
 
 };
 
+ManagerRef getManager(HostVersionRef version)
+{
+	if(!version) {
+		return ManagerRef();
+	}
+	HostVersionImpl* impl = (HostVersionImpl*)version.get();
+	return impl->getManager();
+}
+
 HostVersionRef newVersion(RuntimeRef runtime, int32_t vMajor, int32_t vMinor, int32_t vBuild, int32_t vPatch) {
 	return HostVersionRef(new impl::HostVersionImpl(runtime, vMajor, vMinor, vBuild, vPatch));
 }

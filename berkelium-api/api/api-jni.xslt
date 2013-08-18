@@ -84,7 +84,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
 	if(mo == NULL) {
 		return JNI_ERR;
 	}
-	jmethodID mn = env-&gt;GetStaticMethodID(c, "mapNew", "(IJJLorg/berkelium/impl/BerkeliumObjectImpl;)V");
+	jmethodID mn = env-&gt;GetStaticMethodID(c, "mapNew", "(IJLorg/berkelium/impl/BerkeliumObjectImpl;)V");
 	if(mn == NULL) {
 		return JNI_ERR;
 	}
@@ -146,7 +146,7 @@ bk_ext_obj Berkelium_Java_MapOut(BK_Env_Enum type, bk_bk_obj bkNativeId, void* d
 	return env->CallStaticObjectMethod(BerkeliumJavaImpl, BerkeliumJavaImpl_mapOut, type, bkNativeId);
 }
 
-bk_ext_obj Berkelium_Java_MapNew(BK_Env_Enum type, bk_bk_obj bkNativeId, void* obj, void* data)
+bk_ext_obj Berkelium_Java_MapNew(BK_Env_Enum type, bk_bk_obj bkNativeId, void* data)
 {
 	//fprintf(stderr, "Berkelium_Java_MapNew\n");
 	JNIEnv* env = (JNIEnv*)data;
@@ -154,7 +154,7 @@ bk_ext_obj Berkelium_Java_MapNew(BK_Env_Enum type, bk_bk_obj bkNativeId, void* o
 		return NULL;
 	}
 	bk_ext_obj bkJavaId = env->NewObject(BK_Java_Classes[type], BK_Java_Class_ctors[type]);
-	env->CallStaticVoidMethod(BerkeliumJavaImpl, BerkeliumJavaImpl_mapNew, type, bkNativeId, obj, bkJavaId);
+	env->CallStaticVoidMethod(BerkeliumJavaImpl, BerkeliumJavaImpl_mapNew, type, bkNativeId, bkJavaId);
 	return bkJavaId;
 }
 
@@ -281,6 +281,10 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	</xsl:text>
+	<xsl:if test="not(@static='true')">
+		<xsl:text>void* self((void*)_this);
+	</xsl:text>
+	</xsl:if>
 
 			<xsl:choose>
 				<xsl:when test="$ret='void'">
@@ -312,12 +316,7 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 			<xsl:text>(&amp;bkenv</xsl:text>
 
 			<xsl:if test="not(@static='true')">
-				<xsl:text>, (</xsl:text>
-				<xsl:call-template name="type">
-					<xsl:with-param name="name" select="$class"/>
-					<xsl:with-param name="lang" select="'c'"/>
-				</xsl:call-template>
-				<xsl:text>)_this</xsl:text>
+				<xsl:text>, self</xsl:text>
 			</xsl:if>
 
 			<xsl:for-each select="arg">

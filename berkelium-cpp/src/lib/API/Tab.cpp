@@ -105,6 +105,15 @@ public:
 	}
 };
 
+ManagerRef getManager(TabRef tab)
+{
+	if(!tab) {
+		return ManagerRef();
+	}
+	TabImpl* impl = (TabImpl*)tab.get();
+	return impl->getManager();
+}
+
 TabRef newTab(WindowRef window, Ipc::ChannelRef ipc) {
 	return TabImpl::newTab(window, ipc);
 }

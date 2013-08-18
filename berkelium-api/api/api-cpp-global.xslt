@@ -57,7 +57,7 @@ typedef std::shared_ptr&lt;Rect&gt; RectRef;
 	</xsl:for-each>
 
 	<!-- forward defs -->
-	<xsl:for-each select="/api/group[@type!='enum']">
+	<xsl:for-each select="/api/group[@type='interface']">
 		<!-- type -->
 		<xsl:choose>
 			<xsl:when test="@type='class'">
