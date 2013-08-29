@@ -32,6 +32,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "BerkeliumC.hpp"
+
 //#include <map>
 
 // =========================================
@@ -59,6 +61,8 @@ inline Berkelium::RectRef mapInRectRef(BK_Env* env, BK_Rect& rect)
 
 inline Berkelium::HostVersionRef mapInHostVersionRef(BK_Env* env, bk_ext_obj extId)
 {
+	BERKELIUM_C_TRACE();
+
 	bk_bk_obj intId = env->mapIn(HostVersion, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
@@ -67,16 +71,23 @@ inline Berkelium::HostVersionRef mapInHostVersionRef(BK_Env* env, bk_ext_obj ext
 		return Berkelium::HostVersionRef();
 	}
 
-	return manager->getHostVersion(intId);
+	Berkelium::HostVersionRef ret(manager->getHostVersion(intId));
+
+	BERKELIUM_C_TRACE_RETURN(ret.get());
+
+	return ret;
 }
 
 inline bk_ext_obj mapOutHostVersionRef(BK_Env* env, Berkelium::HostVersionRef bk)
 {
+	BERKELIUM_C_TRACE_STATIC();
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
 
 	if(!manager->locked(bk.get())) {
 		manager->lock(bk.get(), new Berkelium::HostVersionRef(bk));
 	}
+
 
 	BK_Env_Enum type(HostVersion);
 
@@ -90,11 +101,15 @@ inline bk_ext_obj mapOutHostVersionRef(BK_Env* env, Berkelium::HostVersionRef bk
 	fprintf(stderr, "mapOut HostVersion bk:%p ext:%p\n", bk.get(), ret);
 	*/
 
+	BERKELIUM_C_TRACE_RETURN(ret);
+
 	return ret;
 }
 
 inline Berkelium::RuntimeRef mapInRuntimeRef(BK_Env* env, bk_ext_obj extId)
 {
+	BERKELIUM_C_TRACE();
+
 	bk_bk_obj intId = env->mapIn(Runtime, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
@@ -103,16 +118,23 @@ inline Berkelium::RuntimeRef mapInRuntimeRef(BK_Env* env, bk_ext_obj extId)
 		return Berkelium::RuntimeRef();
 	}
 
-	return manager->getRuntime(intId);
+	Berkelium::RuntimeRef ret(manager->getRuntime(intId));
+
+	BERKELIUM_C_TRACE_RETURN(ret.get());
+
+	return ret;
 }
 
 inline bk_ext_obj mapOutRuntimeRef(BK_Env* env, Berkelium::RuntimeRef bk)
 {
+	BERKELIUM_C_TRACE_STATIC();
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
 
 	if(!manager->locked(bk.get())) {
 		manager->lock(bk.get(), new Berkelium::RuntimeRef(bk));
 	}
+
 
 	BK_Env_Enum type(Runtime);
 
@@ -126,11 +148,15 @@ inline bk_ext_obj mapOutRuntimeRef(BK_Env* env, Berkelium::RuntimeRef bk)
 	fprintf(stderr, "mapOut Runtime bk:%p ext:%p\n", bk.get(), ret);
 	*/
 
+	BERKELIUM_C_TRACE_RETURN(ret);
+
 	return ret;
 }
 
 inline Berkelium::HostExecutableRef mapInHostExecutableRef(BK_Env* env, bk_ext_obj extId)
 {
+	BERKELIUM_C_TRACE();
+
 	bk_bk_obj intId = env->mapIn(HostExecutable, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
@@ -139,16 +165,23 @@ inline Berkelium::HostExecutableRef mapInHostExecutableRef(BK_Env* env, bk_ext_o
 		return Berkelium::HostExecutableRef();
 	}
 
-	return manager->getHostExecutable(intId);
+	Berkelium::HostExecutableRef ret(manager->getHostExecutable(intId));
+
+	BERKELIUM_C_TRACE_RETURN(ret.get());
+
+	return ret;
 }
 
 inline bk_ext_obj mapOutHostExecutableRef(BK_Env* env, Berkelium::HostExecutableRef bk)
 {
+	BERKELIUM_C_TRACE_STATIC();
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
 
 	if(!manager->locked(bk.get())) {
 		manager->lock(bk.get(), new Berkelium::HostExecutableRef(bk));
 	}
+
 
 	BK_Env_Enum type(HostExecutable);
 
@@ -162,11 +195,15 @@ inline bk_ext_obj mapOutHostExecutableRef(BK_Env* env, Berkelium::HostExecutable
 	fprintf(stderr, "mapOut HostExecutable bk:%p ext:%p\n", bk.get(), ret);
 	*/
 
+	BERKELIUM_C_TRACE_RETURN(ret);
+
 	return ret;
 }
 
 inline Berkelium::ProfileRef mapInProfileRef(BK_Env* env, bk_ext_obj extId)
 {
+	BERKELIUM_C_TRACE();
+
 	bk_bk_obj intId = env->mapIn(Profile, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
@@ -175,16 +212,23 @@ inline Berkelium::ProfileRef mapInProfileRef(BK_Env* env, bk_ext_obj extId)
 		return Berkelium::ProfileRef();
 	}
 
-	return manager->getProfile(intId);
+	Berkelium::ProfileRef ret(manager->getProfile(intId));
+
+	BERKELIUM_C_TRACE_RETURN(ret.get());
+
+	return ret;
 }
 
 inline bk_ext_obj mapOutProfileRef(BK_Env* env, Berkelium::ProfileRef bk)
 {
+	BERKELIUM_C_TRACE_STATIC();
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
 
 	if(!manager->locked(bk.get())) {
 		manager->lock(bk.get(), new Berkelium::ProfileRef(bk));
 	}
+
 
 	BK_Env_Enum type(Profile);
 
@@ -198,11 +242,15 @@ inline bk_ext_obj mapOutProfileRef(BK_Env* env, Berkelium::ProfileRef bk)
 	fprintf(stderr, "mapOut Profile bk:%p ext:%p\n", bk.get(), ret);
 	*/
 
+	BERKELIUM_C_TRACE_RETURN(ret);
+
 	return ret;
 }
 
 inline Berkelium::LoggerRef mapInLoggerRef(BK_Env* env, bk_ext_obj extId)
 {
+	BERKELIUM_C_TRACE();
+
 	bk_bk_obj intId = env->mapIn(Logger, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
@@ -211,16 +259,23 @@ inline Berkelium::LoggerRef mapInLoggerRef(BK_Env* env, bk_ext_obj extId)
 		return Berkelium::LoggerRef();
 	}
 
-	return manager->getLogger(intId);
+	Berkelium::LoggerRef ret(manager->getLogger(intId));
+
+	BERKELIUM_C_TRACE_RETURN(ret.get());
+
+	return ret;
 }
 
 inline bk_ext_obj mapOutLoggerRef(BK_Env* env, Berkelium::LoggerRef bk)
 {
+	BERKELIUM_C_TRACE_STATIC();
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
 
 	if(!manager->locked(bk.get())) {
 		manager->lock(bk.get(), new Berkelium::LoggerRef(bk));
 	}
+
 
 	BK_Env_Enum type(Logger);
 
@@ -234,33 +289,15 @@ inline bk_ext_obj mapOutLoggerRef(BK_Env* env, Berkelium::LoggerRef bk)
 	fprintf(stderr, "mapOut Logger bk:%p ext:%p\n", bk.get(), ret);
 	*/
 
+	BERKELIUM_C_TRACE_RETURN(ret);
+
 	return ret;
-}
-
-inline Berkelium::LogDelegateRef mapInLogDelegateRef(BK_Env* env, bk_ext_obj extId)
-{
-	BK_Env_Enum type(LogDelegate);
-
-	void* tmp = env->mapIn(type, extId, env->data);
-
-	Berkelium::LogDelegateRef* ret((Berkelium::LogDelegateRef*)tmp);
-
-	return Berkelium::LogDelegateRef(*ret);
-}
-
-inline Berkelium::HostDelegateRef mapInHostDelegateRef(BK_Env* env, bk_ext_obj extId)
-{
-	BK_Env_Enum type(HostDelegate);
-
-	void* tmp = env->mapIn(type, extId, env->data);
-
-	Berkelium::HostDelegateRef* ret((Berkelium::HostDelegateRef*)tmp);
-
-	return Berkelium::HostDelegateRef(*ret);
 }
 
 inline Berkelium::InstanceRef mapInInstanceRef(BK_Env* env, bk_ext_obj extId)
 {
+	BERKELIUM_C_TRACE();
+
 	bk_bk_obj intId = env->mapIn(Instance, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
@@ -269,16 +306,23 @@ inline Berkelium::InstanceRef mapInInstanceRef(BK_Env* env, bk_ext_obj extId)
 		return Berkelium::InstanceRef();
 	}
 
-	return manager->getInstance(intId);
+	Berkelium::InstanceRef ret(manager->getInstance(intId));
+
+	BERKELIUM_C_TRACE_RETURN(ret.get());
+
+	return ret;
 }
 
 inline bk_ext_obj mapOutInstanceRef(BK_Env* env, Berkelium::InstanceRef bk)
 {
+	BERKELIUM_C_TRACE_STATIC();
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
 
 	if(!manager->locked(bk.get())) {
 		manager->lock(bk.get(), new Berkelium::InstanceRef(bk));
 	}
+
 
 	BK_Env_Enum type(Instance);
 
@@ -292,11 +336,15 @@ inline bk_ext_obj mapOutInstanceRef(BK_Env* env, Berkelium::InstanceRef bk)
 	fprintf(stderr, "mapOut Instance bk:%p ext:%p\n", bk.get(), ret);
 	*/
 
+	BERKELIUM_C_TRACE_RETURN(ret);
+
 	return ret;
 }
 
 inline Berkelium::WindowRef mapInWindowRef(BK_Env* env, bk_ext_obj extId)
 {
+	BERKELIUM_C_TRACE();
+
 	bk_bk_obj intId = env->mapIn(Window, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
@@ -305,16 +353,23 @@ inline Berkelium::WindowRef mapInWindowRef(BK_Env* env, bk_ext_obj extId)
 		return Berkelium::WindowRef();
 	}
 
-	return manager->getWindow(intId);
+	Berkelium::WindowRef ret(manager->getWindow(intId));
+
+	BERKELIUM_C_TRACE_RETURN(ret.get());
+
+	return ret;
 }
 
 inline bk_ext_obj mapOutWindowRef(BK_Env* env, Berkelium::WindowRef bk)
 {
+	BERKELIUM_C_TRACE_STATIC();
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
 
 	if(!manager->locked(bk.get())) {
 		manager->lock(bk.get(), new Berkelium::WindowRef(bk));
 	}
+
 
 	BK_Env_Enum type(Window);
 
@@ -328,22 +383,15 @@ inline bk_ext_obj mapOutWindowRef(BK_Env* env, Berkelium::WindowRef bk)
 	fprintf(stderr, "mapOut Window bk:%p ext:%p\n", bk.get(), ret);
 	*/
 
+	BERKELIUM_C_TRACE_RETURN(ret);
+
 	return ret;
-}
-
-inline Berkelium::WindowDelegateRef mapInWindowDelegateRef(BK_Env* env, bk_ext_obj extId)
-{
-	BK_Env_Enum type(WindowDelegate);
-
-	void* tmp = env->mapIn(type, extId, env->data);
-
-	Berkelium::WindowDelegateRef* ret((Berkelium::WindowDelegateRef*)tmp);
-
-	return Berkelium::WindowDelegateRef(*ret);
 }
 
 inline Berkelium::TabRef mapInTabRef(BK_Env* env, bk_ext_obj extId)
 {
+	BERKELIUM_C_TRACE();
+
 	bk_bk_obj intId = env->mapIn(Tab, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
@@ -352,16 +400,23 @@ inline Berkelium::TabRef mapInTabRef(BK_Env* env, bk_ext_obj extId)
 		return Berkelium::TabRef();
 	}
 
-	return manager->getTab(intId);
+	Berkelium::TabRef ret(manager->getTab(intId));
+
+	BERKELIUM_C_TRACE_RETURN(ret.get());
+
+	return ret;
 }
 
 inline bk_ext_obj mapOutTabRef(BK_Env* env, Berkelium::TabRef bk)
 {
+	BERKELIUM_C_TRACE_STATIC();
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
 
 	if(!manager->locked(bk.get())) {
 		manager->lock(bk.get(), new Berkelium::TabRef(bk));
 	}
+
 
 	BK_Env_Enum type(Tab);
 
@@ -375,39 +430,7 @@ inline bk_ext_obj mapOutTabRef(BK_Env* env, Berkelium::TabRef bk)
 	fprintf(stderr, "mapOut Tab bk:%p ext:%p\n", bk.get(), ret);
 	*/
 
-	return ret;
-}
-
-inline Berkelium::TabDelegateRef mapInTabDelegateRef(BK_Env* env, bk_ext_obj extId)
-{
-	BK_Env_Enum type(TabDelegate);
-
-	void* tmp = env->mapIn(type, extId, env->data);
-
-	Berkelium::TabDelegateRef* ret((Berkelium::TabDelegateRef*)tmp);
-
-	return Berkelium::TabDelegateRef(*ret);
-}
-
-inline bk_ext_obj mapOutTabDelegateRef(BK_Env* env, Berkelium::TabDelegateRef bk)
-{
-	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
-
-	if(!manager->locked(bk.get())) {
-		manager->lock(bk.get(), new Berkelium::TabDelegateRef(bk));
-	}
-
-	BK_Env_Enum type(TabDelegate);
-
-	bk_ext_obj ret = env->mapOut(type, bk.get(), env->data);
-
-	if(ret == NULL) {
-		ret = env->mapNew(type, bk.get(), env->data);
-	}
-
-	/*
-	fprintf(stderr, "mapOut TabDelegate bk:%p ext:%p\n", bk.get(), ret);
-	*/
+	BERKELIUM_C_TRACE_RETURN(ret);
 
 	return ret;
 }
@@ -505,6 +528,11 @@ const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type)
 
 extern "C" BK_Runtime BK_HostVersion_getRuntime(BK_Env* env, BK_HostVersion self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
@@ -517,6 +545,11 @@ extern "C" BK_Runtime BK_HostVersion_getRuntime(BK_Env* env, BK_HostVersion self
 
 extern "C" bk_string BK_HostVersion_getVersionString(BK_Env* env, BK_HostVersion self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
@@ -529,6 +562,11 @@ extern "C" bk_string BK_HostVersion_getVersionString(BK_Env* env, BK_HostVersion
 
 extern "C" bk_int32 BK_HostVersion_getMajor(BK_Env* env, BK_HostVersion self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
@@ -541,6 +579,11 @@ extern "C" bk_int32 BK_HostVersion_getMajor(BK_Env* env, BK_HostVersion self)
 
 extern "C" bk_int32 BK_HostVersion_getMinor(BK_Env* env, BK_HostVersion self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
@@ -553,6 +596,11 @@ extern "C" bk_int32 BK_HostVersion_getMinor(BK_Env* env, BK_HostVersion self)
 
 extern "C" bk_int32 BK_HostVersion_getBuild(BK_Env* env, BK_HostVersion self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
@@ -565,6 +613,11 @@ extern "C" bk_int32 BK_HostVersion_getBuild(BK_Env* env, BK_HostVersion self)
 
 extern "C" bk_int32 BK_HostVersion_getPatch(BK_Env* env, BK_HostVersion self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
@@ -577,6 +630,11 @@ extern "C" bk_int32 BK_HostVersion_getPatch(BK_Env* env, BK_HostVersion self)
 
 extern "C" bk_bool BK_HostVersion_isMinVersion(BK_Env* env, BK_HostVersion self, bk_string version)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
 	if(!_this) {
@@ -589,6 +647,10 @@ extern "C" bk_bool BK_HostVersion_isMinVersion(BK_Env* env, BK_HostVersion self,
 
 extern "C" void BK_HostVersion_free(BK_Env* env, BK_HostVersion self)
 {
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
 
@@ -616,16 +678,31 @@ extern "C" void BK_HostVersion_free(BK_Env* env, BK_HostVersion self)
 
 extern "C" BK_Runtime BK_BerkeliumFactory_getDefaultRuntime(BK_Env* env)
 {
+	BERKELIUM_C_TRACE_STATIC();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	return mapOutRuntimeRef(env, Berkelium::BerkeliumFactory::getDefaultRuntime());
 }
 
 extern "C" BK_Runtime BK_BerkeliumFactory_createRuntime(BK_Env* env)
 {
+	BERKELIUM_C_TRACE_STATIC();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	return mapOutRuntimeRef(env, Berkelium::BerkeliumFactory::createRuntime());
 }
 
 extern "C" BK_Runtime BK_BerkeliumFactory_createRuntimeWithLog(BK_Env* env, BK_LogDelegate log)
 {
+	BERKELIUM_C_TRACE_STATIC();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	return mapOutRuntimeRef(env, Berkelium::BerkeliumFactory::createRuntimeWithLog(mapInLogDelegateRef(env, log)));
 }
 
@@ -635,6 +712,11 @@ extern "C" BK_Runtime BK_BerkeliumFactory_createRuntimeWithLog(BK_Env* env, BK_L
 
 extern "C" void BK_Runtime_setDefaultExecutable(BK_Env* env, BK_Runtime self, bk_string pathTo)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -647,6 +729,11 @@ extern "C" void BK_Runtime_setDefaultExecutable(BK_Env* env, BK_Runtime self, bk
 
 extern "C" BK_HostExecutable BK_Runtime_forExecutable(BK_Env* env, BK_Runtime self, bk_string pathTo)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -659,6 +746,11 @@ extern "C" BK_HostExecutable BK_Runtime_forExecutable(BK_Env* env, BK_Runtime se
 
 extern "C" BK_HostExecutable BK_Runtime_forSystemInstalled(BK_Env* env, BK_Runtime self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -671,6 +763,11 @@ extern "C" BK_HostExecutable BK_Runtime_forSystemInstalled(BK_Env* env, BK_Runti
 
 extern "C" BK_Profile BK_Runtime_forProfile(BK_Env* env, BK_Runtime self, bk_string application)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -683,6 +780,11 @@ extern "C" BK_Profile BK_Runtime_forProfile(BK_Env* env, BK_Runtime self, bk_str
 
 extern "C" BK_Profile BK_Runtime_getChromeProfile(BK_Env* env, BK_Runtime self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -695,6 +797,11 @@ extern "C" BK_Profile BK_Runtime_getChromeProfile(BK_Env* env, BK_Runtime self)
 
 extern "C" BK_Profile BK_Runtime_getChromiumProfile(BK_Env* env, BK_Runtime self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -707,6 +814,11 @@ extern "C" BK_Profile BK_Runtime_getChromiumProfile(BK_Env* env, BK_Runtime self
 
 extern "C" BK_Profile BK_Runtime_forProfilePath(BK_Env* env, BK_Runtime self, bk_string path)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -719,6 +831,11 @@ extern "C" BK_Profile BK_Runtime_forProfilePath(BK_Env* env, BK_Runtime self, bk
 
 extern "C" BK_Profile BK_Runtime_createTemporaryProfile(BK_Env* env, BK_Runtime self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -731,6 +848,11 @@ extern "C" BK_Profile BK_Runtime_createTemporaryProfile(BK_Env* env, BK_Runtime 
 
 extern "C" BK_HostVersion BK_Runtime_forVersionS(BK_Env* env, BK_Runtime self, bk_string version)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -743,6 +865,11 @@ extern "C" BK_HostVersion BK_Runtime_forVersionS(BK_Env* env, BK_Runtime self, b
 
 extern "C" BK_HostVersion BK_Runtime_forVersion4I(BK_Env* env, BK_Runtime self, bk_int32 vMajor, bk_int32 vMinor, bk_int32 vBuild, bk_int32 vPatch)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -755,6 +882,11 @@ extern "C" BK_HostVersion BK_Runtime_forVersion4I(BK_Env* env, BK_Runtime self, 
 
 extern "C" BK_Instance BK_Runtime_open(BK_Env* env, BK_Runtime self, BK_HostExecutable executable, BK_Profile profile)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -767,6 +899,11 @@ extern "C" BK_Instance BK_Runtime_open(BK_Env* env, BK_Runtime self, BK_HostExec
 
 extern "C" BK_Logger BK_Runtime_getLogger(BK_Env* env, BK_Runtime self, bk_string clazz, bk_string name)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -779,6 +916,11 @@ extern "C" BK_Logger BK_Runtime_getLogger(BK_Env* env, BK_Runtime self, bk_strin
 
 extern "C" void BK_Runtime_addLogDelegate(BK_Env* env, BK_Runtime self, BK_LogDelegate delegate)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -791,6 +933,11 @@ extern "C" void BK_Runtime_addLogDelegate(BK_Env* env, BK_Runtime self, BK_LogDe
 
 extern "C" void BK_Runtime_removeLogDelegate(BK_Env* env, BK_Runtime self, BK_LogDelegate delegate)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -803,6 +950,11 @@ extern "C" void BK_Runtime_removeLogDelegate(BK_Env* env, BK_Runtime self, BK_Lo
 
 extern "C" void BK_Runtime_log(BK_Env* env, BK_Runtime self, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string name, bk_string message)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
 	if(!_this) {
@@ -815,6 +967,10 @@ extern "C" void BK_Runtime_log(BK_Env* env, BK_Runtime self, BK_LogSource source
 
 extern "C" void BK_Runtime_free(BK_Env* env, BK_Runtime self)
 {
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
 
@@ -843,6 +999,11 @@ extern "C" void BK_Runtime_free(BK_Env* env, BK_Runtime self)
 
 extern "C" BK_Runtime BK_HostExecutable_getRuntime(BK_Env* env, BK_HostExecutable self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::HostExecutableRef _this(mapInHostExecutableRef(env, self));
 
 	if(!_this) {
@@ -855,6 +1016,11 @@ extern "C" BK_Runtime BK_HostExecutable_getRuntime(BK_Env* env, BK_HostExecutabl
 
 extern "C" bk_string BK_HostExecutable_getPath(BK_Env* env, BK_HostExecutable self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::HostExecutableRef _this(mapInHostExecutableRef(env, self));
 
 	if(!_this) {
@@ -867,6 +1033,11 @@ extern "C" bk_string BK_HostExecutable_getPath(BK_Env* env, BK_HostExecutable se
 
 extern "C" BK_HostVersion BK_HostExecutable_getVersion(BK_Env* env, BK_HostExecutable self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::HostExecutableRef _this(mapInHostExecutableRef(env, self));
 
 	if(!_this) {
@@ -879,6 +1050,10 @@ extern "C" BK_HostVersion BK_HostExecutable_getVersion(BK_Env* env, BK_HostExecu
 
 extern "C" void BK_HostExecutable_free(BK_Env* env, BK_HostExecutable self)
 {
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::HostExecutableRef _this(mapInHostExecutableRef(env, self));
 
@@ -906,6 +1081,11 @@ extern "C" void BK_HostExecutable_free(BK_Env* env, BK_HostExecutable self)
 
 extern "C" BK_Runtime BK_Profile_getRuntime(BK_Env* env, BK_Profile self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
@@ -918,6 +1098,11 @@ extern "C" BK_Runtime BK_Profile_getRuntime(BK_Env* env, BK_Profile self)
 
 extern "C" bk_bool BK_Profile_isInUse(BK_Env* env, BK_Profile self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
@@ -930,6 +1115,11 @@ extern "C" bk_bool BK_Profile_isInUse(BK_Env* env, BK_Profile self)
 
 extern "C" bk_bool BK_Profile_isFound(BK_Env* env, BK_Profile self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
@@ -942,6 +1132,11 @@ extern "C" bk_bool BK_Profile_isFound(BK_Env* env, BK_Profile self)
 
 extern "C" bk_bool BK_Profile_isSameVersion(BK_Env* env, BK_Profile self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
@@ -954,6 +1149,11 @@ extern "C" bk_bool BK_Profile_isSameVersion(BK_Env* env, BK_Profile self)
 
 extern "C" bk_bool BK_Profile_isTooNew(BK_Env* env, BK_Profile self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
@@ -966,6 +1166,11 @@ extern "C" bk_bool BK_Profile_isTooNew(BK_Env* env, BK_Profile self)
 
 extern "C" bk_string BK_Profile_getApplicationName(BK_Env* env, BK_Profile self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
@@ -978,6 +1183,11 @@ extern "C" bk_string BK_Profile_getApplicationName(BK_Env* env, BK_Profile self)
 
 extern "C" bk_string BK_Profile_getProfilePath(BK_Env* env, BK_Profile self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
@@ -990,6 +1200,11 @@ extern "C" bk_string BK_Profile_getProfilePath(BK_Env* env, BK_Profile self)
 
 extern "C" void BK_Profile_setLocked(BK_Env* env, BK_Profile self, bk_bool locked)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
@@ -1002,6 +1217,11 @@ extern "C" void BK_Profile_setLocked(BK_Env* env, BK_Profile self, bk_bool locke
 
 extern "C" bk_bool BK_Profile_isLocked(BK_Env* env, BK_Profile self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
 	if(!_this) {
@@ -1014,6 +1234,10 @@ extern "C" bk_bool BK_Profile_isLocked(BK_Env* env, BK_Profile self)
 
 extern "C" void BK_Profile_free(BK_Env* env, BK_Profile self)
 {
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
 
@@ -1041,6 +1265,11 @@ extern "C" void BK_Profile_free(BK_Env* env, BK_Profile self)
 
 extern "C" void BK_Logger_debug(BK_Env* env, BK_Logger self, bk_string message)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::LoggerRef _this(mapInLoggerRef(env, self));
 
 	if(!_this) {
@@ -1053,6 +1282,11 @@ extern "C" void BK_Logger_debug(BK_Env* env, BK_Logger self, bk_string message)
 
 extern "C" void BK_Logger_info(BK_Env* env, BK_Logger self, bk_string message)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::LoggerRef _this(mapInLoggerRef(env, self));
 
 	if(!_this) {
@@ -1065,6 +1299,11 @@ extern "C" void BK_Logger_info(BK_Env* env, BK_Logger self, bk_string message)
 
 extern "C" void BK_Logger_warn(BK_Env* env, BK_Logger self, bk_string message)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::LoggerRef _this(mapInLoggerRef(env, self));
 
 	if(!_this) {
@@ -1077,6 +1316,11 @@ extern "C" void BK_Logger_warn(BK_Env* env, BK_Logger self, bk_string message)
 
 extern "C" void BK_Logger_error(BK_Env* env, BK_Logger self, bk_string message)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::LoggerRef _this(mapInLoggerRef(env, self));
 
 	if(!_this) {
@@ -1089,6 +1333,10 @@ extern "C" void BK_Logger_error(BK_Env* env, BK_Logger self, bk_string message)
 
 extern "C" void BK_Logger_free(BK_Env* env, BK_Logger self)
 {
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::LoggerRef _this(mapInLoggerRef(env, self));
 
@@ -1110,48 +1358,17 @@ extern "C" void BK_Logger_free(BK_Env* env, BK_Logger self)
 
 }
 
-extern "C" void BK_LogDelegate_log(BK_Env* env, BK_LogDelegate self, BK_Runtime runtime, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string name, bk_string message)
-{
-	Berkelium::LogDelegateRef _this(mapInLogDelegateRef(env, self));
-
-	if(!_this) {
-		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
-		return;
-	}
-
-	_this->log(mapInRuntimeRef(env, runtime), (Berkelium::LogSource)source, (Berkelium::LogType)type, clazz, name, message);
-}
-
-extern "C" void BK_HostDelegate_onCrashed(BK_Env* env, BK_HostDelegate self, BK_Instance instance)
-{
-	Berkelium::HostDelegateRef _this(mapInHostDelegateRef(env, self));
-
-	if(!_this) {
-		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
-		return;
-	}
-
-	_this->onCrashed(mapInInstanceRef(env, instance));
-}
-
-extern "C" void BK_HostDelegate_onClosed(BK_Env* env, BK_HostDelegate self, BK_Instance instance)
-{
-	Berkelium::HostDelegateRef _this(mapInHostDelegateRef(env, self));
-
-	if(!_this) {
-		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
-		return;
-	}
-
-	_this->onClosed(mapInInstanceRef(env, instance));
-}
-
 // =========================================
 // interface Instance
 // =========================================
 
 extern "C" BK_Runtime BK_Instance_getRuntime(BK_Env* env, BK_Instance self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
@@ -1164,6 +1381,11 @@ extern "C" BK_Runtime BK_Instance_getRuntime(BK_Env* env, BK_Instance self)
 
 extern "C" void BK_Instance_internalUpdate(BK_Env* env, BK_Instance self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
@@ -1176,6 +1398,11 @@ extern "C" void BK_Instance_internalUpdate(BK_Env* env, BK_Instance self)
 
 extern "C" void BK_Instance_close(BK_Env* env, BK_Instance self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
@@ -1188,6 +1415,11 @@ extern "C" void BK_Instance_close(BK_Env* env, BK_Instance self)
 
 extern "C" BK_Profile BK_Instance_getProfile(BK_Env* env, BK_Instance self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
@@ -1200,6 +1432,11 @@ extern "C" BK_Profile BK_Instance_getProfile(BK_Env* env, BK_Instance self)
 
 extern "C" BK_HostExecutable BK_Instance_getExecutable(BK_Env* env, BK_Instance self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
@@ -1212,6 +1449,11 @@ extern "C" BK_HostExecutable BK_Instance_getExecutable(BK_Env* env, BK_Instance 
 
 extern "C" void BK_Instance_addHostDelegate(BK_Env* env, BK_Instance self, BK_HostDelegate delegate)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
@@ -1224,6 +1466,11 @@ extern "C" void BK_Instance_addHostDelegate(BK_Env* env, BK_Instance self, BK_Ho
 
 extern "C" void BK_Instance_removeHostDelegate(BK_Env* env, BK_Instance self, BK_HostDelegate delegate)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
@@ -1236,6 +1483,11 @@ extern "C" void BK_Instance_removeHostDelegate(BK_Env* env, BK_Instance self, BK
 
 extern "C" bk_int32 BK_Instance_getWindowCount(BK_Env* env, BK_Instance self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
@@ -1248,6 +1500,11 @@ extern "C" bk_int32 BK_Instance_getWindowCount(BK_Env* env, BK_Instance self)
 
 extern "C" BK_WindowList* BK_Instance_getWindowList(BK_Env* env, BK_Instance self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
@@ -1260,6 +1517,11 @@ extern "C" BK_WindowList* BK_Instance_getWindowList(BK_Env* env, BK_Instance sel
 
 extern "C" BK_Window BK_Instance_createWindow(BK_Env* env, BK_Instance self, bk_bool incognito)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
 	if(!_this) {
@@ -1272,6 +1534,10 @@ extern "C" BK_Window BK_Instance_createWindow(BK_Env* env, BK_Instance self, bk_
 
 extern "C" void BK_Instance_free(BK_Env* env, BK_Instance self)
 {
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
 
@@ -1299,6 +1565,11 @@ extern "C" void BK_Instance_free(BK_Env* env, BK_Instance self)
 
 extern "C" BK_Runtime BK_Window_getRuntime(BK_Env* env, BK_Window self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
@@ -1311,6 +1582,11 @@ extern "C" BK_Runtime BK_Window_getRuntime(BK_Env* env, BK_Window self)
 
 extern "C" void BK_Window_internalUpdate(BK_Env* env, BK_Window self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
@@ -1323,6 +1599,11 @@ extern "C" void BK_Window_internalUpdate(BK_Env* env, BK_Window self)
 
 extern "C" bk_int32 BK_Window_getTabCount(BK_Env* env, BK_Window self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
@@ -1335,6 +1616,11 @@ extern "C" bk_int32 BK_Window_getTabCount(BK_Env* env, BK_Window self)
 
 extern "C" BK_TabList* BK_Window_getTabList(BK_Env* env, BK_Window self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
@@ -1347,6 +1633,11 @@ extern "C" BK_TabList* BK_Window_getTabList(BK_Env* env, BK_Window self)
 
 extern "C" BK_Tab BK_Window_createTab(BK_Env* env, BK_Window self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
@@ -1359,6 +1650,11 @@ extern "C" BK_Tab BK_Window_createTab(BK_Env* env, BK_Window self)
 
 extern "C" BK_Instance BK_Window_getInstance(BK_Env* env, BK_Window self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
@@ -1371,6 +1667,11 @@ extern "C" BK_Instance BK_Window_getInstance(BK_Env* env, BK_Window self)
 
 extern "C" void BK_Window_moveTo(BK_Env* env, BK_Window self, BK_Tab tab, bk_int32 index)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
@@ -1383,6 +1684,11 @@ extern "C" void BK_Window_moveTo(BK_Env* env, BK_Window self, BK_Tab tab, bk_int
 
 extern "C" bk_bool BK_Window_isIncognito(BK_Env* env, BK_Window self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
 	if(!_this) {
@@ -1395,6 +1701,10 @@ extern "C" bk_bool BK_Window_isIncognito(BK_Env* env, BK_Window self)
 
 extern "C" void BK_Window_free(BK_Env* env, BK_Window self)
 {
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
 
@@ -1422,6 +1732,11 @@ extern "C" void BK_Window_free(BK_Env* env, BK_Window self)
 
 extern "C" BK_Runtime BK_Tab_getRuntime(BK_Env* env, BK_Tab self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
@@ -1434,6 +1749,11 @@ extern "C" BK_Runtime BK_Tab_getRuntime(BK_Env* env, BK_Tab self)
 
 extern "C" void BK_Tab_internalUpdate(BK_Env* env, BK_Tab self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
@@ -1446,6 +1766,11 @@ extern "C" void BK_Tab_internalUpdate(BK_Env* env, BK_Tab self)
 
 extern "C" void BK_Tab_close(BK_Env* env, BK_Tab self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
@@ -1458,6 +1783,11 @@ extern "C" void BK_Tab_close(BK_Env* env, BK_Tab self)
 
 extern "C" void BK_Tab_sync(BK_Env* env, BK_Tab self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
@@ -1470,6 +1800,11 @@ extern "C" void BK_Tab_sync(BK_Env* env, BK_Tab self)
 
 extern "C" BK_TabDelegate BK_Tab_getTabDelegate(BK_Env* env, BK_Tab self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
@@ -1482,6 +1817,11 @@ extern "C" BK_TabDelegate BK_Tab_getTabDelegate(BK_Env* env, BK_Tab self)
 
 extern "C" void BK_Tab_addTabDelegate(BK_Env* env, BK_Tab self, BK_TabDelegate delegate)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
@@ -1494,6 +1834,11 @@ extern "C" void BK_Tab_addTabDelegate(BK_Env* env, BK_Tab self, BK_TabDelegate d
 
 extern "C" void BK_Tab_removeTabDelegate(BK_Env* env, BK_Tab self, BK_TabDelegate delegate)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
@@ -1506,6 +1851,11 @@ extern "C" void BK_Tab_removeTabDelegate(BK_Env* env, BK_Tab self, BK_TabDelegat
 
 extern "C" BK_Window BK_Tab_getWindow(BK_Env* env, BK_Tab self)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
@@ -1518,6 +1868,11 @@ extern "C" BK_Window BK_Tab_getWindow(BK_Env* env, BK_Tab self)
 
 extern "C" void BK_Tab_resize(BK_Env* env, BK_Tab self, bk_int32 width, bk_int32 height)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
@@ -1530,6 +1885,11 @@ extern "C" void BK_Tab_resize(BK_Env* env, BK_Tab self, bk_int32 width, bk_int32
 
 extern "C" void BK_Tab_navigateTo(BK_Env* env, BK_Tab self, bk_string url)
 {
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
 	if(!_this) {
@@ -1542,6 +1902,10 @@ extern "C" void BK_Tab_navigateTo(BK_Env* env, BK_Tab self, bk_string url)
 
 extern "C" void BK_Tab_free(BK_Env* env, BK_Tab self)
 {
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::TabRef _this(mapInTabRef(env, self));
 
@@ -1561,52 +1925,4 @@ extern "C" void BK_Tab_free(BK_Env* env, BK_Tab self)
 		*/
 	}
 
-}
-
-extern "C" void BK_TabDelegate_onClosed(BK_Env* env, BK_TabDelegate self, BK_Tab tab)
-{
-	Berkelium::TabDelegateRef _this(mapInTabDelegateRef(env, self));
-
-	if(!_this) {
-		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
-		return;
-	}
-
-	_this->onClosed(mapInTabRef(env, tab));
-}
-
-extern "C" void BK_TabDelegate_onTitleChanged(BK_Env* env, BK_TabDelegate self, BK_Tab tab, bk_string title)
-{
-	Berkelium::TabDelegateRef _this(mapInTabDelegateRef(env, self));
-
-	if(!_this) {
-		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
-		return;
-	}
-
-	_this->onTitleChanged(mapInTabRef(env, tab), title);
-}
-
-extern "C" void BK_TabDelegate_onPaint(BK_Env* env, BK_TabDelegate self, BK_Tab tab)
-{
-	Berkelium::TabDelegateRef _this(mapInTabDelegateRef(env, self));
-
-	if(!_this) {
-		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
-		return;
-	}
-
-	_this->onPaint(mapInTabRef(env, tab));
-}
-
-extern "C" void BK_TabDelegate_onPaintDone(BK_Env* env, BK_TabDelegate self, BK_Tab tab, BK_Rect rect)
-{
-	Berkelium::TabDelegateRef _this(mapInTabDelegateRef(env, self));
-
-	if(!_this) {
-		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
-		return;
-	}
-
-	_this->onPaintDone(mapInTabRef(env, tab), mapInRectRef(env, rect));
 }

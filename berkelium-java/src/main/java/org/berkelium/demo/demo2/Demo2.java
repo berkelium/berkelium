@@ -3,6 +3,9 @@ package org.berkelium.demo.demo2;
 import org.berkelium.api.BerkeliumFactory;
 import org.berkelium.api.HostExecutable;
 import org.berkelium.api.Instance;
+import org.berkelium.api.LogDelegate;
+import org.berkelium.api.LogSource;
+import org.berkelium.api.LogType;
 import org.berkelium.api.Runtime;
 import org.berkelium.api.Logger;
 import org.berkelium.api.Profile;
@@ -11,8 +14,16 @@ import org.berkelium.api.Util;
 import org.berkelium.api.Window;
 
 public class Demo2 {
+	private static LogDelegate log = new LogDelegate() {
+		@Override
+		public void log(Runtime runtime, LogSource source, LogType type,
+				String clazz, String name, String message) {
+			System.err.printf("%s %s %s %s %s\n", type, source, clazz, name, message);
+		}
+	};
+
 	public static void main(String[] args) throws InterruptedException {
-		Runtime runtime = BerkeliumFactory.getInstance().createRuntime();
+		Runtime runtime = BerkeliumFactory.getInstance().createRuntimeWithLog(log);
 
 		Logger logger = Util.createRootLogger(runtime);
 

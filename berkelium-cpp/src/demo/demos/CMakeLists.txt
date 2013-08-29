@@ -1,0 +1,12 @@
+CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
+
+PROJECT(berkelium-demo-demos)
+
+ADD_EXECUTABLE(demo-demo1-cpp demo1.cpp)
+TARGET_LINK_LIBRARIES(demo-demo1-cpp ${BERKELIUM_CPP_LIBS})
+
+ADD_EXECUTABLE(demo-demo1-c demo1.c)
+TARGET_LINK_LIBRARIES(demo-demo1-c ${BERKELIUM_CPP_LIBS})
+
+ADD_EXECUTABLE(demo-demo2-cpp demo2.cpp)
+TARGET_LINK_LIBRARIES(demo-demo2-cpp ${BERKELIUM_CPP_LIBS})

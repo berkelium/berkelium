@@ -59,7 +59,7 @@ const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type);
 
 	<xsl:text>
 </xsl:text>
-	<xsl:for-each select="/api/group[@type!='enum']">
+	<xsl:for-each select="/api/group[@type!='enum' and not(@delegate)]">
 		<xsl:text>typedef void* BK_</xsl:text>
 		<xsl:value-of select="@name"/>
 		<xsl:text>;
@@ -124,7 +124,8 @@ typedef struct {
 </xsl:text>
 	</xsl:for-each>
 
-	<xsl:apply-templates select="group[@type!='enum']"/>
+	<xsl:apply-templates select="group[@type!='enum' and @delegate]"/>
+	<xsl:apply-templates select="group[@type!='enum' and not(@delegate)]"/>
 	<xsl:text>
 #ifdef __cplusplus
 }
@@ -135,9 +136,73 @@ typedef struct {
 </xsl:template>
 
 <!-- ============================================================= -->
-<!-- Group                                                         -->
+<!-- Delegate Group                                                -->
 <!-- ============================================================= -->
-<xsl:template match="group">
+<xsl:template match="group[@delegate]">
+	<xsl:text>
+// =========================================
+// </xsl:text>
+	<xsl:text>delegate </xsl:text>
+	<xsl:value-of select="@name"/>
+	<xsl:if test="short">
+		<xsl:text>
+//
+// </xsl:text>
+		<xsl:value-of select="short"/>
+	</xsl:if>
+	<xsl:text>
+// =========================================
+
+typedef struct _BK_</xsl:text>
+	<xsl:value-of select="@name"/>
+	<xsl:text>* BK_</xsl:text>
+	<xsl:value-of select="@name"/>
+	<xsl:text>;
+
+</xsl:text>
+
+	<xsl:for-each select="entry">
+		<xsl:text>typedef </xsl:text>
+		<xsl:call-template name="type">
+			<xsl:with-param name="name" select="@ret"/>
+		</xsl:call-template>
+		<xsl:text> BK_</xsl:text>
+		<xsl:value-of select="../@name"/>
+		<xsl:text>_</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:value-of select="@c-suffix"/>
+		<xsl:text>(BK_Env* env</xsl:text>
+		<xsl:call-template name="arguments-self"/>
+		<xsl:text>);
+</xsl:text>
+	</xsl:for-each>
+
+	<xsl:text>
+struct _BK_</xsl:text>
+	<xsl:value-of select="@name"/>
+	<xsl:text> {
+</xsl:text>
+	<xsl:for-each select="entry">
+		<xsl:text>	BK_</xsl:text>
+		<xsl:value-of select="../@name"/>
+		<xsl:text>_</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:value-of select="@c-suffix"/>
+		<xsl:text>* </xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>;
+</xsl:text>
+	</xsl:for-each>
+
+	<xsl:text>};
+</xsl:text>
+
+</xsl:template>
+
+<!-- ============================================================= -->
+<!-- Interface Group                                               -->
+<!-- ============================================================= -->
+<xsl:template match="group[not(@delegate)]">
 	<xsl:text>
 // =========================================
 // </xsl:text>

@@ -30,6 +30,8 @@
 #include &lt;stdlib.h&gt;
 #include &lt;string.h&gt;
 
+#include "BerkeliumC.hpp"
+
 //#include &lt;map&gt;
 
 // =========================================
@@ -56,7 +58,7 @@ inline Berkelium::RectRef mapInRectRef(BK_Env* env, BK_Rect&amp; rect)
 
 </xsl:text>
 
-	<xsl:for-each select="/api/group[@type='interface']">
+	<xsl:for-each select="/api/group[not(@delegate) and @type='interface']">
 		<xsl:call-template name="mapIn"/>
 
 		<xsl:variable name="name">
@@ -108,7 +110,7 @@ const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type)
 }
 </xsl:text>
 
-	<xsl:apply-templates select="/api/group[@type!='enum']"/>
+	<xsl:apply-templates select="/api/group[not(@delegate) and @type!='enum']"/>
 </xsl:template>
 
 <!-- ============================================================= -->
@@ -126,6 +128,9 @@ extern "C" void BK_</xsl:text>
 			<xsl:value-of select="@name"/>
 			<xsl:text> self)
 {
+</xsl:text>
+	<xsl:call-template name="defaultEnv"/>
+<xsl:text>
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::</xsl:text>
 
@@ -215,6 +220,16 @@ extern "C" void BK_</xsl:text>
 </xsl:template>
 
 <!-- ============================================================= -->
+<!-- Use Default Env                                               -->
+<!-- ============================================================= -->
+<xsl:template name="defaultEnv">
+	<xsl:text>	if(env == NULL) {
+		env = &amp;simpleBerkeliumEnv::env;
+	}
+</xsl:text>
+</xsl:template>
+
+<!-- ============================================================= -->
 <!-- Skip doc                                                      -->
 <!-- ============================================================= -->
 <xsl:template name="invoke">
@@ -289,7 +304,20 @@ extern "C" void BK_</xsl:text>
 	<xsl:call-template name="arguments-self"/>
 	<xsl:text>)
 {
+	BERKELIUM_C_TRACE</xsl:text>
+
+	<xsl:if test="@static">
+		<xsl:text>_STATIC</xsl:text>
+	</xsl:if>
+
+	<xsl:text>();
 </xsl:text>
+
+	<xsl:call-template name="defaultEnv"/>
+
+	<xsl:text>
+</xsl:text>
+
 	<xsl:if test="not(@static)">
 		<xsl:text>	Berkelium::</xsl:text>
 
@@ -382,6 +410,8 @@ inline bk_ext_obj mapOut</xsl:text>
 
 	<xsl:text>Ref bk)
 {
+	BERKELIUM_C_TRACE_STATIC();
+
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
 
 	if(!manager->locked(bk.get())) {
@@ -394,6 +424,7 @@ inline bk_ext_obj mapOut</xsl:text>
 </xsl:text>
 
 	<xsl:text>
+
 	BK_Env_Enum type(</xsl:text>
 
 	<xsl:value-of select="@name"/>
@@ -414,6 +445,8 @@ inline bk_ext_obj mapOut</xsl:text>
 	<xsl:text> bk:%p ext:%p\n", bk.get(), ret);
 	*/
 
+	BERKELIUM_C_TRACE_RETURN(ret);
+
 	return ret;
 }
 </xsl:text>
@@ -431,6 +464,8 @@ inline Berkelium::</xsl:text>
 
 	<xsl:text>Ref(BK_Env* env, bk_ext_obj extId)
 {
+	BERKELIUM_C_TRACE();
+
 	</xsl:text>
 
 	<xsl:choose>
@@ -443,6 +478,8 @@ inline Berkelium::</xsl:text>
 			<xsl:text>);
 
 	void* tmp = env->mapIn(type, extId, env->data);
+
+	BERKELIUM_C_TRACE_RETURN(tmp);
 
 	Berkelium::</xsl:text>
 
@@ -479,11 +516,17 @@ inline Berkelium::</xsl:text>
 		<xsl:text>Ref();
 	}
 
-	return manager->get</xsl:text>
+	Berkelium::</xsl:text>
 
 	<xsl:value-of select="@name"/>
+	<xsl:text>Ref ret(manager->get</xsl:text>
+	<xsl:value-of select="@name"/>
 
-	<xsl:text>(intId);
+	<xsl:text>(intId));
+
+	BERKELIUM_C_TRACE_RETURN(ret.get());
+
+	return ret;
 }
 </xsl:text>
 		</xsl:otherwise>
@@ -540,3 +583,30 @@ inline </xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>
+
+<!--
+inline Berkelium::LogDelegateRef mapInLogDelegateRef(BK_Env* env, bk_ext_obj extId)
+{
+	BK_Env_Enum type(LogDelegate);
+	fprintf(stderr, "mapInLogDelegateRef1 %p\n", extId);
+
+	void* tmp = env->mapIn(type, extId, env->data);
+
+	if(tmp == NULL) {
+		fprintf(stderr, "mapInLogDelegateRef2a %p\n", tmp);
+		Berkelium::LogDelegateRef ret(new JavaLogDelegate());
+		fprintf(stderr, "mapInLogDelegateRef2b %p\n", tmp);
+		tmp = env->mapNew(type, ret.get(), env->data);
+		fprintf(stderr, "mapInLogDelegateRef2c %p\n", tmp);
+		return ret;
+	}
+	fprintf(stderr, "mapInLogDelegateRef2 %p\n", tmp);
+
+	Berkelium::LogDelegateRef* ret((Berkelium::LogDelegateRef*)tmp);
+
+	fprintf(stderr, "mapInLogDelegateRef3 %p\n", ret);
+
+	return Berkelium::LogDelegateRef(*ret);
+}
+
+-->

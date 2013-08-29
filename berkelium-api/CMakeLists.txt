@@ -6,6 +6,25 @@ IF(NOT DEFINED BERKELIUM_BUILD)
 	MESSAGE(FATAL_ERROR "this project should be build using berkelium build system!")
 ENDIF()
 
+###########
+## Build API Doc
+## --------
+#  berkelium-cpp/src/demo/*/*.c
+FILE(GLOB_RECURSE DOC_SOURCE RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/.." "../berkelium-cpp/src/demo/*/*.cpp" "../berkelium-cpp/src/demo/*/*.c" "../berkelium-java/src/main/java/org/berkelium/demo/*/*.java")
+FOREACH(SOURCE ${DOC_SOURCE})
+	GET_FILENAME_COMPONENT(FILE "../${SOURCE}" ABSOLUTE)
+	LIST(APPEND DOC_DEPS "${FILE}")
+	GET_FILENAME_COMPONENT(FILE "${SOURCE}" ABSOLUTE)
+	FILE(RELATIVE_PATH FILE "${CMAKE_CURRENT_SOURCE_DIR}" "${FILE}")
+	LIST(APPEND DOC "${FILE}")
+ENDFOREACH()
+LIST(SORT DOC)
+
+ADD_EXECUTABLE(buildjsdata buildjsdata.c)
+ADD_CUSTOM_COMMAND(OUTPUT data.js COMMAND buildjsdata berkelium-api/data.js ${DOC} DEPENDS buildjsdata ${DOC_DEPS} WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/..")
+
+ADD_CUSTOM_TARGET(doc ALL DEPENDS data.js)
+
 INCLUDE(CMakeParseArguments)
 
 FIND_PROGRAM(XSLTPROC xsltproc DOC "xsltproc transforms XML via XSLT")

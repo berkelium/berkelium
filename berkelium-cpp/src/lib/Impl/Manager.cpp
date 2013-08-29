@@ -38,8 +38,14 @@ ManagerRef getManager(void* ptr)
 {
 	ManagerWMapIt it(managerMap.find(ptr));
 	if(it != managerMap.end()) {
+		/*
+		fprintf(stderr, "getManager: found!\n");
+		*/
 		return it->second.lock();
 	}
+	/*
+	fprintf(stderr, "getManager: not found!\n");
+	*/
 	return ManagerRef();
 }
 
@@ -58,6 +64,9 @@ class TypeManager {
 
 public:
 	void registerRef(std::shared_ptr<T> ref, ManagerWRef manager) {
+		/*
+		fprintf(stderr, "register %p\n", ref.get());
+		*/
 		map.insert(std::pair<void*, std::weak_ptr<T>>(ref.get(), ref));
 		managerMap.insert(std::pair<void*, ManagerWRef>(ref.get(), manager));
 	}
@@ -69,6 +78,7 @@ public:
 	std::shared_ptr<T> getRef(void* id) {
 		for(MapIt it(map.begin()); it != map.end();) {
 			if(it->second.expired()) {
+				managerMap.erase(it->first);
 				/*
 				fprintf(stderr, "unregister %p\n", it->first);
 				*/

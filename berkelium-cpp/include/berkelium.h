@@ -52,13 +52,9 @@ typedef void* BK_Runtime;
 typedef void* BK_HostExecutable;
 typedef void* BK_Profile;
 typedef void* BK_Logger;
-typedef void* BK_LogDelegate;
-typedef void* BK_HostDelegate;
 typedef void* BK_Instance;
 typedef void* BK_Window;
-typedef void* BK_WindowDelegate;
 typedef void* BK_Tab;
-typedef void* BK_TabDelegate;
 
 typedef enum {
 	Host,
@@ -103,6 +99,64 @@ typedef struct {
 	BK_Tab* entrys;
 } BK_TabList;
 
+
+// =========================================
+// delegate LogDelegate
+// =========================================
+
+typedef struct _BK_LogDelegate* BK_LogDelegate;
+
+typedef void BK_LogDelegate_log(BK_Env* env, BK_LogDelegate self, BK_Runtime runtime, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string name, bk_string message);
+
+struct _BK_LogDelegate {
+	BK_LogDelegate_log* log;
+};
+
+// =========================================
+// delegate HostDelegate
+//
+// Handler for events concerning the berkelium host process.
+// =========================================
+
+typedef struct _BK_HostDelegate* BK_HostDelegate;
+
+typedef void BK_HostDelegate_onCrashed(BK_Env* env, BK_HostDelegate self, BK_Instance instance);
+typedef void BK_HostDelegate_onClosed(BK_Env* env, BK_HostDelegate self, BK_Instance instance);
+
+struct _BK_HostDelegate {
+	BK_HostDelegate_onCrashed* onCrashed;
+	BK_HostDelegate_onClosed* onClosed;
+};
+
+// =========================================
+// delegate WindowDelegate
+// =========================================
+
+typedef struct _BK_WindowDelegate* BK_WindowDelegate;
+
+
+struct _BK_WindowDelegate {
+};
+
+// =========================================
+// delegate TabDelegate
+//
+// Handler for events concerning tab content.
+// =========================================
+
+typedef struct _BK_TabDelegate* BK_TabDelegate;
+
+typedef void BK_TabDelegate_onClosed(BK_Env* env, BK_TabDelegate self, BK_Tab tab);
+typedef void BK_TabDelegate_onTitleChanged(BK_Env* env, BK_TabDelegate self, BK_Tab tab, bk_string title);
+typedef void BK_TabDelegate_onPaint(BK_Env* env, BK_TabDelegate self, BK_Tab tab);
+typedef void BK_TabDelegate_onPaintDone(BK_Env* env, BK_TabDelegate self, BK_Tab tab, BK_Rect rect);
+
+struct _BK_TabDelegate {
+	BK_TabDelegate_onClosed* onClosed;
+	BK_TabDelegate_onTitleChanged* onTitleChanged;
+	BK_TabDelegate_onPaint* onPaint;
+	BK_TabDelegate_onPaintDone* onPaintDone;
+};
 
 // =========================================
 // interface HostVersion
@@ -251,25 +305,6 @@ void BK_Logger_error(BK_Env* env, BK_Logger self, bk_string message);
 void BK_Logger_free(BK_Env*, BK_Logger self);
 
 // =========================================
-// interface LogDelegate
-// =========================================
-
-// Allows the client application to handle berkelium library and host messages.
-void BK_LogDelegate_log(BK_Env* env, BK_LogDelegate self, BK_Runtime runtime, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string name, bk_string message);
-
-// =========================================
-// interface HostDelegate
-//
-// Handler for events concerning the berkelium host process.
-// =========================================
-
-// Called if the host process was unexpected terminated.
-void BK_HostDelegate_onCrashed(BK_Env* env, BK_HostDelegate self, BK_Instance instance);
-
-// Called if the host process was properly closed.
-void BK_HostDelegate_onClosed(BK_Env* env, BK_HostDelegate self, BK_Instance instance);
-
-// =========================================
 // interface Instance
 //
 // Represents a running berkelium host instance.
@@ -336,10 +371,6 @@ bk_bool BK_Window_isIncognito(BK_Env* env, BK_Window self);
 void BK_Window_free(BK_Env*, BK_Window self);
 
 // =========================================
-// interface WindowDelegate
-// =========================================
-
-// =========================================
 // interface Tab
 // =========================================
 
@@ -373,16 +404,6 @@ void BK_Tab_resize(BK_Env* env, BK_Tab self, bk_int32 width, bk_int32 height);
 // Set the URL of this tab. A new tab has the url “about:blank”.
 void BK_Tab_navigateTo(BK_Env* env, BK_Tab self, bk_string url);
 void BK_Tab_free(BK_Env*, BK_Tab self);
-
-// =========================================
-// interface TabDelegate
-//
-// Handler for events concerning tab content.
-// =========================================
-void BK_TabDelegate_onClosed(BK_Env* env, BK_TabDelegate self, BK_Tab tab);
-void BK_TabDelegate_onTitleChanged(BK_Env* env, BK_TabDelegate self, BK_Tab tab, bk_string title);
-void BK_TabDelegate_onPaint(BK_Env* env, BK_TabDelegate self, BK_Tab tab);
-void BK_TabDelegate_onPaintDone(BK_Env* env, BK_TabDelegate self, BK_Tab tab, BK_Rect rect);
 
 #ifdef __cplusplus
 }
