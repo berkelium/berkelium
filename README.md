@@ -27,6 +27,10 @@ on this Operating Systems:
 
 Supported are 32 bit and 64 bit systems.
 
+Berkelium API HowTo
+-------------------
+An API How To is available here [http://berkelium.github.io/berkelium/](http://berkelium.github.io/berkelium/)
+
 Documentation
 -------------
 API Documentation (The API is as much as possible identical for all supported languages) can be found [here](berkelium-api).
