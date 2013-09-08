@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Berkelium API Howto</title>
+	<meta charset="utf-8">
+
+	<style>
+	li.L0, li.L1, li.L2, li.L3, li.L4,
+	li.L5, li.L6, li.L7, li.L8, li.L9
+	{
+		list-style-type: decimal !important;
+		background: #ffffff;
+		border-left: 1px solid #cccccc;
+		padding-left: 12px;
+	}
+	.well.sidebar-nav {
+		position: fixed;
+	}
+	.source .prettyprinted {
+		margin-bottom: 0px;
+	}
+	.source .alert {
+		margin-bottom: 0px;
+		padding-top: 5px;
+		padding-bottom: 5px;
+	}
+
+	.source .green .com,
+	.source .yellow .com,
+	.source .red .com,
+	.source .blue .com {
+		color: #000000;
+	}
+	.source .green {
+		background-color: #c0ffc0;
+	}
+
+	.source .yellow {
+		background-color: #ffffc0;
+	}
+
+	.source .red {
+		background-color: #ffc0c0;
+	}
+
+	.source .blue {
+		background-color: #c0c0ff;
+	}
+
+	.source tooltip {
+		border: 2px dashed #428BCA;
+	}
+	.source tooltip.warn {
+		border: 2px dashed #d9534f;
+	}
+
+	#popover-info .popover-title {
+		background-color: #428bca;
+		color: #ffffff;
+	}
+
+	#popover-warn .popover-title {
+		background-color: #d9534f;
+		color: #ffffff;
+	}
+
+	.doc {
+		padding: 10px;
+	}
+
+	</style>
+</head>
+<body data-spy="scroll" data-target="#sidebar" style="padding-top:0px">
+
+<div id="popover-info"></div>
+<div id="popover-warn"></div>
+
+<div class="hidden">
+	<hint match="(BK_.*_free)" type="warn">
+		<title>Free</title>
+		<content>You must call the matching free function for objects returned by Berkelium if you do not need them any longer.</content>
+	</hint>
+	<hint match="/\*HINT:BK_ENV\*/(.*)/\*HINT\*/" type="info">
+		<title>BK_Env</title>
+		<content>You can pass an Pointer of Type BK_Env* to every Berkelium Function. You can just pass NULL if you do not need this Feature. Look for the section <a href="#">Berkelium Mapper</a> for more informations.</content>
+	</hint>
+</div>
+
+<div class="col-md-3 hidden-print" role="navigation">
+	<div class="well bs-sidebar sidebar-nav" id="sidebar" style="margin-top:20px" role="complementary">
+		<ul class="nav">
+			<li><b>Berkelium API</b></li>
+		</ul>
+	</div>
+</div>
+
+<div class="col-md-9" id="content" role="main">
+
+<h1 id="runtime">Runtime</h1>
+
+<entry id="runtime1">
+	<h2>Create</h2>
+	<div>The first thing to do is to create an Berkelium Runtime instance. This is done by calling <b>createRuntime()</b> of class <b>BerkeliumFactory</b>.</div>
+	<file type="cpp" name="berkelium-cpp/src/demo/runtime/runtime1.cpp"/>
+	<file type="c" name="berkelium-cpp/src/demo/runtime/runtime1.c"/>
+	<file type="java" name="berkelium-java/src/main/java/org/berkelium/demo/runtime/Runtime1.java"/>
+</entry>
+
+<entry id="runtime2">
+	<h2>Scope</h2>
+	<div>All Berkelium Objects must be closed.</div>
+	<file type="cpp" name="berkelium-cpp/src/demo/runtime/runtime2.cpp">
+		<div class="info">In C++, all Berkelium Objects are automaticly freed after the last Smart Pointer pointing to the Object was destoryed or resetted.</div>
+	<file type="c" name="berkelium-cpp/src/demo/runtime/runtime2.c"/>
+	<file type="java" name="berkelium-java/src/main/java/org/berkelium/demo/runtime/Runtime2.java"/>
+</entry>
+
+<entry id="runtime3">
+	<h2>Runtime with LogDelegate</h2>
+	<file type="cpp" name="berkelium-cpp/src/demo/runtime/runtime3.cpp"/>
+	<file type="c" name="berkelium-cpp/src/demo/runtime/runtime3.c"/>
+	<file type="java" name="berkelium-java/src/main/java/org/berkelium/demo/runtime/Runtime3.java"/>
+</entry>
+
+<h1 id="demo">Demos</h1>
+
+<entry id="demo1">
+	<h2>Demo1</h2>
+	<file type="cpp" name="berkelium-cpp/src/demo/demos/demo1.cpp"/>
+	<file type="c" name="berkelium-cpp/src/demo/demos/demo1.c"/>
+	<file type="java" name="berkelium-java/src/main/java/org/berkelium/demo/demo1/Demo1.java"/>
+</entry>
+
+<entry id="demo2">
+	<h2>Demo2</h2>
+	<file type="cpp" name="berkelium-cpp/src/demo/demos/demo2.cpp"/>
+	<file type="c" name="berkelium-cpp/src/demo/demos/demo2.c"/>
+	<file type="java" name="berkelium-java/src/main/java/org/berkelium/demo/demo2/Demo2.java"/>
+</entry>
+
+<hr/>
+
+</div>
+
+<script src="https://google-code-prettify.googlecode.com/svn/loader/prettify.js"></script>
+<link rel="stylesheet" href="http://jmblog.github.com/color-themes-for-google-code-prettify/css/themes/github.css">
+<script src="https://code.jquery.com/jquery.js"></script>
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+<script src="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="http://getbootstrap.com/assets/css/docs.css">
+<script src="data.js"></script>
+<script src="api.js"></script>
+
+</body>
+</html>
