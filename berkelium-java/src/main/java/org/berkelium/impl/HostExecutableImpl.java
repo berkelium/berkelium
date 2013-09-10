@@ -24,6 +24,9 @@ public class HostExecutableImpl implements HostExecutable, BerkeliumObjectImpl {
 	}
 
 	@Override
+	public native void dispose();
+
+	@Override
 	public native Runtime getRuntime();
 
 	@Override

@@ -66,6 +66,9 @@
 	public int getBerkeliumId() {
 		return id;
 	}
+
+	@Override
+	public native void dispose();
 </xsl:text>
 
 	<!-- class implementation -->

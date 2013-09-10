@@ -7,6 +7,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*
+ * Class:     org_berkelium_impl_WindowDelegateImpl
+ * Method:    dispose
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_berkelium_impl_WindowDelegateImpl_dispose
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif

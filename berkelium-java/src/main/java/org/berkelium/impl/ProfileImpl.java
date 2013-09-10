@@ -23,6 +23,9 @@ public class ProfileImpl implements Profile, BerkeliumObjectImpl {
 	}
 
 	@Override
+	public native void dispose();
+
+	@Override
 	public native Runtime getRuntime();
 
 	@Override

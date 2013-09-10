@@ -24,6 +24,9 @@ public class BerkeliumFactoryImpl extends BerkeliumFactory implements BerkeliumO
 	}
 
 	@Override
+	public native void dispose();
+
+	@Override
 	public native Runtime getDefaultRuntime();
 
 	@Override

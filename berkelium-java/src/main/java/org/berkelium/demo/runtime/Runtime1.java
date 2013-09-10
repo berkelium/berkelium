@@ -8,10 +8,10 @@ import org.berkelium.api.BerkeliumFactory;
 import org.berkelium.api.Runtime;
 
 public class Runtime1 {
-	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		/*GREEN*/// Create Runtime/*GREEN*/
 		Runtime runtime = /*GREEN*/BerkeliumFactory.getInstance().createRuntime()/*GREEN*/;
-		/*RED*/// TODO close runtime/*RED*/
+		// close runtime
+		runtime.dispose();
 	}
 }

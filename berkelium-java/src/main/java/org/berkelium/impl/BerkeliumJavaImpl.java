@@ -14,14 +14,18 @@ public class BerkeliumJavaImpl {
 		}
 		Long bkNativeId = j2n.get(bkJavaId);
 		if(bkNativeId == null) {
+			/*
 			if(bkJavaId instanceof BerkeliumObjectImpl) {
-				System.err.printf("mapIn : %d	j:0x%x (new)\n", type, bkJavaId.getBerkeliumId());
+				System.err.printf("mapIn : %d	j:%s (new)\n", type, bkJavaId.toString());
 			} else {
 				System.err.printf("mapIn : %d	sorry... (new)\n", type);
 			}
+			*/
 			return 0;
 		}
-		System.err.printf("mapIn : %d	j:0x%x = id:0x%x\n", type, bkJavaId.getBerkeliumId(), bkNativeId);
+		/*
+		System.err.printf("mapIn : %d	j:0x%x = id:0x%x\n", type, bkJavaId.hashCode(), bkNativeId);
+		*/
 		return bkNativeId;
 		/*
 		Long obj = n2o.get(bkNativeId);
@@ -32,11 +36,13 @@ public class BerkeliumJavaImpl {
 
 	static synchronized BerkeliumObjectImpl mapOut(int type, long bkNativeId) {
 		BerkeliumObjectImpl bkJavaId = n2j.get(bkNativeId);
+		/*
 		if(bkJavaId == null) {
 			System.err.printf("mapOut: %d	id:0x%x (calling mapNew)\n", type, bkNativeId);
 		} else {
-			System.err.printf("mapOut: %d	id:0x%x = j:0x%x(old)\n", type, bkNativeId, bkJavaId.getBerkeliumId());
+			System.err.printf("mapOut: %d	id:0x%x = j:0x%x(old)\n", type, bkNativeId, bkJavaId.toString());
 		}
+		*/
 		return bkJavaId;
 	}
 
@@ -44,7 +50,9 @@ public class BerkeliumJavaImpl {
 		if(bkJavaId == null) {
 			throw new NullPointerException("BerkeliumObject");
 		}
-		System.err.printf("mapNew: %d	id:0x%x = j:0x%x(new)\n", type, bkNativeId, bkJavaId.getBerkeliumId());
+		/*
+		System.err.printf("mapNew: %d	id:0x%x = j:%s\n", type, bkNativeId, bkJavaId.toString());
+		*/
 		n2j.put(bkNativeId, bkJavaId);
 		j2n.put(bkJavaId, bkNativeId);
 	}

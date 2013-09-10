@@ -131,7 +131,6 @@ extern "C" void BK_</xsl:text>
 </xsl:text>
 	<xsl:call-template name="defaultEnv"/>
 <xsl:text>
-	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::</xsl:text>
 
 			<xsl:value-of select="@name"/>
@@ -141,7 +140,6 @@ extern "C" void BK_</xsl:text>
 			<xsl:value-of select="@name"/>
 
 			<xsl:text>Ref(env, self));
-
 	if(!_this) {
 		fprintf(stderr, "already freed </xsl:text>
 
@@ -151,14 +149,23 @@ extern "C" void BK_</xsl:text>
 		return;
 	}
 
-	void* result = manager->unlock(self);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(_this));
+	if(!manager) {
+		fprintf(stderr, "can't find manager for </xsl:text>
+
+			<xsl:value-of select="@name"/>
+
+			<xsl:text> %p!\n", self);
+		return;
+	}
+	void* result = manager->unlock(_this.get());
 
 	if(result == NULL) {
 		fprintf(stderr, "can't free </xsl:text>
 
 			<xsl:value-of select="@name"/>
 
-			<xsl:text> %p!\n", self);
+			<xsl:text> %p!\n", _this.get());
 	} else {
 		delete (Berkelium::</xsl:text>
 

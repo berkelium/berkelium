@@ -651,18 +651,21 @@ extern "C" void BK_HostVersion_free(BK_Env* env, BK_HostVersion self)
 		env = &simpleBerkeliumEnv::env;
 	}
 
-	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::HostVersionRef _this(mapInHostVersionRef(env, self));
-
 	if(!_this) {
 		fprintf(stderr, "already freed HostVersion %p!\n", self);
 		return;
 	}
 
-	void* result = manager->unlock(self);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(_this));
+	if(!manager) {
+		fprintf(stderr, "can't find manager for HostVersion %p!\n", self);
+		return;
+	}
+	void* result = manager->unlock(_this.get());
 
 	if(result == NULL) {
-		fprintf(stderr, "can't free HostVersion %p!\n", self);
+		fprintf(stderr, "can't free HostVersion %p!\n", _this.get());
 	} else {
 		delete (Berkelium::HostVersionRef*)result;
 		/*
@@ -971,18 +974,21 @@ extern "C" void BK_Runtime_free(BK_Env* env, BK_Runtime self)
 		env = &simpleBerkeliumEnv::env;
 	}
 
-	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
-
 	if(!_this) {
 		fprintf(stderr, "already freed Runtime %p!\n", self);
 		return;
 	}
 
-	void* result = manager->unlock(self);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(_this));
+	if(!manager) {
+		fprintf(stderr, "can't find manager for Runtime %p!\n", self);
+		return;
+	}
+	void* result = manager->unlock(_this.get());
 
 	if(result == NULL) {
-		fprintf(stderr, "can't free Runtime %p!\n", self);
+		fprintf(stderr, "can't free Runtime %p!\n", _this.get());
 	} else {
 		delete (Berkelium::RuntimeRef*)result;
 		/*
@@ -1054,18 +1060,21 @@ extern "C" void BK_HostExecutable_free(BK_Env* env, BK_HostExecutable self)
 		env = &simpleBerkeliumEnv::env;
 	}
 
-	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::HostExecutableRef _this(mapInHostExecutableRef(env, self));
-
 	if(!_this) {
 		fprintf(stderr, "already freed HostExecutable %p!\n", self);
 		return;
 	}
 
-	void* result = manager->unlock(self);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(_this));
+	if(!manager) {
+		fprintf(stderr, "can't find manager for HostExecutable %p!\n", self);
+		return;
+	}
+	void* result = manager->unlock(_this.get());
 
 	if(result == NULL) {
-		fprintf(stderr, "can't free HostExecutable %p!\n", self);
+		fprintf(stderr, "can't free HostExecutable %p!\n", _this.get());
 	} else {
 		delete (Berkelium::HostExecutableRef*)result;
 		/*
@@ -1238,18 +1247,21 @@ extern "C" void BK_Profile_free(BK_Env* env, BK_Profile self)
 		env = &simpleBerkeliumEnv::env;
 	}
 
-	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::ProfileRef _this(mapInProfileRef(env, self));
-
 	if(!_this) {
 		fprintf(stderr, "already freed Profile %p!\n", self);
 		return;
 	}
 
-	void* result = manager->unlock(self);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(_this));
+	if(!manager) {
+		fprintf(stderr, "can't find manager for Profile %p!\n", self);
+		return;
+	}
+	void* result = manager->unlock(_this.get());
 
 	if(result == NULL) {
-		fprintf(stderr, "can't free Profile %p!\n", self);
+		fprintf(stderr, "can't free Profile %p!\n", _this.get());
 	} else {
 		delete (Berkelium::ProfileRef*)result;
 		/*
@@ -1337,18 +1349,21 @@ extern "C" void BK_Logger_free(BK_Env* env, BK_Logger self)
 		env = &simpleBerkeliumEnv::env;
 	}
 
-	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::LoggerRef _this(mapInLoggerRef(env, self));
-
 	if(!_this) {
 		fprintf(stderr, "already freed Logger %p!\n", self);
 		return;
 	}
 
-	void* result = manager->unlock(self);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(_this));
+	if(!manager) {
+		fprintf(stderr, "can't find manager for Logger %p!\n", self);
+		return;
+	}
+	void* result = manager->unlock(_this.get());
 
 	if(result == NULL) {
-		fprintf(stderr, "can't free Logger %p!\n", self);
+		fprintf(stderr, "can't free Logger %p!\n", _this.get());
 	} else {
 		delete (Berkelium::LoggerRef*)result;
 		/*
@@ -1538,18 +1553,21 @@ extern "C" void BK_Instance_free(BK_Env* env, BK_Instance self)
 		env = &simpleBerkeliumEnv::env;
 	}
 
-	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
-
 	if(!_this) {
 		fprintf(stderr, "already freed Instance %p!\n", self);
 		return;
 	}
 
-	void* result = manager->unlock(self);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(_this));
+	if(!manager) {
+		fprintf(stderr, "can't find manager for Instance %p!\n", self);
+		return;
+	}
+	void* result = manager->unlock(_this.get());
 
 	if(result == NULL) {
-		fprintf(stderr, "can't free Instance %p!\n", self);
+		fprintf(stderr, "can't free Instance %p!\n", _this.get());
 	} else {
 		delete (Berkelium::InstanceRef*)result;
 		/*
@@ -1705,18 +1723,21 @@ extern "C" void BK_Window_free(BK_Env* env, BK_Window self)
 		env = &simpleBerkeliumEnv::env;
 	}
 
-	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::WindowRef _this(mapInWindowRef(env, self));
-
 	if(!_this) {
 		fprintf(stderr, "already freed Window %p!\n", self);
 		return;
 	}
 
-	void* result = manager->unlock(self);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(_this));
+	if(!manager) {
+		fprintf(stderr, "can't find manager for Window %p!\n", self);
+		return;
+	}
+	void* result = manager->unlock(_this.get());
 
 	if(result == NULL) {
-		fprintf(stderr, "can't free Window %p!\n", self);
+		fprintf(stderr, "can't free Window %p!\n", _this.get());
 	} else {
 		delete (Berkelium::WindowRef*)result;
 		/*
@@ -1906,18 +1927,21 @@ extern "C" void BK_Tab_free(BK_Env* env, BK_Tab self)
 		env = &simpleBerkeliumEnv::env;
 	}
 
-	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(self));
 	Berkelium::TabRef _this(mapInTabRef(env, self));
-
 	if(!_this) {
 		fprintf(stderr, "already freed Tab %p!\n", self);
 		return;
 	}
 
-	void* result = manager->unlock(self);
+	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(_this));
+	if(!manager) {
+		fprintf(stderr, "can't find manager for Tab %p!\n", self);
+		return;
+	}
+	void* result = manager->unlock(_this.get());
 
 	if(result == NULL) {
-		fprintf(stderr, "can't free Tab %p!\n", self);
+		fprintf(stderr, "can't free Tab %p!\n", _this.get());
 	} else {
 		delete (Berkelium::TabRef*)result;
 		/*

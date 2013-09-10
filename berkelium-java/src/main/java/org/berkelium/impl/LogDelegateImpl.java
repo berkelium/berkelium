@@ -25,5 +25,8 @@ public class LogDelegateImpl implements LogDelegate, BerkeliumObjectImpl {
 	}
 
 	@Override
+	public native void dispose();
+
+	@Override
 	public native void log(Runtime runtime, LogSource source, LogType type, String clazz, String name, String message);
 }

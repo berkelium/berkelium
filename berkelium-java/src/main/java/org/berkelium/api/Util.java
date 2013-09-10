@@ -22,6 +22,10 @@ public class Util {
 			public void error(String message) {
 				System.err.println(message);
 			}
+
+			@Override
+			public void dispose() {
+			}
 		};
 	}
 }

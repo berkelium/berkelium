@@ -123,7 +123,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
 //
 // =========================================
 
-#define BK_TO_JOBECT(X) (jobject)(X)
+#define BK_TO_JOBJECT(X) (jobject)(X)
 #define BK_TO_JBOOLEAN(X) ((X) ? JNI_TRUE : JNI_FALSE)
 
 bk_bk_obj Berkelium_Java_MapIn(BK_Env_Enum type, bk_ext_obj bkJavaId, void* data)
@@ -227,21 +227,21 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_BerkeliumFactoryImpl_createRun
 {
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
-	return BK_TO_JOBECT(BK_BerkeliumFactory_createRuntime(&bkenv));
+	return BK_TO_JOBJECT(BK_BerkeliumFactory_createRuntime(&bkenv));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_BerkeliumFactoryImpl_createRuntimeWithLog(JNIEnv* env, jobject _this, jobject log)
 {
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
-	return BK_TO_JOBECT(BK_BerkeliumFactory_createRuntimeWithLog(&bkenv, (BK_LogDelegate)log));
+	return BK_TO_JOBJECT(BK_BerkeliumFactory_createRuntimeWithLog(&bkenv, (BK_LogDelegate)log));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_BerkeliumFactoryImpl_getDefaultRuntime(JNIEnv* env, jobject _this)
 {
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
-	return BK_TO_JOBECT(BK_BerkeliumFactory_getDefaultRuntime(&bkenv));
+	return BK_TO_JOBJECT(BK_BerkeliumFactory_getDefaultRuntime(&bkenv));
 }
 
 // =========================================
@@ -249,6 +249,14 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_BerkeliumFactoryImpl_getDefaul
 //	HostExecutable
 //
 // =========================================
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_HostExecutableImpl_dispose(JNIEnv* env, jobject _this)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	BK_HostExecutable_free(&bkenv, (void*)_this);
+}
+
 
 JNIEXPORT jstring JNICALL Java_org_berkelium_impl_HostExecutableImpl_getPath(JNIEnv* env, jobject _this)
 {
@@ -263,7 +271,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_HostExecutableImpl_getRuntime(
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_HostExecutable_getRuntime(&bkenv, self));
+	return BK_TO_JOBJECT(BK_HostExecutable_getRuntime(&bkenv, self));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_HostExecutableImpl_getVersion(JNIEnv* env, jobject _this)
@@ -271,7 +279,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_HostExecutableImpl_getVersion(
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_HostExecutable_getVersion(&bkenv, self));
+	return BK_TO_JOBJECT(BK_HostExecutable_getVersion(&bkenv, self));
 }
 
 // =========================================
@@ -279,6 +287,14 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_HostExecutableImpl_getVersion(
 //	HostVersion
 //
 // =========================================
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_HostVersionImpl_dispose(JNIEnv* env, jobject _this)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	BK_HostVersion_free(&bkenv, (void*)_this);
+}
+
 
 JNIEXPORT jint JNICALL Java_org_berkelium_impl_HostVersionImpl_getBuild(JNIEnv* env, jobject _this)
 {
@@ -317,7 +333,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_HostVersionImpl_getRuntime(JNI
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_HostVersion_getRuntime(&bkenv, self));
+	return BK_TO_JOBJECT(BK_HostVersion_getRuntime(&bkenv, self));
 }
 
 JNIEXPORT jstring JNICALL Java_org_berkelium_impl_HostVersionImpl_getVersionString(JNIEnv* env, jobject _this)
@@ -342,6 +358,14 @@ JNIEXPORT jboolean JNICALL Java_org_berkelium_impl_HostVersionImpl_isMinVersion(
 //
 // =========================================
 
+JNIEXPORT void JNICALL Java_org_berkelium_impl_InstanceImpl_dispose(JNIEnv* env, jobject _this)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	BK_Instance_free(&bkenv, (void*)_this);
+}
+
+
 JNIEXPORT void JNICALL Java_org_berkelium_impl_InstanceImpl_addHostDelegate(JNIEnv* env, jobject _this, jobject delegate)
 {
 	BK_Env bkenv;
@@ -363,7 +387,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_createWindow(JNIE
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Instance_createWindow(&bkenv, self, incognito));
+	return BK_TO_JOBJECT(BK_Instance_createWindow(&bkenv, self, incognito));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getExecutable(JNIEnv* env, jobject _this)
@@ -371,7 +395,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getExecutable(JNI
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Instance_getExecutable(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Instance_getExecutable(&bkenv, self));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getProfile(JNIEnv* env, jobject _this)
@@ -379,7 +403,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getProfile(JNIEnv
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Instance_getProfile(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Instance_getProfile(&bkenv, self));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getRuntime(JNIEnv* env, jobject _this)
@@ -387,7 +411,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getRuntime(JNIEnv
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Instance_getRuntime(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Instance_getRuntime(&bkenv, self));
 }
 
 JNIEXPORT jint JNICALL Java_org_berkelium_impl_InstanceImpl_getWindowCount(JNIEnv* env, jobject _this)
@@ -403,7 +427,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getWindowList(JNI
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Instance_getWindowList(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Instance_getWindowList(&bkenv, self));
 }
 
 JNIEXPORT void JNICALL Java_org_berkelium_impl_InstanceImpl_internalUpdate(JNIEnv* env, jobject _this)
@@ -427,6 +451,14 @@ JNIEXPORT void JNICALL Java_org_berkelium_impl_InstanceImpl_removeHostDelegate(J
 //	Logger
 //
 // =========================================
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_LoggerImpl_dispose(JNIEnv* env, jobject _this)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	BK_Logger_free(&bkenv, (void*)_this);
+}
+
 
 JNIEXPORT void JNICALL Java_org_berkelium_impl_LoggerImpl_debug(JNIEnv* env, jobject _this, jstring message)
 {
@@ -466,6 +498,14 @@ JNIEXPORT void JNICALL Java_org_berkelium_impl_LoggerImpl_warn(JNIEnv* env, jobj
 //
 // =========================================
 
+JNIEXPORT void JNICALL Java_org_berkelium_impl_ProfileImpl_dispose(JNIEnv* env, jobject _this)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	BK_Profile_free(&bkenv, (void*)_this);
+}
+
+
 JNIEXPORT jstring JNICALL Java_org_berkelium_impl_ProfileImpl_getApplicationName(JNIEnv* env, jobject _this)
 {
 	BK_Env bkenv;
@@ -487,7 +527,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_ProfileImpl_getRuntime(JNIEnv*
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Profile_getRuntime(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Profile_getRuntime(&bkenv, self));
 }
 
 JNIEXPORT jboolean JNICALL Java_org_berkelium_impl_ProfileImpl_isFound(JNIEnv* env, jobject _this)
@@ -544,6 +584,14 @@ JNIEXPORT void JNICALL Java_org_berkelium_impl_ProfileImpl_setLocked(JNIEnv* env
 //
 // =========================================
 
+JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_dispose(JNIEnv* env, jobject _this)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	BK_Runtime_free(&bkenv, (void*)_this);
+}
+
+
 JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_addLogDelegate(JNIEnv* env, jobject _this, jobject delegate)
 {
 	BK_Env bkenv;
@@ -557,7 +605,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_createTemporaryPro
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Runtime_createTemporaryProfile(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Runtime_createTemporaryProfile(&bkenv, self));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forExecutable(JNIEnv* env, jobject _this, jstring pathTo)
@@ -565,7 +613,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forExecutable(JNIE
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Runtime_forExecutable(&bkenv, self, JSTRING_TO_BK(env, pathTo)));
+	return BK_TO_JOBJECT(BK_Runtime_forExecutable(&bkenv, self, JSTRING_TO_BK(env, pathTo)));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forProfile(JNIEnv* env, jobject _this, jstring application)
@@ -573,7 +621,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forProfile(JNIEnv*
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Runtime_forProfile(&bkenv, self, JSTRING_TO_BK(env, application)));
+	return BK_TO_JOBJECT(BK_Runtime_forProfile(&bkenv, self, JSTRING_TO_BK(env, application)));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forProfilePath(JNIEnv* env, jobject _this, jstring path)
@@ -581,7 +629,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forProfilePath(JNI
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Runtime_forProfilePath(&bkenv, self, JSTRING_TO_BK(env, path)));
+	return BK_TO_JOBJECT(BK_Runtime_forProfilePath(&bkenv, self, JSTRING_TO_BK(env, path)));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forSystemInstalled(JNIEnv* env, jobject _this)
@@ -589,7 +637,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forSystemInstalled
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Runtime_forSystemInstalled(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Runtime_forSystemInstalled(&bkenv, self));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forVersion__Ljava_lang_String_2(JNIEnv* env, jobject _this, jstring version)
@@ -597,7 +645,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forVersion__Ljava_
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Runtime_forVersionS(&bkenv, self, JSTRING_TO_BK(env, version)));
+	return BK_TO_JOBJECT(BK_Runtime_forVersionS(&bkenv, self, JSTRING_TO_BK(env, version)));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forVersion__IIII(JNIEnv* env, jobject _this, jint vMajor, jint vMinor, jint vBuild, jint vPatch)
@@ -605,7 +653,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_forVersion__IIII(J
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Runtime_forVersion4I(&bkenv, self, vMajor, vMinor, vBuild, vPatch));
+	return BK_TO_JOBJECT(BK_Runtime_forVersion4I(&bkenv, self, vMajor, vMinor, vBuild, vPatch));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_getChromeProfile(JNIEnv* env, jobject _this)
@@ -613,7 +661,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_getChromeProfile(J
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Runtime_getChromeProfile(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Runtime_getChromeProfile(&bkenv, self));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_getChromiumProfile(JNIEnv* env, jobject _this)
@@ -621,7 +669,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_getChromiumProfile
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Runtime_getChromiumProfile(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Runtime_getChromiumProfile(&bkenv, self));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_getLogger(JNIEnv* env, jobject _this, jstring clazz, jstring name)
@@ -629,7 +677,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_getLogger(JNIEnv* 
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Runtime_getLogger(&bkenv, self, JSTRING_TO_BK(env, clazz), JSTRING_TO_BK(env, name)));
+	return BK_TO_JOBJECT(BK_Runtime_getLogger(&bkenv, self, JSTRING_TO_BK(env, clazz), JSTRING_TO_BK(env, name)));
 }
 
 JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_log(JNIEnv* env, jobject _this, jobject source, jobject type, jstring clazz, jstring name, jstring message)
@@ -645,7 +693,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_open(JNIEnv* env, 
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Runtime_open(&bkenv, self, (BK_HostExecutable)executable, (BK_Profile)profile));
+	return BK_TO_JOBJECT(BK_Runtime_open(&bkenv, self, (BK_HostExecutable)executable, (BK_Profile)profile));
 }
 
 JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_removeLogDelegate(JNIEnv* env, jobject _this, jobject delegate)
@@ -670,6 +718,14 @@ JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_setDefaultExecutable(
 //
 // =========================================
 
+JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_dispose(JNIEnv* env, jobject _this)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	BK_Tab_free(&bkenv, (void*)_this);
+}
+
+
 JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_addTabDelegate(JNIEnv* env, jobject _this, jobject delegate)
 {
 	BK_Env bkenv;
@@ -691,7 +747,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getRuntime(JNIEnv* env
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Tab_getRuntime(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Tab_getRuntime(&bkenv, self));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getTabDelegate(JNIEnv* env, jobject _this)
@@ -699,7 +755,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getTabDelegate(JNIEnv*
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Tab_getTabDelegate(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Tab_getTabDelegate(&bkenv, self));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getWindow(JNIEnv* env, jobject _this)
@@ -707,7 +763,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getWindow(JNIEnv* env,
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Tab_getWindow(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Tab_getWindow(&bkenv, self));
 }
 
 JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_internalUpdate(JNIEnv* env, jobject _this)
@@ -756,12 +812,20 @@ JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_sync(JNIEnv* env, jobject
 //
 // =========================================
 
+JNIEXPORT void JNICALL Java_org_berkelium_impl_WindowImpl_dispose(JNIEnv* env, jobject _this)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	BK_Window_free(&bkenv, (void*)_this);
+}
+
+
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_WindowImpl_createTab(JNIEnv* env, jobject _this)
 {
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Window_createTab(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Window_createTab(&bkenv, self));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_WindowImpl_getInstance(JNIEnv* env, jobject _this)
@@ -769,7 +833,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_WindowImpl_getInstance(JNIEnv*
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Window_getInstance(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Window_getInstance(&bkenv, self));
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_WindowImpl_getRuntime(JNIEnv* env, jobject _this)
@@ -777,7 +841,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_WindowImpl_getRuntime(JNIEnv* 
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Window_getRuntime(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Window_getRuntime(&bkenv, self));
 }
 
 JNIEXPORT jint JNICALL Java_org_berkelium_impl_WindowImpl_getTabCount(JNIEnv* env, jobject _this)
@@ -793,7 +857,7 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_WindowImpl_getTabList(JNIEnv* 
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	void* self((void*)_this);
-	return BK_TO_JOBECT(BK_Window_getTabList(&bkenv, self));
+	return BK_TO_JOBJECT(BK_Window_getTabList(&bkenv, self));
 }
 
 JNIEXPORT void JNICALL Java_org_berkelium_impl_WindowImpl_internalUpdate(JNIEnv* env, jobject _this)

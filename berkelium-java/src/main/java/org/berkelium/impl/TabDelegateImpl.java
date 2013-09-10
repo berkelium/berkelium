@@ -24,6 +24,9 @@ public class TabDelegateImpl implements TabDelegate, BerkeliumObjectImpl {
 	}
 
 	@Override
+	public native void dispose();
+
+	@Override
 	public native void onClosed(Tab tab);
 
 	@Override

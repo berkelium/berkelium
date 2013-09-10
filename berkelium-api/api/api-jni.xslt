@@ -127,7 +127,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
 //
 // =========================================
 
-#define BK_TO_JOBECT(X) (jobject)(X)
+#define BK_TO_JOBJECT(X) (jobject)(X)
 #define BK_TO_JBOOLEAN(X) ((X) ? JNI_TRUE : JNI_FALSE)
 
 bk_bk_obj Berkelium_Java_MapIn(BK_Env_Enum type, bk_ext_obj bkJavaId, void* data)
@@ -244,6 +244,26 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 // =========================================
 </xsl:text>
 
+		<xsl:if test="@type='interface'">
+			<xsl:text>
+JNIEXPORT void JNICALL Java_org_berkelium_impl_</xsl:text>
+
+			<xsl:value-of select="$class"/>
+
+			<xsl:text>Impl_dispose(JNIEnv* env, jobject _this)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	BK_</xsl:text>
+
+			<xsl:value-of select="$class"/>
+
+			<xsl:text>_free(&amp;bkenv, (void*)_this);
+}
+
+</xsl:text>
+		</xsl:if>
+
 		<xsl:for-each select="entry[not(@type)]">
 			<xsl:sort select="@name"/>
 
@@ -299,7 +319,7 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 					<xsl:text>return BK_TO_JSTRING(env, </xsl:text>
 				</xsl:when>
 				<xsl:when test="$ret='jobject'">
-					<xsl:text>return BK_TO_JOBECT(</xsl:text>
+					<xsl:text>return BK_TO_JOBJECT(</xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
 					<xsl:text>!!ERROR: Return Statement of '</xsl:text>

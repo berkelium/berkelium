@@ -22,6 +22,9 @@ public class LoggerImpl implements Logger, BerkeliumObjectImpl {
 	}
 
 	@Override
+	public native void dispose();
+
+	@Override
 	public native void debug(String message);
 
 	@Override

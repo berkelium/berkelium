@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     org_berkelium_impl_TabDelegateImpl
+ * Method:    dispose
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_berkelium_impl_TabDelegateImpl_dispose
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_berkelium_impl_TabDelegateImpl
  * Method:    onClosed
  * Signature: (Lorg/berkelium/api/Tab;)V
  */

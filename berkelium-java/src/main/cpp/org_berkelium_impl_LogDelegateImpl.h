@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     org_berkelium_impl_LogDelegateImpl
+ * Method:    dispose
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_berkelium_impl_LogDelegateImpl_dispose
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_berkelium_impl_LogDelegateImpl
  * Method:    log
  * Signature: (Lorg/berkelium/api/Runtime;Lorg/berkelium/api/LogSource;Lorg/berkelium/api/LogType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */

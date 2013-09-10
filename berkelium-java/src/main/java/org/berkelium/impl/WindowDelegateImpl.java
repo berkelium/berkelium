@@ -20,4 +20,7 @@ public class WindowDelegateImpl implements WindowDelegate, BerkeliumObjectImpl {
 	public int getBerkeliumId() {
 		return id;
 	}
+
+	@Override
+	public native void dispose();
 }

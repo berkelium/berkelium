@@ -9,6 +9,14 @@ extern "C" {
 #endif
 /*
  * Class:     org_berkelium_impl_BerkeliumFactoryImpl
+ * Method:    dispose
+ * Signature: ()V
+ */
+JNIEXPORT void JNICALL Java_org_berkelium_impl_BerkeliumFactoryImpl_dispose
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_berkelium_impl_BerkeliumFactoryImpl
  * Method:    getDefaultRuntime
  * Signature: ()Lorg/berkelium/api/Runtime;
  */

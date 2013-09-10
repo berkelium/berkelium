@@ -455,11 +455,11 @@ var source={
 "import org.berkelium.api.Runtime;\n" +
 "\n" +
 "public class Runtime1 {\n" +
-"\t@SuppressWarnings(\"unused\")\n" +
 "\tpublic static void main(String[] args) {\n" +
 "\t\t/*GREEN*/// Create Runtime/*GREEN*/\n" +
 "\t\tRuntime runtime = /*GREEN*/BerkeliumFactory.getInstance().createRuntime()/*GREEN*/;\n" +
-"\t\t/*RED*/// TODO close runtime/*RED*/\n" +
+"\t\t// close runtime\n" +
+"\t\truntime.dispose();\n" +
 "\t}\n" +
 "}\n" +
 "","berkelium-java/src/main/java/org/berkelium/demo/runtime/Runtime2.java":
@@ -473,10 +473,11 @@ var source={
 "import org.berkelium.api.Runtime;\n" +
 "\n" +
 "public class Runtime2 {\n" +
-"\t@SuppressWarnings(\"unused\")\n" +
 "\tpublic static void main(String[] args) {\n" +
+"\t\t// Create Runtime\n" +
 "\t\tRuntime runtime = BerkeliumFactory.getInstance().createRuntime();\n" +
-"\t\t/*RED*/// TODO close runtime/*RED*/\n" +
+"\t\t/*GREEN*/// close runtime/*GREEN*/\n" +
+"\t\t/*GREEN*/runtime.dispose();/*GREEN*/\n" +
 "\t}\n" +
 "}\n" +
 ""

@@ -30,6 +30,9 @@ public class RuntimeImpl implements Runtime, BerkeliumObjectImpl {
 	}
 
 	@Override
+	public native void dispose();
+
+	@Override
 	public native void setDefaultExecutable(String pathTo);
 
 	@Override

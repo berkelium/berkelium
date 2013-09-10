@@ -23,6 +23,9 @@ public class HostDelegateImpl implements HostDelegate, BerkeliumObjectImpl {
 	}
 
 	@Override
+	public native void dispose();
+
+	@Override
 	public native void onCrashed(Instance instance);
 
 	@Override
