@@ -52,10 +52,6 @@ public:
 	virtual void unregisterLogger() = 0;
 	virtual LoggerRef getLogger(void* id) = 0;
 
-	virtual void registerTabDelegate(TabDelegateRef delegate) = 0;
-	virtual void unregisterTabDelegate() = 0;
-	virtual TabDelegateRef getTabDelegate(void* id) = 0;
-
 	virtual bool locked(void* id) = 0;
 
 	virtual void lock(void* id, void* obj) = 0;

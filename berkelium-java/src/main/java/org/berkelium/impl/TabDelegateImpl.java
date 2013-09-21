@@ -17,11 +17,6 @@ import org.berkelium.api.TabDelegate;
 // =========================================
 
 public class TabDelegateImpl implements TabDelegate, BerkeliumObjectImpl {
-	private final int id = BerkeliumJavaImpl.createId();
-
-	public int getBerkeliumId() {
-		return id;
-	}
 
 	@Override
 	public native void dispose();

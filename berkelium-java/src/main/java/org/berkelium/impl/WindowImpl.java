@@ -18,11 +18,6 @@ import org.berkelium.api.Window;
 // =========================================
 
 public class WindowImpl implements Window, BerkeliumObjectImpl {
-	private final int id = BerkeliumJavaImpl.createId();
-
-	public int getBerkeliumId() {
-		return id;
-	}
 
 	@Override
 	public native void dispose();

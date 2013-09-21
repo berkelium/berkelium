@@ -15,11 +15,6 @@ import org.berkelium.api.Logger;
 // =========================================
 
 public class LoggerImpl implements Logger, BerkeliumObjectImpl {
-	private final int id = BerkeliumJavaImpl.createId();
-
-	public int getBerkeliumId() {
-		return id;
-	}
 
 	@Override
 	public native void dispose();

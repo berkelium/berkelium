@@ -6,6 +6,7 @@
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/LogDelegate.hpp>
 #include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/Manager.hpp>
 
 #include <cstring>
 #include <sstream>
@@ -84,6 +85,7 @@ class LoggerImpl : public Logger {
 private:
 	LogDelegateRef target;
 	RuntimeWRef runtime;
+	const ManagerRef manager;
 	const std::string clazz;
 	const std::string name;
 	std::string prefix;
@@ -93,12 +95,18 @@ public:
 		Logger(),
 		target(target),
 		runtime(runtime),
+		manager(Berkelium::impl::getManager(runtime)),
 		clazz(clazz),
 		name(name),
 		prefix(){
 	}
 
 	virtual ~LoggerImpl() {
+		getManager()->unregisterLogger();
+	}
+
+	ManagerRef getManager() {					\
+		return manager;							\
 	}
 
 	virtual std::ostream& debug() {
@@ -158,9 +166,23 @@ void enableBerkeliumHostMode() {
 	logSource = Host;
 }
 
+ManagerRef getManager(LoggerRef logger)
+{
+	if(!logger) {
+		fprintf(stderr, "getManagerForLogger: null!\n");
+		return ManagerRef();
+	}
+	/*
+	fprintf(stderr, "getManagerForLogger: %p\n", logger.get());
+	*/
+	LoggerImpl* impl = (LoggerImpl*)logger.get();
+	return impl->getManager();
+}
+
 LoggerRef newLogger(LogDelegateRef target, RuntimeRef runtime, const std::string& clazz, const std::string& name) {
 	LoggerImpl* impl = new LoggerImpl(target, runtime, clazz, name);
 	LoggerRef ret(impl);
+	impl->getManager()->registerLogger(ret);
 	return ret;
 }
 

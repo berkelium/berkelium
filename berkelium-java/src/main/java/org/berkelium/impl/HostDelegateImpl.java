@@ -16,11 +16,6 @@ import org.berkelium.api.Instance;
 // =========================================
 
 public class HostDelegateImpl implements HostDelegate, BerkeliumObjectImpl {
-	private final int id = BerkeliumJavaImpl.createId();
-
-	public int getBerkeliumId() {
-		return id;
-	}
 
 	@Override
 	public native void dispose();

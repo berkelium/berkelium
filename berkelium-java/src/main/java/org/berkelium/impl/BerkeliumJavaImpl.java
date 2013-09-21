@@ -2,13 +2,32 @@ package org.berkelium.impl;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class BerkeliumJavaImpl {
 	private final static Map<Long, BerkeliumObjectImpl> n2j = new HashMap<Long, BerkeliumObjectImpl>();
 	private final static Map<BerkeliumObjectImpl, Long> j2n = new HashMap<BerkeliumObjectImpl, Long>();
 
+	private static Thread shutdownHook = new Thread(){
+		public void run() {
+			for(BerkeliumObjectImpl o : j2n.keySet()) {
+				System.err.println("Warning: unclosed Berkelium Object " + o);
+				o.dispose();
+			}
+		}
+	};
+
+	private static boolean registerd = false;
+
+	private static void register() {
+		if(!registerd) {
+			registerd = true;
+			//System.r
+			Runtime.getRuntime().addShutdownHook(shutdownHook);
+		}
+	}
+
 	static synchronized long mapIn(int type, BerkeliumObjectImpl bkJavaId) {
+		register();
 		if(bkJavaId == null) {
 			throw new NullPointerException("BerkeliumObject");
 		}
@@ -18,7 +37,7 @@ public class BerkeliumJavaImpl {
 			if(bkJavaId instanceof BerkeliumObjectImpl) {
 				System.err.printf("mapIn : %d	j:%s (new)\n", type, bkJavaId.toString());
 			} else {
-				System.err.printf("mapIn : %d	sorry... (new)\n", type);
+				//throw new IllegalArgumentException("internal error: tried to map none BerkeliumObjectImpl instance of type " +  type + "!");
 			}
 			*/
 			return 0;
@@ -35,6 +54,7 @@ public class BerkeliumJavaImpl {
 	}
 
 	static synchronized BerkeliumObjectImpl mapOut(int type, long bkNativeId) {
+		register();
 		BerkeliumObjectImpl bkJavaId = n2j.get(bkNativeId);
 		/*
 		if(bkJavaId == null) {
@@ -57,9 +77,13 @@ public class BerkeliumJavaImpl {
 		j2n.put(bkJavaId, bkNativeId);
 	}
 
-	private final static AtomicInteger idCounter = new AtomicInteger();
-
-	static int createId() {
-		return idCounter.getAndIncrement();
+	static synchronized void free(long bkNativeId) {
+		BerkeliumObjectImpl removed = n2j.remove(bkNativeId);
+		/*
+		System.err.printf("free: id:0x%x = j:%s\n", bkNativeId, removed);
+		*/
+		if(removed != null) {
+			j2n.remove(removed);
+		}
 	}
 }

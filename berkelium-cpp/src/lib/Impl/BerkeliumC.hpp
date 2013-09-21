@@ -2,25 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/*
-class JavaLogDelegate : public Berkelium::LogDelegate
+inline char* malloc(const std::string& msg) {
+	int n = msg.length() + 1;
+	char* ret = (char*)malloc(n);
+	memcpy(ret, msg.c_str(), n);
+	return ret;
+}
+
+class BkLogDelegateMapper : public Berkelium::LogDelegate
 {
 private:
 	BK_Env* env;
+	BK_LogDelegate delegate;
 public:
-	JavaLogDelegate()
-		: Berkelium::LogDelegate() {
+	BkLogDelegateMapper(BK_Env* env, BK_LogDelegate delegate)
+		: Berkelium::LogDelegate(),
+		env(env),
+		delegate(delegate) {
+		//fprintf(stderr, "new BkLogDelegateMapper\n");
 	}
 
-	virtual ~JavaLogDelegate() {
+	virtual ~BkLogDelegateMapper() {
+		//fprintf(stderr, "delete BkLogDelegateMapper\n");
+		free(delegate);
 	}
 
-	virtual void log(Berkelium::RuntimeRef runtime, Berkelium::LogSource source, Berkelium::LogType type, const std::string& clazz, const std::string& name, const std::string& message) {
-		fprintf(stderr, "log: %s %s %s", clazz.c_str(), name.c_str(), message.c_str());
+	virtual void log(Berkelium::RuntimeRef runtime, Berkelium::LogSource source, Berkelium::LogType type,
+			 const std::string& clazz, const std::string& name, const std::string& message) {
+		delegate->log(env, delegate, NULL, Host, StdErr,
+			      malloc(clazz), malloc(name), malloc(message));
 	}
 };
-*/
-
 
 #if defined(BERKELIUM_TRACE_C_ENTER) || defined(BERKELIUM_TRACE_C_LEAVE)
 class BerkeliumCTracer {
@@ -63,11 +75,21 @@ inline BK_TabDelegate mapOutTabDelegateRef(BK_Env* env, Berkelium::TabDelegateRe
 	return NULL;
 }
 
-
-inline Berkelium::LogDelegateRef mapInLogDelegateRef(BK_Env* env, BK_LogDelegate log)
+inline Berkelium::LogDelegateRef mapInLogDelegateRef(BK_Env* env, bk_ext_obj extId)
 {
 	BERKELIUM_C_TRACE_STATIC();
-	return Berkelium::LogDelegateRef();
+
+	BK_LogDelegate log = (BK_LogDelegate)env->mapIn(LogDelegate, extId, env->data);
+	/*
+	if(log == NULL) {
+		fprintf(stderr, "error: '%s' returned NULL!\n", __FUNCTION__);
+		return Berkelium::LogDelegateRef();
+	}
+	*/
+
+	BERKELIUM_C_TRACE_RETURN(log);
+
+	return Berkelium::LogDelegateRef(new BkLogDelegateMapper(env, log));
 }
 
 inline Berkelium::HostDelegateRef mapInHostDelegateRef(BK_Env* env, BK_HostDelegate host)
@@ -96,10 +118,19 @@ bk_ext_obj mapOut(BK_Env_Enum type, bk_bk_obj id, void* data)
 	return (bk_ext_obj)id;
 }
 
-bk_ext_obj mapNew(BK_Env_Enum type, bk_bk_obj id, void* data)
+bk_ext_obj mapNew(BK_Env_Enum type, bk_bk_obj id, bk_ext_obj extId,  void* data)
 {
 	BERKELIUM_C_TRACE_NOENV();
 	return (bk_ext_obj)id;
+}
+
+void NPE(bk_string clazz, bk_string arg)
+{
+	fprintf(stderr, "Null Pointer Exception: Class '%s' - Argument '%s'", clazz, arg);
+}
+
+void free(bk_ext_obj extId, void* data)
+{
 }
 
 BK_Env create()
@@ -109,6 +140,8 @@ BK_Env create()
 	ret.mapIn = &mapIn;
 	ret.mapOut = &mapOut;
 	ret.mapNew = &mapNew;
+	ret.free= &free;
+	ret.NPE = &NPE;
 
 	return ret;
 }

@@ -148,6 +148,7 @@ extern "C" void BK_</xsl:text>
 			<xsl:text> %p!\n", self);
 		return;
 	}
+	env->free(_this.get(), env->data);
 
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(_this));
 	if(!manager) {
@@ -322,6 +323,32 @@ extern "C" void BK_</xsl:text>
 
 	<xsl:call-template name="defaultEnv"/>
 
+	<xsl:if test="arg/@type='string'">
+
+	<xsl:text>
+	// NPE check
+</xsl:text>
+	<xsl:variable name="return">
+		<xsl:call-template name="returnDefault"/>
+	</xsl:variable>
+
+	<xsl:for-each select="arg[@type='string']">
+		<xsl:text>	if(</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text> == NULL</xsl:text>
+		<xsl:text>) {
+		env->NPE(strdup(__FUNCTION__), strdup("</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>"));
+		</xsl:text>
+		<xsl:value-of select="$return"/>
+		<xsl:text>
+	}
+</xsl:text>
+	</xsl:for-each>
+
+	</xsl:if>
+
 	<xsl:text>
 </xsl:text>
 
@@ -338,23 +365,11 @@ extern "C" void BK_</xsl:text>
 
 	if(!_this) {
 		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
-		return</xsl:text>
+		</xsl:text>
 
-		<xsl:choose>
-			<xsl:when test="not(@ret)">
-			</xsl:when>
-			<xsl:when test="@ret='int32'">
-				<xsl:text> 0</xsl:text>
-			</xsl:when>
-			<xsl:when test="@ret='int32' or @ret='bool'">
-				<xsl:text> false</xsl:text>
-			</xsl:when>
-			<xsl:otherwise>
-				<xsl:text> NULL</xsl:text>
-			</xsl:otherwise>
-		</xsl:choose>
+		<xsl:call-template name="returnDefault"/>
 
-		<xsl:text>;
+		<xsl:text>
 	}
 
 </xsl:text>
@@ -421,6 +436,11 @@ inline bk_ext_obj mapOut</xsl:text>
 
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
 
+	if(!manager) {
+		fprintf(stderr, "error: manager in '%s' %p not found!\n", __FUNCTION__, bk.get());
+		return NULL;
+	}
+
 	if(!manager->locked(bk.get())) {
 		manager->lock(bk.get(), new Berkelium::</xsl:text>
 
@@ -441,7 +461,7 @@ inline bk_ext_obj mapOut</xsl:text>
 	bk_ext_obj ret = env-&gt;mapOut(type, bk.get(), env->data);
 
 	if(ret == NULL) {
-		ret = env-&gt;mapNew(type, bk.get(), env->data);
+		ret = env-&gt;mapNew(type, bk.get(), NULL, env->data);
 	}
 
 	/*
@@ -587,6 +607,25 @@ inline </xsl:text>
 	return ret;
 }
 </xsl:text>
+</xsl:template>
+
+
+<xsl:template name="returnDefault">
+	<xsl:text>return</xsl:text>
+	<xsl:choose>
+		<xsl:when test="not(@ret)">
+		</xsl:when>
+		<xsl:when test="@ret='int32'">
+			<xsl:text> 0</xsl:text>
+		</xsl:when>
+		<xsl:when test="@ret='int32' or @ret='bool'">
+			<xsl:text> false</xsl:text>
+		</xsl:when>
+		<xsl:otherwise>
+			<xsl:text> NULL</xsl:text>
+		</xsl:otherwise>
+	</xsl:choose>
+	<xsl:text>;</xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>

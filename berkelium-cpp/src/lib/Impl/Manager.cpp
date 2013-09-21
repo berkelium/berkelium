@@ -18,22 +18,6 @@ typedef ManagerWMap::iterator ManagerWMapIt;
 
 ManagerWMap managerMap;
 
-ManagerRef getManager(TabDelegateRef delegate)
-{
-	if(!delegate) {
-		return ManagerRef();
-	}
-	return getManager(delegate.get());
-}
-
-ManagerRef getManager(LoggerRef logger)
-{
-	if(!logger) {
-		return ManagerRef();
-	}
-	return getManager(logger.get());
-}
-
 ManagerRef getManager(void* ptr)
 {
 	ManagerWMapIt it(managerMap.find(ptr));

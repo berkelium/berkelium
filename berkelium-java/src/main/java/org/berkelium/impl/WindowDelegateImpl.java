@@ -15,11 +15,6 @@ import org.berkelium.api.WindowDelegate;
 // =========================================
 
 public class WindowDelegateImpl implements WindowDelegate, BerkeliumObjectImpl {
-	private final int id = BerkeliumJavaImpl.createId();
-
-	public int getBerkeliumId() {
-		return id;
-	}
 
 	@Override
 	public native void dispose();

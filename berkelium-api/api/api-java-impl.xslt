@@ -61,11 +61,6 @@
 		</xsl:otherwise>
 	</xsl:choose>
 	<xsl:text> {
-	private final int id = BerkeliumJavaImpl.createId();
-
-	public int getBerkeliumId() {
-		return id;
-	}
 
 	@Override
 	public native void dispose();

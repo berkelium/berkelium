@@ -190,7 +190,9 @@ public:
 	virtual void log(LogSource source, LogType type, const std::string& clazz, const std::string& name, const std::string& message) {
 		for(LogDelegateRefSet::iterator it = logs.begin(); it != logs.end(); it++) {
 			LogDelegateRef ref = *it;
-			ref->log(getSelf(), source, type, clazz, name, message);
+			if(ref) {
+				ref->log(getSelf(), source, type, clazz, name, message);
+			}
 		}
 	}
 };

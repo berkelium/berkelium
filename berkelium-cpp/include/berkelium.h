@@ -77,15 +77,18 @@ typedef bk_bk_obj BK_Env_mapIn(BK_Env_Enum type, bk_ext_obj id, void* data);
 
 typedef bk_ext_obj BK_Env_mapOut(BK_Env_Enum type, bk_bk_obj id, void* data);
 
-typedef bk_ext_obj BK_Env_mapNew(BK_Env_Enum type, bk_bk_obj id, void* data);
+typedef bk_ext_obj BK_Env_mapNew(BK_Env_Enum type, bk_bk_obj id, bk_ext_obj extId, void* data);
 
-typedef void BK_Env_mapInError(BK_Env_Enum expected, BK_Env_Enum actual, bk_ext_obj id, void* data);
+typedef void BK_Env_free(bk_ext_obj extId, void* data);
+
+typedef void BK_Env_NPE(bk_string clazz, bk_string arg);
 
 typedef struct {
 	BK_Env_mapIn* mapIn;
 	BK_Env_mapOut* mapOut;
 	BK_Env_mapNew* mapNew;
-	BK_Env_mapInError* mapInError;
+	BK_Env_free* free;
+	BK_Env_NPE* NPE;
 	void* data;
 } BK_Env;
 
@@ -109,6 +112,7 @@ typedef struct _BK_LogDelegate* BK_LogDelegate;
 typedef void BK_LogDelegate_log(BK_Env* env, BK_LogDelegate self, BK_Runtime runtime, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string name, bk_string message);
 
 struct _BK_LogDelegate {
+	bk_ext_obj self;
 	BK_LogDelegate_log* log;
 };
 
@@ -124,6 +128,7 @@ typedef void BK_HostDelegate_onCrashed(BK_Env* env, BK_HostDelegate self, BK_Ins
 typedef void BK_HostDelegate_onClosed(BK_Env* env, BK_HostDelegate self, BK_Instance instance);
 
 struct _BK_HostDelegate {
+	bk_ext_obj self;
 	BK_HostDelegate_onCrashed* onCrashed;
 	BK_HostDelegate_onClosed* onClosed;
 };
@@ -136,6 +141,7 @@ typedef struct _BK_WindowDelegate* BK_WindowDelegate;
 
 
 struct _BK_WindowDelegate {
+	bk_ext_obj self;
 };
 
 // =========================================
@@ -152,6 +158,7 @@ typedef void BK_TabDelegate_onPaint(BK_Env* env, BK_TabDelegate self, BK_Tab tab
 typedef void BK_TabDelegate_onPaintDone(BK_Env* env, BK_TabDelegate self, BK_Tab tab, BK_Rect rect);
 
 struct _BK_TabDelegate {
+	bk_ext_obj self;
 	BK_TabDelegate_onClosed* onClosed;
 	BK_TabDelegate_onTitleChanged* onTitleChanged;
 	BK_TabDelegate_onPaint* onPaint;

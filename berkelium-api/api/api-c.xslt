@@ -97,15 +97,18 @@ typedef bk_bk_obj BK_Env_mapIn(BK_Env_Enum type, bk_ext_obj id, void* data);
 
 typedef bk_ext_obj BK_Env_mapOut(BK_Env_Enum type, bk_bk_obj id, void* data);
 
-typedef bk_ext_obj BK_Env_mapNew(BK_Env_Enum type, bk_bk_obj id, void* data);
+typedef bk_ext_obj BK_Env_mapNew(BK_Env_Enum type, bk_bk_obj id, bk_ext_obj extId, void* data);
 
-typedef void BK_Env_mapInError(BK_Env_Enum expected, BK_Env_Enum actual, bk_ext_obj id, void* data);
+typedef void BK_Env_free(bk_ext_obj extId, void* data);
+
+typedef void BK_Env_NPE(bk_string clazz, bk_string arg);
 
 typedef struct {
 	BK_Env_mapIn* mapIn;
 	BK_Env_mapOut* mapOut;
 	BK_Env_mapNew* mapNew;
-	BK_Env_mapInError* mapInError;
+	BK_Env_free* free;
+	BK_Env_NPE* NPE;
 	void* data;
 } BK_Env;
 
@@ -181,6 +184,7 @@ typedef struct _BK_</xsl:text>
 struct _BK_</xsl:text>
 	<xsl:value-of select="@name"/>
 	<xsl:text> {
+	bk_ext_obj self;
 </xsl:text>
 	<xsl:for-each select="entry">
 		<xsl:text>	BK_</xsl:text>

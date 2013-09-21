@@ -59,6 +59,24 @@ public class Demo2 {
 
 		instance.close();
 
-		logger.info("done!");
+		logger.info("dispose tab...");
+		tab.dispose();
+
+		logger.info("dispose window...");
+		win.dispose();
+
+		logger.info("dispose instance...");
+		instance.dispose();
+
+		logger.info("dispose profile...");
+		profile.dispose();
+
+		logger.info("dispose host...");
+		host.dispose();
+
+		logger.info("dispose runtime...");
+		runtime.dispose();
+
+		logger.info("disposed!");
 	}
 }

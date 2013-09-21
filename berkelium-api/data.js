@@ -441,7 +441,25 @@ var source={
 "\n" +
 "\t\tinstance.close();\n" +
 "\n" +
-"\t\tlogger.info(\"done!\");\n" +
+"\t\tlogger.info(\"dispose tab...\");\n" +
+"\t\ttab.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose window...\");\n" +
+"\t\twin.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose instance...\");\n" +
+"\t\tinstance.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose profile...\");\n" +
+"\t\tprofile.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose host...\");\n" +
+"\t\thost.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose runtime...\");\n" +
+"\t\truntime.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"disposed!\");\n" +
 "\t}\n" +
 "}\n" +
 "","berkelium-java/src/main/java/org/berkelium/demo/runtime/Runtime1.java":
@@ -478,6 +496,49 @@ var source={
 "\t\tRuntime runtime = BerkeliumFactory.getInstance().createRuntime();\n" +
 "\t\t/*GREEN*/// close runtime/*GREEN*/\n" +
 "\t\t/*GREEN*/runtime.dispose();/*GREEN*/\n" +
+"\t}\n" +
+"}\n" +
+"","berkelium-java/src/main/java/org/berkelium/demo/runtime/Runtime3.java":
+"// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
+"// Use of this source code is governed by a BSD-style license that can be\n" +
+"// found in the LICENSE file.\n" +
+"\n" +
+"package org.berkelium.demo.runtime;\n" +
+"\n" +
+"import org.berkelium.api.BerkeliumFactory;\n" +
+"import org.berkelium.api.LogDelegate;\n" +
+"import org.berkelium.api.LogSource;\n" +
+"import org.berkelium.api.LogType;\n" +
+"import org.berkelium.api.Logger;\n" +
+"import org.berkelium.api.Runtime;\n" +
+"\n" +
+"public class Runtime3 {\n" +
+"\t// This LogDelegate will receive all Log Messages from Berkelium\n" +
+"\tprivate static /*GREEN*/LogDelegate log/*GREEN*/ = new LogDelegate() {\n" +
+"\t\t@Override\n" +
+"\t\tpublic void log(Runtime runtime, LogSource source, LogType type,\n" +
+"\t\t\tString clazz, String name, String message) {\n" +
+"\t\t\t// just a demo: write log message to System.err...\n" +
+"\t\t\t/*GREEN*/System.err.printf(\"%s %s %s\\n\", clazz, name, message);/*GREEN*/\n" +
+"\t\t}\n" +
+"\t};\n" +
+"\n" +
+"\tpublic static void main(String[] args) {\n" +
+"\t\t// Create Runtime, use given Log Delegate\n" +
+"\t\tRuntime runtime = /*GREEN*/BerkeliumFactory.getInstance().createRuntimeWithLog(log);/*GREEN*/\n" +
+"\n" +
+"\t\t/*BLUE*/// The Logger Code here is only necessary to demonstrate an invocation of the LogDelegate/*BLUE*/\n" +
+"\t\t/*BLUE*/// Berkelium itself creates log messages that are delegated to the Log Delegate/*BLUE*/\n" +
+"\t\t/*BLUE*/// Because of this it is not necessary to use the Logger Classes directly/*BLUE*/\n" +
+"\t\tLogger logger = runtime.getLogger(Runtime3.class.getName(), \"\");\n" +
+"\t\t// Create a Log Message to demonstrate the LogDelegate\n" +
+"\t\tlogger.info(\"Hello World!\");\n" +
+"\n" +
+"\t\t// close logger\n" +
+"\t\tlogger.dispose();\n" +
+"\n" +
+"\t\t// close runtime\n" +
+"\t\truntime.dispose();\n" +
 "\t}\n" +
 "}\n" +
 ""

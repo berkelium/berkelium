@@ -17,11 +17,6 @@ import org.berkelium.api.Runtime;
 // =========================================
 
 public class HostExecutableImpl implements HostExecutable, BerkeliumObjectImpl {
-	private final int id = BerkeliumJavaImpl.createId();
-
-	public int getBerkeliumId() {
-		return id;
-	}
 
 	@Override
 	public native void dispose();
