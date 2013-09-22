@@ -1,4 +1,4 @@
-package org.berkelium.demo.demo1;
+package org.berkelium.demo.demos;
 
 import org.berkelium.api.BerkeliumFactory;
 import org.berkelium.api.HostExecutable;

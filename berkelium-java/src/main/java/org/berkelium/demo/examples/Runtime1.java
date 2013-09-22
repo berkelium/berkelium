@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.berkelium.demo.runtime;
+package org.berkelium.demo.examples;
 
 import org.berkelium.api.BerkeliumFactory;
 import org.berkelium.api.Runtime;
 
-public class Runtime2 {
+public class Runtime1 {
 	public static void main(String[] args) {
-		// Create Runtime
-		Runtime runtime = BerkeliumFactory.getInstance().createRuntime();
-		/*GREEN*/// close runtime/*GREEN*/
-		/*GREEN*/runtime.dispose();/*GREEN*/
+		/*GREEN*/// Create Runtime/*GREEN*/
+		Runtime runtime = /*GREEN*/BerkeliumFactory.getInstance().createRuntime()/*GREEN*/;
+		// close runtime
+		runtime.dispose();
 	}
 }

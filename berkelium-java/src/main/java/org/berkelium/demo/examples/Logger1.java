@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.berkelium.demo.runtime;
+package org.berkelium.demo.examples;
 
 import org.berkelium.api.BerkeliumFactory;
 import org.berkelium.api.LogDelegate;
@@ -11,7 +11,7 @@ import org.berkelium.api.LogType;
 import org.berkelium.api.Logger;
 import org.berkelium.api.Runtime;
 
-public class Runtime3 {
+public class Logger1 {
 	// This LogDelegate will receive all Log Messages from Berkelium
 	private static /*GREEN*/LogDelegate log/*GREEN*/ = new LogDelegate() {
 		@Override
@@ -29,7 +29,7 @@ public class Runtime3 {
 		/*BLUE*/// The Logger Code here is only necessary to demonstrate an invocation of the LogDelegate/*BLUE*/
 		/*BLUE*/// Berkelium itself creates log messages that are delegated to the Log Delegate/*BLUE*/
 		/*BLUE*/// Because of this it is not necessary to use the Logger Classes directly/*BLUE*/
-		Logger logger = runtime.getLogger(Runtime3.class.getName(), "");
+		Logger logger = runtime.getLogger(Logger1.class.getName(), "");
 		// Create a Log Message to demonstrate the LogDelegate
 		logger.info("Hello World!");
 

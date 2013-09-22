@@ -13,3 +13,9 @@ TARGET_LINK_LIBRARIES(demo-runtime2-cpp ${BERKELIUM_CPP_LIBS})
 
 ADD_EXECUTABLE(demo-runtime2-c runtime2.c)
 TARGET_LINK_LIBRARIES(demo-runtime2-c ${BERKELIUM_CPP_LIBS})
+
+ADD_EXECUTABLE(demo-logger1-cpp logger1.cpp)
+TARGET_LINK_LIBRARIES(demo-logger1-cpp ${BERKELIUM_CPP_LIBS})
+
+ADD_EXECUTABLE(demo-logger1-c logger1.c)
+TARGET_LINK_LIBRARIES(demo-logger1-c ${BERKELIUM_CPP_LIBS})
