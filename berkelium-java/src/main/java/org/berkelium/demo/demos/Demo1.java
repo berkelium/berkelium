@@ -18,6 +18,8 @@ public class Demo1 {
 		logger.debug("profile path: " + profile.getProfilePath());
 		logger.debug("profile is found: " + profile.isFound());
 		logger.debug("profile in use: " + profile.isInUse());
+
+		profile.dispose();
 	}
 
 	public static void main(String[] args) {
@@ -29,11 +31,15 @@ public class Demo1 {
 		HostExecutable host = runtime.forSystemInstalled();
 
 		HostVersion version = host.getVersion();
+		host.dispose();
+
 		logger.info("host version string: " + version);
+		version.dispose();
 
 		dumpProfile(logger, "temporary", runtime.createTemporaryProfile());
 		dumpProfile(logger, "Chrome", runtime.getChromeProfile());
 		dumpProfile(logger, "Chromium", runtime.getChromiumProfile());
 		dumpProfile(logger, "Berkelium", runtime.forProfile("berkelium"));
+		runtime.dispose();
 	}
 }

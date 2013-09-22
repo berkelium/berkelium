@@ -1,7 +1,9 @@
 package org.berkelium.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class BerkeliumJavaImpl {
 	private final static Map<Long, BerkeliumObjectImpl> n2j = new HashMap<Long, BerkeliumObjectImpl>();
@@ -9,7 +11,7 @@ public class BerkeliumJavaImpl {
 
 	private static Thread shutdownHook = new Thread(){
 		public void run() {
-			for(BerkeliumObjectImpl o : j2n.keySet()) {
+			for(BerkeliumObjectImpl o : new HashSet<BerkeliumObjectImpl>(j2n.keySet())) {
 				System.err.println("Warning: unclosed Berkelium Object " + o);
 				o.dispose();
 			}

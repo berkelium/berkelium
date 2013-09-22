@@ -221,13 +221,33 @@ var source={
 "\n" +
 "#include <berkelium.h>\n" +
 "#include <stdio.h>\n" +
+"#include <string.h>\n" +
+"#include <stdlib.h>\n" +
+"\n" +
+"void log_delegate(BK_Env* env, BK_LogDelegate self, BK_Runtime runtime, BK_LogSource source, BK_LogType type,\n" +
+"\t\tbk_string clazz, bk_string name, bk_string message)\n" +
+"{\n" +
+"\t// just a demo: write log message to System.err...\n" +
+"\t/*GREEN*/fprintf(stderr, \"%s %s %s\\n\", clazz, name, message);/*GREEN*/\n" +
+"}\n" +
 "\n" +
 "int main(int argc, char* argv[])\n" +
 "{\n" +
-"\tBK_Runtime runtime = BK_BerkeliumFactory_createRuntime(/*HINT:BK_ENV*/NULL/*HINT*/);\n" +
+"\tBK_LogDelegate log = (BK_LogDelegate)malloc(sizeof(struct _BK_LogDelegate));\n" +
+"\tlog->log = log_delegate;\n" +
 "\n" +
-"\t/*GREEN*/// Runtime will be freed here/*GREEN*/\n" +
-"\t/*GREEN*/BK_Runtime_free(/*HINT:BK_ENV*/NULL/*HINT*/, runtime);/*GREEN*/\n" +
+"\tBK_Runtime runtime = BK_BerkeliumFactory_createRuntimeWithLog(/*HINT:BK_ENV*/NULL/*HINT*/, log);\n" +
+"\n" +
+"\t/*BLUE*/// The Logger Code here is only necessary to demonstrate an invocation of the LogDelegate/*BLUE*/\n" +
+"\t/*BLUE*/// Berkelium itself creates log messages that are delegated to the Log Delegate/*BLUE*/\n" +
+"\t/*BLUE*/// Because of this it is not necessary to use the Logger Classes directly/*BLUE*/\n" +
+"\tBK_Logger logger = BK_Runtime_getLogger(/*HINT:BK_ENV*/NULL/*HINT*/, runtime, strdup(\"logger1\"), strdup(\"\"));\n" +
+"\t// Create a Log Message to demonstrate the LogDelegate\n" +
+"\tBK_Logger_info(/*HINT:BK_ENV*/NULL/*HINT*/, logger, strdup(\"Hello World!\"));\n" +
+"\n" +
+"\tBK_Logger_free(/*HINT:BK_ENV*/NULL/*HINT*/, logger);\n" +
+"\n" +
+"\tBK_Runtime_free(/*HINT:BK_ENV*/NULL/*HINT*/, runtime);\n" +
 "\n" +
 "\treturn 0;\n" +
 "}\n" +
@@ -254,14 +274,14 @@ var source={
 "int main(int argc, char* argv[])\n" +
 "{\n" +
 "\t// This LogDelegate will receive all Log Messages from Berkelium\n" +
-"\tBerkelium::LogDelegateRef log(/*GREEN*/new DemoLogDelegate()/*GREEN*/); \n" +
+"\tBerkelium::LogDelegateRef log(/*GREEN*/new DemoLogDelegate()/*GREEN*/);\n" +
 "\t// Create Runtime, use given Log Delegate\n" +
 "\tBerkelium::RuntimeRef runtime(/*GREEN*/Berkelium::BerkeliumFactory::createRuntimeWithLog(log)/*GREEN*/);\n" +
 "\n" +
 "\t/*BLUE*/// The Logger Code here is only necessary to demonstrate an invocation of the LogDelegate/*BLUE*/\n" +
 "\t/*BLUE*/// Berkelium itself creates log messages that are delegated to the Log Delegate/*BLUE*/\n" +
 "\t/*BLUE*/// Because of this it is not necessary to use the Logger Classes directly/*BLUE*/\n" +
-"\tBerkelium::LoggerRef logger = runtime->getLogger(\"runtime3\", \"\");\n" +
+"\tBerkelium::LoggerRef logger = runtime->getLogger(\"logger1\", \"\");\n" +
 "\t// Create a Log Message to demonstrate the LogDelegate\n" +
 "\tlogger->info(\"Hello World!\");\n" +
 "\n" +
@@ -412,6 +432,8 @@ var source={
 "\t\tlogger.debug(\"profile path: \" + profile.getProfilePath());\n" +
 "\t\tlogger.debug(\"profile is found: \" + profile.isFound());\n" +
 "\t\tlogger.debug(\"profile in use: \" + profile.isInUse());\n" +
+"\n" +
+"\t\tprofile.dispose();\n" +
 "\t}\n" +
 "\n" +
 "\tpublic static void main(String[] args) {\n" +
@@ -423,12 +445,16 @@ var source={
 "\t\tHostExecutable host = runtime.forSystemInstalled();\n" +
 "\n" +
 "\t\tHostVersion version = host.getVersion();\n" +
+"\t\thost.dispose();\n" +
+"\n" +
 "\t\tlogger.info(\"host version string: \" + version);\n" +
+"\t\tversion.dispose();\n" +
 "\n" +
 "\t\tdumpProfile(logger, \"temporary\", runtime.createTemporaryProfile());\n" +
 "\t\tdumpProfile(logger, \"Chrome\", runtime.getChromeProfile());\n" +
 "\t\tdumpProfile(logger, \"Chromium\", runtime.getChromiumProfile());\n" +
 "\t\tdumpProfile(logger, \"Berkelium\", runtime.forProfile(\"berkelium\"));\n" +
+"\t\truntime.dispose();\n" +
 "\t}\n" +
 "}\n" +
 "","berkelium-java/src/main/java/org/berkelium/demo/demos/Demo2.java":

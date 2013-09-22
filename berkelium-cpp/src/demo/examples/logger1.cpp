@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 	/*BLUE*/// The Logger Code here is only necessary to demonstrate an invocation of the LogDelegate/*BLUE*/
 	/*BLUE*/// Berkelium itself creates log messages that are delegated to the Log Delegate/*BLUE*/
 	/*BLUE*/// Because of this it is not necessary to use the Logger Classes directly/*BLUE*/
-	Berkelium::LoggerRef logger = runtime->getLogger("runtime3", "");
+	Berkelium::LoggerRef logger = runtime->getLogger("logger1", "");
 	// Create a Log Message to demonstrate the LogDelegate
 	logger->info("Hello World!");
 
