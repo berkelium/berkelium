@@ -214,6 +214,121 @@ var source={
 "\thost.reset();\n" +
 "\tlogger->info() << \"done!\" << std::endl;\n" +
 "}\n" +
+"","berkelium-cpp/src/demo/examples/logger1.c":
+"// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
+"// Use of this source code is governed by a BSD-style license that can be\n" +
+"// found in the LICENSE file.\n" +
+"\n" +
+"#include <berkelium.h>\n" +
+"#include <stdio.h>\n" +
+"\n" +
+"int main(int argc, char* argv[])\n" +
+"{\n" +
+"\tBK_Runtime runtime = BK_BerkeliumFactory_createRuntime(/*HINT:BK_ENV*/NULL/*HINT*/);\n" +
+"\n" +
+"\t/*GREEN*/// Runtime will be freed here/*GREEN*/\n" +
+"\t/*GREEN*/BK_Runtime_free(/*HINT:BK_ENV*/NULL/*HINT*/, runtime);/*GREEN*/\n" +
+"\n" +
+"\treturn 0;\n" +
+"}\n" +
+"","berkelium-cpp/src/demo/examples/logger1.cpp":
+"// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
+"// Use of this source code is governed by a BSD-style license that can be\n" +
+"// found in the LICENSE file.\n" +
+"\n" +
+"#include <Berkelium/API/Runtime.hpp>\n" +
+"#include <Berkelium/API/LogDelegate.hpp>\n" +
+"#include <Berkelium/API/Logger.hpp>\n" +
+"#include <Berkelium/API/BerkeliumFactory.hpp>\n" +
+"\n" +
+"class DemoLogDelegate : public Berkelium::LogDelegate\n" +
+"{\n" +
+"public:\n" +
+"\tvirtual void log(Berkelium::RuntimeRef runtime, Berkelium::LogSource source, Berkelium::LogType type,\n" +
+"\t\t\t const std::string& clazz, const std::string& name, const std::string& message) {\n" +
+"\t\t// just a demo: write log message to std::cout...\n" +
+"\t\t/*GREEN*/std::cout << clazz << ' ' << name << ' ' << message << std::endl;/*GREEN*/\n" +
+"\t}\n" +
+"};\n" +
+"\n" +
+"int main(int argc, char* argv[])\n" +
+"{\n" +
+"\t// This LogDelegate will receive all Log Messages from Berkelium\n" +
+"\tBerkelium::LogDelegateRef log(/*GREEN*/new DemoLogDelegate()/*GREEN*/); \n" +
+"\t// Create Runtime, use given Log Delegate\n" +
+"\tBerkelium::RuntimeRef runtime(/*GREEN*/Berkelium::BerkeliumFactory::createRuntimeWithLog(log)/*GREEN*/);\n" +
+"\n" +
+"\t/*BLUE*/// The Logger Code here is only necessary to demonstrate an invocation of the LogDelegate/*BLUE*/\n" +
+"\t/*BLUE*/// Berkelium itself creates log messages that are delegated to the Log Delegate/*BLUE*/\n" +
+"\t/*BLUE*/// Because of this it is not necessary to use the Logger Classes directly/*BLUE*/\n" +
+"\tBerkelium::LoggerRef logger = runtime->getLogger(\"runtime3\", \"\");\n" +
+"\t// Create a Log Message to demonstrate the LogDelegate\n" +
+"\tlogger->info(\"Hello World!\");\n" +
+"\n" +
+"}\n" +
+"","berkelium-cpp/src/demo/examples/runtime1.c":
+"// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
+"// Use of this source code is governed by a BSD-style license that can be\n" +
+"// found in the LICENSE file.\n" +
+"\n" +
+"#include <berkelium.h>\n" +
+"#include <stdio.h>\n" +
+"\n" +
+"int main(int argc, char* argv[])\n" +
+"{\n" +
+"\t/*GREEN*/// Create Runtime/*GREEN*/\n" +
+"\tBK_Runtime runtime = /*GREEN*/BK_BerkeliumFactory_createRuntime(/*HINT:BK_ENV*/NULL/*HINT*/)/*GREEN*/;\n" +
+"\tBK_Runtime_free(/*HINT:BK_ENV*/NULL/*HINT*/, runtime);\n" +
+"\n" +
+"\treturn 0;\n" +
+"}\n" +
+"","berkelium-cpp/src/demo/examples/runtime1.cpp":
+"// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
+"// Use of this source code is governed by a BSD-style license that can be\n" +
+"// found in the LICENSE file.\n" +
+"\n" +
+"#include <Berkelium/API/Runtime.hpp>\n" +
+"#include <Berkelium/API/BerkeliumFactory.hpp>\n" +
+"\n" +
+"int main(int argc, char* argv[])\n" +
+"{\n" +
+"\t/*GREEN*/// Create Runtime/*GREEN*/\n" +
+"\tBerkelium::RuntimeRef runtime(/*GREEN*/Berkelium::BerkeliumFactory::createRuntime()/*GREEN*/);\n" +
+"}\n" +
+"","berkelium-cpp/src/demo/examples/runtime2.c":
+"// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
+"// Use of this source code is governed by a BSD-style license that can be\n" +
+"// found in the LICENSE file.\n" +
+"\n" +
+"#include <berkelium.h>\n" +
+"#include <stdio.h>\n" +
+"\n" +
+"int main(int argc, char* argv[])\n" +
+"{\n" +
+"\tBK_Runtime runtime = BK_BerkeliumFactory_createRuntime(/*HINT:BK_ENV*/NULL/*HINT*/);\n" +
+"\n" +
+"\t/*GREEN*/// Runtime will be freed here/*GREEN*/\n" +
+"\t/*GREEN*/BK_Runtime_free(/*HINT:BK_ENV*/NULL/*HINT*/, runtime);/*GREEN*/\n" +
+"\n" +
+"\treturn 0;\n" +
+"}\n" +
+"","berkelium-cpp/src/demo/examples/runtime2.cpp":
+"// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
+"// Use of this source code is governed by a BSD-style license that can be\n" +
+"// found in the LICENSE file.\n" +
+"\n" +
+"#include <Berkelium/API/Runtime.hpp>\n" +
+"#include <Berkelium/API/BerkeliumFactory.hpp>\n" +
+"\n" +
+"int main(int argc, char* argv[])\n" +
+"{\n" +
+"\t/*GREEN*/// no Runtime Instance yet/*GREEN*/\n" +
+"\t{\n" +
+"\t\tBerkelium::RuntimeRef runtime(Berkelium::BerkeliumFactory::createRuntime());\n" +
+"\t\t/*GREEN*/// you can use the 'runtime' Variable here/*GREEN*/\n" +
+"\t}\n" +
+"\t/*GREEN*/// The 'runtime' Variable got out of scope - Runtime Instance was automaticly freed/*GREEN*/\n" +
+"}\n" +
 "","berkelium-cpp/src/demo/pngrenderer/pngrenderer.cpp":
 "// Copyright (c) 2012 The Berkelium Authors. All rights reserved.\n" +
 "// Use of this source code is governed by a BSD-style license that can be\n" +
@@ -276,71 +391,8 @@ var source={
 "\n" +
 "\tlogger->info() << \"pngrenderer finished!\" << std::endl;\n" +
 "}\n" +
-"","berkelium-cpp/src/demo/runtime/runtime1.c":
-"// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
-"// Use of this source code is governed by a BSD-style license that can be\n" +
-"// found in the LICENSE file.\n" +
-"\n" +
-"#include <berkelium.h>\n" +
-"#include <stdio.h>\n" +
-"\n" +
-"int main(int argc, char* argv[])\n" +
-"{\n" +
-"\t/*GREEN*/// Create Runtime/*GREEN*/\n" +
-"\tBK_Runtime runtime = /*GREEN*/BK_BerkeliumFactory_createRuntime(/*HINT:BK_ENV*/NULL/*HINT*/)/*GREEN*/;\n" +
-"\tBK_Runtime_free(/*HINT:BK_ENV*/NULL/*HINT*/, runtime);\n" +
-"\n" +
-"\treturn 0;\n" +
-"}\n" +
-"","berkelium-cpp/src/demo/runtime/runtime1.cpp":
-"// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
-"// Use of this source code is governed by a BSD-style license that can be\n" +
-"// found in the LICENSE file.\n" +
-"\n" +
-"#include <Berkelium/API/Runtime.hpp>\n" +
-"#include <Berkelium/API/BerkeliumFactory.hpp>\n" +
-"\n" +
-"int main(int argc, char* argv[])\n" +
-"{\n" +
-"\t/*GREEN*/// Create Runtime/*GREEN*/\n" +
-"\tBerkelium::RuntimeRef runtime(/*GREEN*/Berkelium::BerkeliumFactory::createRuntime()/*GREEN*/);\n" +
-"}\n" +
-"","berkelium-cpp/src/demo/runtime/runtime2.c":
-"// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
-"// Use of this source code is governed by a BSD-style license that can be\n" +
-"// found in the LICENSE file.\n" +
-"\n" +
-"#include <berkelium.h>\n" +
-"#include <stdio.h>\n" +
-"\n" +
-"int main(int argc, char* argv[])\n" +
-"{\n" +
-"\tBK_Runtime runtime = BK_BerkeliumFactory_createRuntime(/*HINT:BK_ENV*/NULL/*HINT*/);\n" +
-"\n" +
-"\t/*GREEN*/// Runtime will be freed here/*GREEN*/\n" +
-"\t/*GREEN*/BK_Runtime_free(/*HINT:BK_ENV*/NULL/*HINT*/, runtime);/*GREEN*/\n" +
-"\n" +
-"\treturn 0;\n" +
-"}\n" +
-"","berkelium-cpp/src/demo/runtime/runtime2.cpp":
-"// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
-"// Use of this source code is governed by a BSD-style license that can be\n" +
-"// found in the LICENSE file.\n" +
-"\n" +
-"#include <Berkelium/API/Runtime.hpp>\n" +
-"#include <Berkelium/API/BerkeliumFactory.hpp>\n" +
-"\n" +
-"int main(int argc, char* argv[])\n" +
-"{\n" +
-"\t/*GREEN*/// no Runtime Instance yet/*GREEN*/\n" +
-"\t{\n" +
-"\t\tBerkelium::RuntimeRef runtime(Berkelium::BerkeliumFactory::createRuntime());\n" +
-"\t\t/*GREEN*/// you can use the 'runtime' Variable here/*GREEN*/\n" +
-"\t}\n" +
-"\t/*GREEN*/// The 'runtime' Variable got out of scope - Runtime Instance was automaticly freed/*GREEN*/\n" +
-"}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/demo1/Demo1.java":
-"package org.berkelium.demo.demo1;\n" +
+"","berkelium-java/src/main/java/org/berkelium/demo/demos/Demo1.java":
+"package org.berkelium.demo.demos;\n" +
 "\n" +
 "import org.berkelium.api.BerkeliumFactory;\n" +
 "import org.berkelium.api.HostExecutable;\n" +
@@ -379,8 +431,8 @@ var source={
 "\t\tdumpProfile(logger, \"Berkelium\", runtime.forProfile(\"berkelium\"));\n" +
 "\t}\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/demo2/Demo2.java":
-"package org.berkelium.demo.demo2;\n" +
+"","berkelium-java/src/main/java/org/berkelium/demo/demos/Demo2.java":
+"package org.berkelium.demo.demos;\n" +
 "\n" +
 "import org.berkelium.api.BerkeliumFactory;\n" +
 "import org.berkelium.api.HostExecutable;\n" +
@@ -441,42 +493,104 @@ var source={
 "\n" +
 "\t\tinstance.close();\n" +
 "\n" +
-"\t\tlogger.info(\"done!\");\n" +
+"\t\tlogger.info(\"dispose tab...\");\n" +
+"\t\ttab.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose window...\");\n" +
+"\t\twin.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose instance...\");\n" +
+"\t\tinstance.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose profile...\");\n" +
+"\t\tprofile.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose host...\");\n" +
+"\t\thost.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose runtime...\");\n" +
+"\t\truntime.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"disposed!\");\n" +
 "\t}\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/runtime/Runtime1.java":
+"","berkelium-java/src/main/java/org/berkelium/demo/examples/Logger1.java":
 "// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
 "// Use of this source code is governed by a BSD-style license that can be\n" +
 "// found in the LICENSE file.\n" +
 "\n" +
-"package org.berkelium.demo.runtime;\n" +
+"package org.berkelium.demo.examples;\n" +
+"\n" +
+"import org.berkelium.api.BerkeliumFactory;\n" +
+"import org.berkelium.api.LogDelegate;\n" +
+"import org.berkelium.api.LogSource;\n" +
+"import org.berkelium.api.LogType;\n" +
+"import org.berkelium.api.Logger;\n" +
+"import org.berkelium.api.Runtime;\n" +
+"\n" +
+"public class Logger1 {\n" +
+"\t// This LogDelegate will receive all Log Messages from Berkelium\n" +
+"\tprivate static /*GREEN*/LogDelegate log/*GREEN*/ = new LogDelegate() {\n" +
+"\t\t@Override\n" +
+"\t\tpublic void log(Runtime runtime, LogSource source, LogType type,\n" +
+"\t\t\tString clazz, String name, String message) {\n" +
+"\t\t\t// just a demo: write log message to System.err...\n" +
+"\t\t\t/*GREEN*/System.err.printf(\"%s %s %s\\n\", clazz, name, message);/*GREEN*/\n" +
+"\t\t}\n" +
+"\t};\n" +
+"\n" +
+"\tpublic static void main(String[] args) {\n" +
+"\t\t// Create Runtime, use given Log Delegate\n" +
+"\t\tRuntime runtime = /*GREEN*/BerkeliumFactory.getInstance().createRuntimeWithLog(log);/*GREEN*/\n" +
+"\n" +
+"\t\t/*BLUE*/// The Logger Code here is only necessary to demonstrate an invocation of the LogDelegate/*BLUE*/\n" +
+"\t\t/*BLUE*/// Berkelium itself creates log messages that are delegated to the Log Delegate/*BLUE*/\n" +
+"\t\t/*BLUE*/// Because of this it is not necessary to use the Logger Classes directly/*BLUE*/\n" +
+"\t\tLogger logger = runtime.getLogger(Logger1.class.getName(), \"\");\n" +
+"\t\t// Create a Log Message to demonstrate the LogDelegate\n" +
+"\t\tlogger.info(\"Hello World!\");\n" +
+"\n" +
+"\t\t// close logger\n" +
+"\t\tlogger.dispose();\n" +
+"\n" +
+"\t\t// close runtime\n" +
+"\t\truntime.dispose();\n" +
+"\t}\n" +
+"}\n" +
+"","berkelium-java/src/main/java/org/berkelium/demo/examples/Runtime1.java":
+"// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
+"// Use of this source code is governed by a BSD-style license that can be\n" +
+"// found in the LICENSE file.\n" +
+"\n" +
+"package org.berkelium.demo.examples;\n" +
 "\n" +
 "import org.berkelium.api.BerkeliumFactory;\n" +
 "import org.berkelium.api.Runtime;\n" +
 "\n" +
 "public class Runtime1 {\n" +
-"\t@SuppressWarnings(\"unused\")\n" +
 "\tpublic static void main(String[] args) {\n" +
 "\t\t/*GREEN*/// Create Runtime/*GREEN*/\n" +
 "\t\tRuntime runtime = /*GREEN*/BerkeliumFactory.getInstance().createRuntime()/*GREEN*/;\n" +
-"\t\t/*RED*/// TODO close runtime/*RED*/\n" +
+"\t\t// close runtime\n" +
+"\t\truntime.dispose();\n" +
 "\t}\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/runtime/Runtime2.java":
+"","berkelium-java/src/main/java/org/berkelium/demo/examples/Runtime2.java":
 "// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
 "// Use of this source code is governed by a BSD-style license that can be\n" +
 "// found in the LICENSE file.\n" +
 "\n" +
-"package org.berkelium.demo.runtime;\n" +
+"package org.berkelium.demo.examples;\n" +
 "\n" +
 "import org.berkelium.api.BerkeliumFactory;\n" +
 "import org.berkelium.api.Runtime;\n" +
 "\n" +
 "public class Runtime2 {\n" +
-"\t@SuppressWarnings(\"unused\")\n" +
 "\tpublic static void main(String[] args) {\n" +
+"\t\t// Create Runtime\n" +
 "\t\tRuntime runtime = BerkeliumFactory.getInstance().createRuntime();\n" +
-"\t\t/*RED*/// TODO close runtime/*RED*/\n" +
+"\t\t/*GREEN*/// close runtime/*GREEN*/\n" +
+"\t\t/*GREEN*/runtime.dispose();/*GREEN*/\n" +
 "\t}\n" +
 "}\n" +
 ""
