@@ -411,7 +411,7 @@ var source={
 "\n" +
 "\tlogger->info() << \"pngrenderer finished!\" << std::endl;\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/demos/Demo1.java":
+"","berkelium-java/src/test/java/org/berkelium/demo/demos/Demo1.java":
 "package org.berkelium.demo.demos;\n" +
 "\n" +
 "import org.berkelium.api.BerkeliumFactory;\n" +
@@ -457,7 +457,7 @@ var source={
 "\t\truntime.dispose();\n" +
 "\t}\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/demos/Demo2.java":
+"","berkelium-java/src/test/java/org/berkelium/demo/demos/Demo2.java":
 "package org.berkelium.demo.demos;\n" +
 "\n" +
 "import org.berkelium.api.BerkeliumFactory;\n" +
@@ -540,7 +540,7 @@ var source={
 "\t\tlogger.info(\"disposed!\");\n" +
 "\t}\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/examples/Logger1.java":
+"","berkelium-java/src/test/java/org/berkelium/demo/examples/Logger1.java":
 "// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
 "// Use of this source code is governed by a BSD-style license that can be\n" +
 "// found in the LICENSE file.\n" +
@@ -583,7 +583,7 @@ var source={
 "\t\truntime.dispose();\n" +
 "\t}\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/examples/Runtime1.java":
+"","berkelium-java/src/test/java/org/berkelium/demo/examples/Runtime1.java":
 "// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
 "// Use of this source code is governed by a BSD-style license that can be\n" +
 "// found in the LICENSE file.\n" +
@@ -601,7 +601,7 @@ var source={
 "\t\truntime.dispose();\n" +
 "\t}\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/examples/Runtime2.java":
+"","berkelium-java/src/test/java/org/berkelium/demo/examples/Runtime2.java":
 "// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
 "// Use of this source code is governed by a BSD-style license that can be\n" +
 "// found in the LICENSE file.\n" +

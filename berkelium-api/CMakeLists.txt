@@ -10,7 +10,7 @@ ENDIF()
 ## Build API Doc
 ## --------
 #  berkelium-cpp/src/demo/*/*.c
-FILE(GLOB_RECURSE DOC_SOURCE RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/.." "../berkelium-cpp/src/demo/*/*.cpp" "../berkelium-cpp/src/demo/*/*.c" "../berkelium-java/src/main/java/org/berkelium/demo/*/*.java")
+FILE(GLOB_RECURSE DOC_SOURCE RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/.." "../berkelium-cpp/src/demo/*/*.cpp" "../berkelium-cpp/src/demo/*/*.c" "../berkelium-java/src/test/java/org/berkelium/demo/*/*.java")
 FOREACH(SOURCE ${DOC_SOURCE})
 	GET_FILENAME_COMPONENT(FILE "../${SOURCE}" ABSOLUTE)
 	LIST(APPEND DOC_DEPS "${FILE}")
