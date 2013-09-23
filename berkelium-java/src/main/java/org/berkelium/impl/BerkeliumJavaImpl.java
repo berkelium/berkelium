@@ -3,11 +3,14 @@ package org.berkelium.impl;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 public class BerkeliumJavaImpl {
 	private final static Map<Long, BerkeliumObjectImpl> n2j = new HashMap<Long, BerkeliumObjectImpl>();
 	private final static Map<BerkeliumObjectImpl, Long> j2n = new HashMap<BerkeliumObjectImpl, Long>();
+
+	public static synchronized int getObjectCount() {
+		return n2j.size();
+	}
 
 	private static Thread shutdownHook = new Thread(){
 		public void run() {
@@ -20,10 +23,9 @@ public class BerkeliumJavaImpl {
 
 	private static boolean registerd = false;
 
-	private static void register() {
+	private synchronized static void register() {
 		if(!registerd) {
 			registerd = true;
-			//System.r
 			Runtime.getRuntime().addShutdownHook(shutdownHook);
 		}
 	}
