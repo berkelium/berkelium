@@ -20,6 +20,10 @@ class Channel;
 typedef std::shared_ptr<Channel> ChannelRef;
 typedef std::weak_ptr<Channel> ChannelWRef;
 
+class ChannelGroup;
+typedef std::shared_ptr<ChannelGroup> ChannelGroupRef;
+typedef std::weak_ptr<ChannelGroup> ChannelGroupWRef;
+
 class Message;
 typedef std::shared_ptr<Message> MessageRef;
 typedef std::weak_ptr<Message> MessageWRef;

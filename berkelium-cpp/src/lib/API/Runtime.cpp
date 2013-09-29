@@ -10,6 +10,7 @@
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
 #include <Berkelium/Impl/Manager.hpp>
+#include <Berkelium/IPC/ChannelGroup.hpp>
 
 #include <set>
 
@@ -63,6 +64,7 @@ public:
 class RuntimeImpl : public Runtime {
 private:
 	LoggerRef logger;
+	Ipc::ChannelGroupRef group;
 	std::string defaultExecutable;
 	LogDelegateRefSet logs;
 	LogDelegateRef target;
@@ -75,6 +77,7 @@ private:
 	RuntimeImpl(LogDelegateRef master, ManagerRef manager) :
 		Runtime(),
 		logger(),
+		group(Ipc::ChannelGroup::create()),
 		defaultExecutable(""),
 		logs(),
 		target(new RuntimeLogDelegate()),
@@ -199,6 +202,10 @@ public:
 			}
 		}
 	}
+
+	Ipc::ChannelGroupRef getChannelGroup() {
+		return group;
+	}
 };
 
 ManagerRef getManager(Runtime* runtime)
@@ -209,6 +216,16 @@ ManagerRef getManager(Runtime* runtime)
 	}
 	RuntimeImpl* impl = (RuntimeImpl*)runtime;
 	return impl->getManager();
+}
+
+Ipc::ChannelGroupRef getChannelGroup(RuntimeRef runtime)
+{
+	if(!runtime) {
+		bk_error("getChannelGroup(Runtime* = null)");
+		return Ipc::ChannelGroupRef();
+	}
+	RuntimeImpl* impl = (RuntimeImpl*)runtime.get();
+	return impl->getChannelGroup();
 }
 
 } // namespace impl

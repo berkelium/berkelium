@@ -31,8 +31,8 @@ private:
 	int exit;
 
 public:
-	ProcessLinuxImpl(LoggerRef logger, const std::string& dir) :
-		Process(logger, dir),
+	ProcessLinuxImpl(Ipc::ChannelGroupRef group, LoggerRef logger, const std::string& dir) :
+		Process(group, logger, dir),
 		pid(-1),
 		exit(-1) {
 	}
@@ -77,6 +77,9 @@ public:
 			return false;
 		}
 		case 0: {
+			Ipc::ChannelRef ipc(getIpcChannel());
+			dup2(getPipeFd(ipc, true), 1);
+			dup2(getPipeFd(ipc, false), 2);
 			int ret = exec(args);
 			logger->systemError(("launch " + args[0]).c_str());
 			::exit(ret);
@@ -90,8 +93,8 @@ public:
 	}
 };
 
-ProcessRef Process::create(LoggerRef logger, const std::string& dir) {
-	return ProcessRef(new ProcessLinuxImpl(logger, dir));
+ProcessRef Process::create(Ipc::ChannelGroupRef group, LoggerRef logger, const std::string& dir) {
+	return ProcessRef(new ProcessLinuxImpl(group, logger, dir));
 }
 
 Process::~Process() {

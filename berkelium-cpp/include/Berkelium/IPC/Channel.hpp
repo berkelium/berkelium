@@ -21,8 +21,8 @@ protected:
 	Channel();
 
 public:
-	static ChannelRef createChannel(LoggerRef logger, const std::string& dir, const bool server);
-	static ChannelRef getChannel(LoggerRef logger, const std::string& dir, const std::string& name, const bool server);
+	static ChannelRef createChannel(ChannelGroupRef group, LoggerRef logger, const std::string& dir, const bool server);
+	static ChannelRef getChannel(ChannelGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const bool server);
 
 	virtual ~Channel() = 0;
 
@@ -44,6 +44,8 @@ public:
 	virtual ChannelRef getReverseChannel() = 0;
 
 	virtual std::string getName() = 0;
+
+	virtual ChannelGroupRef getGroup() = 0;
 };
 
 } // namespace Ipc

@@ -29,13 +29,13 @@ private:
 protected:
 	const LoggerRef logger;
 
-	inline Process(LoggerRef logger, const std::string& dir) :
-		ipc(Ipc::Channel::createChannel(logger, dir, true)),
+	inline Process(Ipc::ChannelGroupRef group, LoggerRef logger, const std::string& dir) :
+		ipc(Ipc::Channel::createChannel(group, logger, dir, true)),
 		logger(logger) {
 	}
 
 public:
-	static ProcessRef create(LoggerRef logger, const std::string& dir);
+	static ProcessRef create(Ipc::ChannelGroupRef group, LoggerRef logger, const std::string& dir);
 
 	virtual ~Process() = 0;
 

@@ -33,7 +33,7 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 	}
 
 	LoggerRef logger(runtime->getLogger("Process", Util::randomId()));
-	impl::ProcessRef process = impl::Process::create(logger, profile->getProfilePath());
+	impl::ProcessRef process = impl::Process::create(impl::getChannelGroup(runtime), logger, profile->getProfilePath());
 	Ipc::ChannelRef ipc = process->getIpcChannel();
 
 	std::vector<std::string> args;

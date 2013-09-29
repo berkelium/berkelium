@@ -9,6 +9,7 @@
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
+#include <Berkelium/Impl/Impl.hpp>
 
 #include <stdio.h>
 #include <unistd.h>
@@ -118,6 +119,10 @@ public:
 	virtual const std::string getPath() {
 		return name;
 	}
+
+	int getPipeFd() {
+		return fd;
+	}
 };
 
 } // namespace impl
@@ -133,6 +138,19 @@ PipeRef Pipe::getPipe(LoggerRef logger, const std::string& name) {
 }
 
 } // namespace Ipc
+
+namespace impl {
+
+int getPipeFd(Ipc::PipeRef pipe)
+{
+	if(!pipe) {
+		Berkelium::impl::bk_error("getPipeFd: pipe is NULL!");
+		return 0;
+	}
+	return ((Ipc::impl::PipeLinuxImpl*)pipe.get())->getPipeFd();
+}
+
+} // namespace impl
 
 } // namespace Berkelium
 

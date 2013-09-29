@@ -8,6 +8,7 @@
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Channel.hpp>
+#include <Berkelium/IPC/ChannelGroup.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
 #include <queue>
@@ -18,6 +19,8 @@ using Berkelium::ProfileRef;
 using Berkelium::LoggerRef;
 using Berkelium::Ipc::Channel;
 using Berkelium::Ipc::ChannelRef;
+using Berkelium::Ipc::ChannelGroup;
+using Berkelium::Ipc::ChannelGroupRef;
 using Berkelium::Ipc::Message;
 using Berkelium::Ipc::MessageRef;
 using Berkelium::Ipc::CommandId;
@@ -75,8 +78,10 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	ChannelGroupRef group(ChannelGroup::create());
+
 	logger->debug() << "starting host fake!" << std::endl;
-	ChannelRef ipc = Channel::getChannel(logger, dir, id, false);
+	ChannelRef ipc = Channel::getChannel(group, logger, dir, id, false);
 
 	MessageRef msg(ipc->getMessage());
 	msg->add_str("berkelium");
