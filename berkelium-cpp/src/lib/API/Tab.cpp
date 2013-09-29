@@ -9,6 +9,7 @@
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/Manager.hpp>
 
 namespace Berkelium {
 
@@ -41,6 +42,7 @@ public:
 	}
 
 	virtual ~TabImpl() {
+		manager->unregisterTab();
 	}
 
 	virtual void internalUpdate() {
@@ -101,6 +103,7 @@ public:
 		TabImpl* impl = new TabImpl(window, ipc);
 		TabRef ret(impl);
 		impl->self = ret;
+		impl->manager->registerTab(ret);
 		return ret;
 	}
 };

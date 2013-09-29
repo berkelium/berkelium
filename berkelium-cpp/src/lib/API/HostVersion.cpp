@@ -6,6 +6,7 @@
 #include <Berkelium/API/HostVersion.hpp>
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/Manager.hpp>
 
 #include <sstream>
 
@@ -47,6 +48,7 @@ public:
 	}
 
 	virtual ~HostVersionImpl() {
+		manager->unregisterHostVersion();
 	}
 
 	virtual const std::string& getVersionString() {
@@ -85,7 +87,9 @@ ManagerRef getManager(HostVersionRef version)
 }
 
 HostVersionRef newVersion(RuntimeRef runtime, int32_t vMajor, int32_t vMinor, int32_t vBuild, int32_t vPatch) {
-	return HostVersionRef(new impl::HostVersionImpl(runtime, vMajor, vMinor, vBuild, vPatch));
+	HostVersionRef ret(new impl::HostVersionImpl(runtime, vMajor, vMinor, vBuild, vPatch));
+	getManager(ret)->registerHostVersion(ret);
+	return ret;
 }
 
 HostVersionRef newVersion(RuntimeRef runtime, const std::string& version) {
