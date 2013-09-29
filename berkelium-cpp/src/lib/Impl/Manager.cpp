@@ -13,26 +13,6 @@ namespace Berkelium {
 
 namespace impl {
 
-typedef std::map<void*, ManagerWRef> ManagerWMap;
-typedef ManagerWMap::iterator ManagerWMapIt;
-
-ManagerWMap managerMap;
-
-ManagerRef getManager(void* ptr)
-{
-	ManagerWMapIt it(managerMap.find(ptr));
-	if(it != managerMap.end()) {
-		/*
-		fprintf(stderr, "getManager: found!\n");
-		*/
-		return it->second.lock();
-	}
-	/*
-	fprintf(stderr, "getManager: not found!\n");
-	*/
-	return ManagerRef();
-}
-
 Manager::Manager() {
 }
 
@@ -52,7 +32,6 @@ public:
 		fprintf(stderr, "register %p\n", ref.get());
 		*/
 		map.insert(std::pair<void*, std::weak_ptr<T>>(ref.get(), ref));
-		managerMap.insert(std::pair<void*, ManagerWRef>(ref.get(), manager));
 	}
 
 	void unregisterRef() {
@@ -62,7 +41,6 @@ public:
 	std::shared_ptr<T> getRef(void* id) {
 		for(MapIt it(map.begin()); it != map.end();) {
 			if(it->second.expired()) {
-				managerMap.erase(it->first);
 				/*
 				fprintf(stderr, "unregister %p\n", it->first);
 				*/

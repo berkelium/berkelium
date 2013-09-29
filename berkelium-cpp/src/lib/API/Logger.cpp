@@ -173,7 +173,7 @@ void enableBerkeliumHostMode() {
 	logSource = Host;
 }
 
-ManagerRef getManager(LoggerRef logger)
+ManagerRef getManager(Logger* logger)
 {
 	if(!logger) {
 		fprintf(stderr, "getManagerForLogger: null!\n");
@@ -182,7 +182,7 @@ ManagerRef getManager(LoggerRef logger)
 	/*
 	fprintf(stderr, "getManagerForLogger: %p\n", logger.get());
 	*/
-	LoggerImpl* impl = (LoggerImpl*)logger.get();
+	LoggerImpl* impl = (LoggerImpl*)logger;
 	return impl->getManager();
 }
 

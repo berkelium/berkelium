@@ -108,12 +108,12 @@ public:
 	}
 };
 
-ManagerRef getManager(TabRef tab)
+ManagerRef getManager(Tab* tab)
 {
 	if(!tab) {
 		return ManagerRef();
 	}
-	TabImpl* impl = (TabImpl*)tab.get();
+	TabImpl* impl = (TabImpl*)tab;
 	return impl->getManager();
 }
 

@@ -527,11 +527,14 @@ inline Berkelium::</xsl:text>
 </xsl:text>
 		</xsl:when>
 		<xsl:otherwise>
-			<xsl:text>bk_bk_obj intId = env->mapIn(</xsl:text>
+			<xsl:text>Berkelium::</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>* intId = (Berkelium::</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>*)env->mapIn(</xsl:text>
+			<xsl:value-of select="@name"/>
 
-		<xsl:value-of select="@name"/>
-
-		<xsl:text>, extId, env->data);
+			<xsl:text>, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
 	if(!manager) {

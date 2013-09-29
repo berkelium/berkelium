@@ -234,7 +234,7 @@ void cleanup(RuntimeRef runtime, const std::string& tmp) {
 	}
 }
 
-ManagerRef getManager(ProfileRef profile)
+ManagerRef getManager(Profile* profile)
 {
 	if(!profile) {
 		fprintf(stderr, "getManagerForProfile: null!\n");
@@ -243,7 +243,7 @@ ManagerRef getManager(ProfileRef profile)
 	/*
 	fprintf(stderr, "getManagerrForProfile: %p\n", profile.get());
 	*/
-	ProfileImpl* impl = (ProfileImpl*)profile.get();
+	ProfileImpl* impl = (ProfileImpl*)profile;
 	return impl->getManager();
 }
 

@@ -77,12 +77,12 @@ public:
 
 };
 
-ManagerRef getManager(HostVersionRef version)
+ManagerRef getManager(HostVersion* version)
 {
 	if(!version) {
 		return ManagerRef();
 	}
-	HostVersionImpl* impl = (HostVersionImpl*)version.get();
+	HostVersionImpl* impl = (HostVersionImpl*)version;
 	return impl->getManager();
 }
 

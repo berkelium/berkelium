@@ -63,7 +63,7 @@ inline Berkelium::HostVersionRef mapInHostVersionRef(BK_Env* env, bk_ext_obj ext
 {
 	BERKELIUM_C_TRACE();
 
-	bk_bk_obj intId = env->mapIn(HostVersion, extId, env->data);
+	Berkelium::HostVersion* intId = (Berkelium::HostVersion*)env->mapIn(HostVersion, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
 	if(!manager) {
@@ -115,7 +115,7 @@ inline Berkelium::RuntimeRef mapInRuntimeRef(BK_Env* env, bk_ext_obj extId)
 {
 	BERKELIUM_C_TRACE();
 
-	bk_bk_obj intId = env->mapIn(Runtime, extId, env->data);
+	Berkelium::Runtime* intId = (Berkelium::Runtime*)env->mapIn(Runtime, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
 	if(!manager) {
@@ -167,7 +167,7 @@ inline Berkelium::HostExecutableRef mapInHostExecutableRef(BK_Env* env, bk_ext_o
 {
 	BERKELIUM_C_TRACE();
 
-	bk_bk_obj intId = env->mapIn(HostExecutable, extId, env->data);
+	Berkelium::HostExecutable* intId = (Berkelium::HostExecutable*)env->mapIn(HostExecutable, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
 	if(!manager) {
@@ -219,7 +219,7 @@ inline Berkelium::ProfileRef mapInProfileRef(BK_Env* env, bk_ext_obj extId)
 {
 	BERKELIUM_C_TRACE();
 
-	bk_bk_obj intId = env->mapIn(Profile, extId, env->data);
+	Berkelium::Profile* intId = (Berkelium::Profile*)env->mapIn(Profile, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
 	if(!manager) {
@@ -271,7 +271,7 @@ inline Berkelium::LoggerRef mapInLoggerRef(BK_Env* env, bk_ext_obj extId)
 {
 	BERKELIUM_C_TRACE();
 
-	bk_bk_obj intId = env->mapIn(Logger, extId, env->data);
+	Berkelium::Logger* intId = (Berkelium::Logger*)env->mapIn(Logger, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
 	if(!manager) {
@@ -323,7 +323,7 @@ inline Berkelium::InstanceRef mapInInstanceRef(BK_Env* env, bk_ext_obj extId)
 {
 	BERKELIUM_C_TRACE();
 
-	bk_bk_obj intId = env->mapIn(Instance, extId, env->data);
+	Berkelium::Instance* intId = (Berkelium::Instance*)env->mapIn(Instance, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
 	if(!manager) {
@@ -375,7 +375,7 @@ inline Berkelium::WindowRef mapInWindowRef(BK_Env* env, bk_ext_obj extId)
 {
 	BERKELIUM_C_TRACE();
 
-	bk_bk_obj intId = env->mapIn(Window, extId, env->data);
+	Berkelium::Window* intId = (Berkelium::Window*)env->mapIn(Window, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
 	if(!manager) {
@@ -427,7 +427,7 @@ inline Berkelium::TabRef mapInTabRef(BK_Env* env, bk_ext_obj extId)
 {
 	BERKELIUM_C_TRACE();
 
-	bk_bk_obj intId = env->mapIn(Tab, extId, env->data);
+	Berkelium::Tab* intId = (Berkelium::Tab*)env->mapIn(Tab, extId, env->data);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
 	if(!manager) {

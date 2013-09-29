@@ -27,16 +27,50 @@ class Manager;
 typedef std::shared_ptr<Manager> ManagerRef;
 typedef std::weak_ptr<Manager> ManagerWRef;
 
-ManagerRef getManager(void* ptr);
-ManagerRef getManager(HostVersionRef id);
-ManagerRef getManager(RuntimeRef id);
-ManagerRef getManager(HostExecutableRef id);
-ManagerRef getManager(ProfileRef id);
-ManagerRef getManager(LoggerRef id);
-ManagerRef getManager(InstanceRef id);
-ManagerRef getManager(WindowRef id);
-ManagerRef getManager(TabRef id);
-ManagerRef getManager(TabDelegateRef id);
+ManagerRef getManager(HostVersion* id);
+inline ManagerRef getManager(HostVersionRef id) {
+	return getManager(id.get());
+}
+
+ManagerRef getManager(Runtime* id);
+inline ManagerRef getManager(RuntimeRef id) {
+	return getManager(id.get());
+}
+
+ManagerRef getManager(HostExecutable* id);
+inline ManagerRef getManager(HostExecutableRef id) {
+	return getManager(id.get());
+}
+
+ManagerRef getManager(Profile* id);
+inline ManagerRef getManager(ProfileRef id) {
+	return getManager(id.get());
+}
+
+ManagerRef getManager(Logger* id);
+inline ManagerRef getManager(LoggerRef id) {
+	return getManager(id.get());
+}
+
+ManagerRef getManager(Instance* id);
+inline ManagerRef getManager(InstanceRef id) {
+	return getManager(id.get());
+}
+
+ManagerRef getManager(Window* id);
+inline ManagerRef getManager(WindowRef id) {
+	return getManager(id.get());
+}
+
+ManagerRef getManager(Tab* id);
+inline ManagerRef getManager(TabRef id) {
+	return getManager(id.get());
+}
+
+ManagerRef getManager(TabDelegate* id);
+inline ManagerRef getManager(TabDelegateRef id) {
+	return getManager(id.get());
+}
 
 void enableBerkeliumHostMode();
 TabRef newTab(WindowRef window, Ipc::ChannelRef ipc);

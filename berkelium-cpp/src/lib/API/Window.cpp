@@ -146,12 +146,12 @@ public:
 	}
 };
 
-ManagerRef getManager(WindowRef window)
+ManagerRef getManager(Window* window)
 {
 	if(!window) {
 		return ManagerRef();
 	}
-	WindowImpl* impl = (WindowImpl*)window.get();
+	WindowImpl* impl = (WindowImpl*)window;
 	return impl->getManager();
 }
 

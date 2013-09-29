@@ -51,12 +51,12 @@ public:
 	}
 };
 
-ManagerRef getManager(HostExecutableRef host)
+ManagerRef getManager(HostExecutable* host)
 {
 	if(!host) {
 		return ManagerRef();
 	}
-	HostExecutableImpl* impl = (HostExecutableImpl*)host.get();
+	HostExecutableImpl* impl = (HostExecutableImpl*)host;
 	return impl->getManager();
 }
 

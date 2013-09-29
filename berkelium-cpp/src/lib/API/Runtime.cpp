@@ -197,12 +197,12 @@ public:
 	}
 };
 
-ManagerRef getManager(RuntimeRef runtime)
+ManagerRef getManager(Runtime* runtime)
 {
 	if(!runtime) {
 		return ManagerRef();
 	}
-	RuntimeImpl* impl = (RuntimeImpl*)runtime.get();
+	RuntimeImpl* impl = (RuntimeImpl*)runtime;
 	return impl->getManager();
 }
 

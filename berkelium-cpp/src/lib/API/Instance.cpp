@@ -169,12 +169,12 @@ public:
 	}
 };
 
-ManagerRef getManager(InstanceRef instance)
+ManagerRef getManager(Instance* instance)
 {
 	if(!instance) {
 		return ManagerRef();
 	}
-	InstanceImpl* impl = (InstanceImpl*)instance.get();
+	InstanceImpl* impl = (InstanceImpl*)instance;
 	return impl->getManager();
 }
 
