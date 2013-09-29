@@ -17,7 +17,7 @@ import org.berkelium.api.Window;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class TabImpl implements Tab, BerkeliumObjectImpl {
+class TabImpl implements Tab, BerkeliumObjectImpl {
 
 	@Override
 	public native void dispose();

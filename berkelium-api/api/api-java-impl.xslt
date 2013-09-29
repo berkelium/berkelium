@@ -42,7 +42,7 @@
 	<xsl:call-template name="comment-generated"/>
 
 	<!-- class definition -->
-	<xsl:text>public class </xsl:text>
+	<xsl:text>class </xsl:text>
 	<xsl:value-of select="$class"/>
 	<xsl:text>Impl </xsl:text>
 	<xsl:choose>
@@ -71,6 +71,13 @@
 
 	<!-- class members -->
 	<xsl:apply-templates select="$group/entry" mode="class"/>
+
+	<xsl:if test="$class='BerkeliumFactory'">
+		<xsl:text>
+	public BerkeliumFactoryImpl() {
+	}
+</xsl:text>
+	</xsl:if>
 
 	<xsl:text>}
 </xsl:text>

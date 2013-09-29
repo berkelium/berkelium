@@ -21,7 +21,9 @@ public abstract class BerkeliumFactory {
 				System.loadLibrary("berkelium-java");
 				Class<?> c = BerkeliumFactory.class.getClassLoader().loadClass(
 					"org.berkelium.impl.BerkeliumFactoryImpl");
-				instance = (BerkeliumFactory)c.getConstructor().newInstance();
+				java.lang.reflect.Constructor<?> ctor = c.getConstructor();
+				ctor.setAccessible(true);
+				instance = (BerkeliumFactory)ctor.newInstance();
 			} catch (Exception ex) {
 				throw new RuntimeException(ex);
 			}

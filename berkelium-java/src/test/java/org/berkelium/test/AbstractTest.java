@@ -2,7 +2,7 @@ package org.berkelium.test;
 
 import java.util.LinkedList;
 
-import org.berkelium.impl.BerkeliumJavaImpl;
+import org.berkelium.impl.TestHelper;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,7 +22,7 @@ public abstract class AbstractTest {
 	}
 
 	protected void pushObjectCount() {
-		objectCount.addLast(BerkeliumJavaImpl.getObjectCount());
+		objectCount.addLast(TestHelper.getObjectCount());
 	}
 
 	protected void popAndAssert() {
@@ -31,11 +31,11 @@ public abstract class AbstractTest {
 	}
 
 	protected void assertChanged() {
-		Assert.assertNotEquals(objectCount.peekLast(), (Integer)BerkeliumJavaImpl.getObjectCount());
+		Assert.assertNotEquals(objectCount.peekLast(), TestHelper.getObjectCount());
 	}
 
 	protected void assertUnchanged() {
-		Assert.assertEquals(objectCount.peekLast(), (Integer)BerkeliumJavaImpl.getObjectCount());
+		Assert.assertEquals(objectCount.peekLast(), TestHelper.getObjectCount());
 	}
 
 	protected void assertChangedAndPush() {

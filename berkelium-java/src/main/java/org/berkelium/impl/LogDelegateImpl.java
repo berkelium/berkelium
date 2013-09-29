@@ -17,7 +17,7 @@ import org.berkelium.api.Runtime;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class LogDelegateImpl implements LogDelegate, BerkeliumObjectImpl {
+class LogDelegateImpl implements LogDelegate, BerkeliumObjectImpl {
 
 	@Override
 	public native void dispose();

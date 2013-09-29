@@ -15,7 +15,7 @@ import org.berkelium.api.Runtime;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class ProfileImpl implements Profile, BerkeliumObjectImpl {
+class ProfileImpl implements Profile, BerkeliumObjectImpl {
 
 	@Override
 	public native void dispose();

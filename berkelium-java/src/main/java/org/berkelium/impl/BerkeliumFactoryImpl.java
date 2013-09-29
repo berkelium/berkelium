@@ -16,7 +16,7 @@ import org.berkelium.api.Runtime;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class BerkeliumFactoryImpl extends BerkeliumFactory implements BerkeliumObjectImpl {
+class BerkeliumFactoryImpl extends BerkeliumFactory implements BerkeliumObjectImpl {
 
 	@Override
 	public native void dispose();
@@ -29,4 +29,7 @@ public class BerkeliumFactoryImpl extends BerkeliumFactory implements BerkeliumO
 
 	@Override
 	public native Runtime createRuntimeWithLog(LogDelegate log);
+
+	public BerkeliumFactoryImpl() {
+	}
 }

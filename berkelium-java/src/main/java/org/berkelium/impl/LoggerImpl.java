@@ -14,7 +14,7 @@ import org.berkelium.api.Logger;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class LoggerImpl implements Logger, BerkeliumObjectImpl {
+class LoggerImpl implements Logger, BerkeliumObjectImpl {
 
 	@Override
 	public native void dispose();

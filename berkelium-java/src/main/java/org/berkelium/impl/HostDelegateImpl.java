@@ -15,7 +15,7 @@ import org.berkelium.api.Instance;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class HostDelegateImpl implements HostDelegate, BerkeliumObjectImpl {
+class HostDelegateImpl implements HostDelegate, BerkeliumObjectImpl {
 
 	@Override
 	public native void dispose();

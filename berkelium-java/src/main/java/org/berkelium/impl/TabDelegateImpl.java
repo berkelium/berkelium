@@ -16,7 +16,7 @@ import org.berkelium.api.TabDelegate;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class TabDelegateImpl implements TabDelegate, BerkeliumObjectImpl {
+class TabDelegateImpl implements TabDelegate, BerkeliumObjectImpl {
 
 	@Override
 	public native void dispose();

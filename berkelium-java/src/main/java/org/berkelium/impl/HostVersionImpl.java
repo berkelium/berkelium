@@ -15,7 +15,7 @@ import org.berkelium.api.Runtime;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class HostVersionImpl implements HostVersion, BerkeliumObjectImpl {
+class HostVersionImpl implements HostVersion, BerkeliumObjectImpl {
 
 	@Override
 	public native void dispose();

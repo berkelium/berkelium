@@ -14,7 +14,7 @@ import org.berkelium.api.WindowDelegate;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class WindowDelegateImpl implements WindowDelegate, BerkeliumObjectImpl {
+class WindowDelegateImpl implements WindowDelegate, BerkeliumObjectImpl {
 
 	@Override
 	public native void dispose();

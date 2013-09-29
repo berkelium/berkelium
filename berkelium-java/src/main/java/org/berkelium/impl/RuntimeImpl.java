@@ -22,7 +22,7 @@ import org.berkelium.api.Runtime;
 // See berkelium/berkelium-api/update.sh
 // =========================================
 
-public class RuntimeImpl implements Runtime, BerkeliumObjectImpl {
+class RuntimeImpl implements Runtime, BerkeliumObjectImpl {
 
 	@Override
 	public native void dispose();
