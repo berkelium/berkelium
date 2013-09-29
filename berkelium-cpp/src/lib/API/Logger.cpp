@@ -26,7 +26,7 @@ LogSource logSource(Lib);
 class LoggerStreamBuffer : public std::stringbuf {
 private:
 	LogDelegateRef target;
-	RuntimeRef runtime;
+	RuntimeWRef runtime;
 	LogType type;
 	std::string clazz;
 	std::string name;
@@ -42,16 +42,22 @@ public:
 	}
 
 	virtual int sync() {
+		RuntimeRef rt(runtime.lock());
+
 		std::string msg(str());
 		str(std::string());
 		if(msg.length() > 0) {
 			msg.erase(msg.length() - 1);
 		}
-		target->log(runtime, logSource, type, clazz, name, msg);
+		if(rt) {
+			target->log(rt, logSource, type, clazz, name, msg);
+		} else {
+			fprintf(stderr, "Warning: runtime lost: can not log '%s' '%s' '%s'\n!", clazz.c_str(), name.c_str(), msg.c_str());
+		}
 		return 0;
 	}
 
-	void setMode(LogDelegateRef target, RuntimeRef runtime, const LogType type, const std::string& clazz, const std::string& name) {
+	void setMode(LogDelegateRef target, RuntimeWRef runtime, const LogType type, const std::string& clazz, const std::string& name) {
 		this->target = target;
 		this->runtime = runtime;
 		this->type = type;
@@ -65,27 +71,26 @@ private:
 	LoggerStreamBuffer* buf;
 
 public:
-	LoggerStream() :
-		std::ostream(new LoggerStreamBuffer()),
-		buf((LoggerStreamBuffer*)rdbuf()) {
+	LoggerStream(LoggerStreamBuffer* buf) :
+		std::ostream(buf),
+		buf(buf) {
 	}
 
 	~LoggerStream() {
-		delete rdbuf();
 	}
 
-	void setMode(LogDelegateRef target, RuntimeRef runtime, const LogType type, const std::string& clazz, const std::string& name) {
+	void setMode(LogDelegateRef target, RuntimeWRef runtime, const LogType type, const std::string& clazz, const std::string& name) {
 		buf->setMode(target, runtime, type, clazz, name);
 	}
 };
-
-LoggerStream logStream;
 
 class LoggerImpl : public Logger {
 private:
 	LogDelegateRef target;
 	RuntimeWRef runtime;
 	const ManagerRef manager;
+	LoggerStreamBuffer logBuffer;
+	LoggerStream logStream;
 	const std::string clazz;
 	const std::string name;
 	std::string prefix;
@@ -96,6 +101,8 @@ public:
 		target(target),
 		runtime(runtime),
 		manager(Berkelium::impl::getManager(runtime)),
+		logBuffer(),
+		logStream(&logBuffer),
 		clazz(clazz),
 		name(name),
 		prefix(){
@@ -110,22 +117,22 @@ public:
 	}
 
 	virtual std::ostream& debug() {
-		logStream.setMode(target, runtime.lock(), Debug, clazz, name);
+		logStream.setMode(target, runtime, Debug, clazz, name);
 		return logStream;
 	}
 
 	virtual std::ostream& info() {
-		logStream.setMode(target, runtime.lock(), Info, clazz, name);
+		logStream.setMode(target, runtime, Info, clazz, name);
 		return logStream;
 	}
 
 	virtual std::ostream& warn() {
-		logStream.setMode(target, runtime.lock(), Warn, clazz, name);
+		logStream.setMode(target, runtime, Warn, clazz, name);
 		return logStream;
 	}
 
 	virtual std::ostream& error() {
-		logStream.setMode(target, runtime.lock(), Error, clazz, name);
+		logStream.setMode(target, runtime, Error, clazz, name);
 		return logStream;
 	}
 
