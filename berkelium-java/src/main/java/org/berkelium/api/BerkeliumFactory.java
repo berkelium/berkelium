@@ -13,24 +13,10 @@ package org.berkelium.api;
 // =========================================
 
 public abstract class BerkeliumFactory {
-	private static BerkeliumFactory instance;
-
-	public synchronized static BerkeliumFactory getInstance() {
-		if(instance == null) {
-			try {
-				System.loadLibrary("berkelium-java");
-				Class<?> c = BerkeliumFactory.class.getClassLoader().loadClass(
-					"org.berkelium.impl.BerkeliumFactoryImpl");
-				java.lang.reflect.Constructor<?> ctor = c.getConstructor();
-				ctor.setAccessible(true);
-				instance = (BerkeliumFactory)ctor.newInstance();
-			} catch (Exception ex) {
-				throw new RuntimeException(ex);
-			}
-		}
-		return instance;
+	public static BerkeliumFactory getInstance() {
+		return BerkeliumFactoryLoader.getBerkeliumFactoryInstance();
 	}
-		
+
 	// Returns the default Berkelium Runtime Instance.
 	public abstract Runtime getDefaultRuntime();
 

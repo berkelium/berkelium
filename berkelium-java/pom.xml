@@ -1,24 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>berkelium-java</groupId>
-	<artifactId>berkelium-java</artifactId>
+	<groupId>org.berkelium</groupId>
+	<artifactId>berkelium-build</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 	<build>
-		<testResources>
-			<testResource>
-				<directory>src/test/java</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</testResource>
-			<testResource>
-				<directory>src/test/resources</directory>
-				<excludes>
-					<exclude>**/*.java</exclude>
-				</excludes>
-			</testResource>
-		</testResources>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -26,13 +15,6 @@
 				<configuration>
 					<source>1.6</source>
 					<target>1.6</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<configuration>
-					<argLine>-Djava.library.path=../build/run</argLine>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -51,4 +33,116 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+	<profiles>
+		<profile>
+			<id>commandLineBuildDir</id>
+			<activation>
+				<property>
+					<name>build.dir</name>
+				</property>
+			</activation>
+			<build>
+				<directory>${build.dir}</directory>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<configuration>
+							<outputDirectory>${build.dir}/../../../run</outputDirectory>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>build-api</id>
+			<activation>
+				<property>
+					<name>build.api</name>
+				</property>
+			</activation>
+			<properties>
+				<maven.test.skip>true</maven.test.skip>
+			</properties>
+			<build>
+				<finalName>berkelium-api</finalName>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<version>2.4</version>
+						<configuration>
+							<archive>
+								<addMavenDescriptor>false</addMavenDescriptor>
+							</archive>
+							<excludes>
+								<excludes>.gitignore</excludes>
+							</excludes>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+		<profile>
+			<id>build-platform</id>
+			<activation>
+				<property>
+					<name>target.platform</name>
+				</property>
+			</activation>
+			<build>
+				<finalName>berkelium-${target.platform}</finalName>
+				<resources>
+					<resource>
+						<directory>${dist.dir}</directory>
+						<targetPath>org/berkelium/dist</targetPath>
+						<includes>
+							<include>${dist.name}</include>
+						</includes>
+					</resource>
+					<resource>
+						<directory>${dist.dir}</directory>
+						<targetPath>org/berkelium/lib</targetPath>
+						<includes>
+							<include>${dist.lib}</include>
+						</includes>
+					</resource>
+					<resource>
+						<filtering>true</filtering>
+						<directory>dist</directory>
+						<targetPath>META-INF/maven/org.berkelium/berkelium-${target.platform}</targetPath>
+						<includes>
+							<include>pom.xml</include>
+							<include>pom.properties</include>
+						</includes>
+					</resource>
+				</resources>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-jar-plugin</artifactId>
+						<version>2.4</version>
+						<configuration>
+							<archive>
+								<addMavenDescriptor>false</addMavenDescriptor>
+							</archive>
+							<excludes>
+								<excludes>.gitignore</excludes>
+								<excludes>org/berkelium/api/</excludes>
+								<excludes>org/berkelium/impl/</excludes>
+							</excludes>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-surefire-plugin</artifactId>
+						<version>2.16</version>
+						<configuration>
+							<argLine>-Djava.library.path=../build/run</argLine>
+						</configuration>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>

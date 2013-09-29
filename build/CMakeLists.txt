@@ -75,8 +75,10 @@ ENDIF()
 
 IF("${CMAKE_SIZEOF_VOID_P}" EQUAL "4")
 	ADD_DEFINITIONS(/DOS_32)
+	SET(BERKELIUM_BITS 32)
 ELSEIF("${CMAKE_SIZEOF_VOID_P}" EQUAL "8")
 	ADD_DEFINITIONS(/DOS_64)
+	SET(BERKELIUM_BITS 64)
 ELSE()
 	MESSAGE(FATAL_ERROR "Only 32 and 64 Bit Systems are supported!")
 ENDIF()
@@ -91,7 +93,18 @@ SET(BERKELIUM_CPP_LIBS berkelium-cpp)
 ## --------------
 IF("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 	ADD_DEFINITIONS(-DLINUX)
+	SET(BERKELIUM_SYSTEM "linux")
+	SET(BERKELIUM_LIB_PREFIX "lib")
+	SET(BERKELIUM_LIB_SUFFIX ".so")
+ELSE()
+	MESSAGE(FATAL_ERROR "Only Linux Systems are supported!")
 ENDIF()
+
+SET(BERKELIUM_PLATFORM "${BERKELIUM_SYSTEM}${BERKELIUM_BITS}")
+SET(BERKELIUM_CHROMIUM_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../chromium/src/out/Debug")
+SET(BERKELIUM_DIST_DIR "${CMAKE_CURRENT_BINARY_DIR}/run")
+SET(BERKELIUM_DIST_NAME "berkelium-${BERKELIUM_PLATFORM}.zip")
+SET(BERKELIUM_DIST_ZIP "${BERKELIUM_DIST_DIR}/${BERKELIUM_DIST_NAME}")
 
 ###########
 ## Berkelium API
@@ -99,9 +112,14 @@ ENDIF()
 ADD_SUBDIRECTORY(../berkelium-api build/berkelium-api)
 
 ###########
-## Berkelium C++ API
+## Berkelium C/C++ API
 ## --------
 ADD_SUBDIRECTORY(../berkelium-cpp build/berkelium-cpp)
+
+###########
+## Berkelium Host
+## --------
+ADD_SUBDIRECTORY(../berkelium-host build/berkelium-host)
 
 ###########
 ## Berkelium Java API
