@@ -63,9 +63,21 @@
 			</activation>
 			<properties>
 				<maven.test.skip>true</maven.test.skip>
+				<platform>api</platform>
 			</properties>
 			<build>
 				<finalName>berkelium-api</finalName>
+				<resources>
+					<resource>
+						<filtering>true</filtering>
+						<directory>dist</directory>
+						<targetPath>META-INF/maven/org.berkelium/berkelium-${platform}</targetPath>
+						<includes>
+							<include>pom.xml</include>
+							<include>pom.properties</include>
+						</includes>
+					</resource>
+				</resources>
 				<plugins>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
@@ -90,6 +102,9 @@
 					<name>target.platform</name>
 				</property>
 			</activation>
+			<properties>
+				<platform>${target.platform}</platform>
+			</properties>
 			<build>
 				<finalName>berkelium-${target.platform}</finalName>
 				<resources>
