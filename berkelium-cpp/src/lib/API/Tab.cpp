@@ -111,6 +111,7 @@ public:
 ManagerRef getManager(Tab* tab)
 {
 	if(!tab) {
+		bk_error("getManager(Tab* = null)");
 		return ManagerRef();
 	}
 	TabImpl* impl = (TabImpl*)tab;

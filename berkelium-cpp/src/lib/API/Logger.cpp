@@ -52,7 +52,7 @@ public:
 		if(rt) {
 			target->log(rt, logSource, type, clazz, name, msg);
 		} else {
-			fprintf(stderr, "Warning: runtime lost: can not log '%s' '%s' '%s'\n!", clazz.c_str(), name.c_str(), msg.c_str());
+			bk_error("Warning: runtime lost: can not log '%s' '%s' '%s'!", clazz.c_str(), name.c_str(), msg.c_str());
 		}
 		return 0;
 	}
@@ -176,12 +176,9 @@ void enableBerkeliumHostMode() {
 ManagerRef getManager(Logger* logger)
 {
 	if(!logger) {
-		fprintf(stderr, "getManagerForLogger: null!\n");
+		bk_error("getManager(Logger* = null)");
 		return ManagerRef();
 	}
-	/*
-	fprintf(stderr, "getManagerForLogger: %p\n", logger.get());
-	*/
 	LoggerImpl* impl = (LoggerImpl*)logger;
 	return impl->getManager();
 }

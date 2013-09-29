@@ -172,6 +172,7 @@ public:
 ManagerRef getManager(Instance* instance)
 {
 	if(!instance) {
+		bk_error("getManager(Instance* = null)");
 		return ManagerRef();
 	}
 	InstanceImpl* impl = (InstanceImpl*)instance;

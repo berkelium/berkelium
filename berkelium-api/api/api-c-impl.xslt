@@ -32,15 +32,9 @@
 
 #include "BerkeliumC.hpp"
 
-//#include &lt;map&gt;
-
 // =========================================
 // C / C++ converter functions
 // =========================================
-
-//typedef std::pair&lt;bk_ext_obj, BK_Env_Enum&gt; bk_type_pair;
-//typedef std::map&lt;bk_ext_obj, BK_Env_Enum&gt; bk_type_map;
-//bk_type_map bk_types;
 
 inline char* newString(const std::string&amp; str)
 {
@@ -141,45 +135,38 @@ extern "C" void BK_</xsl:text>
 
 			<xsl:text>Ref(env, self));
 	if(!_this) {
-		fprintf(stderr, "already freed </xsl:text>
+		bk_error("already freed </xsl:text>
 
 			<xsl:value-of select="@name"/>
 
-			<xsl:text> %p!\n", self);
+			<xsl:text> %p!", self);
 		return;
 	}
 	env->free(_this.get(), env->data);
 
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(_this));
 	if(!manager) {
-		fprintf(stderr, "can't find manager for </xsl:text>
+		bk_error("can't find manager for </xsl:text>
 
 			<xsl:value-of select="@name"/>
 
-			<xsl:text> %p!\n", self);
+			<xsl:text> %p!", self);
 		return;
 	}
 	void* result = manager->unlock(_this.get());
 
 	if(result == NULL) {
-		fprintf(stderr, "can't free </xsl:text>
+		bk_error("can't free </xsl:text>
 
 			<xsl:value-of select="@name"/>
 
-			<xsl:text> %p!\n", _this.get());
+			<xsl:text> %p!", _this.get());
 	} else {
 		delete (Berkelium::</xsl:text>
 
 	<xsl:value-of select="@name"/>
 
 	<xsl:text>Ref*)result;
-		/*
-		fprintf(stderr, "freed </xsl:text>
-
-			<xsl:value-of select="@name"/>
-
-			<xsl:text> %p!\n", self);
-		*/
 	}
 
 </xsl:text>
@@ -364,7 +351,7 @@ extern "C" void BK_</xsl:text>
 		<xsl:text>Ref(env, self));
 
 	if(!_this) {
-		fprintf(stderr, "error: _this in '%s' %p not found!\n", __FUNCTION__, self);
+		bk_error("error: _this in '%s' %p not found!", __FUNCTION__, self);
 		</xsl:text>
 
 		<xsl:call-template name="returnDefault"/>
@@ -437,7 +424,7 @@ inline bk_ext_obj mapOut</xsl:text>
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(bk));
 
 	if(!manager) {
-		fprintf(stderr, "error: manager in '%s' %p not found!\n", __FUNCTION__, bk.get());
+		bk_error("error: manager in '%s' %p not found!", __FUNCTION__, bk.get());
 		return NULL;
 	}
 
@@ -464,13 +451,9 @@ inline bk_ext_obj mapOut</xsl:text>
 		ret = env-&gt;mapNew(type, bk.get(), NULL, env->data);
 	}
 
-	/*
-	fprintf(stderr, "mapOut </xsl:text>
-
-	<xsl:value-of select="@name"/>
-
-	<xsl:text> bk:%p ext:%p\n", bk.get(), ret);
-	*/
+	if(ret == NULL) {
+		bk_error("error: '%s' returned NULL!", __FUNCTION__);
+	}
 
 	BERKELIUM_C_TRACE_RETURN(ret);
 
@@ -538,7 +521,7 @@ inline Berkelium::</xsl:text>
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
 	if(!manager) {
-		fprintf(stderr, "error: manager in '%s' %p not found!\n", __FUNCTION__, intId);
+		bk_error("error: manager in '%s' %p not found!", __FUNCTION__, intId);
 		return Berkelium::</xsl:text>
 
 		<xsl:value-of select="@name"/>
@@ -632,30 +615,3 @@ inline </xsl:text>
 </xsl:template>
 
 </xsl:stylesheet>
-
-<!--
-inline Berkelium::LogDelegateRef mapInLogDelegateRef(BK_Env* env, bk_ext_obj extId)
-{
-	BK_Env_Enum type(LogDelegate);
-	fprintf(stderr, "mapInLogDelegateRef1 %p\n", extId);
-
-	void* tmp = env->mapIn(type, extId, env->data);
-
-	if(tmp == NULL) {
-		fprintf(stderr, "mapInLogDelegateRef2a %p\n", tmp);
-		Berkelium::LogDelegateRef ret(new JavaLogDelegate());
-		fprintf(stderr, "mapInLogDelegateRef2b %p\n", tmp);
-		tmp = env->mapNew(type, ret.get(), env->data);
-		fprintf(stderr, "mapInLogDelegateRef2c %p\n", tmp);
-		return ret;
-	}
-	fprintf(stderr, "mapInLogDelegateRef2 %p\n", tmp);
-
-	Berkelium::LogDelegateRef* ret((Berkelium::LogDelegateRef*)tmp);
-
-	fprintf(stderr, "mapInLogDelegateRef3 %p\n", ret);
-
-	return Berkelium::LogDelegateRef(*ret);
-}
-
--->

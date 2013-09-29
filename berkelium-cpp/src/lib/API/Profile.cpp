@@ -237,12 +237,9 @@ void cleanup(RuntimeRef runtime, const std::string& tmp) {
 ManagerRef getManager(Profile* profile)
 {
 	if(!profile) {
-		fprintf(stderr, "getManagerForProfile: null!\n");
+		bk_error("getManager(Profile* = null)");
 		return ManagerRef();
 	}
-	/*
-	fprintf(stderr, "getManagerrForProfile: %p\n", profile.get());
-	*/
 	ProfileImpl* impl = (ProfileImpl*)profile;
 	return impl->getManager();
 }

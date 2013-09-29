@@ -80,6 +80,7 @@ public:
 ManagerRef getManager(HostVersion* version)
 {
 	if(!version) {
+		bk_error("getManager(HostVersion* = null)");
 		return ManagerRef();
 	}
 	HostVersionImpl* impl = (HostVersionImpl*)version;

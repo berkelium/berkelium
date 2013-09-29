@@ -200,6 +200,7 @@ public:
 ManagerRef getManager(Runtime* runtime)
 {
 	if(!runtime) {
+		bk_error("getManager(Runtime* = null)");
 		return ManagerRef();
 	}
 	RuntimeImpl* impl = (RuntimeImpl*)runtime;

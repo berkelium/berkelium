@@ -28,9 +28,6 @@ class TypeManager {
 
 public:
 	void registerRef(std::shared_ptr<T> ref, ManagerWRef manager) {
-		/*
-		fprintf(stderr, "register %p\n", ref.get());
-		*/
 		map.insert(std::pair<void*, std::weak_ptr<T>>(ref.get(), ref));
 	}
 
@@ -41,9 +38,6 @@ public:
 	std::shared_ptr<T> getRef(void* id) {
 		for(MapIt it(map.begin()); it != map.end();) {
 			if(it->second.expired()) {
-				/*
-				fprintf(stderr, "unregister %p\n", it->first);
-				*/
 				it = map.erase(it);
 			} else if(it->first == id){
 				return it->second.lock();
@@ -79,18 +73,11 @@ public:
 		Manager(),
 		self(),
 		logger(logger) {
-		/*
-		fprintf(stderr, "new Manager\n");
-		*/
 	}
 
 	virtual ~ManagerImpl() {
-		/*
-		fprintf(stderr, "~Manager\n");
-		*/
 	}
 
-	//fprintf(stderr, "register %s %p\n", X , ref.get());
 #define FUNCTION_NAME(X, Y) X ## Y
 #define ALL_TYPES(X)                                        \
  virtual void FUNCTION_NAME(register,X)(X##Ref ref) {     \
@@ -114,21 +101,15 @@ public:
 
 	virtual void lock(void* id, void* obj) {
 		if(locked(id)) {
-			/*
-			fprintf(stderr, "already locked %p!\n", id);
-			*/
 			return;
 		}
-		/*
-		fprintf(stderr, "lock %p!\n", id);
-		*/
 		lockedMap.insert(std::pair<void*, void*>(id, obj));
 	}
 
 	virtual void* unlock(void* id) {
 		std::map<void*, void*>::iterator it(lockedMap.find(id));
 		if(it == lockedMap.end()) {
-			fprintf(stderr, "not locked %p!\n", id);
+			bk_error("not locked %p!\n", id);
 			return NULL;
 		}
 		lockedMap.erase(it);

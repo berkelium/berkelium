@@ -149,6 +149,7 @@ public:
 ManagerRef getManager(Window* window)
 {
 	if(!window) {
+		bk_error("getManager(Window* = null)");
 		return ManagerRef();
 	}
 	WindowImpl* impl = (WindowImpl*)window;

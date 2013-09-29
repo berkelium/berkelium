@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+using Berkelium::impl::bk_error;
+
 inline char* malloc(const std::string& msg) {
 	int n = msg.length() + 1;
 	char* ret = (char*)malloc(n);
@@ -19,11 +21,9 @@ public:
 		: Berkelium::LogDelegate(),
 		env(env),
 		delegate(delegate) {
-		//fprintf(stderr, "new BkLogDelegateMapper\n");
 	}
 
 	virtual ~BkLogDelegateMapper() {
-		//fprintf(stderr, "delete BkLogDelegateMapper\n");
 		free(delegate);
 	}
 
@@ -43,13 +43,13 @@ public:
 		env(env),
 		fnk(fnk) {
 #ifdef BERKELIUM_TRACE_C_ENTER
-		fprintf(stderr,"ENTER %s (env:%p)\n", fnk, env);
+		bk_error(stderr,"ENTER %s (env:%p)", fnk, env);
 #endif
 	}
 
 	~BerkeliumCTracer() {
 #ifdef BERKELIUM_TRACE_C_LEAVE
-		fprintf(stderr,"LEAVE %s (env:%p)\n", fnk, env);
+		bk_error(stderr,"LEAVE %s (env:%p)", fnk, env);
 #endif
 	}
 };
@@ -64,7 +64,7 @@ public:
 #endif
 
 #ifdef BERKELIUM_TRACE_C_RETURN
-#define BERKELIUM_C_TRACE_RETURN(ret) fprintf(stderr, "RETURN %s = %p\n", __FUNCTION__, ret);
+#define BERKELIUM_C_TRACE_RETURN(ret) bk_error("RETURN %s = %p", __FUNCTION__, ret);
 #else
 #define BERKELIUM_C_TRACE_RETURN(ret)
 #endif
@@ -80,12 +80,10 @@ inline Berkelium::LogDelegateRef mapInLogDelegateRef(BK_Env* env, bk_ext_obj ext
 	BERKELIUM_C_TRACE_STATIC();
 
 	BK_LogDelegate log = (BK_LogDelegate)env->mapIn(LogDelegate, extId, env->data);
-	/*
 	if(log == NULL) {
-		fprintf(stderr, "error: '%s' returned NULL!\n", __FUNCTION__);
+		bk_error("error: '%s' returned NULL!", __FUNCTION__);
 		return Berkelium::LogDelegateRef();
 	}
-	*/
 
 	BERKELIUM_C_TRACE_RETURN(log);
 
@@ -126,7 +124,7 @@ bk_ext_obj mapNew(BK_Env_Enum type, bk_bk_obj id, bk_ext_obj extId,  void* data)
 
 void NPE(bk_string clazz, bk_string arg)
 {
-	fprintf(stderr, "Null Pointer Exception: Class '%s' - Argument '%s'", clazz, arg);
+	bk_error("Null Pointer Exception: Class '%s' - Argument '%s'", clazz, arg);
 }
 
 void free(bk_ext_obj extId, void* data)

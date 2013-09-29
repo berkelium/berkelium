@@ -54,6 +54,7 @@ public:
 ManagerRef getManager(HostExecutable* host)
 {
 	if(!host) {
+		bk_error("getManager(HostExecutable* = null)");
 		return ManagerRef();
 	}
 	HostExecutableImpl* impl = (HostExecutableImpl*)host;

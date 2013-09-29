@@ -67,11 +67,6 @@ inline ManagerRef getManager(TabRef id) {
 	return getManager(id.get());
 }
 
-ManagerRef getManager(TabDelegate* id);
-inline ManagerRef getManager(TabDelegateRef id) {
-	return getManager(id.get());
-}
-
 void enableBerkeliumHostMode();
 TabRef newTab(WindowRef window, Ipc::ChannelRef ipc);
 WindowRef newWindow(InstanceRef instance, Ipc::ChannelRef channel, bool incognito);
@@ -89,6 +84,8 @@ ProfileRef createTemporaryProfile(RuntimeRef runtime);
 LoggerRef newLogger(LogDelegateRef target, RuntimeRef runtime, const std::string& clazz, const std::string& name);
 LogDelegateRef newLogDelegate();
 void setLoggerPrefix(RuntimeRef runtime, const std::string& name);
+
+void bk_error(const char* format, ...);
 
 #define BERKELIUM_IMPL_CLASS(TypeName)			\
 private:										\

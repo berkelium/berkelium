@@ -67,7 +67,7 @@ public:
 			&si,            // Pointer to STARTUPINFO structure
 			&pi )           // Pointer to PROCESS_INFORMATION structure
 		) {
-			printf( "CreateProcess failed (%d).\n", GetLastError() );
+			bk_error("CreateProcess failed (%d).\n", GetLastError());
 			return false;
 		}
 
