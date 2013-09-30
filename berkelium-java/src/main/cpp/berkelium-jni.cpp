@@ -490,6 +490,13 @@ JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_setDefaultExecutable(
 	BK_Runtime_setDefaultExecutable(&bkenv, (void*)_this, JSTRING_TO_BK(env, pathTo));
 }
 
+JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_update(JNIEnv* env, jobject _this, jint timeout)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	BK_Runtime_update(&bkenv, (void*)_this, timeout);
+}
+
 // =========================================
 //
 //	Tab

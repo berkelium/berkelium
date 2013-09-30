@@ -106,6 +106,10 @@ public:
 		return self.lock();
 	}
 
+	virtual void update(int32_t timeout) {
+		group->update(timeout);
+	}
+
 	virtual void setDefaultExecutable(const std::string& pathTo) {
 		defaultExecutable = pathTo;
 	}

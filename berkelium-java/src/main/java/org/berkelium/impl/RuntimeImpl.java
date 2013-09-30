@@ -28,6 +28,9 @@ class RuntimeImpl implements Runtime, BerkeliumObjectImpl {
 	public native void dispose();
 
 	@Override
+	public native void update(int timeout);
+
+	@Override
 	public native void setDefaultExecutable(String pathTo);
 
 	@Override

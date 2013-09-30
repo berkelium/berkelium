@@ -14,6 +14,9 @@ package org.berkelium.api;
 
 public interface Runtime extends BerkeliumObject  {
 
+	// Processes all Pending Events. Waits up to timeout ms for new events.
+	void update(int timeout);
+
 	// Sets the Path to the HostExecutable Object used by forSystemInstalled.
 	void setDefaultExecutable(String pathTo);
 

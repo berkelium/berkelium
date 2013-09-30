@@ -74,6 +74,10 @@
 		</entry>
 	</group>
 	<group type="interface" name="Runtime">
+		<entry name="update">
+			<arg type="int32" name="timeout"/>
+			<short>Processes all Pending Events. Waits up to timeout ms for new events.</short>
+		</entry>
 		<entry name="setDefaultExecutable">
 			<arg type="string" name="pathTo"/>
 			<short>Sets the Path to the HostExecutable Object used by forSystemInstalled.</short>

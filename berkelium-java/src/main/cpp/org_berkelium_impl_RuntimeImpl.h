@@ -17,6 +17,14 @@ JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_dispose
 
 /*
  * Class:     org_berkelium_impl_RuntimeImpl
+ * Method:    update
+ * Signature: (I)V
+ */
+JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_update
+  (JNIEnv *, jobject, jint);
+
+/*
+ * Class:     org_berkelium_impl_RuntimeImpl
  * Method:    setDefaultExecutable
  * Signature: (Ljava/lang/String;)V
  */

@@ -25,6 +25,9 @@ protected:
 public:
 	virtual ~Runtime() = 0;
 
+	// Processes all Pending Events. Waits up to timeout ms for new events.
+	virtual void update(int32_t timeout) = 0;
+
 	// Sets the Path to the HostExecutable Object used by forSystemInstalled.
 	virtual void setDefaultExecutable(const std::string& pathTo) = 0;
 
