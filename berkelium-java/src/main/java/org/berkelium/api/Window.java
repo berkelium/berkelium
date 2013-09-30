@@ -17,9 +17,6 @@ public interface Window extends BerkeliumObject  {
 	// Returns the associated Runtime.
 	Runtime getRuntime();
 
-	// Internal Update Function
-	void internalUpdate();
-
 	// Returns the current tab count.
 	int getTabCount();
 

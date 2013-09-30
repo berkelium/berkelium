@@ -16,6 +16,14 @@ namespace Berkelium {
 
 namespace Ipc {
 
+class ChannelCallback
+{
+public:
+	virtual ~ChannelCallback() = 0;
+
+	virtual void onDataReady(ChannelRef channel) = 0;
+};
+
 class Channel {
 protected:
 	Channel();

@@ -73,7 +73,7 @@ public:
 	}
 
 	virtual void recv(Ipc::MessageRef msg) {
-		pin->recv(msg);
+		group->recv(self.lock(), pin, msg);
 	}
 
 	virtual ChannelRef createSubChannel() {
@@ -134,6 +134,9 @@ Channel::Channel() {
 }
 
 Channel::~Channel() {
+}
+
+ChannelCallback::~ChannelCallback() {
 }
 
 ChannelRef Channel::createChannel(ChannelGroupRef group, LoggerRef logger, const std::string& dir, const bool server) {

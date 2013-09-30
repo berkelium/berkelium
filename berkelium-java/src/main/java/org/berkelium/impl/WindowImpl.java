@@ -26,9 +26,6 @@ class WindowImpl implements Window, BerkeliumObjectImpl {
 	public native Runtime getRuntime();
 
 	@Override
-	public native void internalUpdate();
-
-	@Override
 	public native int getTabCount();
 
 	@Override

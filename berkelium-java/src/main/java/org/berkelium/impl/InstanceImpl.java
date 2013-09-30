@@ -28,9 +28,6 @@ class InstanceImpl implements Instance, BerkeliumObjectImpl {
 	public native Runtime getRuntime();
 
 	@Override
-	public native void internalUpdate();
-
-	@Override
 	public native void close();
 
 	@Override

@@ -41,8 +41,7 @@ int main(int argc, char* argv[])
 	logger->debug() << "tested!" << std::endl;
 
 	for(int i = 0; i < 2000; i += 100) {
-		instance->internalUpdate();
-		Berkelium::Util::sleep(100);
+		runtime->update(100);
 	}
 
 	logger->debug() << "closing window..." << std::endl;

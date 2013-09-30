@@ -1519,23 +1519,6 @@ extern "C" BK_Runtime BK_Instance_getRuntime(BK_Env* env, BK_Instance self)
 	return mapOutRuntimeRef(env, _this->getRuntime());
 }
 
-extern "C" void BK_Instance_internalUpdate(BK_Env* env, BK_Instance self)
-{
-	BERKELIUM_C_TRACE();
-	if(env == NULL) {
-		env = &simpleBerkeliumEnv::env;
-	}
-
-	Berkelium::InstanceRef _this(mapInInstanceRef(env, self));
-
-	if(!_this) {
-		bk_error("error: _this in '%s' %p not found!", __FUNCTION__, self);
-		return;
-	}
-
-	_this->internalUpdate();
-}
-
 extern "C" void BK_Instance_close(BK_Env* env, BK_Instance self)
 {
 	BERKELIUM_C_TRACE();
@@ -1721,23 +1704,6 @@ extern "C" BK_Runtime BK_Window_getRuntime(BK_Env* env, BK_Window self)
 	return mapOutRuntimeRef(env, _this->getRuntime());
 }
 
-extern "C" void BK_Window_internalUpdate(BK_Env* env, BK_Window self)
-{
-	BERKELIUM_C_TRACE();
-	if(env == NULL) {
-		env = &simpleBerkeliumEnv::env;
-	}
-
-	Berkelium::WindowRef _this(mapInWindowRef(env, self));
-
-	if(!_this) {
-		bk_error("error: _this in '%s' %p not found!", __FUNCTION__, self);
-		return;
-	}
-
-	_this->internalUpdate();
-}
-
 extern "C" bk_int32 BK_Window_getTabCount(BK_Env* env, BK_Window self)
 {
 	BERKELIUM_C_TRACE();
@@ -1887,23 +1853,6 @@ extern "C" BK_Runtime BK_Tab_getRuntime(BK_Env* env, BK_Tab self)
 	}
 
 	return mapOutRuntimeRef(env, _this->getRuntime());
-}
-
-extern "C" void BK_Tab_internalUpdate(BK_Env* env, BK_Tab self)
-{
-	BERKELIUM_C_TRACE();
-	if(env == NULL) {
-		env = &simpleBerkeliumEnv::env;
-	}
-
-	Berkelium::TabRef _this(mapInTabRef(env, self));
-
-	if(!_this) {
-		bk_error("error: _this in '%s' %p not found!", __FUNCTION__, self);
-		return;
-	}
-
-	_this->internalUpdate();
 }
 
 extern "C" void BK_Tab_close(BK_Env* env, BK_Tab self)

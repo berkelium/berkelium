@@ -25,14 +25,6 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getRuntime
 
 /*
  * Class:     org_berkelium_impl_TabImpl
- * Method:    internalUpdate
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_internalUpdate
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_berkelium_impl_TabImpl
  * Method:    close
  * Signature: ()V
  */

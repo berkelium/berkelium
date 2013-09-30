@@ -25,12 +25,16 @@ typedef std::shared_ptr<Process> ProcessRef;
 class Process {
 private:
 	Ipc::ChannelRef ipc;
+	Ipc::ChannelRef ipcout;
+	Ipc::ChannelRef ipcerr;
 
 protected:
 	const LoggerRef logger;
 
 	inline Process(Ipc::ChannelGroupRef group, LoggerRef logger, const std::string& dir) :
 		ipc(Ipc::Channel::createChannel(group, logger, dir, true)),
+		ipcout(Ipc::Channel::createChannel(group, logger, dir, true)),
+		ipcerr(Ipc::Channel::createChannel(group, logger, dir, true)),
 		logger(logger) {
 	}
 
@@ -43,6 +47,14 @@ public:
 
 	Ipc::ChannelRef getIpcChannel() {
 		return ipc;
+	}
+
+	Ipc::ChannelRef getIpcOut() {
+		return ipcout;
+	}
+
+	Ipc::ChannelRef getIpcErr() {
+		return ipcerr;
 	}
 
 	virtual const bool start(const std::vector<std::string>& args) = 0;

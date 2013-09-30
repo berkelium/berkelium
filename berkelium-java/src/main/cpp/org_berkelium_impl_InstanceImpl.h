@@ -25,14 +25,6 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getRuntime
 
 /*
  * Class:     org_berkelium_impl_InstanceImpl
- * Method:    internalUpdate
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_berkelium_impl_InstanceImpl_internalUpdate
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_berkelium_impl_InstanceImpl
  * Method:    close
  * Signature: ()V
  */

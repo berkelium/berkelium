@@ -266,9 +266,6 @@
 		<entry name="getRuntime" ret="Runtime">
 			<short>Returns the associated Runtime.</short>
 		</entry>
-		<entry name="internalUpdate">
-			<short>Internal Update Function</short>
-		</entry>
 		<entry name="close">
 			<short>Closes all open Windows/Tabs and the profile, terminates the host.</short>
 			<short>Also removes the profile if it is a temporary one.</short>
@@ -303,9 +300,6 @@
 		<entry name="getRuntime" ret="Runtime">
 			<short>Returns the associated Runtime.</short>
 		</entry>
-		<entry name="internalUpdate">
-			<short>Internal Update Function</short>
-		</entry>
 		<entry name="getTabCount" ret="int32">
 			<short>Returns the current tab count.</short>
 		</entry>
@@ -332,9 +326,6 @@
 	<group type="interface" name="Tab">
 		<entry name="getRuntime" ret="Runtime">
 			<short>Returns the associated Runtime.</short>
-		</entry>
-		<entry name="internalUpdate">
-			<short>Internal Update Function</short>
 		</entry>
 		<entry name="close">
 			<short>Closes this tab and removes it from the window.</short>

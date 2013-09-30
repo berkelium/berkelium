@@ -204,8 +204,7 @@ var source={
 "\tlogger->info() << \"waiting 10s...\" << std::endl;\n" +
 "\n" +
 "\tfor(int i = 0; i < 10000; i += 100) {\n" +
-"\t\tinstance->internalUpdate();\n" +
-"\t\tBerkelium::Util::sleep(100);\n" +
+"\t\truntime->update(100);\n" +
 "\t}\n" +
 "\n" +
 "\tlogger->info() << \"shutting down browser...\" << std::endl;\n" +
@@ -393,8 +392,7 @@ var source={
 "\tlogger->debug() << \"tested!\" << std::endl;\n" +
 "\n" +
 "\tfor(int i = 0; i < 2000; i += 100) {\n" +
-"\t\tinstance->internalUpdate();\n" +
-"\t\tBerkelium::Util::sleep(100);\n" +
+"\t\truntime->update(100);\n" +
 "\t}\n" +
 "\n" +
 "\tlogger->debug() << \"closing window...\" << std::endl;\n" +

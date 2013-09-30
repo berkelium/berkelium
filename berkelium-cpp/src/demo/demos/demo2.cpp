@@ -36,8 +36,7 @@ int main(int argc, char* argv[])
 	logger->info() << "waiting 10s..." << std::endl;
 
 	for(int i = 0; i < 10000; i += 100) {
-		instance->internalUpdate();
-		Berkelium::Util::sleep(100);
+		runtime->update(100);
 	}
 
 	logger->info() << "shutting down browser..." << std::endl;

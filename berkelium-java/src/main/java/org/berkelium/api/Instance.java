@@ -18,9 +18,6 @@ public interface Instance extends BerkeliumObject  {
 	// Returns the associated Runtime.
 	Runtime getRuntime();
 
-	// Internal Update Function
-	void internalUpdate();
-
 	// Closes all open Windows/Tabs and the profile, terminates the host.
 	void close();
 

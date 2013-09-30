@@ -29,9 +29,6 @@ public:
 	// Returns the associated Runtime.
 	virtual RuntimeRef getRuntime() = 0;
 
-	// Internal Update Function
-	virtual void internalUpdate() = 0;
-
 	// Closes all open Windows/Tabs and the profile, terminates the host.
 	virtual void close() = 0;
 

@@ -25,14 +25,6 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_WindowImpl_getRuntime
 
 /*
  * Class:     org_berkelium_impl_WindowImpl
- * Method:    internalUpdate
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_berkelium_impl_WindowImpl_internalUpdate
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_berkelium_impl_WindowImpl
  * Method:    getTabCount
  * Signature: ()I
  */

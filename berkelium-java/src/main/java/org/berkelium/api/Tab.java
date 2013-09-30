@@ -17,9 +17,6 @@ public interface Tab extends BerkeliumObject  {
 	// Returns the associated Runtime.
 	Runtime getRuntime();
 
-	// Internal Update Function
-	void internalUpdate();
-
 	// Closes this tab and removes it from the window.
 	void close();
 

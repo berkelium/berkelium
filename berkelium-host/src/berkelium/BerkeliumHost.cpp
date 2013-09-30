@@ -21,6 +21,7 @@
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/IPC/Channel.hpp>
+#include <Berkelium/IPC/ChannelGroup.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
@@ -33,8 +34,12 @@ namespace Berkelium {
 using Ipc::CommandId;
 using Ipc::Channel;
 using Ipc::ChannelRef;
+using Ipc::ChannelGroup;
+using Ipc::ChannelGroupRef;
 using Ipc::Message;
 using Ipc::MessageRef;
+
+ChannelGroupRef group(ChannelGroup::create());
 
 LoggerRef logger = Berkelium::Util::createRootLogger(NULL);
 ChannelRef ipc;
@@ -252,7 +257,7 @@ bool BerkeliumHost::init(const std::string& dir, const std::string& name) {
 	initialised = 1;
 	Berkelium::impl::enableBerkeliumHostMode();
 	BrowserList::GetInstance(chrome::HOST_DESKTOP_TYPE_NATIVE)->AddObserver(&observer);
-	ipc = Channel::getChannel(logger, dir, name, false);
+	ipc = Channel::getChannel(group, logger, dir, name, false);
 	msg = ipc->getMessage();
 	return true;
 }

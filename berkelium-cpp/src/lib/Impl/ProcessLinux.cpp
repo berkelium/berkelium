@@ -7,6 +7,8 @@
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Process.hpp>
+#include <Berkelium/IPC/Channel.hpp>
+#include <Berkelium/IPC/ChannelGroup.hpp>
 
 #include <sys/wait.h>
 #include <unistd.h>
@@ -25,16 +27,44 @@ int exec(const std::vector<std::string>& args) {
     return execvp(args[0].c_str(), &tmp[0]);
 }
 
+#define BUF_SIZE 1024
+
+class ConsoleWriter : public Berkelium::Ipc::ChannelCallback
+{
+public:
+	virtual ~ConsoleWriter() {
+		//bk_error("~ConsoleWriter");
+	}
+
+	virtual void onDataReady(Ipc::ChannelRef channel) {
+		//bk_error("ConsoleWriter: onDataReady!");
+		int fd = getPipeFd(channel, true);
+		char buf[BUF_SIZE];
+		int r = ::read(fd, &buf, BUF_SIZE);
+		if(r == 0) {
+			return;
+		} else if(r == -1) {
+			bk_error("ConsoleWriter: read error!");
+			return;
+		}
+		write(1, buf, r);
+	}
+};
+
 class ProcessLinuxImpl : public Process {
 private:
+	std::shared_ptr<ConsoleWriter> writer;
 	pid_t pid;
 	int exit;
 
 public:
 	ProcessLinuxImpl(Ipc::ChannelGroupRef group, LoggerRef logger, const std::string& dir) :
 		Process(group, logger, dir),
+		writer(new ConsoleWriter()),
 		pid(-1),
 		exit(-1) {
+		group->registerCallback(getIpcOut(), writer, true);
+		group->registerCallback(getIpcErr(), writer, true);
 	}
 
 	virtual ~ProcessLinuxImpl() {
@@ -77,9 +107,8 @@ public:
 			return false;
 		}
 		case 0: {
-			Ipc::ChannelRef ipc(getIpcChannel());
-			dup2(getPipeFd(ipc, true), 1);
-			dup2(getPipeFd(ipc, false), 2);
+			dup2(getPipeFd(getIpcOut(), true), 1);
+			dup2(getPipeFd(getIpcErr(), false), 2);
 			int ret = exec(args);
 			logger->systemError(("launch " + args[0]).c_str());
 			::exit(ret);

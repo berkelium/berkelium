@@ -238,13 +238,6 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_InstanceImpl_getWindowList(JNI
 	return BK_TO_JOBJECT(BK_Instance_getWindowList(&bkenv, (void*)_this));
 }
 
-JNIEXPORT void JNICALL Java_org_berkelium_impl_InstanceImpl_internalUpdate(JNIEnv* env, jobject _this)
-{
-	BK_Env bkenv;
-	setupBkEnv(bkenv, env);
-	BK_Instance_internalUpdate(&bkenv, (void*)_this);
-}
-
 JNIEXPORT void JNICALL Java_org_berkelium_impl_InstanceImpl_removeHostDelegate(JNIEnv* env, jobject _this, jobject delegate)
 {
 	BK_Env bkenv;
@@ -546,13 +539,6 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getWindow(JNIEnv* env,
 	return BK_TO_JOBJECT(BK_Tab_getWindow(&bkenv, (void*)_this));
 }
 
-JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_internalUpdate(JNIEnv* env, jobject _this)
-{
-	BK_Env bkenv;
-	setupBkEnv(bkenv, env);
-	BK_Tab_internalUpdate(&bkenv, (void*)_this);
-}
-
 JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_navigateTo(JNIEnv* env, jobject _this, jstring url)
 {
 	BK_Env bkenv;
@@ -628,13 +614,6 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_WindowImpl_getTabList(JNIEnv* 
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	return BK_TO_JOBJECT(BK_Window_getTabList(&bkenv, (void*)_this));
-}
-
-JNIEXPORT void JNICALL Java_org_berkelium_impl_WindowImpl_internalUpdate(JNIEnv* env, jobject _this)
-{
-	BK_Env bkenv;
-	setupBkEnv(bkenv, env);
-	BK_Window_internalUpdate(&bkenv, (void*)_this);
 }
 
 JNIEXPORT jboolean JNICALL Java_org_berkelium_impl_WindowImpl_isIncognito(JNIEnv* env, jobject _this)

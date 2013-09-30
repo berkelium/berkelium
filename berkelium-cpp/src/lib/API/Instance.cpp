@@ -14,6 +14,7 @@
 #include <Berkelium/Impl/Process.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>
+#include <Berkelium/Impl/BerkeliumCallback.hpp>
 
 #include <set>
 
@@ -35,7 +36,7 @@ struct set {
 typedef set<WindowWRef>::type WindowWRefSet;
 typedef set<HostDelegateWRef>::type HostDelegateWRefSet;
 
-class InstanceImpl : public Instance {
+class InstanceImpl : public Instance, public InternalUpdate {
 BERKELIUM_IMPL_CLASS(Instance)
 
 private:
@@ -45,6 +46,7 @@ private:
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
 	Ipc::MessageRef message;
+	Berkelium::Ipc::ChannelCallbackRef cb;
 	ProcessRef process;
 	WindowWRefSet windows;
 	HostDelegateWRefSet hosts;
@@ -58,6 +60,7 @@ public:
 		send(ipc),
 		recv(ipc->getReverseChannel()),
 		message(ipc->getMessage()),
+		cb(),
 		process(process),
 		windows(),
 		hosts() {
@@ -87,7 +90,7 @@ public:
 		//ipc->recv(message); //ACK
 	}
 
-	virtual void internalUpdate() {
+	void internalUpdate() {
 		if(!recv->isEmpty()) {
 			recv->recv(message);
 			if(message->length() == 0) {
@@ -99,14 +102,6 @@ public:
 						break;
 					}
 				}
-			}
-		}
-		for(WindowWRefSet::iterator it = windows.begin(); it != windows.end(); it++) {
-			WindowRef win(it->lock());
-			if(win) {
-				win->internalUpdate();
-			} else {
-				it = windows.erase(it);
 			}
 		}
 	}
@@ -167,6 +162,16 @@ public:
 
 		return ret;
 	}
+
+	static InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process) {
+		InstanceImpl* impl = new InstanceImpl(executable, profile, ipc, process);
+		InstanceRef ret(impl);
+		impl->setSelf(ret);
+		impl->cb.reset(new BerkeliumCallback<Instance, InstanceImpl>(ret));
+		impl->getManager()->registerInstance(ret);
+		//impl->createWindow(false);
+		return ret;
+	}
 };
 
 ManagerRef getManager(Instance* instance)
@@ -180,12 +185,7 @@ ManagerRef getManager(Instance* instance)
 }
 
 InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process) {
-	InstanceImpl* impl = new InstanceImpl(executable, profile, ipc, process);
-	InstanceRef ret(impl);
-	impl->setSelf(ret);
-	impl->getManager()->registerInstance(ret);
-	//impl->createWindow(false);
-	return ret;
+	return InstanceImpl::newInstance(executable, profile, ipc, process);
 }
 
 } // namespace impl

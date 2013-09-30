@@ -323,9 +323,6 @@ void BK_Logger_free(BK_Env*, BK_Logger self);
 // Returns the associated Runtime.
 BK_Runtime BK_Instance_getRuntime(BK_Env* env, BK_Instance self);
 
-// Internal Update Function
-void BK_Instance_internalUpdate(BK_Env* env, BK_Instance self);
-
 // Closes all open Windows/Tabs and the profile, terminates the host.
 void BK_Instance_close(BK_Env* env, BK_Instance self);
 
@@ -358,9 +355,6 @@ void BK_Instance_free(BK_Env*, BK_Instance self);
 // Returns the associated Runtime.
 BK_Runtime BK_Window_getRuntime(BK_Env* env, BK_Window self);
 
-// Internal Update Function
-void BK_Window_internalUpdate(BK_Env* env, BK_Window self);
-
 // Returns the current tab count.
 bk_int32 BK_Window_getTabCount(BK_Env* env, BK_Window self);
 
@@ -386,9 +380,6 @@ void BK_Window_free(BK_Env*, BK_Window self);
 
 // Returns the associated Runtime.
 BK_Runtime BK_Tab_getRuntime(BK_Env* env, BK_Tab self);
-
-// Internal Update Function
-void BK_Tab_internalUpdate(BK_Env* env, BK_Tab self);
 
 // Closes this tab and removes it from the window.
 void BK_Tab_close(BK_Env* env, BK_Tab self);

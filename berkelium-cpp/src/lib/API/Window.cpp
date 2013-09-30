@@ -11,6 +11,7 @@
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>
+#include <Berkelium/Impl/BerkeliumCallback.hpp>
 
 namespace Berkelium {
 
@@ -22,7 +23,7 @@ Window::~Window() {
 
 namespace impl {
 
-class WindowImpl : public Window {
+class WindowImpl : public Window, public InternalUpdate {
 BERKELIUM_IMPL_CLASS(Window)
 
 private:
@@ -31,9 +32,9 @@ private:
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
 	Ipc::MessageRef message;
+	Berkelium::Ipc::ChannelCallbackRef cb;
 	std::list<TabWRef> tabs;
 	const bool incognito;
-	Berkelium::Ipc::ChannelRef x;
 
 public:
 	WindowImpl(InstanceRef instance, Ipc::ChannelRef channel, bool incognito) :
@@ -43,6 +44,7 @@ public:
 		send(channel),
 		recv(channel->getReverseChannel()),
 		message(channel->getMessage()),
+		cb(),
 		tabs(),
 		incognito(incognito) {
 	}
@@ -51,7 +53,7 @@ public:
 		getManager()->unregisterWindow();
 	}
 
-	virtual void internalUpdate() {
+	void internalUpdate() {
 		if(!recv->isEmpty()) {
 			recv->recv(message);
 			if(message->length() == 0) {
@@ -73,14 +75,6 @@ public:
 					}
 					*/
 				}
-			}
-		}
-		for(std::list<TabWRef>::iterator it = tabs.begin(); it != tabs.end(); it++) {
-			TabRef tab(it->lock());
-			if(tab) {
-				tab->internalUpdate();
-			} else {
-				it = tabs.erase(it);
 			}
 		}
 	}
@@ -141,6 +135,7 @@ public:
 		WindowImpl* impl = new WindowImpl(instance, channel, incognito);
 		WindowRef ret(impl);
 		impl->self = ret;
+		impl->cb.reset(new BerkeliumCallback<Window, WindowImpl>(ret));
 		impl->manager->registerWindow(ret);
 		return ret;
 	}

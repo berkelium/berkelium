@@ -27,7 +27,11 @@ public:
 
 	virtual void unregisterChannel(Channel* channel) = 0;
 
-	virtual void recv(ChannelRef channel, MessageRef msg) = 0;
+	virtual void registerCallback(ChannelRef channel, ChannelCallbackRef callback, bool highPrio) = 0;
+
+	virtual void recv(ChannelRef channel, PipeRef pipe, MessageRef msg) = 0;
+
+	virtual void update(int32_t timeout) = 0;
 
 	static ChannelGroupRef create();
 };
