@@ -1,8 +1,8 @@
 package org.berkelium.test;
 
-import org.berkelium.api.BerkeliumFactory;
 import org.berkelium.api.Profile;
 import org.berkelium.api.Runtime;
+import org.berkelium.impl.TestHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,7 +12,7 @@ public class CreateProfileTest extends AbstractTest {
 	}
 
 	public void testProfile(String name, GetProfile gp) {
-		Runtime runtime = BerkeliumFactory.getInstance().createRuntime();
+		Runtime runtime = TestHelper.createRuntime();
 		assertChangedAndPush();
 		{
 			Profile profile = gp.getProfile(runtime);

@@ -1,22 +1,22 @@
 package org.berkelium.test;
 
-import org.berkelium.api.BerkeliumFactory;
 import org.berkelium.api.HostExecutable;
 import org.berkelium.api.Runtime;
+import org.berkelium.impl.TestHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
 public class BerkeliumFactoryTest extends AbstractTest {
 	@Test
 	public void testRuntimeDispose() {
-		Runtime runtime = BerkeliumFactory.getInstance().createRuntime();
+		Runtime runtime = TestHelper.createRuntime();
 		assertChanged();
 		runtime.dispose();
 	}
 
 	@Test
 	public void testForSystemInstalled() {
-		Runtime runtime = BerkeliumFactory.getInstance().createRuntime();
+		Runtime runtime = TestHelper.createRuntime();
 		assertChangedAndPush();
 		{
 			HostExecutable host = runtime.forSystemInstalled();

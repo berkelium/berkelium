@@ -250,6 +250,17 @@ void process(ChannelRef ipc, Browser* browser) {
 static int initialised = 0;
 
 bool BerkeliumHost::init(const std::string& dir, const std::string& name) {
+	/*
+	for(int i = 0; i < 100; i++) {
+		fprintf(stdout, "stdout %d!\n", i);
+		fprintf(stderr, "stderr %d!\n", i);
+		if((i + 1) % 10 == 0) {
+			fprintf(stdout, "test...");
+			fflush(stdout);
+			Berkelium::Util::sleep(500);
+		}
+	}
+	*/
 	if(isActive()) {
 		fprintf(stderr, "berkelium init double call!\n");
 		return false;

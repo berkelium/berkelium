@@ -66,6 +66,8 @@ public:
 			ChannelGroupData* data = it->second;
 			data->cb = callback;
 			data->highPrio = highPrio;
+		} else {
+			Berkelium::impl::bk_error("register callback %p failed!", channel.get());
 		}
 	}
 

@@ -186,7 +186,10 @@ ManagerRef getManager(Logger* logger)
 LoggerRef newLogger(LogDelegateRef target, RuntimeRef runtime, const std::string& clazz, const std::string& name) {
 	LoggerImpl* impl = new LoggerImpl(target, runtime, clazz, name);
 	LoggerRef ret(impl);
-	impl->getManager()->registerLogger(ret);
+	ManagerRef manager(impl->getManager());
+	if(manager) {
+		manager->registerLogger(ret);
+	}
 	return ret;
 }
 

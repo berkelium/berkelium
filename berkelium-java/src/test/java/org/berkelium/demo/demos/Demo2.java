@@ -10,7 +10,6 @@ import org.berkelium.api.Runtime;
 import org.berkelium.api.Logger;
 import org.berkelium.api.Profile;
 import org.berkelium.api.Tab;
-import org.berkelium.api.Util;
 import org.berkelium.api.Window;
 
 public class Demo2 {
@@ -25,7 +24,7 @@ public class Demo2 {
 	public static void main(String[] args) throws InterruptedException {
 		Runtime runtime = BerkeliumFactory.getInstance().createRuntimeWithLog(log);
 
-		Logger logger = Util.createRootLogger(runtime);
+		Logger logger = runtime.getLogger(Demo2.class.getName(), "");
 
 		logger.info("berkelium demo application...");
 		HostExecutable host = runtime.forSystemInstalled();
@@ -51,8 +50,7 @@ public class Demo2 {
 		logger.info("waiting 10s...");
 
 		for(int i = 0; i < 10000; i += 100) {
-			instance.internalUpdate();
-			Thread.sleep(100);
+			runtime.update(100);
 		}
 
 		logger.info("shutting down browser...");
@@ -78,5 +76,7 @@ public class Demo2 {
 		runtime.dispose();
 
 		logger.info("disposed!");
+
+		logger.dispose();
 	}
 }

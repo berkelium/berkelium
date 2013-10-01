@@ -11,7 +11,6 @@
 #include <Berkelium/API/Window.hpp>
 #include <Berkelium/IPC/Channel.hpp>
 #include <Berkelium/IPC/Message.hpp>
-#include <Berkelium/Impl/Process.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>
 #include <Berkelium/Impl/BerkeliumCallback.hpp>

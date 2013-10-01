@@ -483,7 +483,7 @@ var source={
 "\tpublic static void main(String[] args) throws InterruptedException {\n" +
 "\t\tRuntime runtime = BerkeliumFactory.getInstance().createRuntimeWithLog(log);\n" +
 "\n" +
-"\t\tLogger logger = Util.createRootLogger(runtime);\n" +
+"\t\tLogger logger = runtime.getLogger(Demo2.class.getName(), \"\");\n" +
 "\n" +
 "\t\tlogger.info(\"berkelium demo application...\");\n" +
 "\t\tHostExecutable host = runtime.forSystemInstalled();\n" +
@@ -509,8 +509,7 @@ var source={
 "\t\tlogger.info(\"waiting 10s...\");\n" +
 "\n" +
 "\t\tfor(int i = 0; i < 10000; i += 100) {\n" +
-"\t\t\tinstance.internalUpdate();\n" +
-"\t\t\tThread.sleep(100);\n" +
+"\t\t\truntime.update(100);\n" +
 "\t\t}\n" +
 "\n" +
 "\t\tlogger.info(\"shutting down browser...\");\n" +
@@ -536,6 +535,8 @@ var source={
 "\t\truntime.dispose();\n" +
 "\n" +
 "\t\tlogger.info(\"disposed!\");\n" +
+"\n" +
+"\t\tlogger.dispose();\n" +
 "\t}\n" +
 "}\n" +
 "","berkelium-java/src/test/java/org/berkelium/demo/examples/Logger1.java":

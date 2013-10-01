@@ -33,7 +33,7 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 	}
 
 	LoggerRef logger(runtime->getLogger("Process", Util::randomId()));
-	impl::ProcessRef process = impl::Process::create(impl::getChannelGroup(runtime), logger, profile->getProfilePath());
+	impl::ProcessRef process = impl::Process::create(runtime, logger, profile->getProfilePath());
 	Ipc::ChannelRef ipc = process->getIpcChannel();
 
 	std::vector<std::string> args;
@@ -55,7 +55,7 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 			logger->error() << "berkelium host startup failed!" << std::endl;
 			return InstanceRef();
 		}
-		Util::sleep(100);
+		runtime->update(100);
 	}
 	ipc->recv(msg);
 	if(msg->get_str().compare("berkelium") != 0) {
@@ -64,7 +64,7 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 	}
 	logger->debug() << "waiting for profile..." << std::endl;
 	while(!profile->isInUse()) {
-		Util::sleep(100);
+		runtime->update(100);
 	}
 	logger->info() << "berkelium host process is up and running!" << std::endl;
 

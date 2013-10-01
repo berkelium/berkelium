@@ -5,6 +5,7 @@
 #ifdef LINUX
 
 #include <Berkelium/API/Logger.hpp>
+#include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Process.hpp>
 #include <Berkelium/IPC/Channel.hpp>
@@ -12,6 +13,7 @@
 
 #include <sys/wait.h>
 #include <unistd.h>
+#include <sstream>
 
 namespace Berkelium {
 
@@ -29,42 +31,90 @@ int exec(const std::vector<std::string>& args) {
 
 #define BUF_SIZE 1024
 
-class ConsoleWriter : public Berkelium::Ipc::ChannelCallback
+using Berkelium::Ipc::ChannelCallback;
+using Berkelium::Ipc::ChannelCallbackRef;
+
+class ConsoleRedirector : public ChannelCallback
 {
+private:
+	RuntimeRef runtime;
+	LogType type;
+	std::string buffer;
+
 public:
-	virtual ~ConsoleWriter() {
-		//bk_error("~ConsoleWriter");
+	ConsoleRedirector(RuntimeRef runtime, LogType type) :
+		Berkelium::Ipc::ChannelCallback(),
+		runtime(runtime),
+		type(type) {
+	}
+
+	virtual ~ConsoleRedirector() {
 	}
 
 	virtual void onDataReady(Ipc::ChannelRef channel) {
-		//bk_error("ConsoleWriter: onDataReady!");
 		int fd = getPipeFd(channel, true);
+
 		char buf[BUF_SIZE];
-		int r = ::read(fd, &buf, BUF_SIZE);
-		if(r == 0) {
-			return;
-		} else if(r == -1) {
-			bk_error("ConsoleWriter: read error!");
-			return;
+
+		// read everything available into buffer
+		while(!channel->isEmpty()) {
+			int r = ::read(fd, &buf, BUF_SIZE);
+			if(r == 0) {
+				break;
+			} else if(r == -1) {
+				bk_error("ConsoleWriter: read error!");
+				return;
+			}
+			buffer += std::string(buf, 0, r);
 		}
-		write(1, buf, r);
+
+		// split into lines
+		std::string line;
+		std::istringstream is(buffer);
+
+		if(buffer[buffer.length() - 1] == 10) {
+			// buffer end == line end
+			while(std::getline(is, line)) {
+				log(line);
+			}
+			buffer = "";
+		} else {
+			// buffer end != line end
+			std::list<std::string> lines;
+			while(std::getline(is, line)) {
+				lines.push_back(line);
+			}
+			// store incomplete line
+			buffer = lines.back();
+			lines.pop_back();
+			while(!lines.empty()) {
+				log(lines.front());
+				lines.pop_front();
+			}
+		}
+	}
+
+	void log(std::string line) {
+		runtime->log(LogSource::Host, type, type == LogType::StdOut ? "STDOUT" : "STDERR", "", line);
 	}
 };
 
 class ProcessLinuxImpl : public Process {
 private:
-	std::shared_ptr<ConsoleWriter> writer;
+	ChannelCallbackRef out;
+	ChannelCallbackRef err;
 	pid_t pid;
 	int exit;
 
 public:
-	ProcessLinuxImpl(Ipc::ChannelGroupRef group, LoggerRef logger, const std::string& dir) :
-		Process(group, logger, dir),
-		writer(new ConsoleWriter()),
+	ProcessLinuxImpl(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
+		Process(runtime, logger, dir),
+		out(new ConsoleRedirector(runtime, LogType::StdOut)),
+		err(new ConsoleRedirector(runtime, LogType::StdErr)),
 		pid(-1),
 		exit(-1) {
-		group->registerCallback(getIpcOut(), writer, true);
-		group->registerCallback(getIpcErr(), writer, true);
+		group->registerCallback(ipcout, out, true);
+		group->registerCallback(ipcerr, err, true);
 	}
 
 	virtual ~ProcessLinuxImpl() {
@@ -107,8 +157,8 @@ public:
 			return false;
 		}
 		case 0: {
-			dup2(getPipeFd(getIpcOut(), true), 1);
-			dup2(getPipeFd(getIpcErr(), false), 2);
+			dup2(getPipeFd(ipcout, true), 1);
+			dup2(getPipeFd(ipcerr, true), 2);
 			int ret = exec(args);
 			logger->systemError(("launch " + args[0]).c_str());
 			::exit(ret);
@@ -122,8 +172,8 @@ public:
 	}
 };
 
-ProcessRef Process::create(Ipc::ChannelGroupRef group, LoggerRef logger, const std::string& dir) {
-	return ProcessRef(new ProcessLinuxImpl(group, logger, dir));
+ProcessRef Process::create(RuntimeRef runtime, LoggerRef logger, const std::string& dir) {
+	return ProcessRef(new ProcessLinuxImpl(runtime, logger, dir));
 }
 
 Process::~Process() {

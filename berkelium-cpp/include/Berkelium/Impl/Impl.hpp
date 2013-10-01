@@ -12,7 +12,6 @@
 
 #include <Berkelium/API/Berkelium.hpp>
 #include <Berkelium/IPC/Ipc.hpp>
-#include <Berkelium/Impl/Process.hpp>
 
 namespace Berkelium {
 
@@ -22,6 +21,9 @@ namespace impl {
 typedef std::shared_ptr<int8_t> ByteRef;
 typedef std::shared_ptr<int32_t> Int32Ref;
 #endif
+
+class Process;
+typedef std::shared_ptr<Process> ProcessRef;
 
 class Manager;
 typedef std::shared_ptr<Manager> ManagerRef;
@@ -127,5 +129,7 @@ int getPipeFd(Ipc::PipeRef pipe);
 } // namespace impl
 
 } // namespace Berkelium
+
+#include <Berkelium/Impl/Process.hpp>
 
 #endif // BERKELIUM_IMPL_IMPL_HPP_

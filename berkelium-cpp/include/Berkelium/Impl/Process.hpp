@@ -19,19 +19,17 @@ namespace Berkelium {
 
 namespace impl {
 
-class Process;
-typedef std::shared_ptr<Process> ProcessRef;
-
 class Process {
-private:
+protected:
+	Ipc::ChannelGroupRef group;
 	Ipc::ChannelRef ipc;
 	Ipc::ChannelRef ipcout;
 	Ipc::ChannelRef ipcerr;
 
-protected:
 	const LoggerRef logger;
 
-	inline Process(Ipc::ChannelGroupRef group, LoggerRef logger, const std::string& dir) :
+	inline Process(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
+		group(getChannelGroup(runtime)),
 		ipc(Ipc::Channel::createChannel(group, logger, dir, true)),
 		ipcout(Ipc::Channel::createChannel(group, logger, dir, true)),
 		ipcerr(Ipc::Channel::createChannel(group, logger, dir, true)),
@@ -39,7 +37,7 @@ protected:
 	}
 
 public:
-	static ProcessRef create(Ipc::ChannelGroupRef group, LoggerRef logger, const std::string& dir);
+	static ProcessRef create(RuntimeRef runtime, LoggerRef logger, const std::string& dir);
 
 	virtual ~Process() = 0;
 
@@ -47,14 +45,6 @@ public:
 
 	Ipc::ChannelRef getIpcChannel() {
 		return ipc;
-	}
-
-	Ipc::ChannelRef getIpcOut() {
-		return ipcout;
-	}
-
-	Ipc::ChannelRef getIpcErr() {
-		return ipcerr;
 	}
 
 	virtual const bool start(const std::vector<std::string>& args) = 0;

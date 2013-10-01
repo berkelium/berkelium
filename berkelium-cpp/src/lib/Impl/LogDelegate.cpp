@@ -28,8 +28,8 @@ const char* DEBUG_MSG ("\033[1;34mDebug");
 const char* INFO_MSG  ("\033[1;32mInfo ");
 const char* WARN_MSG  ("\033[1;33mWarn ");
 const char* ERROR_MSG ("\033[1;31mError");
-const char* STDOUT_MSG("\033[1;32Out   ");
-const char* STDERR_MSG("\033[1;31Err   ");
+const char* STDOUT_MSG("\033[1;32mOut  ");
+const char* STDERR_MSG("\033[1;31mErr  ");
 #endif
 
 inline std::string pad(std::string n, int s, char p) {

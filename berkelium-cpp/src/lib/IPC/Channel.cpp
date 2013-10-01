@@ -136,6 +136,9 @@ Channel::Channel() {
 Channel::~Channel() {
 }
 
+ChannelCallback::ChannelCallback() {
+}
+
 ChannelCallback::~ChannelCallback() {
 }
 

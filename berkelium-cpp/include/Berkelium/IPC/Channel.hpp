@@ -19,6 +19,8 @@ namespace Ipc {
 class ChannelCallback
 {
 public:
+	ChannelCallback();
+
 	virtual ~ChannelCallback() = 0;
 
 	virtual void onDataReady(ChannelRef channel) = 0;

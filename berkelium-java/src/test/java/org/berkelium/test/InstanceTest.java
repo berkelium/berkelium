@@ -1,11 +1,11 @@
 package org.berkelium.test;
 
-import org.berkelium.api.BerkeliumFactory;
 import org.berkelium.api.HostExecutable;
 import org.berkelium.api.Instance;
 import org.berkelium.api.Profile;
 import org.berkelium.api.Runtime;
 import org.berkelium.api.Window;
+import org.berkelium.impl.TestHelper;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,7 +19,7 @@ public class InstanceTest extends AbstractTest {
 
 	@Before
 	public void before() {
-		runtime = BerkeliumFactory.getInstance().createRuntime();
+		runtime = TestHelper.createRuntime();
 		assertChangedAndPush();
 		host = runtime.forSystemInstalled();
 		assertChangedAndPush();
