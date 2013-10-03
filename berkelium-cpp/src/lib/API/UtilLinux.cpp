@@ -6,6 +6,7 @@
 
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Logger.hpp>
+#include <Berkelium/Impl/Impl.hpp>
 
 #include <sys/time.h>
 #include <cstdlib>
@@ -27,10 +28,10 @@ void initRandom() {
 	}
 }
 
-int64_t currentTimeMillis(LoggerRef logger) {
+int64_t currentTimeMillis() {
 	timeval t;
 	if(gettimeofday( &t, NULL) == -1)
-		logger->systemError("gettimeofday");
+		Berkelium::impl::bk_error("gettimeofday");
 	return int64_t(t.tv_sec) * 1000 + int64_t(t.tv_usec) / 1000;
 }
 
@@ -40,10 +41,6 @@ std::string getEnv(const std::string& env, const std::string& defaultValue) {
 		return defaultValue;
 	}
 	return ret;
-}
-
-void sleep(int32_t ms) {
-	usleep(1000 * ms);
 }
 
 } // namespace Util

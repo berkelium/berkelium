@@ -72,7 +72,7 @@ public:
 		if(profile->isInUse()) {
 			logger->debug() << "closing instance: waiting for profile..." << std::endl;
 			while(profile->isInUse()) {
-				Util::sleep(100);
+				runtime->update(100);
 			}
 			logger->debug() << "profile closed!" << std::endl;
 		}

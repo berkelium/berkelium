@@ -16,9 +16,7 @@ void initRandom();
 std::string randomId();
 std::string randomId(int length);
 
-void sleep(int32_t ms);
-
-int64_t currentTimeMillis(LoggerRef logger);
+int64_t currentTimeMillis();
 
 std::string getEnv(const std::string&, const std::string& defaultValue);
 

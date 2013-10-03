@@ -32,8 +32,8 @@ struct Entry {
 	ChannelRef channel;
 	MessageRef msg;
 
-	Entry(LoggerRef logger, int64_t time, ChannelRef channel, MessageRef msg) :
-		time(time + Berkelium::Util::currentTimeMillis(logger)),
+	Entry(int64_t time, ChannelRef channel, MessageRef msg) :
+		time(time + Berkelium::Util::currentTimeMillis()),
 		channel(channel),
 		msg(msg) {
 	}
@@ -136,7 +136,7 @@ int main(int argc, char* argv[])
 					// wait 2s and send onReady
 					MessageRef m = Message::create(logger);
 					m->add_cmd(CommandId::onReady);
-					todo.push(Entry(logger, 2000, tab2, m));
+					todo.push(Entry(2000, tab2, m));
 					msg->reset();
 					break;
 				}
@@ -168,7 +168,7 @@ int main(int argc, char* argv[])
 
 		while(!todo.empty()) {
 			Entry entry = todo.top();
-			if(entry.time > Berkelium::Util::currentTimeMillis(logger)) {
+			if(entry.time > Berkelium::Util::currentTimeMillis()) {
 				break;
 			}
 			todo.pop();
@@ -177,7 +177,11 @@ int main(int argc, char* argv[])
 		}
 
 		if(wait) {
-			Berkelium::Util::sleep(33);
+#ifdef LINUX
+			usleep(33000);
+#else
+#error TODO
+#endif
 		}
 	}
 
