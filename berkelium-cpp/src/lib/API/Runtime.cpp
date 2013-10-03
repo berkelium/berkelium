@@ -10,7 +10,7 @@
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
 #include <Berkelium/Impl/Manager.hpp>
-#include <Berkelium/IPC/ChannelGroup.hpp>
+#include <Berkelium/IPC/PipeGroup.hpp>
 
 #include <set>
 
@@ -64,7 +64,7 @@ public:
 class RuntimeImpl : public Runtime {
 private:
 	LoggerRef logger;
-	Ipc::ChannelGroupRef group;
+	Ipc::PipeGroupRef group;
 	std::string defaultExecutable;
 	LogDelegateRefSet logs;
 	LogDelegateRef target;
@@ -77,7 +77,7 @@ private:
 	RuntimeImpl(LogDelegateRef master, ManagerRef manager) :
 		Runtime(),
 		logger(),
-		group(Ipc::ChannelGroup::create()),
+		group(Ipc::PipeGroup::create()),
 		defaultExecutable(""),
 		logs(),
 		target(new RuntimeLogDelegate()),
@@ -203,7 +203,7 @@ public:
 		}
 	}
 
-	Ipc::ChannelGroupRef getChannelGroup() {
+	Ipc::PipeGroupRef getPipeGroup() {
 		return group;
 	}
 };
@@ -211,21 +211,20 @@ public:
 ManagerRef getManager(Runtime* runtime)
 {
 	if(!runtime) {
-		bk_error("getManager(Runtime* = null)");
 		return ManagerRef();
 	}
 	RuntimeImpl* impl = (RuntimeImpl*)runtime;
 	return impl->getManager();
 }
 
-Ipc::ChannelGroupRef getChannelGroup(RuntimeRef runtime)
+Ipc::PipeGroupRef getPipeGroup(RuntimeRef runtime)
 {
 	if(!runtime) {
-		bk_error("getChannelGroup(Runtime* = null)");
-		return Ipc::ChannelGroupRef();
+		bk_error("getPipeGroup(Runtime* = null)");
+		return Ipc::PipeGroupRef();
 	}
 	RuntimeImpl* impl = (RuntimeImpl*)runtime.get();
-	return impl->getChannelGroup();
+	return impl->getPipeGroup();
 }
 
 } // namespace impl

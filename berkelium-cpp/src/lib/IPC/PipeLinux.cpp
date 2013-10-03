@@ -8,6 +8,7 @@
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/PipeGroup.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
@@ -16,6 +17,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sstream>
+
+#ifdef BERKELIUM_TRACE_IO_DATA
+#define trace 1
+#else
+#define trace 0
+#endif
 
 using Berkelium::impl::Filesystem;
 
@@ -28,37 +36,51 @@ namespace impl {
 class PipeLinuxImpl : public Pipe {
 private:
 	LoggerRef logger;
+	PipeGroupRef group;
 	const std::string name;
+	const std::string dir;
+	const std::string full;
+	const std::string alias;
+	bool read;
 	int fd;
 	fd_set fds;
 
 public:
-	PipeLinuxImpl(LoggerRef logger, const std::string& name) :
+	PipeLinuxImpl(bool read, PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
 		Pipe(),
 		logger(logger),
-		name(name) {
-		fd = -1;
+		group(group),
+		name(name),
+		dir(dir),
+		full(Filesystem::append(dir, name)),
+		alias(alias),
+		read(read),
+		fd(-1) {
 
-		Filesystem::createDirectoriesFor(name);
+		Filesystem::createDirectories(dir);
 
-		const char* p = name.c_str();
+		const char* p = full.c_str();
 		if(::access(p, F_OK) != 0 && ::mkfifo(p, 0700) != 0) {
-			logger->systemError("mkfifo", name);
+			logger->systemError("mkfifo", full);
 			return;
 		}
 		fd = ::open(p, O_RDWR);
 		if(fd == -1) {
-			logger->systemError("open", name);
+			logger->systemError("open", full);
 			return;
 		}
+
 	}
 
 	virtual ~PipeLinuxImpl() {
+		if(group) {
+			group->unregisterPipe(this);
+		}
 		if(fd != -1) {
 			close(fd);
 			fd = -1;
 		}
-		Filesystem::removeFile(name);
+		Filesystem::removeFile(full);
 	}
 
 	virtual bool isEmpty() {
@@ -70,19 +92,29 @@ public:
 		return select(fd + 1, &fds, NULL, NULL, &tv) != 1;
 	}
 
-	/*
-	inline void dump(const char* msg, char* data, size_t size) {
-		fprintf(stderr, "%s: %s ", msg, name.c_str());
+	inline void dump(const char* msg, int fd, char* data, size_t size) {
+		std::stringstream str;
+		str << Berkelium::impl::getBerkeliumHostMode();
+		str << ' ';
+		str << msg;
+		str << ": ";
+		str << fd;
+		str << ' ';
+		str << name;
+		str << ' ';
+		str << alias;
+		str << ' ';
+		str << std::hex;
 		for(size_t i = 0; i < size; i++) {
-		    fprintf(stderr, "%02X ", data[i]);
+			str << (int)(data[i] & 0xFF);
+			str << ' ';
 		}
-		fprintf(stderr, " ");
+		str << ' ';
 		for(size_t i = 0; i < size; i++) {
-		    fprintf(stderr, "%c", data[i]);
+			str << (char)(data[i] >= 32 ? data[i] : '.');
 		}
-		fprintf(stderr, "\n");
+		fprintf(stderr, "%s\n", str.str().c_str());
 	}
-	*/
 
 	virtual void send(MessageRef msg) {
 		if(fd == -1) return;
@@ -90,7 +122,9 @@ public:
 		//fprintf(stderr, "send: 4 bytes '%d'!\n", size);
 		::write(fd, &size, 4);
 		//fprintf(stderr, "send: data...\n");
-		//dump("send", (char*)msg->data(), size);
+		if(trace) {
+			dump("send", fd, (char*)msg->data(), size);
+		}
 		::write(fd, msg->data(), size);
 		//fprintf(stderr, "send: done!\n");
 		msg->reset();
@@ -102,7 +136,9 @@ public:
 		//fprintf(stderr, "recv: %d bytes!\n", size);
 		msg->setup(size);
 		recv((char*)msg->data(), size);
-		//dump("recv", (char*)msg->data(), size);
+		if(trace) {
+			dump("recv", fd, (char*)msg->data(), size);
+		}
 	}
 
 	void recv(char* to, size_t size) {
@@ -116,11 +152,18 @@ public:
 		}
 	}
 
-	virtual const std::string getPath() {
+	virtual const std::string getName() {
 		return name;
 	}
 
+	virtual const std::string getAlias() {
+		return alias;
+	}
+
 	int getPipeFd() {
+		if(!read) {
+			return -1;
+		}
 		return fd;
 	}
 };
@@ -133,8 +176,12 @@ Pipe::Pipe() {
 Pipe::~Pipe() {
 }
 
-PipeRef Pipe::getPipe(LoggerRef logger, const std::string& name) {
-	return PipeRef(new impl::PipeLinuxImpl(logger, name));
+PipeRef Pipe::getPipe(bool read, PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) {
+	PipeRef ret(new impl::PipeLinuxImpl(read, group, logger, dir, name, alias));
+	if(read && group) {
+		group->registerPipe(ret);
+	}
+	return ret;
 }
 
 } // namespace Ipc

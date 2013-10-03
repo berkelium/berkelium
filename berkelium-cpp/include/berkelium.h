@@ -156,6 +156,7 @@ typedef void BK_TabDelegate_onClosed(BK_Env* env, BK_TabDelegate self, BK_Tab ta
 typedef void BK_TabDelegate_onTitleChanged(BK_Env* env, BK_TabDelegate self, BK_Tab tab, bk_string title);
 typedef void BK_TabDelegate_onPaint(BK_Env* env, BK_TabDelegate self, BK_Tab tab);
 typedef void BK_TabDelegate_onPaintDone(BK_Env* env, BK_TabDelegate self, BK_Tab tab, BK_Rect rect);
+typedef void BK_TabDelegate_onReady(BK_Env* env, BK_TabDelegate self, BK_Tab tab);
 
 struct _BK_TabDelegate {
 	bk_ext_obj self;
@@ -163,6 +164,7 @@ struct _BK_TabDelegate {
 	BK_TabDelegate_onTitleChanged* onTitleChanged;
 	BK_TabDelegate_onPaint* onPaint;
 	BK_TabDelegate_onPaintDone* onPaintDone;
+	BK_TabDelegate_onReady* onReady;
 };
 
 // =========================================
@@ -386,9 +388,6 @@ void BK_Tab_close(BK_Env* env, BK_Tab self);
 
 // Wait until all pending Java Script Events are handled.
 void BK_Tab_sync(BK_Env* env, BK_Tab self);
-
-// All methods called on this tab delegate are forwared to all tab delegates of this tab.
-BK_TabDelegate BK_Tab_getTabDelegate(BK_Env* env, BK_Tab self);
 
 // Add a TabDelegate to this tab.
 void BK_Tab_addTabDelegate(BK_Env* env, BK_Tab self, BK_TabDelegate delegate);

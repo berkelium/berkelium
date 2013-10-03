@@ -50,21 +50,25 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 
 	logger->debug() << "awaiting berkelium host process ipc startup message!" << std::endl;
 	Ipc::MessageRef msg(ipc->getMessage());
-	while(ipc->isEmpty()) {
+	while(!ipc->recv(msg, 100)) {
 		if(!process->isRunning()) {
 			logger->error() << "berkelium host startup failed!" << std::endl;
 			return InstanceRef();
 		}
-		runtime->update(100);
 	}
-	ipc->recv(msg);
 	if(msg->get_str().compare("berkelium") != 0) {
 		logger->error() << "ipc bad magic!" << std::endl;
 		return InstanceRef();
 	}
+	msg->reset();
+	ipc->send(msg);
 	logger->debug() << "waiting for profile..." << std::endl;
 	while(!profile->isInUse()) {
 		runtime->update(100);
+		if(!process->isRunning()) {
+			logger->error() << "berkelium host startup failed!" << std::endl;
+			return InstanceRef();
+		}
 	}
 	logger->info() << "berkelium host process is up and running!" << std::endl;
 

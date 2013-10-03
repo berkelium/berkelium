@@ -155,7 +155,7 @@ inline char* JSTRING_TO_BK(JNIEnv* env, jstring str)
 	return ret;
 }
 
-void Berkelium_Java_LogDelegate(BK_Env* bkenv, BK_LogDelegate self, BK_Runtime runtime, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string name, bk_string message)
+void Berkelium_Java_LogDelegate_log(BK_Env* bkenv, BK_LogDelegate self, BK_Runtime runtime, BK_LogSource source, BK_LogType type, bk_string clazz, bk_string name, bk_string message)
 {
 	JNIEnv* env = getBerkeliumJavaVMForCallback();
 
@@ -164,6 +164,27 @@ void Berkelium_Java_LogDelegate(BK_Env* bkenv, BK_LogDelegate self, BK_Runtime r
 		env->CallVoidMethod((jobject)self->self, LogDelegate_log_Java, NULL, NULL, NULL, BK_TO_JSTRING(env, clazz), BK_TO_JSTRING(env, name), BK_TO_JSTRING(env, message));
 	}
 	//fprintf(stderr, "log done!\n");
+}
+
+void Berkelium_Java_TabDelegate_onClosed(BK_Env* env, BK_TabDelegate self, BK_Tab tab)
+{
+}
+
+void Berkelium_Java_TabDelegate_onTitleChanged(BK_Env* env, BK_TabDelegate self, BK_Tab tab, bk_string title)
+{
+}
+
+void Berkelium_Java_TabDelegate_onPaint(BK_Env* env, BK_TabDelegate self, BK_Tab tab)
+{
+}
+
+void Berkelium_Java_TabDelegate_onPaintDone(BK_Env* env, BK_TabDelegate self, BK_Tab tab, BK_Rect rect)
+{
+}
+
+void Berkelium_Java_TabDelegate_onReady(BK_Env* env, BK_TabDelegate self, BK_Tab tab)
+{
+	fprintf(stderr, "BerkeliumJava onReady\b");
 }
 
 bk_bk_obj Berkelium_Java_MapIn(BK_Env_Enum type, bk_ext_obj bkJavaId, void* data)
@@ -175,7 +196,18 @@ bk_bk_obj Berkelium_Java_MapIn(BK_Env_Enum type, bk_ext_obj bkJavaId, void* data
 	if(!ret) {
 		if(type == LogDelegate) {
 			BK_LogDelegate ret((BK_LogDelegate)malloc(sizeof(_BK_LogDelegate)));
-			ret->log = &Berkelium_Java_LogDelegate;
+			ret->log = &Berkelium_Java_LogDelegate_log;
+			ret->self = env->NewGlobalRef((jobject)bkJavaId);
+			//fprintf(stderr, "Berkelium_Java_MapIn: LogDelegate local:%p global:%p env:%p\n", bkJavaId, ret->self, env);
+			return ret;
+		} else if(type == HostDelegate) {
+			BK_HostDelegate ret((BK_HostDelegate)malloc(sizeof(_BK_HostDelegate)));
+			ret->self = env->NewGlobalRef((jobject)bkJavaId);
+			//fprintf(stderr, "Berkelium_Java_MapIn: LogDelegate local:%p global:%p env:%p\n", bkJavaId, ret->self, env);
+			return ret;
+		} else if(type == TabDelegate) {
+			BK_TabDelegate ret((BK_TabDelegate)malloc(sizeof(_BK_TabDelegate)));
+			ret->onReady = &Berkelium_Java_TabDelegate_onReady;
 			ret->self = env->NewGlobalRef((jobject)bkJavaId);
 			//fprintf(stderr, "Berkelium_Java_MapIn: LogDelegate local:%p global:%p env:%p\n", bkJavaId, ret->self, env);
 			return ret;

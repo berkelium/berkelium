@@ -109,7 +109,9 @@ public:
 	}
 
 	virtual ~LoggerImpl() {
-		getManager()->unregisterLogger();
+		if(manager) {
+			manager->unregisterLogger();
+		}
 	}
 
 	ManagerRef getManager() {					\
@@ -171,6 +173,15 @@ public:
 
 void enableBerkeliumHostMode() {
 	logSource = Host;
+}
+
+bool isBerkeliumHostMode() {
+	return logSource == Host;
+}
+
+const char* getBerkeliumHostMode()
+{
+	return isBerkeliumHostMode() ? "Host" : "Lib";
 }
 
 ManagerRef getManager(Logger* logger)

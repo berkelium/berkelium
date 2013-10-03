@@ -7,6 +7,8 @@
 
 #include <cstdlib>
 #include <ctime>
+#include <sstream>
+#include <vector>
 
 namespace Berkelium {
 
@@ -36,6 +38,21 @@ std::string getOption(int argc, char* argv[], const std::string& option) {
 		}
 	}
 	return "";
+}
+
+std::string getOption(const std::string& cmdline, const std::string& option) {
+	std::stringstream ss(cmdline);
+	std::string item;
+	std::vector<std::string> elems;
+	while (std::getline(ss, item, ' ')) {
+		elems.push_back(item);
+	}
+	int argc = elems.size();
+	char* argv[argc];
+	for(int i = 0; i < argc; i++) {
+		argv[i] = (char*)elems[i].c_str();
+	}
+	return getOption(argc, (char**)&argv, option);
 }
 
 void parseCommandLine(RuntimeRef runtime, int argc, char* argv[]) {

@@ -28,6 +28,8 @@ RuntimeRef createRuntime(int argc, char* argv[]);
 
 std::string getOption(int argc, char* argv[], const std::string& option);
 
+std::string getOption(const std::string& cmdline, const std::string& option);
+
 void parseCommandLine(RuntimeRef runtime, int argc, char* argv[]);
 
 #ifdef WIN32

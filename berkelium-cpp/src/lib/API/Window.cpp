@@ -9,6 +9,8 @@
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
+#include <Berkelium/IPC/PipeGroup.hpp>
+#include <Berkelium/IPC/Pipe.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>
 #include <Berkelium/Impl/BerkeliumCallback.hpp>
@@ -32,7 +34,7 @@ private:
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
 	Ipc::MessageRef message;
-	Berkelium::Ipc::ChannelCallbackRef cb;
+	Berkelium::Ipc::PipeCallbackRef cb;
 	std::list<TabWRef> tabs;
 	const bool incognito;
 
@@ -53,7 +55,8 @@ public:
 		getManager()->unregisterWindow();
 	}
 
-	void internalUpdate() {
+	virtual void internalUpdate() {
+		fprintf(stderr, "window internalUpdate\n");
 		if(!recv->isEmpty()) {
 			recv->recv(message);
 			if(message->length() == 0) {
@@ -76,6 +79,8 @@ public:
 					*/
 				}
 			}
+		} else {
+			fprintf(stderr, "window error?\n");
 		}
 	}
 
@@ -101,7 +106,7 @@ public:
 		send->recv(message);
 		std::string id(message->get_str());
 		logger->debug() << "created tab '" << id << "'" << std::endl;
-		Ipc::ChannelRef x = send->getSubChannel(id);
+		Ipc::ChannelRef x = send->getSubChannel(id, "tab");
 		logger->debug() << "with channel '" << x->getName() << "'" << std::endl;
 		TabRef ret(newTab(getSelf(), x));
 		tabs.push_back(ret);
@@ -136,6 +141,7 @@ public:
 		WindowRef ret(impl);
 		impl->self = ret;
 		impl->cb.reset(new BerkeliumCallback<Window, WindowImpl>(ret));
+		getPipeGroup(impl->runtime)->registerCallback(impl->recv, impl->cb, false);
 		impl->manager->registerWindow(ret);
 		return ret;
 	}

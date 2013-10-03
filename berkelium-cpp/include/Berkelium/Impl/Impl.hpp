@@ -70,6 +70,8 @@ inline ManagerRef getManager(TabRef id) {
 }
 
 void enableBerkeliumHostMode();
+bool isBerkeliumHostMode();
+const char* getBerkeliumHostMode();
 TabRef newTab(WindowRef window, Ipc::ChannelRef ipc);
 WindowRef newWindow(InstanceRef instance, Ipc::ChannelRef channel, bool incognito);
 HostExecutableRef newHostExecutable(RuntimeRef runtime, const std::string&);
@@ -85,8 +87,9 @@ ProfileRef forProfilePath(RuntimeRef runtime, const std::string& path);
 ProfileRef createTemporaryProfile(RuntimeRef runtime);
 LoggerRef newLogger(LogDelegateRef target, RuntimeRef runtime, const std::string& clazz, const std::string& name);
 LogDelegateRef newLogDelegate();
-Ipc::ChannelGroupRef getChannelGroup(RuntimeRef runtime);
+Ipc::PipeGroupRef getPipeGroup(RuntimeRef runtime);
 void setLoggerPrefix(RuntimeRef runtime, const std::string& name);
+Ipc::PipeRef getInputPipe(Ipc::ChannelRef channel);
 
 void bk_error(const char* format, ...);
 
@@ -122,7 +125,6 @@ public:											\
 	_BERKELIUM_IMPL_CTOR(TypeName, name, rt->getRuntime())
 
 #ifdef LINUX
-int getPipeFd(Ipc::ChannelRef channel, bool in);
 int getPipeFd(Ipc::PipeRef pipe);
 #endif
 

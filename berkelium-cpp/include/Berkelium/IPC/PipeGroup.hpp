@@ -16,24 +16,26 @@ namespace Berkelium {
 
 namespace Ipc {
 
-class ChannelGroup {
+class PipeGroup {
 protected:
-	ChannelGroup();
+	PipeGroup();
 
 public:
-	virtual ~ChannelGroup() = 0;
+	virtual ~PipeGroup() = 0;
 
-	virtual void registerChannel(ChannelRef channel) = 0;
+	virtual void registerPipe(PipeRef pipe) = 0;
 
-	virtual void unregisterChannel(Channel* channel) = 0;
+	virtual void unregisterPipe(Pipe* pipe) = 0;
 
-	virtual void registerCallback(ChannelRef channel, ChannelCallbackRef callback, bool highPrio) = 0;
+	virtual void registerCallback(ChannelRef channel, PipeCallbackRef callback, bool highPrio) = 0;
 
-	virtual void recv(ChannelRef channel, PipeRef pipe, MessageRef msg) = 0;
+	virtual void registerCallback(PipeRef pipe, PipeCallbackRef callback, bool highPrio) = 0;
+
+	virtual bool recv(PipeRef pipe, MessageRef msg, int32_t timeout) = 0;
 
 	virtual void update(int32_t timeout) = 0;
 
-	static ChannelGroupRef create();
+	static PipeGroupRef create();
 };
 
 } // namespace Ipc

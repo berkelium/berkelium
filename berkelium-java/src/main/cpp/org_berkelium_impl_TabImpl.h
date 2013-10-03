@@ -41,14 +41,6 @@ JNIEXPORT void JNICALL Java_org_berkelium_impl_TabImpl_sync
 
 /*
  * Class:     org_berkelium_impl_TabImpl
- * Method:    getTabDelegate
- * Signature: ()Lorg/berkelium/api/TabDelegate;
- */
-JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getTabDelegate
-  (JNIEnv *, jobject);
-
-/*
- * Class:     org_berkelium_impl_TabImpl
  * Method:    addTabDelegate
  * Signature: (Lorg/berkelium/api/TabDelegate;)V
  */

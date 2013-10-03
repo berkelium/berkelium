@@ -32,9 +32,6 @@ class TabImpl implements Tab, BerkeliumObjectImpl {
 	public native void sync();
 
 	@Override
-	public native TabDelegate getTabDelegate();
-
-	@Override
 	public native void addTabDelegate(TabDelegate delegate);
 
 	@Override

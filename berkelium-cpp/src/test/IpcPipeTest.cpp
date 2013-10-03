@@ -12,6 +12,7 @@
 
 using Berkelium::Ipc::Pipe;
 using Berkelium::Ipc::PipeRef;
+using Berkelium::Ipc::PipeGroupRef;
 using Berkelium::Ipc::Message;
 using Berkelium::Ipc::MessageRef;
 using Berkelium::Util::randomId;
@@ -25,27 +26,32 @@ class PipeTest : public ::testing::Test {
 
 TEST_F(PipeTest, create) {
 	USE_LOGGER(create);
-	ASSERT_NOT_NULL(Pipe::getPipe(logger, randomId()));
+	ASSERT_NOT_NULL(Pipe::getPipe(false, PipeGroupRef(), logger, Filesystem::getTemp(), randomId(), "testCreatePipe"));
 }
 
 TEST_F(PipeTest, remove) {
 	USE_LOGGER(create);
-	std::string name = "/tmp/berkelium." + randomId();
-	ASSERT_FALSE(Filesystem::exists(name));
+	std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
+	std::string name(randomId());
+	ASSERT_FALSE(Filesystem::exists(dir));
 	{
-		PipeRef pipe = Pipe::getPipe(getLogger("remove"), name);
-		ASSERT_TRUE(Filesystem::exists(name));
+		PipeRef pipe = Pipe::getPipe(false, PipeGroupRef(), getLogger("remove"), dir, name, "testRemovePipe");
+		ASSERT_TRUE(Filesystem::exists(dir));
+		ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name)));
 	}
-	ASSERT_FALSE(Filesystem::exists(name));
+	ASSERT_FALSE(Filesystem::exists(Filesystem::append(dir, name)));
+	Filesystem::removeDir(dir);
 }
 
 TEST_F(PipeTest, sendRecv) {
 	USE_LOGGER(create);
-	std::string name = "/tmp/berkelium." + randomId();
-	ASSERT_FALSE(Filesystem::exists(name));
+	std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
+		std::string name(randomId());
+	ASSERT_FALSE(Filesystem::exists(dir));
 	{
-		PipeRef pipe = Pipe::getPipe(getLogger("sendRecv"), name);
-		ASSERT_TRUE(Filesystem::exists(name));
+		PipeRef pipe = Pipe::getPipe(false, PipeGroupRef(), getLogger("sendRecv"), dir, name, "testSendRecvPipe");
+		ASSERT_TRUE(Filesystem::exists(dir));
+		ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name)));
 		ASSERT_TRUE(pipe->isEmpty());
 		MessageRef msg(Message::create(logger));
 		msg->add_str("hello");
@@ -57,7 +63,8 @@ TEST_F(PipeTest, sendRecv) {
 		ASSERT_TRUE(pipe->isEmpty());
 		ASSERT_EQ(0, recv.compare("hello"));
 	}
-	ASSERT_FALSE(Filesystem::exists(name));
+	ASSERT_FALSE(Filesystem::exists(Filesystem::append(dir, name)));
+	Filesystem::removeDir(dir);
 }
 
 } // namespace

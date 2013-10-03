@@ -16,23 +16,13 @@ namespace Berkelium {
 
 namespace Ipc {
 
-class ChannelCallback
-{
-public:
-	ChannelCallback();
-
-	virtual ~ChannelCallback() = 0;
-
-	virtual void onDataReady(ChannelRef channel) = 0;
-};
-
 class Channel {
 protected:
 	Channel();
 
 public:
-	static ChannelRef createChannel(ChannelGroupRef group, LoggerRef logger, const std::string& dir, const bool server);
-	static ChannelRef getChannel(ChannelGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const bool server);
+	static ChannelRef createChannel(PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& alias, const bool server);
+	static ChannelRef getChannel(PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, const bool server);
 
 	virtual ~Channel() = 0;
 
@@ -48,14 +38,22 @@ public:
 	// Receives the next message.
 	virtual void recv(MessageRef msg) = 0;
 
- 	virtual ChannelRef createSubChannel() = 0;
- 	virtual ChannelRef getSubChannel(const std::string& name) = 0;
+	virtual bool recv(MessageRef msg, int32_t timeout) = 0;
+
+	virtual ChannelRef createSubChannel(const std::string& alias) = 0;
+	virtual ChannelRef getSubChannel(const std::string& name, const std::string& alias) = 0;
 
 	virtual ChannelRef getReverseChannel() = 0;
 
+	virtual bool isReverseChannel() = 0;
+
+	virtual std::string toString() = 0;
+
 	virtual std::string getName() = 0;
 
-	virtual ChannelGroupRef getGroup() = 0;
+	virtual std::string getAlias() = 0;
+
+	virtual PipeGroupRef getGroup() = 0;
 };
 
 } // namespace Ipc

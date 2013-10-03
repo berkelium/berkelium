@@ -521,13 +521,6 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getRuntime(JNIEnv* env
 	return BK_TO_JOBJECT(BK_Tab_getRuntime(&bkenv, (void*)_this));
 }
 
-JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getTabDelegate(JNIEnv* env, jobject _this)
-{
-	BK_Env bkenv;
-	setupBkEnv(bkenv, env);
-	return BK_TO_JOBJECT(BK_Tab_getTabDelegate(&bkenv, (void*)_this));
-}
-
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_TabImpl_getWindow(JNIEnv* env, jobject _this)
 {
 	BK_Env bkenv;

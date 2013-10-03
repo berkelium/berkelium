@@ -2,13 +2,92 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "BerkeliumHost.hpp"
+#include "BerkeliumHostDelegate.hpp"
+
+#include <Berkelium/API/Profile.hpp>
+#include <Berkelium/API/Runtime.hpp>
+#include <Berkelium/API/Util.hpp>
+#include <Berkelium/Impl/Impl.hpp>
+
+namespace Berkelium {
+
+void BerkeliumHostDelegate::updateLater()
+{
+}
+
+void BerkeliumHostDelegate::exit()
+{
+}
+
+void BerkeliumHostDelegate::init()
+{
+}
+
+void* BerkeliumHostDelegate::createWindow(bool incognito)
+{
+	return NULL;
+}
+
+void BerkeliumHostDelegate::destroyWindow(void* window)
+{
+}
+
+void* BerkeliumHostDelegate::createTab(void* window)
+{
+	return NULL;
+}
+
+void BerkeliumHostDelegate::destroyTab(void* window, void* tab)
+{
+}
+
+} // namespace Berkelium
+
+int main(int argc, char* argv[])
+{
+	Berkelium::impl::enableBerkeliumHostMode();
+
+	Berkelium::ProfileRef profile;
+
+	const std::string debug(Berkelium::Util::getOption(argc, argv, "--berkelium-debug="));
+	if(!debug.empty()) {
+		profile = Berkelium::BerkeliumHost::initDebug(debug);
+	}
+
+	if(!profile) {
+		const std::string id(Berkelium::Util::getOption(argc, argv, "--berkelium="));
+		const std::string dir(Berkelium::Util::getOption(argc, argv, "--user-data-dir="));
+		if(!id.empty() && !dir.empty()) {
+			profile = Berkelium::BerkeliumHost::init(dir, id);
+		}
+	}
+
+	if(profile) {
+		Berkelium::RuntimeRef runtime(profile->getRuntime());
+		Berkelium::LoggerRef logger(runtime->getLogger("host-fake", profile->getApplicationName()));
+		profile->setLocked(true);
+		if(!profile->isLocked()) {
+			logger->error() << "profile can not be locked!" << std::endl;
+			return 1;
+		}
+
+		Berkelium::BerkeliumHost::lasyInit();
+		while(Berkelium::BerkeliumHost::update(100));
+		return 0;
+	}
+	std::cerr << "Berkelium Host Fake: no berkelium-debug or berkelium and user-data-dir options passed!" << std::endl;
+	return 1;
+}
+
+/*
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Channel.hpp>
-#include <Berkelium/IPC/ChannelGroup.hpp>
+#include <Berkelium/IPC/PipeGroup.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
 #include <queue>
@@ -19,8 +98,8 @@ using Berkelium::ProfileRef;
 using Berkelium::LoggerRef;
 using Berkelium::Ipc::Channel;
 using Berkelium::Ipc::ChannelRef;
-using Berkelium::Ipc::ChannelGroup;
-using Berkelium::Ipc::ChannelGroupRef;
+using Berkelium::Ipc::PipeGroup;
+using Berkelium::Ipc::PipeGroupRef;
 using Berkelium::Ipc::Message;
 using Berkelium::Ipc::MessageRef;
 using Berkelium::Ipc::CommandId;
@@ -78,10 +157,10 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	ChannelGroupRef group(ChannelGroup::create());
+	PipeGroupRef group(PipeGroup::create());
 
 	logger->debug() << "starting host fake!" << std::endl;
-	ChannelRef ipc = Channel::getChannel(group, logger, dir, id, false);
+	ChannelRef ipc = Channel::getChannel(group, logger, dir, id, "host-fake", false);
 
 	MessageRef msg(ipc->getMessage());
 	msg->add_str("berkelium");
@@ -125,7 +204,7 @@ int main(int argc, char* argv[])
 				}
 
 				case CommandId::createTab: {
-					ChannelRef tab(ipc->createSubChannel());
+					ChannelRef tab(ipc->createSubChannel("tab"));
 					ChannelRef tab2(tab->getReverseChannel());
 					channels.push_back(tab);
 					msg->reset();
@@ -143,7 +222,7 @@ int main(int argc, char* argv[])
 
 				case CommandId::createWindow: {
 					bool incognito = msg->get_8() == 1;
-					ChannelRef win(ipc->createSubChannel());
+					ChannelRef win(ipc->createSubChannel("window"));
 					channels.push_back(win);
 					msg->reset();
 					msg->add_str(win->getName());
@@ -189,3 +268,4 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
+*/

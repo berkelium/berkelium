@@ -23,9 +23,6 @@ public interface Tab extends BerkeliumObject  {
 	// Wait until all pending Java Script Events are handled.
 	void sync();
 
-	// All methods called on this tab delegate are forwared to all tab delegates of this tab.
-	TabDelegate getTabDelegate();
-
 	// Add a TabDelegate to this tab.
 	void addTabDelegate(TabDelegate delegate);
 

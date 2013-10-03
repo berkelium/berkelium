@@ -1,5 +1,12 @@
 #!/bin/sh
 dir=`dirname $(readlink -f "$0")`
+
+function update_ld_path()
+{
+if [ ! -e $dir/run ]; then
+	echo "Error: berkelium host not found!"
+	exit 1
+fi
 cd "$dir/run"
 base="$dir/../chromium/src/out"
 if [ -e "$base/Debug" ]; then
@@ -12,7 +19,45 @@ else
 fi
 
 export LD_LIBRARY_PATH="`readlink -f $base/lib.target`"
+}
 
-# uncomment this to debug berkelium
-#exec gdb --args ./berkelium $*
+function berkelium_default()
+{
+update_ld_path
 exec ./berkelium $*
+}
+
+function berkelium_debug_gdb()
+{
+update_ld_path
+exec gdb --args ./berkelium $*
+}
+
+function berkelium_debug_external()
+{
+echo waiting for external debugger
+echo $* > ~/.berkelium-debug
+while [ -e ~/.berkelium-debug ]; do
+	sleep 3
+done
+exit 0
+}
+
+#
+# You can create an ~/.berkeliumrc with this content:
+#
+# BERKELIUM_DEBUG="gdb"
+#  to debug berkelium hots with gdb on command line
+#
+# BERKELIUM_DEBUG="external"
+#  to debug berkelium host with eclipse
+#  Pass --berkelium-debug=<home>/.berkelium-debug to berkelium-host
+#
+
+[ -e ~/.berkeliumrc ] && . ~/.berkeliumrc
+
+[ "$BERKELIUM_DEBUG" = "gdb" ] && berkelium_debug_gdb $*
+
+[ "$BERKELIUM_DEBUG" = "external" ] && berkelium_debug_external $*
+
+berkelium_default $*

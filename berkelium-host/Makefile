@@ -21,13 +21,9 @@ out:
 	ln -s chromium out/Release
 
 out/o/%.o: src/%.cpp src/*/*.hpp out
-	g++ -fexceptions -std=c++0x -DBERKELIUM_CPP_IMPL `pkg-config --cflags glib-2.0` `pkg-config --cflags gtk+-2.0` -Isrc/include -I../berkelium-cpp/include -I../chromium/src/third_party/skia/include/config -I../chromium/src -I../chromium/src/third_party/WebKit/Source/Platform/chromium -I../chromium/src/third_party/skia/include/core -D_DEBUG -DDEBUG -g -Wall -pthread -fno-exceptions -fno-strict-aliasing -Wno-unused-parameter -Wno-missing-field-initializers -fvisibility=hidden -pipe -fPIC -O0 -g -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -MMD -MF $@.d.raw -c -o $@ $<
+	g++ -I../berkelium-cpp/src/host/shared -I../berkelium-cpp/include -fexceptions -std=c++0x -DBERKELIUM_CPP_IMPL `pkg-config --cflags glib-2.0` `pkg-config --cflags gtk+-2.0` -Isrc/include -I../berkelium-cpp/include -I../chromium/src/third_party/skia/include/config -I../chromium/src -I../chromium/src/third_party/WebKit/Source/Platform/chromium -I../chromium/src/third_party/skia/include/core -D_DEBUG -DDEBUG -g -Wall -pthread -fno-exceptions -fno-strict-aliasing -Wno-unused-parameter -Wno-missing-field-initializers -fvisibility=hidden -pipe -fPIC -O0 -g -fno-rtti -fno-threadsafe-statics -fvisibility-inlines-hidden -MMD -MF $@.d.raw -c -o $@ $<
 
 run/berkelium: $(SOURCES:%.cpp=out/o/%.o)
 	test -d run || mkdir run
 	for i in chrome.pak chrome_100_percent.pak resources.pak locales nacl_helper_bootstrap nacl_helper nacl_irt_x86_64.nexe; do test -e run/$$i || ln -s ../out/Debug/$$i run ; done
-	`cat linux-link.txt | sed 's#-o out/Debug/chrome #-o run/berkelium $^ -L../build/out -lberkelium-cpp #' | sed 's#out/Debug/obj.target/chrome/chrome/app/chrome_main.o##'`
-
-.PHONY: run
-run: run/berkelium
-	./berkelium
+	`cat linux-link.txt | sed 's#-o out/Debug/chrome #-o run/berkelium $^ -L../build/out -lhost-shared -lberkelium-cpp #' | sed 's#out/Debug/obj.target/chrome/chrome/app/chrome_main.o##'`

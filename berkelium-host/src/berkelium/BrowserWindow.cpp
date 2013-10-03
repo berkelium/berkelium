@@ -1,4 +1,4 @@
-	// Copyright (c) 2012 The Berkelium Authors. All rights reserved.
+// Copyright (c) 2012 The Berkelium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,7 +99,7 @@ public:
 	BerkeliumBrowserWindow(Browser* browser) :
 		browser(browser),
 		ipc(Berkelium::BerkeliumHost::addWindow(browser)),
-		msg(ipc->getMessage()) {
+		msg(/*ipc->getMessage()*/) {
 		fprintf(stderr, "this: %p\n", this);
 		fprintf(stderr, "browser: %p\n", browser);
 		fprintf(stderr, "tab_strip_model: %p\n", browser->tab_strip_model());
@@ -132,7 +132,7 @@ public:
 
 	virtual void Close() {
 		browser->tab_strip_model()->CloseAllTabs();
-		Berkelium::closed.insert(browser);
+		//Berkelium::closed.insert(browser);
 	}
 
 	virtual void TabInsertedAt(content::WebContents* contents, int index, bool foreground) {

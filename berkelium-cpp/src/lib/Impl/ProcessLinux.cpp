@@ -8,12 +8,18 @@
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Process.hpp>
-#include <Berkelium/IPC/Channel.hpp>
-#include <Berkelium/IPC/ChannelGroup.hpp>
+#include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/PipeGroup.hpp>
 
 #include <sys/wait.h>
 #include <unistd.h>
 #include <sstream>
+
+#ifdef BERKELIUM_NO_HOST_REDIRECT
+#define redirect 0
+#else
+#define redirect 1
+#endif
 
 namespace Berkelium {
 
@@ -31,10 +37,10 @@ int exec(const std::vector<std::string>& args) {
 
 #define BUF_SIZE 1024
 
-using Berkelium::Ipc::ChannelCallback;
-using Berkelium::Ipc::ChannelCallbackRef;
+using Berkelium::Ipc::PipeCallback;
+using Berkelium::Ipc::PipeCallbackRef;
 
-class ConsoleRedirector : public ChannelCallback
+class ConsoleRedirector : public PipeCallback
 {
 private:
 	RuntimeRef runtime;
@@ -43,7 +49,7 @@ private:
 
 public:
 	ConsoleRedirector(RuntimeRef runtime, LogType type) :
-		Berkelium::Ipc::ChannelCallback(),
+		Berkelium::Ipc::PipeCallback(),
 		runtime(runtime),
 		type(type) {
 	}
@@ -51,13 +57,13 @@ public:
 	virtual ~ConsoleRedirector() {
 	}
 
-	virtual void onDataReady(Ipc::ChannelRef channel) {
-		int fd = getPipeFd(channel, true);
+	virtual void onDataReady(Ipc::PipeRef pipe) {
+		int fd = getPipeFd(pipe);
 
 		char buf[BUF_SIZE];
 
 		// read everything available into buffer
-		while(!channel->isEmpty()) {
+		while(!pipe->isEmpty()) {
 			int r = ::read(fd, &buf, BUF_SIZE);
 			if(r == 0) {
 				break;
@@ -84,6 +90,9 @@ public:
 			while(std::getline(is, line)) {
 				lines.push_back(line);
 			}
+			if(lines.empty()) {
+				return;
+			}
 			// store incomplete line
 			buffer = lines.back();
 			lines.pop_back();
@@ -101,8 +110,8 @@ public:
 
 class ProcessLinuxImpl : public Process {
 private:
-	ChannelCallbackRef out;
-	ChannelCallbackRef err;
+	PipeCallbackRef out;
+	PipeCallbackRef err;
 	pid_t pid;
 	int exit;
 
@@ -113,8 +122,8 @@ public:
 		err(new ConsoleRedirector(runtime, LogType::StdErr)),
 		pid(-1),
 		exit(-1) {
-		group->registerCallback(ipcout, out, true);
-		group->registerCallback(ipcerr, err, true);
+		group->registerCallback(pipeout, out, true);
+		group->registerCallback(pipeerr, err, true);
 	}
 
 	virtual ~ProcessLinuxImpl() {
@@ -157,8 +166,10 @@ public:
 			return false;
 		}
 		case 0: {
-			dup2(getPipeFd(ipcout, true), 1);
-			dup2(getPipeFd(ipcerr, true), 2);
+			if(redirect) {
+				dup2(getPipeFd(pipeout), 1);
+				dup2(getPipeFd(pipeerr), 2);
+			}
 			int ret = exec(args);
 			logger->systemError(("launch " + args[0]).c_str());
 			::exit(ret);
@@ -174,9 +185,6 @@ public:
 
 ProcessRef Process::create(RuntimeRef runtime, LoggerRef logger, const std::string& dir) {
 	return ProcessRef(new ProcessLinuxImpl(runtime, logger, dir));
-}
-
-Process::~Process() {
 }
 
 } // namespace impl

@@ -21,20 +21,15 @@ namespace impl {
 
 class Process {
 protected:
-	Ipc::ChannelGroupRef group;
+	std::string name;
+	Ipc::PipeGroupRef group;
 	Ipc::ChannelRef ipc;
-	Ipc::ChannelRef ipcout;
-	Ipc::ChannelRef ipcerr;
+	Ipc::PipeRef pipeout;
+	Ipc::PipeRef pipeerr;
 
 	const LoggerRef logger;
 
-	inline Process(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
-		group(getChannelGroup(runtime)),
-		ipc(Ipc::Channel::createChannel(group, logger, dir, true)),
-		ipcout(Ipc::Channel::createChannel(group, logger, dir, true)),
-		ipcerr(Ipc::Channel::createChannel(group, logger, dir, true)),
-		logger(logger) {
-	}
+	Process(RuntimeRef runtime, LoggerRef logger, const std::string& dir);
 
 public:
 	static ProcessRef create(RuntimeRef runtime, LoggerRef logger, const std::string& dir);
@@ -43,7 +38,7 @@ public:
 
 	virtual bool isRunning() = 0;
 
-	Ipc::ChannelRef getIpcChannel() {
+	inline Ipc::ChannelRef getIpcChannel() {
 		return ipc;
 	}
 

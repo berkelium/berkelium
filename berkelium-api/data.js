@@ -539,6 +539,109 @@ var source={
 "\t\tlogger.dispose();\n" +
 "\t}\n" +
 "}\n" +
+"","berkelium-java/src/test/java/org/berkelium/demo/demos/Demo3.java":
+"package org.berkelium.demo.demos;\n" +
+"\n" +
+"import org.berkelium.api.HostExecutable;\n" +
+"import org.berkelium.api.Instance;\n" +
+"import org.berkelium.api.Logger;\n" +
+"import org.berkelium.api.Profile;\n" +
+"import org.berkelium.api.Rect;\n" +
+"import org.berkelium.api.Runtime;\n" +
+"import org.berkelium.api.Tab;\n" +
+"import org.berkelium.api.TabDelegate;\n" +
+"import org.berkelium.api.Util;\n" +
+"import org.berkelium.api.Window;\n" +
+"\n" +
+"public class Demo3 {\n" +
+"\tprivate final static TabDelegate tabDelegate = new TabDelegate() {\n" +
+"\t\t@Override\n" +
+"\t\tpublic void onTitleChanged(Tab tab, String title) {\n" +
+"\t\t\tSystem.err.println(\"onTitleChanged \" + title);\n" +
+"\t\t}\n" +
+"\n" +
+"\t\t@Override\n" +
+"\t\tpublic void onPaintDone(Tab tab, Rect rect) {\n" +
+"\t\t\tSystem.err.println(\"onPaintDone\");\n" +
+"\t\t}\n" +
+"\n" +
+"\t\t@Override\n" +
+"\t\tpublic void onPaint(Tab tab) {\n" +
+"\t\t\tSystem.err.println(\"onPaint\");\n" +
+"\t\t}\n" +
+"\n" +
+"\t\t@Override\n" +
+"\t\tpublic void onClosed(Tab tab) {\n" +
+"\t\t\tSystem.err.println(\"onClosed\");\n" +
+"\t\t}\n" +
+"\n" +
+"\t\t@Override\n" +
+"\t\tpublic void onReady(Tab tab) {\n" +
+"\t\t\tSystem.err.println(\"onReady\");\n" +
+"\t\t}\n" +
+"\t};\n" +
+"\n" +
+"\tpublic static void main(String[] args) throws InterruptedException {\n" +
+"\t\tRuntime runtime = Util.createRuntimeWithLog();\n" +
+"\n" +
+"\t\tLogger logger = runtime.getLogger(Demo3.class.getName(), \"\");\n" +
+"\n" +
+"\t\tlogger.info(\"berkelium demo application...\");\n" +
+"\t\tHostExecutable host = runtime.forSystemInstalled();\n" +
+"\n" +
+"\t\tif(host == null) {\n" +
+"\t\t\tlogger.error(\"berkelium host executable not found!\");\n" +
+"\t\t\treturn;\n" +
+"\t\t}\n" +
+"\n" +
+"\t\tProfile profile = runtime.createTemporaryProfile();\n" +
+"\t\tlogger.info(\"starting berkelium browser...\");\n" +
+"\n" +
+"\t\tInstance instance = runtime.open(host, profile);\n" +
+"\t\tif(instance == null) {\n" +
+"\t\t\tlogger.info(\"berkelium browser can not be started!\");\n" +
+"\t\t\treturn;\n" +
+"\t\t}\n" +
+"\t\tlogger.info(\"berkelium browser is running!\");\n" +
+"\n" +
+"\t\tWindow win = instance.createWindow(false);\n" +
+"\t\tTab tab = win.createTab();\n" +
+"\n" +
+"\t\ttab.addTabDelegate(tabDelegate);\n" +
+"\n" +
+"\t\tlogger.info(\"waiting 10s...\");\n" +
+"\n" +
+"\t\tfor(int i = 0; i < 10000; i += 100) {\n" +
+"\t\t\truntime.update(100);\n" +
+"\t\t}\n" +
+"\n" +
+"\t\tlogger.info(\"shutting down browser...\");\n" +
+"\n" +
+"\t\tinstance.close();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose tab...\");\n" +
+"\t\ttab.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose window...\");\n" +
+"\t\twin.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose instance...\");\n" +
+"\t\tinstance.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose profile...\");\n" +
+"\t\tprofile.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose host...\");\n" +
+"\t\thost.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose runtime...\");\n" +
+"\t\truntime.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"disposed!\");\n" +
+"\n" +
+"\t\tlogger.dispose();\n" +
+"\t}\n" +
+"}\n" +
 "","berkelium-java/src/test/java/org/berkelium/demo/examples/Logger1.java":
 "// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
 "// Use of this source code is governed by a BSD-style license that can be\n" +

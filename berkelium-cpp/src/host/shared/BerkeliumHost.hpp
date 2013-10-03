@@ -13,25 +13,21 @@
 
 namespace Berkelium {
 
-/*
-class BerkeliumChromiumWindow;
-typedef std::shared_ptr<BerkeliumChromiumWindow> BerkeliumChromiumWindowRef;
-typedef std::weak_ptr<BerkeliumChromiumWindow> BerkeliumChromiumWindowWRef;
-
-class BerkeliumChromiumTab;
-typedef std::shared_ptr<BerkeliumChromiumTab> BerkeliumChromiumTabRef;
-typedef std::weak_ptr<BerkeliumChromiumTab> BerkeliumChromiumTabWRef;
-*/
-
 class BerkeliumHost {
 public:
-	static bool init(const std::string&, const std::string&);
+	static ProfileRef init(const std::string& dir, const std::string& id);
+
+	static ProfileRef initDebug(const std::string& file);
 
 	static void lasyInit();
 
-	static void destory();
-
 	static bool isActive();
+
+	static bool isDone();
+
+	static void setDone();
+
+	static bool update(int32_t ms);
 
 	//static void CloseWindow();
 

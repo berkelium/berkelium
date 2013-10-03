@@ -8,8 +8,11 @@
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
+#include <Berkelium/IPC/PipeGroup.hpp>
+#include <Berkelium/IPC/Pipe.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>
+#include <Berkelium/Impl/BerkeliumCallback.hpp>
 
 namespace Berkelium {
 
@@ -21,7 +24,7 @@ Tab::~Tab() {
 
 namespace impl {
 
-class TabImpl : public Tab {
+class TabImpl : public Tab, public InternalUpdate {
 BERKELIUM_IMPL_CLASS(Tab)
 
 private:
@@ -29,6 +32,7 @@ private:
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
 	Ipc::MessageRef message;
+	Berkelium::Ipc::PipeCallbackRef cb;
 	WindowRef parent;
 
 public:
@@ -38,6 +42,7 @@ public:
 		send(ipc),
 		recv(ipc->getReverseChannel()),
 		message(ipc->getMessage()),
+		cb(),
 		parent(parent) {
 	}
 
@@ -46,6 +51,7 @@ public:
 	}
 
 	virtual void internalUpdate() {
+		fprintf(stderr, "tab internalUpdate\n");
 		if(!recv->isEmpty()) {
 			recv->recv(message);
 			if(message->length() == 0) {
@@ -66,6 +72,8 @@ public:
 					}
 				}
 			}
+		} else {
+			fprintf(stderr, "tab error?\n");
 		}
 	}
 
@@ -103,6 +111,8 @@ public:
 		TabImpl* impl = new TabImpl(window, ipc);
 		TabRef ret(impl);
 		impl->self = ret;
+		impl->cb.reset(new BerkeliumCallback<Tab, TabImpl>(ret));
+		getPipeGroup(impl->runtime)->registerCallback(impl->recv, impl->cb, false);
 		impl->manager->registerTab(ret);
 		return ret;
 	}

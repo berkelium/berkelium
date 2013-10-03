@@ -333,9 +333,6 @@
 		<entry name="sync">
 			<short>Wait until all pending Java Script Events are handled.</short>
 		</entry>
-		<entry name="getTabDelegate" ret="TabDelegate">
-			<short>All methods called on this tab delegate are forwared to all tab delegates of this tab.</short>
-		</entry>
 		<entry name="addTabDelegate">
 			<arg type="TabDelegate" name="delegate"/>
 			<short>Add a TabDelegate to this tab.</short>
@@ -375,6 +372,9 @@
 		<entry name="onPaintDone">
 			<arg type="Tab" name="tab"/>
 			<arg type="Rect" name="rect"/>
+		</entry>
+		<entry name="onReady">
+			<arg type="Tab" name="tab"/>
 		</entry>
 	</group>
 </api>

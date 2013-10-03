@@ -16,12 +16,22 @@ namespace Berkelium {
 
 namespace Ipc {
 
+class PipeCallback
+{
+public:
+	PipeCallback();
+
+	virtual ~PipeCallback() = 0;
+
+	virtual void onDataReady(PipeRef pipe) = 0;
+};
+
 class Pipe {
 protected:
 	Pipe();
 
 public:
-	static PipeRef getPipe(LoggerRef logger, const std::string& path);
+	static PipeRef getPipe(bool read, PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias);
 
 	virtual ~Pipe() = 0;
 
@@ -34,7 +44,9 @@ public:
 	// Receives the next message.
 	virtual void recv(MessageRef msg) = 0;
 
-	virtual const std::string getPath() = 0;
+	virtual const std::string getName() = 0;
+
+	virtual const std::string getAlias() = 0;
 };
 
 } // namespace Ipc

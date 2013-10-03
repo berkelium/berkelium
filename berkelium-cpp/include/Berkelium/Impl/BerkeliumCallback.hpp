@@ -25,20 +25,20 @@ public:
 };
 
 template<class T, class I>
-class BerkeliumCallback : public Berkelium::Ipc::ChannelCallback {
+class BerkeliumCallback : public Berkelium::Ipc::PipeCallback {
 private:
 	std::weak_ptr<T> wref;
 
 public:
 	BerkeliumCallback(std::weak_ptr<T> wref) :
-		Berkelium::Ipc::ChannelCallback(),
+		Berkelium::Ipc::PipeCallback(),
 		wref(wref) {
 	}
 
 	virtual ~BerkeliumCallback() {
 	}
 
-	virtual void onDataReady(Berkelium::Ipc::ChannelRef channel) {
+	virtual void onDataReady(Berkelium::Ipc::PipeRef pipe) {
 		std::shared_ptr<T> ref(wref.lock());
 		if(ref) {
 			I* impl = (I*)ref.get();

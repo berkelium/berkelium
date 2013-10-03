@@ -1889,23 +1889,6 @@ extern "C" void BK_Tab_sync(BK_Env* env, BK_Tab self)
 	_this->sync();
 }
 
-extern "C" BK_TabDelegate BK_Tab_getTabDelegate(BK_Env* env, BK_Tab self)
-{
-	BERKELIUM_C_TRACE();
-	if(env == NULL) {
-		env = &simpleBerkeliumEnv::env;
-	}
-
-	Berkelium::TabRef _this(mapInTabRef(env, self));
-
-	if(!_this) {
-		bk_error("error: _this in '%s' %p not found!", __FUNCTION__, self);
-		return NULL;
-	}
-
-	return mapOutTabDelegateRef(env, _this->getTabDelegate());
-}
-
 extern "C" void BK_Tab_addTabDelegate(BK_Env* env, BK_Tab self, BK_TabDelegate delegate)
 {
 	BERKELIUM_C_TRACE();

@@ -10,6 +10,7 @@ ENDIF()
 ## Projects
 ## --------
 ADD_SUBDIRECTORY(src/lib build/berkelium-cpp/lib)
-ADD_SUBDIRECTORY(src/fake build/berkelium-cpp/fake)
+ADD_SUBDIRECTORY(src/host/shared build/berkelium-cpp/host/shared)
+ADD_SUBDIRECTORY(src/host/fake build/berkelium-cpp/host/fake)
 ADD_SUBDIRECTORY(src/test build/berkelium-cpp/test)
 ADD_SUBDIRECTORY(src/demo build/berkelium-cpp/demo)

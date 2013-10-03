@@ -53,7 +53,7 @@ public:
 	session_storage_namespace(session_storage_namespace),
 	started(false),
 	ipc(BerkeliumHost::addTab(this)),
-	msg(ipc->getMessage())
+	msg(/*ipc->getMessage()*/)
 	{
 		printf("new MemoryRenderViewHost!\n");
 	}
@@ -119,6 +119,7 @@ private: // BerkeliumTab impl
 	}
 
 	virtual void Update() {
+		/*
 		if(!ipc->isEmpty()) {
 			ipc->recv(msg);
 			std::string str = msg->get_str();
@@ -129,20 +130,26 @@ private: // BerkeliumTab impl
 				fprintf(stderr, "*** Update(%s)\n", str.c_str());
 			}
 		}
+		*/
+		fprintf(stderr, "*** Update\n");
 	}
 
 	virtual void OnReady() {
+		/*
 		msg->reset();
 		msg->add_str("OnReady");
 		ipc->send(msg);
+		*/
 		fprintf(stderr, "*** OnReady()\n");
 	}
 
 	virtual void OnLoading(bool start) {
+		/*
 		msg->reset();
 		msg->add_str("OnLoading");
 		msg->add_8(start);
 		ipc->send(msg);
+		*/
 		fprintf(stderr, "*** OnLoading(%s)\n", start ? "true" : "false");
 	}
 };
@@ -160,8 +167,14 @@ std::vector<std::string> split(std::string l, char delim) {
 }
 
 bool doRegister() {
+	const std::string debug("berkelium-debug");
 	const std::string bs("berkelium");
 	const std::string ds("user-data-dir");
+
+	if(CommandLine::ForCurrentProcess()->HasSwitch(debug)) {
+		return !!BerkeliumHost::initDebug(CommandLine::ForCurrentProcess()->GetSwitchValueASCII(debug));
+	}
+
 	if(!CommandLine::ForCurrentProcess()->HasSwitch(bs)) return false;
 	if(!CommandLine::ForCurrentProcess()->HasSwitch(ds)) return false;
 	std::string id = CommandLine::ForCurrentProcess()->GetSwitchValueASCII(bs);
@@ -169,7 +182,7 @@ bool doRegister() {
 	if(id.empty() || dir.empty()) {
 		return false;
 	}
-	return BerkeliumHost::init(dir, id);
+	return !!BerkeliumHost::init(dir, id);
 }
 
 MemoryRenderViewHostFactory::MemoryRenderViewHostFactory()
@@ -182,7 +195,6 @@ MemoryRenderViewHostFactory::MemoryRenderViewHostFactory()
 
 MemoryRenderViewHostFactory::~MemoryRenderViewHostFactory() {
 	if(registered) {
-		BerkeliumHost::destory();
 		RenderViewHostFactory::UnregisterFactory();
 	}
 }

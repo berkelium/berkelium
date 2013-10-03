@@ -34,9 +34,6 @@ public:
 	// Wait until all pending Java Script Events are handled.
 	virtual void sync() = 0;
 
-	// All methods called on this tab delegate are forwared to all tab delegates of this tab.
-	virtual TabDelegateRef getTabDelegate() = 0;
-
 	// Add a TabDelegate to this tab.
 	virtual void addTabDelegate(TabDelegateRef delegate) = 0;
 

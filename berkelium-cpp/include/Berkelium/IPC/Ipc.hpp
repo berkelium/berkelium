@@ -16,17 +16,17 @@ namespace Berkelium {
 
 namespace Ipc {
 
-class ChannelCallback;
-typedef std::shared_ptr<ChannelCallback> ChannelCallbackRef;
-typedef std::weak_ptr<ChannelCallback> ChannelCallbackWRef;
+class PipeCallback;
+typedef std::shared_ptr<PipeCallback> PipeCallbackRef;
+typedef std::weak_ptr<PipeCallback> PipeCallbackWRef;
 
 class Channel;
 typedef std::shared_ptr<Channel> ChannelRef;
 typedef std::weak_ptr<Channel> ChannelWRef;
 
-class ChannelGroup;
-typedef std::shared_ptr<ChannelGroup> ChannelGroupRef;
-typedef std::weak_ptr<ChannelGroup> ChannelGroupWRef;
+class PipeGroup;
+typedef std::shared_ptr<PipeGroup> PipeGroupRef;
+typedef std::weak_ptr<PipeGroup> PipeGroupWRef;
 
 class Message;
 typedef std::shared_ptr<Message> MessageRef;

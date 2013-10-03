@@ -6,7 +6,7 @@
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
 #include <Berkelium/IPC/Message.hpp>
-#include <Berkelium/IPC/ChannelGroup.hpp>
+#include <Berkelium/IPC/PipeGroup.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
 
@@ -20,10 +20,11 @@ namespace impl {
 
 class ChannelImpl : public Channel {
 private:
-	ChannelGroupRef group;
+	PipeGroupRef group;
 	LoggerRef logger;
 	const std::string dir;
 	const std::string name;
+	const std::string alias;
 	const bool server;
 	const bool reverse;
 	ChannelRef reverseRef;
@@ -41,23 +42,23 @@ private:
 	}
 
 public:
-	ChannelImpl(ChannelGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const bool server, const bool reverse) :
+	ChannelImpl(PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, const bool server, const bool reverse) :
 		Channel(),
 		group(group),
 		logger(logger),
 		dir(dir),
 		name(name),
+		alias(alias),
 		server(server),
 		reverse(reverse),
 		reverseRef(),
 		self(),
 		message(Message::create(logger)),
-		pin(Pipe::getPipe(logger, Filesystem::append(dir, name + getExt(server, reverse)))),
-		pout(Pipe::getPipe(logger, Filesystem::append(dir, name + getExt(!server, reverse)))) {
+		pin(Pipe::getPipe(true, group, logger, dir, name + getExt(server, reverse), alias)),
+		pout(Pipe::getPipe(false, group, logger, dir, name + getExt(!server, reverse), alias)) {
 	}
 
 	virtual ~ChannelImpl() {
-		group->unregisterChannel(this);
 	}
 
 	virtual bool isEmpty() {
@@ -73,15 +74,19 @@ public:
 	}
 
 	virtual void recv(Ipc::MessageRef msg) {
-		group->recv(self.lock(), pin, msg);
+		group->recv(pin, msg, -1);
 	}
 
-	virtual ChannelRef createSubChannel() {
-		return Channel::createChannel(group, logger, dir, true);
+	virtual bool recv(Ipc::MessageRef msg, int32_t timeout) {
+		return group->recv(pin, msg, timeout);
 	}
 
-	virtual ChannelRef getSubChannel(const std::string& name) {
-		return Channel::getChannel(group, logger, dir, name, false);
+	virtual ChannelRef createSubChannel(const std::string& alias) {
+		return Channel::createChannel(group, logger, dir, alias, true);
+	}
+
+	virtual ChannelRef getSubChannel(const std::string& name, const std::string& alias) {
+		return Channel::getChannel(group, logger, dir, name, alias, false);
 	}
 
 	virtual ChannelRef getReverseChannel() {
@@ -91,11 +96,23 @@ public:
 		return reverseWRef.lock();
 	}
 
+	virtual bool isReverseChannel() {
+		return reverse;
+	}
+
+	virtual std::string toString() {
+		return name + getExt(server, reverse) + " (" + alias + ")";
+	}
+
 	virtual std::string getName() {
 		return name;
 	}
 
-	virtual ChannelGroupRef getGroup() {
+	virtual std::string getAlias() {
+		return alias;
+	}
+
+	virtual PipeGroupRef getGroup() {
 		return group;
 	}
 
@@ -103,29 +120,21 @@ public:
 		return self.lock();
 	}
 
-	static ChannelRef newChannel(ChannelGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const bool server) {
-		ChannelImpl* impl1 = new ChannelImpl(group, logger, dir, name, server, false);
-		ChannelImpl* impl2 = new ChannelImpl(group, logger, dir, name, server, true);
+	static ChannelRef newChannel(PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, const bool server) {
+		ChannelImpl* impl1 = new ChannelImpl(group, logger, dir, name, alias, server, false);
+		ChannelImpl* impl2 = new ChannelImpl(group, logger, dir, name, alias, server, true);
 		ChannelRef ret1(impl1);
 		ChannelRef ret2(impl2);
 		impl1->self = ret1;
 		impl2->self = ret2;
 		impl1->reverseRef = ret2;
 		impl2->reverseWRef = ret1;
-		group->registerChannel(ret1);
-		group->registerChannel(ret2);
 		return ret1;
 	}
 
-#ifdef LINUX
-	int getPipeFd(bool in) {
-		if(in) {
-			return Berkelium::impl::getPipeFd(pin);
-		} else {
-			return Berkelium::impl::getPipeFd(pout);
-		}
+	Ipc::PipeRef getInputPipe() {
+		return pin;
 	}
-#endif // LINUX
 };
 
 } // namespace impl
@@ -136,37 +145,26 @@ Channel::Channel() {
 Channel::~Channel() {
 }
 
-ChannelCallback::ChannelCallback() {
+ChannelRef Channel::createChannel(PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& alias, const bool server) {
+	return getChannel(group, logger, dir, Util::randomId(), alias, server);
 }
 
-ChannelCallback::~ChannelCallback() {
-}
-
-ChannelRef Channel::createChannel(ChannelGroupRef group, LoggerRef logger, const std::string& dir, const bool server) {
-	return getChannel(group, logger, dir, Util::randomId(), server);
-}
-
-ChannelRef Channel::getChannel(ChannelGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const bool server) {
-	return impl::ChannelImpl::newChannel(group, logger, dir, name, server);
+ChannelRef Channel::getChannel(PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, const bool server) {
+	return impl::ChannelImpl::newChannel(group, logger, dir, name, alias, server);
 }
 
 } // namespace Ipc
 
-#ifdef LINUX
-
 namespace impl {
 
-int getPipeFd(Ipc::ChannelRef channel, bool in)
+Ipc::PipeRef getInputPipe(Ipc::ChannelRef channel)
 {
-       if(!channel) {
-               Berkelium::impl::bk_error("getPipeFd: channel is NULL!");
-               return 0;
-       }
-       return ((Ipc::impl::ChannelImpl*)channel.get())->getPipeFd(in);
+	if(!channel) {
+		return Ipc::PipeRef();
+	}
+	return ((Berkelium::Ipc::impl::ChannelImpl*)channel.get())->getInputPipe();
 }
 
 } // namespace impl
-
-#endif // LINUX
 
 } // namespace Berkelium

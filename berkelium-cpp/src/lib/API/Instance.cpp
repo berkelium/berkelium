@@ -11,6 +11,8 @@
 #include <Berkelium/API/Window.hpp>
 #include <Berkelium/IPC/Channel.hpp>
 #include <Berkelium/IPC/Message.hpp>
+#include <Berkelium/IPC/PipeGroup.hpp>
+#include <Berkelium/IPC/Pipe.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>
 #include <Berkelium/Impl/BerkeliumCallback.hpp>
@@ -45,7 +47,7 @@ private:
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
 	Ipc::MessageRef message;
-	Berkelium::Ipc::ChannelCallbackRef cb;
+	Berkelium::Ipc::PipeCallbackRef cb;
 	ProcessRef process;
 	WindowWRefSet windows;
 	HostDelegateWRefSet hosts;
@@ -89,7 +91,8 @@ public:
 		//ipc->recv(message); //ACK
 	}
 
-	void internalUpdate() {
+	virtual void internalUpdate() {
+		fprintf(stderr, "instance internalUpdate\n");
 		if(!recv->isEmpty()) {
 			recv->recv(message);
 			if(message->length() == 0) {
@@ -102,6 +105,8 @@ public:
 					}
 				}
 			}
+		} else {
+			fprintf(stderr, "instance error?\n");
 		}
 	}
 
@@ -154,7 +159,7 @@ public:
 
 		std::string id = message->get_str();
 		logger->debug() << "created window '" << id << "'!" << std::endl;
-		Ipc::ChannelRef channel = send->getSubChannel(id);
+		Ipc::ChannelRef channel = send->getSubChannel(id, "window");
 
 		WindowRef ret(newWindow(self.lock(), channel, incognito));
 		windows.insert(ret);
@@ -167,6 +172,7 @@ public:
 		InstanceRef ret(impl);
 		impl->setSelf(ret);
 		impl->cb.reset(new BerkeliumCallback<Instance, InstanceImpl>(ret));
+		getPipeGroup(impl->runtime)->registerCallback(impl->recv, impl->cb, false);
 		impl->getManager()->registerInstance(ret);
 		//impl->createWindow(false);
 		return ret;

@@ -22,4 +22,6 @@ public interface TabDelegate {
 	void onPaint(Tab tab);
 
 	void onPaintDone(Tab tab, Rect rect);
+
+	void onReady(Tab tab);
 }
