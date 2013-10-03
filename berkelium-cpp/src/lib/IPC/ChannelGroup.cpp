@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <Berkelium/API/Util.hpp>
 #include <Berkelium/IPC/ChannelGroup.hpp>
 #include <Berkelium/IPC/Ipc.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
@@ -72,8 +73,17 @@ public:
 	}
 
 	virtual void update(int32_t timeout) {
+		int64_t end = Util::currentTimeMillis() + timeout;
 		//Berkelium::impl::bk_error("update %d", timeout);
-		recv(ChannelRef(), timeout);
+		while(true) {
+			int64_t now = Util::currentTimeMillis();
+			int64_t left = end - now;
+			//Berkelium::impl::bk_error("update now %ld end %ld left %ld", now, end, left);
+			if(left < 1) {
+				return;
+			}
+			recv(ChannelRef(), left);
+		}
 	}
 
 	virtual void recv(ChannelRef channel, PipeRef pipe, MessageRef msg) {
