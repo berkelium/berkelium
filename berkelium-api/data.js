@@ -412,7 +412,6 @@ var source={
 "","berkelium-java/src/test/java/org/berkelium/demo/demos/Demo1.java":
 "package org.berkelium.demo.demos;\n" +
 "\n" +
-"import org.berkelium.api.BerkeliumFactory;\n" +
 "import org.berkelium.api.HostExecutable;\n" +
 "import org.berkelium.api.HostVersion;\n" +
 "import org.berkelium.api.Runtime;\n" +
@@ -435,9 +434,9 @@ var source={
 "\t}\n" +
 "\n" +
 "\tpublic static void main(String[] args) {\n" +
-"\t\tRuntime runtime = BerkeliumFactory.getInstance().createRuntime();\n" +
+"\t\tRuntime runtime = Util.createRuntimeWithLog();\n" +
 "\n" +
-"\t\tLogger logger = Util.createRootLogger(runtime);\n" +
+"\t\tLogger logger = runtime.getLogger(Demo1.class.getName(), \"\");\n" +
 "\n" +
 "\t\tlogger.info(\"berkelium demo application...\");\n" +
 "\t\tHostExecutable host = runtime.forSystemInstalled();\n" +
@@ -453,6 +452,8 @@ var source={
 "\t\tdumpProfile(logger, \"Chromium\", runtime.getChromiumProfile());\n" +
 "\t\tdumpProfile(logger, \"Berkelium\", runtime.forProfile(\"berkelium\"));\n" +
 "\t\truntime.dispose();\n" +
+"\n" +
+"\t\tlogger.dispose();\n" +
 "\t}\n" +
 "}\n" +
 "","berkelium-java/src/test/java/org/berkelium/demo/demos/Demo2.java":
@@ -468,7 +469,6 @@ var source={
 "import org.berkelium.api.Logger;\n" +
 "import org.berkelium.api.Profile;\n" +
 "import org.berkelium.api.Tab;\n" +
-"import org.berkelium.api.Util;\n" +
 "import org.berkelium.api.Window;\n" +
 "\n" +
 "public class Demo2 {\n" +
