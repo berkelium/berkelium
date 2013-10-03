@@ -98,6 +98,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
 	BERKELIUM_GET_METHODID(LogDelegate, log);
 
 	for(int i = 0; i < BK_Env_Enum_MAX; i++) {
+		if(BK_Java_Class_Names[i] == NULL) {
+			continue;
+		}
 		c = env->FindClass(BK_Java_Class_Names[i]);
 		if(c == NULL) {
 			return JNI_ERR;
@@ -195,6 +198,9 @@ bk_ext_obj Berkelium_Java_MapNew(BK_Env_Enum type, bk_bk_obj bkNativeId, bk_ext_
 	//fprintf(stderr, "Berkelium_Java_MapNew\n");
 	JNIEnv* env = (JNIEnv*)data;
 	if(type < 0 || type >= BK_Env_Enum_MAX) {
+		return NULL;
+	}
+	if(BK_Java_Classes[type] == NULL) {
 		return NULL;
 	}
 

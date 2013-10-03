@@ -38,7 +38,7 @@
 </xsl:template>
 
 <xsl:template name="java-impl">
-	<xsl:for-each select="/api/group[@type!='enum']">
+	<xsl:for-each select="/api/group[@type!='enum' and not(@delegate='true')]">
 		<xsl:value-of select="@name"/>
 		<xsl:text>
 </xsl:text>
@@ -46,7 +46,7 @@
 </xsl:template>
 
 <xsl:template name="jni">
-	<xsl:for-each select="/api/group[@type!='enum']">
+	<xsl:for-each select="/api/group[@type!='enum' and not(@delegate='true')]">
 		<xsl:text>org/berkelium/impl/</xsl:text>
 		<xsl:value-of select="@name"/>
 		<xsl:text>Impl.java

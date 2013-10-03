@@ -17,9 +17,7 @@
 
 	<xsl:call-template name="comment-generated"/>
 
-	<xsl:variable name="all" select="/api/group[@type!='enum']"/>
-
-	<xsl:for-each select="$all">
+	<xsl:for-each select="/api/group[@type!='enum' and not(@delegate='true')]">
 		<xsl:text>#include "org_berkelium_impl_</xsl:text>
 
 		<xsl:value-of select="@name"/>
@@ -35,14 +33,22 @@
 const char* BK_Java_Class_Names[] = {
 </xsl:text>
 
-	<xsl:for-each select="$all">
-		<xsl:text>      "org/berkelium/impl/</xsl:text>
-
-		<xsl:value-of select="@name"/>
-
-		<xsl:text>Impl"</xsl:text>
-		<xsl:text>,
+	<xsl:for-each select="/api/group[@type!='enum']">
+		<xsl:choose>
+			<xsl:when test="@delegate='true'">
+				<xsl:text>	NULL,
 </xsl:text>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:text>      "org/berkelium/impl/</xsl:text>
+
+				<xsl:value-of select="@name"/>
+
+				<xsl:text>Impl"</xsl:text>
+				<xsl:text>,
+</xsl:text>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:for-each>
 
 	<xsl:text>};

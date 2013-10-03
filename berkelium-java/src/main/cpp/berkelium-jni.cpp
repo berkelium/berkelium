@@ -16,13 +16,9 @@
 #include "org_berkelium_impl_HostExecutableImpl.h"
 #include "org_berkelium_impl_ProfileImpl.h"
 #include "org_berkelium_impl_LoggerImpl.h"
-#include "org_berkelium_impl_LogDelegateImpl.h"
-#include "org_berkelium_impl_HostDelegateImpl.h"
 #include "org_berkelium_impl_InstanceImpl.h"
 #include "org_berkelium_impl_WindowImpl.h"
-#include "org_berkelium_impl_WindowDelegateImpl.h"
 #include "org_berkelium_impl_TabImpl.h"
-#include "org_berkelium_impl_TabDelegateImpl.h"
 #include "org_berkelium_impl_BerkeliumJavaImpl.h"
 
 #include "berkelium-jni.hpp"
@@ -34,13 +30,13 @@ const char* BK_Java_Class_Names[] = {
       "org/berkelium/impl/HostExecutableImpl",
       "org/berkelium/impl/ProfileImpl",
       "org/berkelium/impl/LoggerImpl",
-      "org/berkelium/impl/LogDelegateImpl",
-      "org/berkelium/impl/HostDelegateImpl",
+	NULL,
+	NULL,
       "org/berkelium/impl/InstanceImpl",
       "org/berkelium/impl/WindowImpl",
-      "org/berkelium/impl/WindowDelegateImpl",
+	NULL,
       "org/berkelium/impl/TabImpl",
-      "org/berkelium/impl/TabDelegateImpl",
+	NULL,
 };
 
 // =========================================
