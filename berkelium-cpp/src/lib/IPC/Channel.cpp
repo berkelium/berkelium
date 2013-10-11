@@ -61,10 +61,6 @@ public:
 	virtual ~ChannelImpl() {
 	}
 
-	virtual bool isEmpty() {
-		return pin->isEmpty();
-	}
-
 	virtual Ipc::MessageRef getMessage() {
 		return message;
 	}

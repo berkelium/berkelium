@@ -98,21 +98,16 @@ public:
 	}
 
 	virtual void internalUpdate() {
-		fprintf(stderr, "instance internalUpdate\n");
-		if(!recv->isEmpty()) {
-			recv->recv(message);
-			if(message->length() == 0) {
-				// only an ack..
-			} else {
-				switch(Ipc::CommandId cmd = message->get_cmd()) {
-					default: {
-						logger->error() << "Instance: received unknown command '" << cmd << "'" << std::endl;
-						break;
-					}
+		recv->recv(message);
+		if(message->length() == 0) {
+			// only an ack..
+		} else {
+			switch(Ipc::CommandId cmd = message->get_cmd()) {
+				default: {
+					logger->error() << "Instance: received unknown command '" << cmd << "'" << std::endl;
+					break;
 				}
 			}
-		} else {
-			fprintf(stderr, "instance error?\n");
 		}
 	}
 

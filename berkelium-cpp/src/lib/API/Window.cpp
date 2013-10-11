@@ -56,31 +56,26 @@ public:
 	}
 
 	virtual void internalUpdate() {
-		fprintf(stderr, "window internalUpdate\n");
-		if(!recv->isEmpty()) {
-			recv->recv(message);
-			if(message->length() == 0) {
-				// only an ack..
-			} else {
-				switch(Ipc::CommandId cmd = message->get_cmd()) {
-					default: {
-						logger->error() << "Window: received unknown command '" << cmd << "'" << std::endl;
-						break;
-					}
-					/*
-					case Ipc::CommandId::onReady: {
-						msg->reset();
-						msg->add_cmd(Ipc::CommandId::navigate);
-						msg->add_str("http://heise.de/");
-						Log::debug() << "sending navigate to heise.de!" << std::endl;
-						send->send(msg);
-						break;
-					}
-					*/
-				}
-			}
+		recv->recv(message);
+		if(message->length() == 0) {
+			// only an ack..
 		} else {
-			fprintf(stderr, "window error?\n");
+			switch(Ipc::CommandId cmd = message->get_cmd()) {
+				default: {
+					logger->error() << "Window: received unknown command '" << cmd << "'" << std::endl;
+					break;
+				}
+				/*
+				case Ipc::CommandId::onReady: {
+					msg->reset();
+					msg->add_cmd(Ipc::CommandId::navigate);
+					msg->add_str("http://heise.de/");
+					Log::debug() << "sending navigate to heise.de!" << std::endl;
+					send->send(msg);
+					break;
+				}
+				*/
+			}
 		}
 	}
 

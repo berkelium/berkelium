@@ -51,29 +51,24 @@ public:
 	}
 
 	virtual void internalUpdate() {
-		fprintf(stderr, "tab internalUpdate\n");
-		if(!recv->isEmpty()) {
-			recv->recv(message);
-			if(message->length() == 0) {
-				// only an ack..
-			} else {
-				switch(Ipc::CommandId cmd = message->get_cmd()) {
-					default: {
-						logger->error() << "Tab: received unknown command '" << cmd << "'" << std::endl;
-						break;
-					}
-					case Ipc::CommandId::onReady: {
-						message->reset();
-						message->add_cmd(Ipc::CommandId::navigate);
-						message->add_str("http://heise.de/");
-						logger->debug() << "sending navigate to heise.de!" << std::endl;
-						send->send(message);
-						break;
-					}
+		recv->recv(message);
+		if(message->length() == 0) {
+			// only an ack..
+		} else {
+			switch(Ipc::CommandId cmd = message->get_cmd()) {
+				default: {
+					logger->error() << "Tab: received unknown command '" << cmd << "'" << std::endl;
+					break;
+				}
+				case Ipc::CommandId::onReady: {
+					message->reset();
+					message->add_cmd(Ipc::CommandId::navigate);
+					message->add_str("http://heise.de/");
+					logger->debug() << "sending navigate to heise.de!" << std::endl;
+					send->send(message);
+					break;
 				}
 			}
-		} else {
-			fprintf(stderr, "tab error?\n");
 		}
 	}
 
