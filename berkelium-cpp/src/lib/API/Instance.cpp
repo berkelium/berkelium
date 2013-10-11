@@ -73,10 +73,16 @@ public:
 		close();
 		if(profile->isInUse()) {
 			logger->debug() << "closing instance: waiting for profile..." << std::endl;
-			while(profile->isInUse()) {
+			int timeout = 20000;
+			while(profile->isInUse() && timeout > 0) {
 				runtime->update(100);
+				timeout-=100;
 			}
-			logger->debug() << "profile closed!" << std::endl;
+			if(timeout < 0) {
+				logger->error() << "profile not closed!" << std::endl;
+			} else {
+				logger->debug() << "profile closed!" << std::endl;
+			}
 		}
 	}
 
