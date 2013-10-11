@@ -42,7 +42,7 @@ public:
 	virtual void send(MessageRef msg) = 0;
 
 	// Receives the next message.
-	virtual void recv(MessageRef msg) = 0;
+	virtual MessageRef recv() = 0;
 
 	virtual const std::string getName() = 0;
 

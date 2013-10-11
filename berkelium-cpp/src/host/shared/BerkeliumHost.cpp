@@ -7,17 +7,6 @@
 #include "BerkeliumHostWindow.hpp"
 #include "BerkeliumHostDelegate.hpp"
 
-/*
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/browser_list_observer.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/browser_thread.h"
-#include "base/message_loop.h"
-*/
-
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -31,6 +20,7 @@
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/IPC/Channel.hpp>
 #include <Berkelium/IPC/PipeGroup.hpp>
+#include <Berkelium/IPC/ChannelGroup.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
@@ -44,6 +34,8 @@ namespace Berkelium {
 using Ipc::CommandId;
 using Ipc::Channel;
 using Ipc::ChannelRef;
+using Ipc::ChannelGroup;
+using Ipc::ChannelGroupRef;
 using Ipc::PipeGroup;
 using Ipc::PipeGroupRef;
 using Ipc::Message;
@@ -53,10 +45,10 @@ bool berkeliumDone = false;
 BerkeliumHostInstanceRef berkeliumHostInstance;
 
 PipeGroupRef group(PipeGroup::create());
+ChannelGroupRef channels;
 
 LoggerRef logger = Berkelium::Util::createRootLogger(NULL);
 ChannelRef ipc;
-MessageRef msg;
 
 int initialised = 0;
 
@@ -140,10 +132,11 @@ bool BerkeliumHost::update(int32_t timeout) {
 
 	if(!started_send) {
 		// send berkelium ipc startup message
+		MessageRef msg(Message::create(logger));
 		started_send = true;
 		msg->add_str("berkelium");
 		ipc->send(msg);
-		ipc->recv(msg);
+		msg = ipc->recv();
 		logger->info("berkelium host is up and running!");
 	}
 
@@ -213,9 +206,9 @@ ProfileRef BerkeliumHost::init(const std::string& dir, const std::string& name) 
 	initialised = 1;
 	Berkelium::impl::enableBerkeliumHostMode();
 	BerkeliumHostDelegate::init();
-	ipc = Channel::getChannel(group, logger, dir, name, "berkelium-host-ipc", false);
-	msg = ipc->getMessage();
-	berkeliumHostInstance = BerkeliumHostInstance::createBerkeliumHostInstance(logger, group, ipc);
+	channels = ChannelGroup::createGroup(logger, dir, name, "host", group);
+	ipc = channels->getChannel(0, "berkelium-host-ipc");
+	berkeliumHostInstance = BerkeliumHostInstance::createBerkeliumHostInstance(logger, ipc);
 
 	RuntimeRef runtime(BerkeliumFactory::createRuntime());
 	ProfileRef profile(runtime->forProfilePath(dir));

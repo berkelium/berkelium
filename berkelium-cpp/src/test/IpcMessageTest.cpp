@@ -21,6 +21,23 @@ TEST_F(IpcMessageTest, create) {
 	ASSERT_NOT_NULL(Message::create(logger));
 }
 
+/*
+inline void dump(char* data, size_t size) {
+	std::stringstream str;
+	str << "dump(" << size << "): ";
+	str << std::hex;
+	for(size_t i = 0; i < size; i++) {
+		str << (int)(data[i] & 0xFF);
+		str << ' ';
+	}
+	str << ' ';
+	for(size_t i = 0; i < size; i++) {
+		str << (char)(data[i] >= 32 ? data[i] : '.');
+	}
+	fprintf(stderr, "%s\n", str.str().c_str());
+}
+*/
+
 #define TEST_LR(l, r) ASSERT_EQ((size_t)l, m->length()); ASSERT_EQ((size_t)r, m->remaining())
 
 TEST_F(IpcMessageTest, test8) {
@@ -125,17 +142,42 @@ TEST_F(IpcMessageTest, test_setup) {
 	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
 
-	m->setup(6);
-	char data[] = {0, 4, 't', 'e', 's', 't'};
-	::memcpy(m->data(), data, 6);
+	char data[] = {0, 0, 0, 0,/* ChannelId */
+			0, 4, /* String Length */
+			't', 'e', 's', 't'};
+	const size_t s(sizeof(data) - sizeof(int32_t));
+	m->setup(s);
+	::memcpy(m->data(), data, s + sizeof(int32_t));
 
-	TEST_LR(6, 6);
+	TEST_LR(s, s);
 	std::string str = m->get_str();
-	TEST_LR(6, 0);
+	TEST_LR(s, 0);
 
 	ASSERT_STREQ("test", str.c_str());
 
 	m->reset();TEST_LR(0, 0);
+}
+
+TEST_F(IpcMessageTest, test_sendrecv) {
+	USE_LOGGER(test_setup);
+	MessageRef m = Message::create(logger);
+	TEST_LR(0, 0);
+	//dump((char*)m->data(), m->data_length());
+	m->add_32(   0);TEST_LR(4, 4);
+	m->add_32( 100);TEST_LR(8, 8);
+	m->add_32(  -1);TEST_LR(12, 12);
+	m->add_32(-100);TEST_LR(16, 16);
+
+	MessageRef m2 = Message::create(logger);
+	m2->setup(m->data_length() - sizeof(int32_t));
+	::memcpy(m2->data(), m->data(), m->data_length());
+
+	// TEST_LR will use m...
+	m = m2;
+	ASSERT_EQ(   0, m->get_32());TEST_LR(16, 12);
+	ASSERT_EQ( 100, m->get_32());TEST_LR(16, 8);
+	ASSERT_EQ(  -1, m->get_32());TEST_LR(16, 4);
+	ASSERT_EQ(-100, m->get_32());TEST_LR(16, 0);
 }
 
 } // namespace

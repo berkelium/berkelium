@@ -8,8 +8,8 @@
 
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
-#include <Berkelium/IPC/PipeGroup.hpp>
 #include <Berkelium/IPC/Channel.hpp>
+#include <Berkelium/IPC/ChannelGroup.hpp>
 
 #include <set>
 
@@ -17,7 +17,6 @@ namespace Berkelium {
 
 using Ipc::CommandId;
 using Ipc::ChannelRef;
-using Ipc::PipeGroupRef;
 using Ipc::PipeRef;
 using Ipc::MessageRef;
 
@@ -27,17 +26,13 @@ class BerkeliumHostInstanceImpl : public BerkeliumHostInstance {
 private:
 	std::set<BerkeliumHostWindowRef> windows;
 	LoggerRef logger;
-	PipeGroupRef group;
 	ChannelRef ipc;
-	MessageRef msg;
 
-	BerkeliumHostInstanceImpl(LoggerRef logger, PipeGroupRef group, ChannelRef ipc) :
+	BerkeliumHostInstanceImpl(LoggerRef logger, ChannelRef ipc) :
 		BerkeliumHostInstance(),
 		windows(),
 		logger(logger),
-		group(group),
-		ipc(ipc),
-		msg(Ipc::Message::create(logger)) {
+		ipc(ipc) {
 		fprintf(stderr, "new BerkeliumHostInstanceImpl\n");
 	}
 
@@ -53,19 +48,18 @@ public:
 		*/
 	}
 
-	static BerkeliumHostInstanceRef create(LoggerRef logger, PipeGroupRef group, ChannelRef ipc) {
-		BerkeliumHostInstanceImpl* impl = new BerkeliumHostInstanceImpl(logger, group, ipc);
+	static BerkeliumHostInstanceRef create(LoggerRef logger, ChannelRef ipc) {
+		BerkeliumHostInstanceImpl* impl = new BerkeliumHostInstanceImpl(logger, ipc);
 		BerkeliumHostInstanceRef ret(impl);
-		group->registerCallback(ipc, ret, true);
+		ipc->registerCallback(ret);
 		return ret;
 	}
 
-	virtual void onDataReady(PipeRef pipe) {
-		pipe->recv(msg);
+	virtual void onDataReady(ChannelRef channel, MessageRef msg) {
 		fprintf(stderr, "BerkeliumHostInstanceImpl::onDataReady\n");
 		switch(CommandId cmd = msg->get_cmd()) {
 			case CommandId::createWindow: {
-				onCreateWindow();
+				onCreateWindow(msg);
 				break;
 			}
 			case CommandId::exitHost: {
@@ -79,18 +73,18 @@ public:
 		}
 	}
 
-	void onCreateWindow() {
+	void onCreateWindow(MessageRef msg) {
 		bool incognito = msg->get_8() == 1;
-		ChannelRef win(ipc->createSubChannel("window"));
+		ChannelRef win(ipc->getGroup()->createChannel("window"));
 
-		windows.insert(BerkeliumHostWindow::createBerkeliumHostWindow(logger, group, win, incognito));
+		windows.insert(BerkeliumHostWindow::createBerkeliumHostWindow(logger, win, incognito));
 
 		msg->reset();
-		msg->add_str(win->getName());
+		msg->add_32(win->getId());
 		ipc->send(msg);
 
 		logger->info() << "created new " << (incognito ? "incognito" : "default") << " window with id "
-				<< win->getName() << "!" << std::endl;
+				<< win->getId() << "!" << std::endl;
 	}
 
 	void onExitHost() {
@@ -108,9 +102,9 @@ BerkeliumHostInstance::~BerkeliumHostInstance()
 {
 }
 
-BerkeliumHostInstanceRef BerkeliumHostInstance::createBerkeliumHostInstance(LoggerRef logger, PipeGroupRef group, ChannelRef ipc)
+BerkeliumHostInstanceRef BerkeliumHostInstance::createBerkeliumHostInstance(LoggerRef logger, ChannelRef ipc)
 {
-	return impl::BerkeliumHostInstanceImpl::create(logger, group, ipc);
+	return impl::BerkeliumHostInstanceImpl::create(logger, ipc);
 }
 
 } // namespace Berkelium

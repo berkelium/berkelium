@@ -11,6 +11,7 @@
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/PipeGroup.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/ChannelGroup.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>
 #include <Berkelium/Impl/BerkeliumCallback.hpp>
@@ -25,28 +26,32 @@ Window::~Window() {
 
 namespace impl {
 
-class WindowImpl : public Window, public InternalUpdate {
+class WindowImpl : public Window/*, public InternalUpdate*/ {
 BERKELIUM_IMPL_CLASS(Window)
 
 private:
 	WindowWRef self;
 	InstanceRef instance;
+	Ipc::ChannelGroupRef group;
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
-	Ipc::MessageRef message;
+	/*
 	Berkelium::Ipc::PipeCallbackRef cb;
+	*/
 	std::list<TabWRef> tabs;
 	const bool incognito;
 
 public:
 	WindowImpl(InstanceRef instance, Ipc::ChannelRef channel, bool incognito) :
-		BERKELIUM_IMPL_CTOR3(Window, channel->getName(), instance),
+		BERKELIUM_IMPL_CTOR3(Window, channel->getAlias(), instance),
 		self(),
 		instance(instance),
+		group(channel->getGroup()),
 		send(channel),
 		recv(channel->getReverseChannel()),
-		message(channel->getMessage()),
+		/*
 		cb(),
+		*/
 		tabs(),
 		incognito(incognito) {
 	}
@@ -55,29 +60,17 @@ public:
 		getManager()->unregisterWindow();
 	}
 
+	/*
 	virtual void internalUpdate() {
-		recv->recv(message);
-		if(message->length() == 0) {
-			// only an ack..
-		} else {
-			switch(Ipc::CommandId cmd = message->get_cmd()) {
-				default: {
-					logger->error() << "Window: received unknown command '" << cmd << "'" << std::endl;
-					break;
-				}
-				/*
-				case Ipc::CommandId::onReady: {
-					msg->reset();
-					msg->add_cmd(Ipc::CommandId::navigate);
-					msg->add_str("http://heise.de/");
-					Log::debug() << "sending navigate to heise.de!" << std::endl;
-					send->send(msg);
-					break;
-				}
-				*/
+		Ipc::MessageRef message(recv->recv());
+		switch(Ipc::CommandId cmd = message->get_cmd()) {
+			default: {
+				logger->error() << "Window: received unknown command '" << cmd << "'" << std::endl;
+				break;
 			}
 		}
 	}
+	*/
 
 	virtual int32_t getTabCount() {
 		cleanupTabs();
@@ -95,14 +88,14 @@ public:
 
 	virtual TabRef createTab()  {
 		cleanupTabs();
-		message->reset();
+		Ipc::MessageRef message(Ipc::Message::create(logger));
 		message->add_cmd(Ipc::CommandId::createTab);
 		send->send(message);
-		send->recv(message);
-		std::string id(message->get_str());
+		message = send->recv();
+		int32_t id(message->get_32());
 		logger->debug() << "created tab '" << id << "'" << std::endl;
-		Ipc::ChannelRef x = send->getSubChannel(id, "tab");
-		logger->debug() << "with channel '" << x->getName() << "'" << std::endl;
+		Ipc::ChannelRef x = group->getChannel(id, "tab");
+		logger->debug() << "with channel '" << x->getId() << "'" << std::endl;
 		TabRef ret(newTab(getSelf(), x));
 		tabs.push_back(ret);
 		return ret;
@@ -135,8 +128,10 @@ public:
 		WindowImpl* impl = new WindowImpl(instance, channel, incognito);
 		WindowRef ret(impl);
 		impl->self = ret;
+		/*
 		impl->cb.reset(new BerkeliumCallback<Window, WindowImpl>(ret));
-		getPipeGroup(impl->runtime)->registerCallback(impl->recv, impl->cb, false);
+		getPipeGroup(impl->runtime)->registerCallback(channel->getGroup(), impl->cb, false);
+		*/
 		impl->manager->registerWindow(ret);
 		return ret;
 	}

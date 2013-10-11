@@ -9,6 +9,7 @@
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
+#include <Berkelium/IPC/ChannelGroup.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
 namespace Berkelium {
@@ -38,7 +39,7 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 
 	std::vector<std::string> args;
 	args.push_back(enclose(executable->getPath()));
-	args.push_back("--berkelium=" + ipc->getName());
+	args.push_back("--berkelium=" + process->getChannelGroup()->getName());
 	args.push_back("--no-first-run");
 	//args.push_back("--crash-test");
 	args.push_back("--user-data-dir=" + enclose(profile->getProfilePath()));
@@ -49,8 +50,12 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 	}
 
 	logger->debug() << "awaiting berkelium host process ipc startup message!" << std::endl;
-	Ipc::MessageRef msg(ipc->getMessage());
-	while(!ipc->recv(msg, 100)) {
+	Ipc::MessageRef msg;
+	while(true) {
+		msg = ipc->recv();
+		if(msg) {
+			break;
+		}
 		if(!process->isRunning()) {
 			logger->error() << "berkelium host startup failed!" << std::endl;
 			return InstanceRef();

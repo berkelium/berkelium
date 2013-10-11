@@ -13,6 +13,7 @@
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/PipeGroup.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/ChannelGroup.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>
 #include <Berkelium/Impl/BerkeliumCallback.hpp>
@@ -37,31 +38,35 @@ struct set {
 typedef set<WindowWRef>::type WindowWRefSet;
 typedef set<HostDelegateWRef>::type HostDelegateWRefSet;
 
-class InstanceImpl : public Instance, public InternalUpdate {
+class InstanceImpl : public Instance/*, public InternalUpdate*/ {
 BERKELIUM_IMPL_CLASS(Instance)
 
 private:
 	InstanceWRef self;
+	Ipc::ChannelGroupRef group;
 	HostExecutableRef executable;
 	ProfileRef profile;
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
-	Ipc::MessageRef message;
+	/*
 	Berkelium::Ipc::PipeCallbackRef cb;
+	*/
 	ProcessRef process;
 	WindowWRefSet windows;
 	HostDelegateWRefSet hosts;
 
 public:
 	InstanceImpl(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process) :
-		BERKELIUM_IMPL_CTOR3(Instance, ipc->getName(), executable),
+		BERKELIUM_IMPL_CTOR3(Instance, ipc->getAlias(), executable),
 		self(),
+		group(ipc->getGroup()),
 		executable(executable),
 		profile(profile),
 		send(ipc),
 		recv(ipc->getReverseChannel()),
-		message(ipc->getMessage()),
+		/*
 		cb(),
+		*/
 		process(process),
 		windows(),
 		hosts() {
@@ -91,25 +96,22 @@ public:
 	}
 
 	virtual void close() {
-		message->reset();
+		Ipc::MessageRef message(Ipc::Message::create(logger));
 		message->add_cmd(Ipc::CommandId::exitHost);
 		send->send(message);
-		//ipc->recv(message); //ACK
 	}
 
+	/*
 	virtual void internalUpdate() {
-		recv->recv(message);
-		if(message->length() == 0) {
-			// only an ack..
-		} else {
-			switch(Ipc::CommandId cmd = message->get_cmd()) {
-				default: {
-					logger->error() << "Instance: received unknown command '" << cmd << "'" << std::endl;
-					break;
-				}
+		Ipc::MessageRef message(recv->recv());
+		switch(Ipc::CommandId cmd = message->get_cmd()) {
+			default: {
+				logger->error() << "Instance: received unknown command '" << cmd << "'" << std::endl;
+				break;
 			}
 		}
 	}
+	*/
 
 	virtual ProfileRef getProfile() {
 		return profile;
@@ -152,15 +154,15 @@ public:
 	virtual WindowRef createWindow(bool incognito) {
 		logger->debug() << "create Window start" << std::endl;
 
-		message->reset();
+		Ipc::MessageRef message(Ipc::Message::create(logger));
 		message->add_cmd(Ipc::CommandId::createWindow);
 		message->add_8(incognito);
 		send->send(message);
-		send->recv(message);
+		message = send->recv();
 
-		std::string id = message->get_str();
+		int32_t id = message->get_32();
 		logger->debug() << "created window '" << id << "'!" << std::endl;
-		Ipc::ChannelRef channel = send->getSubChannel(id, "window");
+		Ipc::ChannelRef channel = group->getChannel(id, "window");
 
 		WindowRef ret(newWindow(self.lock(), channel, incognito));
 		windows.insert(ret);
@@ -172,8 +174,10 @@ public:
 		InstanceImpl* impl = new InstanceImpl(executable, profile, ipc, process);
 		InstanceRef ret(impl);
 		impl->setSelf(ret);
+		/*
 		impl->cb.reset(new BerkeliumCallback<Instance, InstanceImpl>(ret));
-		getPipeGroup(impl->runtime)->registerCallback(impl->recv, impl->cb, false);
+		getPipeGroup(impl->runtime)->registerCallback(ipc->getGroup(), impl->cb, false);
+		*/
 		impl->getManager()->registerInstance(ret);
 		//impl->createWindow(false);
 		return ret;

@@ -57,8 +57,7 @@ TEST_F(PipeTest, sendRecv) {
 		msg->add_str("hello");
 		pipe->send(msg);
 		ASSERT_FALSE(pipe->isEmpty());
-		msg = Message::create(logger);
-		pipe->recv(msg);
+		msg = pipe->recv();
 		std::string recv = msg->get_str();
 		ASSERT_TRUE(pipe->isEmpty());
 		ASSERT_EQ(0, recv.compare("hello"));

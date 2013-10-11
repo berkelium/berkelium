@@ -70,6 +70,7 @@ public:
 			return;
 		}
 
+		//fprintf(stderr, "new Pipe %s %d %s\n", name.c_str(), fd, alias.c_str());
 	}
 
 	virtual ~PipeLinuxImpl() {
@@ -118,7 +119,7 @@ public:
 
 	virtual void send(MessageRef msg) {
 		if(fd == -1) return;
-		int32_t size = msg->length();
+		int32_t size = msg->data_length();
 		//fprintf(stderr, "send: 4 bytes '%d'!\n", size);
 		::write(fd, &size, 4);
 		//fprintf(stderr, "send: data...\n");
@@ -130,15 +131,17 @@ public:
 		msg->reset();
 	}
 
-	virtual void recv(MessageRef msg) {
+	virtual MessageRef recv() {
+		MessageRef msg(Message::create(logger));
 		int32_t size = 0;
 		recv((char*)&size, 4);
 		//fprintf(stderr, "recv: %d bytes!\n", size);
-		msg->setup(size);
+		msg->setup(size - sizeof(int32_t));
 		recv((char*)msg->data(), size);
 		if(trace) {
 			dump("recv", fd, (char*)msg->data(), size);
 		}
+		return msg;
 	}
 
 	void recv(char* to, size_t size) {

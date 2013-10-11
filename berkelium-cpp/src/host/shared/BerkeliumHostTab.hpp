@@ -6,7 +6,7 @@
 #define BERKELIUM_HOST_TAB_HPP_
 #pragma once
 
-#include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/Channel.hpp>
 #include "BerkeliumHostWindow.hpp"
 
 namespace Berkelium {
@@ -15,12 +15,12 @@ class BerkeliumHostTab;
 typedef std::shared_ptr<BerkeliumHostTab> BerkeliumHostTabRef;
 typedef std::weak_ptr<BerkeliumHostTab> BerkeliumHostTabWRef;
 
-class BerkeliumHostTab : public Berkelium::Ipc::PipeCallback {
+class BerkeliumHostTab : public Berkelium::Ipc::ChannelCallback {
 protected:
 	BerkeliumHostTab();
 
 public:
-	static BerkeliumHostTabRef createBerkeliumHostTab(BerkeliumHostWindowRef window, LoggerRef logger, Ipc::PipeGroupRef group, Ipc::ChannelRef ipc);
+	static BerkeliumHostTabRef createBerkeliumHostTab(BerkeliumHostWindowRef window, LoggerRef logger, Ipc::ChannelRef ipc);
 
 	virtual ~BerkeliumHostTab() = 0;
 };

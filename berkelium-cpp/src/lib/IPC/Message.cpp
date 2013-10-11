@@ -19,7 +19,9 @@ private:
 	size_t capacity;
 	size_t wp;
 	size_t rp;
+	uint8_t* real;
 	uint8_t* buffer;
+	int32_t* id;
 
 public:
 	MessageImpl(LoggerRef logger) :
@@ -28,15 +30,27 @@ public:
 		capacity(1024),
 		wp(0),
 		rp(0),
-		buffer(new uint8_t[capacity]) {
+		real(new uint8_t[capacity + sizeof(int32_t)]),
+		buffer(real + sizeof(int32_t)),
+		id((int32_t*)real) {
 	}
 
 	virtual ~MessageImpl() {
 		capacity = 0;
 		wp = 0;
 		rp = 0;
-		delete[] buffer;
+		delete[] real;
+		real = 0;
 		buffer = 0;
+		id = 0;
+	}
+
+	virtual int32_t getChannelId() {
+		return *id;
+	}
+
+	virtual void setChannelId(int32_t id) {
+		*(this->id) = id;
 	}
 
 	virtual size_t length() {
@@ -48,7 +62,11 @@ public:
 	}
 
 	virtual void* data() {
-		return buffer;
+		return real;
+	}
+
+	virtual size_t data_length() {
+		return wp + sizeof(int32_t);
 	}
 
 	virtual void reset() {
@@ -65,10 +83,12 @@ public:
 	void resize(size_t size) {
 		if(size > capacity) {
 			size += 1024;
-			uint8_t* tmp = new uint8_t[size];
-			memcpy(tmp, buffer, wp);
-			delete[] buffer;
-			buffer = tmp;
+			uint8_t* tmp = new uint8_t[size + sizeof(int32_t)];
+			memcpy(tmp, real, wp + sizeof(int32_t));
+			delete[] real;
+			real = tmp;
+			buffer = tmp + 4;
+			id = (int32_t*)tmp;
 			capacity = size;
 		}
 	}

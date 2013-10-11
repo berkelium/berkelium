@@ -7,13 +7,12 @@
 
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
-#include <Berkelium/IPC/PipeGroup.hpp>
+#include <Berkelium/IPC/Channel.hpp>
 
 namespace Berkelium {
 
 using Ipc::CommandId;
 using Ipc::ChannelRef;
-using Ipc::PipeGroupRef;
 using Ipc::PipeRef;
 using Ipc::MessageRef;
 
@@ -23,19 +22,15 @@ class BerkeliumHostTabImpl : public BerkeliumHostTab {
 private:
 	BerkeliumHostWindowWRef window;
 	LoggerRef logger;
-	PipeGroupRef group;
 	ChannelRef ipc;
-	MessageRef msg;
 	void* nativeWindow;
 	void* nativeTab;
 
-	BerkeliumHostTabImpl(BerkeliumHostWindowRef window, LoggerRef logger, PipeGroupRef group, ChannelRef ipc) :
+	BerkeliumHostTabImpl(BerkeliumHostWindowRef window, LoggerRef logger, ChannelRef ipc) :
 		BerkeliumHostTab(),
 		window(window),
 		logger(logger),
-		group(group),
 		ipc(ipc),
-		msg(Ipc::Message::create(logger)),
 		nativeWindow(window->getNative()),
 		nativeTab(BerkeliumHostDelegate::createTab(nativeWindow)) {
 		fprintf(stderr, "new BerkeliumHostTabImpl\n");
@@ -47,15 +42,14 @@ public:
 		BerkeliumHostDelegate::destroyTab(nativeWindow, nativeTab);
 	}
 
-	static BerkeliumHostTabRef create(BerkeliumHostWindowRef window, LoggerRef logger, PipeGroupRef group, ChannelRef ipc) {
-		BerkeliumHostTabImpl* impl = new BerkeliumHostTabImpl(window, logger, group, ipc);
+	static BerkeliumHostTabRef create(BerkeliumHostWindowRef window, LoggerRef logger, ChannelRef ipc) {
+		BerkeliumHostTabImpl* impl = new BerkeliumHostTabImpl(window, logger, ipc);
 		BerkeliumHostTabRef ret(impl);
-		group->registerCallback(ipc, ret, false);
+		ipc->registerCallback(ret);
 		return ret;
 	}
 
-	virtual void onDataReady(PipeRef pipe) {
-		pipe->recv(msg);
+	virtual void onDataReady(ChannelRef channel, MessageRef msg) {
 		fprintf(stderr, "BerkeliumHostTabImpl::onDataReady\n");
 		switch(CommandId cmd = msg->get_cmd()) {
 			default: {
@@ -76,9 +70,9 @@ BerkeliumHostTab::~BerkeliumHostTab()
 {
 }
 
-BerkeliumHostTabRef BerkeliumHostTab::createBerkeliumHostTab(BerkeliumHostWindowRef window, LoggerRef logger, PipeGroupRef group, ChannelRef ipc)
+BerkeliumHostTabRef BerkeliumHostTab::createBerkeliumHostTab(BerkeliumHostWindowRef window, LoggerRef logger, ChannelRef ipc)
 {
-	return impl::BerkeliumHostTabImpl::create(window, logger, group, ipc);
+	return impl::BerkeliumHostTabImpl::create(window, logger, ipc);
 }
 
 } // namespace Berkelium

@@ -31,17 +31,15 @@ private:
 	TabWRef self;
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
-	Ipc::MessageRef message;
 	Berkelium::Ipc::PipeCallbackRef cb;
 	WindowRef parent;
 
 public:
 	TabImpl(WindowRef parent, Ipc::ChannelRef ipc) :
-		BERKELIUM_IMPL_CTOR3(Tab, ipc->getName(), parent),
+		BERKELIUM_IMPL_CTOR3(Tab, ipc->getAlias(), parent),
 		self(),
 		send(ipc),
 		recv(ipc->getReverseChannel()),
-		message(ipc->getMessage()),
 		cb(),
 		parent(parent) {
 	}
@@ -51,23 +49,19 @@ public:
 	}
 
 	virtual void internalUpdate() {
-		recv->recv(message);
-		if(message->length() == 0) {
-			// only an ack..
-		} else {
-			switch(Ipc::CommandId cmd = message->get_cmd()) {
-				default: {
-					logger->error() << "Tab: received unknown command '" << cmd << "'" << std::endl;
-					break;
-				}
-				case Ipc::CommandId::onReady: {
-					message->reset();
-					message->add_cmd(Ipc::CommandId::navigate);
-					message->add_str("http://heise.de/");
-					logger->debug() << "sending navigate to heise.de!" << std::endl;
-					send->send(message);
-					break;
-				}
+		Ipc::MessageRef message(recv->recv());
+		switch(Ipc::CommandId cmd = message->get_cmd()) {
+			default: {
+				logger->error() << "Tab: received unknown command '" << cmd << "'" << std::endl;
+				break;
+			}
+			case Ipc::CommandId::onReady: {
+				message->reset();
+				message->add_cmd(Ipc::CommandId::navigate);
+				message->add_str("http://heise.de/");
+				logger->debug() << "sending navigate to heise.de!" << std::endl;
+				send->send(message);
+				break;
 			}
 		}
 	}
@@ -107,7 +101,7 @@ public:
 		TabRef ret(impl);
 		impl->self = ret;
 		impl->cb.reset(new BerkeliumCallback<Tab, TabImpl>(ret));
-		getPipeGroup(impl->runtime)->registerCallback(impl->recv, impl->cb, false);
+		getPipeGroup(impl->runtime)->registerCallback(ipc->getGroup(), impl->cb);
 		impl->manager->registerTab(ret);
 		return ret;
 	}

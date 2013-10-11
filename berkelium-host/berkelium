@@ -56,6 +56,8 @@ exit 0
 
 [ -e ~/.berkeliumrc ] && . ~/.berkeliumrc
 
+[ "$1" = "debug" ] && berkelium_debug_gdb --berkelium-debug=`echo ~/.berkelium-debug`
+
 [ "$BERKELIUM_DEBUG" = "gdb" ] && berkelium_debug_gdb $*
 
 [ "$BERKELIUM_DEBUG" = "external" ] && berkelium_debug_external $*

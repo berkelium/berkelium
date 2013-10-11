@@ -87,9 +87,10 @@ ProfileRef forProfilePath(RuntimeRef runtime, const std::string& path);
 ProfileRef createTemporaryProfile(RuntimeRef runtime);
 LoggerRef newLogger(LogDelegateRef target, RuntimeRef runtime, const std::string& clazz, const std::string& name);
 LogDelegateRef newLogDelegate();
+Ipc::ChannelRef createChannel(LoggerRef logger, int32_t id, Ipc::ChannelGroupRef group, const std::string& alias);
 Ipc::PipeGroupRef getPipeGroup(RuntimeRef runtime);
 void setLoggerPrefix(RuntimeRef runtime, const std::string& name);
-Ipc::PipeRef getInputPipe(Ipc::ChannelRef channel);
+Ipc::PipeRef getInputPipe(Ipc::ChannelGroupRef group);
 
 void bk_error(const char* format, ...);
 

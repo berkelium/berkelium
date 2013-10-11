@@ -27,11 +27,9 @@ public:
 
 	virtual void unregisterPipe(Pipe* pipe) = 0;
 
-	virtual void registerCallback(ChannelRef channel, PipeCallbackRef callback, bool highPrio) = 0;
+	virtual void registerCallback(ChannelGroupRef group, PipeCallbackRef callback) = 0;
 
-	virtual void registerCallback(PipeRef pipe, PipeCallbackRef callback, bool highPrio) = 0;
-
-	virtual bool recv(PipeRef pipe, MessageRef msg, int32_t timeout) = 0;
+	virtual void registerCallback(PipeRef pipe, PipeCallbackRef callback) = 0;
 
 	virtual void update(int32_t timeout) = 0;
 

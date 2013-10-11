@@ -8,8 +8,8 @@
 
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
-#include <Berkelium/IPC/PipeGroup.hpp>
 #include <Berkelium/IPC/Channel.hpp>
+#include <Berkelium/IPC/ChannelGroup.hpp>
 
 #include <set>
 
@@ -17,7 +17,6 @@ namespace Berkelium {
 
 using Ipc::CommandId;
 using Ipc::ChannelRef;
-using Ipc::PipeGroupRef;
 using Ipc::PipeRef;
 using Ipc::MessageRef;
 
@@ -28,18 +27,16 @@ private:
 	BerkeliumHostWindowWRef self;
 	std::set<BerkeliumHostTabRef> tabs;
 	LoggerRef logger;
-	PipeGroupRef group;
 	ChannelRef ipc;
 	MessageRef msg;
 	void* native;
 	bool incognito;
 
-	BerkeliumHostWindowImpl(LoggerRef logger, PipeGroupRef group, ChannelRef ipc, bool incognito) :
+	BerkeliumHostWindowImpl(LoggerRef logger, ChannelRef ipc, bool incognito) :
 		BerkeliumHostWindow(),
 		self(),
 		tabs(),
 		logger(logger),
-		group(group),
 		ipc(ipc),
 		msg(Ipc::Message::create(logger)),
 		native(BerkeliumHostDelegate::createWindow(incognito)),
@@ -62,20 +59,19 @@ public:
 		return native;
 	}
 
-	static BerkeliumHostWindowRef create(LoggerRef logger, PipeGroupRef group, ChannelRef ipc, bool incognito) {
-		BerkeliumHostWindowImpl* impl = new BerkeliumHostWindowImpl(logger, group, ipc, incognito);
+	static BerkeliumHostWindowRef create(LoggerRef logger, ChannelRef ipc, bool incognito) {
+		BerkeliumHostWindowImpl* impl = new BerkeliumHostWindowImpl(logger, ipc, incognito);
 		BerkeliumHostWindowRef ret(impl);
 		impl->self = ret;
-		group->registerCallback(ipc, ret, false);
+		ipc->registerCallback(ret);
 		return ret;
 	}
 
-	virtual void onDataReady(PipeRef pipe) {
-		pipe->recv(msg);
+	virtual void onDataReady(ChannelRef channel, MessageRef msg) {
 		fprintf(stderr, "BerkeliumHostWindowImpl::onDataReady\n");
 		switch(CommandId cmd = msg->get_cmd()) {
 			case CommandId::createTab: {
-				onCreateTab();
+				onCreateTab(msg);
 				break;
 			}
 			default: {
@@ -85,16 +81,16 @@ public:
 		}
 	}
 
-	void onCreateTab() {
-		ChannelRef tab(ipc->createSubChannel("tab"));
+	void onCreateTab(MessageRef msg) {
+		ChannelRef tab(ipc->getGroup()->createChannel("tab"));
 
-		tabs.insert(BerkeliumHostTab::createBerkeliumHostTab(self.lock(), logger, group, tab));
+		tabs.insert(BerkeliumHostTab::createBerkeliumHostTab(self.lock(), logger, tab));
 
 		msg->reset();
-		msg->add_str(tab->getName());
+		msg->add_32(tab->getId());
 		ipc->send(msg);
 
-		logger->info() << "created new tab with id " << tab->getName() << "!" << std::endl;
+		logger->info() << "created new tab with id " << tab->getId() << "!" << std::endl;
 
 		/*
 		// wait 2s and send onReady
@@ -117,9 +113,9 @@ BerkeliumHostWindow::~BerkeliumHostWindow()
 {
 }
 
-BerkeliumHostWindowRef BerkeliumHostWindow::createBerkeliumHostWindow(LoggerRef logger, PipeGroupRef group, ChannelRef ipc, bool incognito)
+BerkeliumHostWindowRef BerkeliumHostWindow::createBerkeliumHostWindow(LoggerRef logger, ChannelRef ipc, bool incognito)
 {
-	return impl::BerkeliumHostWindowImpl::create(logger, group, ipc, incognito);
+	return impl::BerkeliumHostWindowImpl::create(logger, ipc, incognito);
 }
 
 } // namespace Berkelium

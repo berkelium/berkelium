@@ -6,7 +6,7 @@
 #define BERKELIUM_HOST_INSTANCE_HPP_
 #pragma once
 
-#include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/Channel.hpp>
 
 namespace Berkelium {
 
@@ -14,12 +14,12 @@ class BerkeliumHostInstance;
 typedef std::shared_ptr<BerkeliumHostInstance> BerkeliumHostInstanceRef;
 typedef std::weak_ptr<BerkeliumHostInstance> BerkeliumHostInstanceWRef;
 
-class BerkeliumHostInstance : public Berkelium::Ipc::PipeCallback {
+class BerkeliumHostInstance : public Berkelium::Ipc::ChannelCallback {
 protected:
 	BerkeliumHostInstance();
 
 public:
-	static BerkeliumHostInstanceRef createBerkeliumHostInstance(LoggerRef logger, Ipc::PipeGroupRef group, Ipc::ChannelRef ipc);
+	static BerkeliumHostInstanceRef createBerkeliumHostInstance(LoggerRef logger, Ipc::ChannelRef ipc);
 
 	virtual ~BerkeliumHostInstance() = 0;
 };

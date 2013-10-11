@@ -35,7 +35,6 @@ struct PipeGroupData {
 	PipeWRef ref;
 	PipeCallbackWRef cb;
 	int fd;
-	bool highPrio;
 };
 
 typedef std::map<Pipe*, PipeGroupData*> PipeMap;
@@ -72,7 +71,7 @@ public:
 		}
 	}
 
-	virtual void registerCallback(PipeRef pipe, PipeCallbackRef callback, bool highPrio) {
+	virtual void registerCallback(PipeRef pipe, PipeCallbackRef callback) {
 		//Berkelium::impl::bk_error("register callback %p", pipe.get());
 		PipeMap::iterator it(map.find(pipe.get()));
 		if(it != map.end()) {
@@ -81,59 +80,42 @@ public:
 				Berkelium::impl::bk_error("register callback %p failed: no fd!", pipe.get());
 			}
 			data->cb = callback;
-			data->highPrio = highPrio;
 		} else {
 			Berkelium::impl::bk_error("register callback %p failed!", pipe.get());
 		}
 	}
 
-	virtual void registerCallback(ChannelRef channel, PipeCallbackRef callback, bool highPrio) {
-		registerCallback(Berkelium::impl::getInputPipe(channel), callback, highPrio);
+	virtual void registerCallback(ChannelGroupRef group, PipeCallbackRef callback) {
+		registerCallback(Berkelium::impl::getInputPipe(group), callback);
 	}
 
 	virtual void update(int32_t timeout) {
+		if(timeout < 0) {
+			recv(-1);
+			return;
+		}
 		int64_t end = Util::currentTimeMillis() + timeout;
 		while(true) {
+			//fprintf(stderr, "timeout %d\n", timeout);
 			int64_t now = Util::currentTimeMillis();
 			int64_t left = end - now;
 			if(left < 1) {
 				return;
 			}
-			recv(PipeRef(), left);
+			recv(left);
 		}
 	}
 
-	virtual bool recv(PipeRef pipe, MessageRef msg, int32_t timeout) {
-		int64_t end = Util::currentTimeMillis() + timeout;
-		while(pipe->isEmpty()) {
-			if(timeout == -1) {
-				recv(pipe, -1);
-			} else {
-				int64_t now = Util::currentTimeMillis();
-				int64_t left = end - now;
-				if(left < 1) {
-					return false;
-				}
-				recv(pipe, left);
-			}
-		}
-		pipe->recv(msg);
-		return true;
-	}
-
-	void recv(PipeRef pipe, int32_t timeout) {
+	void recv(int32_t timeout) {
 		FD_ZERO(&fds);
 		int nfds = 0;
-		bool all = !pipe;
-		bool included = false;
 		if(trace) {
-			//bk_error("PipeGroup: selecting...");
+			bk_error("PipeGroup: selecting...");
 		}
 		for(PipeMap::iterator it(map.begin()); it != map.end(); it++) {
 			PipeGroupData* data = it->second;
 			PipeRef ref(data->ref.lock());
-			if(ref && (all || data->highPrio || ref == pipe)) {
-				included |= ref == pipe;
+			if(ref) {
 				int fd = data->fd;
 				if(fd == -1) {
 					continue;
@@ -141,17 +123,11 @@ public:
 				nfds = std::max(nfds, fd);
 				FD_SET(fd, &fds);
 				if(trace) {
-					if(ref->getAlias().substr(0, 7) != "process")
-					if(ref->getAlias() != "berkelium-host-ipc")
+					//if(ref->getAlias().substr(0, 7) != "process")
+					//if(ref->getAlias() != "berkelium-host-ipc")
 					bk_error("PipeGroup: waiting for %s %d %s", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
 				}
 			}
-		}
-		if(pipe && !included) {
-			bk_error("PipeGroup: pipe not registered!");
-			int fd = getPipeFd(pipe);
-			nfds = std::max(nfds, fd);
-			FD_SET(fd, &fds);
 		}
 		static struct timeval tv;
 		tv.tv_sec = 0;
@@ -175,10 +151,8 @@ public:
 				}
 				PipeCallbackRef cb(data->cb.lock());
 				if(cb) {
-					if(ref != pipe) {
-						cb->onDataReady(ref);
-					}
-				} else if(data->highPrio){
+					cb->onDataReady(ref);
+				} else {
 					bk_error("PipeGroup: no callback!");
 				}
 			}

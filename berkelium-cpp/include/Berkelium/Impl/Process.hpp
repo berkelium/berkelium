@@ -23,6 +23,7 @@ class Process {
 protected:
 	std::string name;
 	Ipc::PipeGroupRef group;
+	Ipc::ChannelGroupRef channels;
 	Ipc::ChannelRef ipc;
 	Ipc::PipeRef pipeout;
 	Ipc::PipeRef pipeerr;
@@ -37,6 +38,10 @@ public:
 	virtual ~Process() = 0;
 
 	virtual bool isRunning() = 0;
+
+	inline Ipc::ChannelGroupRef getChannelGroup() {
+		return channels;
+	}
 
 	inline Ipc::ChannelRef getIpcChannel() {
 		return ipc;

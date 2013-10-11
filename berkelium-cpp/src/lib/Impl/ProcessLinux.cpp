@@ -122,8 +122,8 @@ public:
 		err(new ConsoleRedirector(runtime, LogType::StdErr)),
 		pid(-1),
 		exit(-1) {
-		group->registerCallback(pipeout, out, true);
-		group->registerCallback(pipeerr, err, true);
+		group->registerCallback(pipeout, out);
+		group->registerCallback(pipeerr, err);
 	}
 
 	virtual ~ProcessLinuxImpl() {
