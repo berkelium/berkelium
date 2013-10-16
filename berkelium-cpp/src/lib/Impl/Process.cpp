@@ -22,10 +22,6 @@ Process::Process(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
 	logger(logger) {
 }
 
-Process::~Process()
-{
-}
-
 } // namespace impl
 
 } // namespace Berkelium
