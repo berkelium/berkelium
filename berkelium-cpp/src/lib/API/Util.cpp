@@ -48,11 +48,11 @@ std::string getOption(const std::string& cmdline, const std::string& option) {
 		elems.push_back(item);
 	}
 	int argc = elems.size();
-	char* argv[argc];
+    std::vector<char*> argv(argc);
 	for(int i = 0; i < argc; i++) {
-		argv[i] = (char*)elems[i].c_str();
+        argv.push_back((char*)elems[i].c_str());
 	}
-	return getOption(argc, (char**)&argv, option);
+	return getOption(argc, (char**)&argv[0], option);
 }
 
 void parseCommandLine(RuntimeRef runtime, int argc, char* argv[]) {
