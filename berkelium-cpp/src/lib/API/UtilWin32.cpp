@@ -8,7 +8,8 @@
 
 #include <vector>
 
-#include <Windows.h>
+#include <windows.h>
+#include <time.h>
 
 namespace Berkelium {
 
@@ -18,8 +19,7 @@ void initRandom() {
 	static bool initialised = false;
 	if(!initialised) {
 		initialised = true;
-		// TODO this should be done better...
-		srand((unsigned)time(0));
+		srand((unsigned) time(NULL));
 	}
 }
 
