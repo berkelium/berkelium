@@ -15,17 +15,17 @@ class UtilWinTest : public ::testing::Test {
 TEST_F(UtilWinTest, getEnv) {
 	std::string key = "SystemDrive";
 	std::string value = "C:";
-	std::string s = Berkelium::impl::getEnv(key, "");
+	std::string s = Berkelium::Util::getEnv(key, "");
 	ASSERT_EQ(0, s.compare(value));
 }
 
 void s2ws(const std::wstring& expected, const std::string& test) {
-	std::wstring result = Berkelium::impl::s2ws(test);
+	std::wstring result = Berkelium::Util::s2ws(test);
 	ASSERT_EQ(0, expected.compare(result));
 }
 
 void ws2s(const std::string& expected, const std::wstring& test) {
-	std::string result = Berkelium::impl::ws2s(test);
+	std::string result = Berkelium::Util::ws2s(test);
 	ASSERT_EQ(0, expected.compare(result));
 }
 
