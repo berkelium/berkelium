@@ -68,7 +68,7 @@ public:
 				if(left < 1) {
 					return MessageRef();
 				}
-				group->update(left);
+				group->update((int32_t) left);
 			}
 		}
 		MessageRef ret(messages.front());

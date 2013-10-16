@@ -42,7 +42,10 @@ typedef std::map<Pipe*, PipeGroupData*> PipeMap;
 class PipeGroupImpl : public PipeGroup {
 private:
 	PipeMap map;
+// TODO Windows
+#ifdef LINUX
 	fd_set fds;
+#endif
 
 public:
 	PipeGroupImpl() :
@@ -91,7 +94,7 @@ public:
 
 	virtual void update(int32_t timeout) {
 		if(timeout < 0) {
-			recv(-1);
+			recv((int32_t) -1);
 			return;
 		}
 		int64_t end = Util::currentTimeMillis() + timeout;
@@ -102,11 +105,13 @@ public:
 			if(left < 1) {
 				return;
 			}
-			recv(left);
+			recv((int32_t) left);
 		}
 	}
 
 	void recv(int32_t timeout) {
+// TODO Windows
+#ifdef LINUX
 		FD_ZERO(&fds);
 		int nfds = 0;
 		if(trace) {
@@ -157,6 +162,7 @@ public:
 				}
 			}
 		}
+#endif
 	}
 };
 
