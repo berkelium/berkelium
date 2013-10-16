@@ -17,3 +17,8 @@ INCLUDE_DIRECTORIES(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 ADD_DEFINITIONS(-DBERKELIUM_CPP_IMPL)
 ADD_EXECUTABLE(berkelium-cpp-test ${SRC_TEST} ${INCLUDE_BK})
 TARGET_LINK_LIBRARIES(berkelium-cpp-test berkelium-cpp gtest ${Boost_LIBRARIES})
+
+# VS2012 doesn't support correctly the tuples yet
+if(MSVC)
+  add_definitions(/D _VARIADIC_MAX=10)
+endif()

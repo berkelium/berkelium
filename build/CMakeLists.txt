@@ -90,7 +90,11 @@ ENDIF()
 ################
 ## Librarys
 ## -------------
-SET(BERKELIUM_CPP_LIBS berkelium-cpp)
+IF("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+    SET(BERKELIUM_CPP_LIBS berkelium-cpp Ws2_32.lib)
+ELSE()
+    SET(BERKELIUM_CPP_LIBS berkelium-cpp)
+ENDIF()
 
 #################
 ## System Defines
@@ -100,6 +104,11 @@ IF("${CMAKE_SYSTEM_NAME}" STREQUAL "Linux")
 	SET(BERKELIUM_SYSTEM "linux")
 	SET(BERKELIUM_LIB_PREFIX "lib")
 	SET(BERKELIUM_LIB_SUFFIX ".so")
+ELSEIF("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+	ADD_DEFINITIONS(-DWINDOWS -DNOMINMAX)
+	SET(BERKELIUM_SYSTEM "windows")
+	SET(BERKELIUM_LIB_PREFIX "")
+	SET(BERKELIUM_LIB_SUFFIX ".dll")
 ELSE()
 	MESSAGE(FATAL_ERROR "Only Linux Systems are supported!")
 ENDIF()
