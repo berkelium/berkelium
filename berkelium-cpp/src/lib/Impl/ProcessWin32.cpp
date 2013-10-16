@@ -26,8 +26,8 @@ private:
 	bool started;
 
 public:
-	ProcessImpl(LoggerRef logger, const std::string& dir) :
-		Process(logger, dir),
+	ProcessImpl(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
+		Process(runtime, logger, dir),
 		started(false) {
 		ZeroMemory(&si, sizeof(si));
 		si.cb = sizeof(si);
@@ -76,8 +76,8 @@ public:
 	}
 };
 
-ProcessRef Process::create(LoggerRef logger, const std::string& dir) {
-	return ProcessRef(new ProcessImpl(logger, dir));
+ProcessRef Process::create(RuntimeRef runtime, LoggerRef logger, const std::string& dir) {
+	return ProcessRef(new ProcessImpl(runtime, logger, dir));
 }
 
 Process::~Process() {
