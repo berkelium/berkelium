@@ -29,6 +29,8 @@ public:
 
 	static std::string absolute(const std::string& arg);
 
+    static void Filesystem::createDirectory(const std::string& dir);
+
 	static void createDirectories(const std::string& dir);
 
 	static void createDirectoriesFor(const std::string& file);
@@ -36,6 +38,8 @@ public:
 	static void removeFile(const std::string& file);
 
 	static void removeDir(const std::string& dir);
+
+	static void removeEmptyDir(const std::string& dir);
 
 	static bool exists(const std::string& arg);
 

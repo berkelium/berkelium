@@ -4,50 +4,89 @@
 
 #ifdef OS_WINDOWS
 
+#include <Berkelium/API/Util.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
 
 #include <windows.h>
 #include <tchar.h>
 
+#define BUFSIZE 1024
+
 namespace Berkelium {
 
 namespace impl {
-
+    
+extern const char seperatorChar = '\\';
 extern const std::string seperator = "\\";
 
-#define BUFSIZE 4096
+std::string Filesystem::append(const std::string& dir, const std::string& append) {
+    if (dir.empty()) {
+        return append;
+    }
+	return dir + seperator + append;
+}
+
+std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2) {
+	return append(append(dir, a1), a2);
+}
+
+std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2, const std::string& a3) {
+	return append(append(dir, a1, a2), a3);
+}
 
 std::string Filesystem::absolute(const std::string& arg) {
-	TCHAR buffer[BUFSIZE];
-	if(GetFullPathName(arg.c_str(), BUFSIZE, buffer, NULL) == 0) {
-		// TODO
-		return "";
-	}
-	return buffer;
+    TCHAR buffer[BUFSIZE];
+    if(GetFullPathName(arg.c_str(), BUFSIZE, buffer, NULL) == 0) {
+        // TODO error handling?
+        return "";
+    }
+    return buffer;
 }
 
 std::string Filesystem::getTemp() {
-	return append(Util::getEnv("TEMP", "C:\\WINDOWS\\TEMP"), "berkelium." + Util::getEnv("USERNAME", "User"));
+    return append(Util::getEnv("TEMP", "C:\\WINDOWS\\TEMP"), "berkelium." + Util::getEnv("USERNAME", "User"));
 }
 
-void Filesystem::createDirectories(const std::string& dir) {
-}
-
-void Filesystem::createDirectoriesFor(const std::string& file) {
+void Filesystem::createDirectory(const std::string& dir) {
+    CreateDirectory(dir.c_str(), NULL);
 }
 
 void Filesystem::removeFile(const std::string& file) {
+    DeleteFile(file.c_str());
 }
 
-void Filesystem::removeDir(const std::string& dir) {
+void Filesystem::removeEmptyDir(const std::string& dir) {
+    RemoveDirectory(dir.c_str());
 }
 
-bool Filesystem::exists(const std::string& arg) {
-	return false;
+bool Filesystem::exists(const std::string& file) {
+   WIN32_FIND_DATA findFileData;
+   HANDLE handle = FindFirstFile(file.c_str(), &findFileData);
+   bool found = handle != INVALID_HANDLE_VALUE;
+   if (found) {
+       FindClose(handle);
+   }
+   return found;
 }
 
 bool Filesystem::readDirectory(const std::string& dir, std::vector<std::string>& content) {
-	return false;
+    const std::string path = dir + "\\*.*";
+    
+    WIN32_FIND_DATA fdFile;
+    HANDLE hFind = FindFirstFile(path.c_str(), &fdFile);
+    if(hFind == INVALID_HANDLE_VALUE) {
+        return false;
+    }
+
+    do {
+        if(strcmp(fdFile.cFileName, ".") == 0 || strcmp(fdFile.cFileName, "..") == 0) {
+            continue;
+        }
+        content.push_back(fdFile.cFileName);
+    } while(FindNextFile(hFind, &fdFile));
+
+    FindClose(hFind);
+    return true;
 }
 
 } // namespace impl

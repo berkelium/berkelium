@@ -14,18 +14,6 @@ namespace impl {
 extern const char seperatorChar;
 extern const std::string seperator;
 
-std::string Filesystem::append(const std::string& dir, const std::string& append) {
-	return dir + seperator + append;
-}
-
-std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2) {
-	return dir + seperator + a1 + seperator + a2;
-}
-
-std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2, const std::string& a3) {
-	return dir + seperator + a1 + seperator + a2 + seperator + a3;
-}
-
 std::vector<std::string> Filesystem::split(const std::string& arg) {
 	std::vector<std::string> ret;
 	std::stringstream ss(arg);
@@ -46,6 +34,30 @@ std::string Filesystem::dirname(const std::string& arg) {
 	return arg.substr(0, pos);
 }
 
+void Filesystem::createDirectories(const std::string& dir) {
+	std::vector<std::string> s(split(dir));
+	std::string full;
+	for(unsigned i = 0; i < s.size(); i++) {
+		full = append(full, s[i]);
+		createDirectory(full);
+	}
+}
+
+void Filesystem::createDirectoriesFor(const std::string& file) {
+	createDirectories(dirname(file));
+}
+
+void Filesystem::removeDir(const std::string& dir) {
+    std::vector<std::string> c;
+    if(readDirectory(dir, c)) {
+        for(unsigned i = 0; i < c.size(); i++) {
+            std::string name(append(dir, c[i]));
+            removeDir(name);
+            removeFile(name);
+        }
+        removeEmptyDir(dir.c_str());
+    }
+}
 
 } // namespace impl
 

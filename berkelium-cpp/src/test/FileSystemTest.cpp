@@ -30,17 +30,16 @@ TEST_F(FileSystemTest, split) {
 
 TEST_F(FileSystemTest, tmp) {
 	USE_LOGGER(tmp);
-
-	ASSERT_TRUE(Filesystem::exists("/tmp"));
-	ASSERT_FALSE(Filesystem::exists("/abcdefghijklmnopqrstuvwxyz"));
+    
+    std::string temp = Filesystem::getTemp();
+	ASSERT_TRUE(Filesystem::exists(temp));
+	ASSERT_FALSE(Filesystem::exists("abcdefghijklmnopqrstuvwxyz"));
 }
 
 TEST_F(FileSystemTest, createDeleteDir) {
 	USE_LOGGER(createDeleteDir);
 
 	std::string tmp(Filesystem::getTemp());
-	logger->info() << tmp << std::endl;
-
 	std::string dir(Filesystem::append(tmp, Berkelium::Util::randomId()));
 	ASSERT_FALSE(Filesystem::exists(dir));
 	Filesystem::createDirectories(dir);

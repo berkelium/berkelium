@@ -22,6 +22,18 @@ namespace impl {
 extern const char seperatorChar = '/';
 extern const std::string seperator = "/";
 
+std::string Filesystem::append(const std::string& dir, const std::string& append) {
+	return dir + seperator + append;
+}
+
+std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2) {
+	return dir + seperator + a1 + seperator + a2;
+}
+
+std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2, const std::string& a3) {
+	return dir + seperator + a1 + seperator + a2 + seperator + a3;
+}
+
 std::string Filesystem::absolute(const std::string& arg) {
 	char ret[PATH_MAX];
 	memset(ret, 0, PATH_MAX);
@@ -36,37 +48,16 @@ std::string Filesystem::getTemp() {
 	return append("/tmp", "berkelium." + Util::getEnv("USER", "User"));
 }
 
-inline void createDirectory(const std::string& dir) {
+void Filesystem::createDirectory(const std::string& dir) {
 	mkdir(dir.c_str(), 448); // mode 700
-}
-
-void Filesystem::createDirectories(const std::string& dir) {
-	std::vector<std::string> s(split(dir));
-	std::string full;
-	for(unsigned i = 0; i < s.size(); i++) {
-		full = append(full, s[i]);
-		createDirectory(full);
-	}
-}
-
-void Filesystem::createDirectoriesFor(const std::string& file) {
-	createDirectories(dirname(file));
 }
 
 void Filesystem::removeFile(const std::string& file) {
 	unlink(file.c_str());
 }
 
-void Filesystem::removeDir(const std::string& dir) {
-	std::vector<std::string> c;
-	if(readDirectory(dir, c)) {
-		for(unsigned i = 0; i < c.size(); i++) {
-			std::string name(append(dir, c[i]));
-			removeDir(name);
-			removeFile(name);
-		}
-		rmdir(dir.c_str());
-	}
+void Filesystem::removeEmptyDir(const std::string& dir) {
+    RemoveDirectory(dir.c_str());
 }
 
 bool Filesystem::exists(const std::string& arg) {
