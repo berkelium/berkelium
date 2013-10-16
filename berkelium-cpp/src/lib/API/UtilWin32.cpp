@@ -23,7 +23,7 @@ void initRandom() {
 	}
 }
 
-int64_t currentTimeMillis(LoggerRef logger) {
+int64_t currentTimeMillis() {
 	FILETIME wt;
 	GetSystemTimeAsFileTime(&wt);
 	int64_t ret = (int64_t)wt.dwHighDateTime << 32;
