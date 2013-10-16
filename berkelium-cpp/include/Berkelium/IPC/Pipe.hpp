@@ -51,6 +51,12 @@ public:
 
 } // namespace Ipc
 
+namespace impl {
+
+    extern int getPipeFd(Ipc::PipeRef pipe);
+
+} // namespace impl
+
 } // namespace Berkelium
 
 #endif // BERKELIUM_IPC_PIPE_HPP_

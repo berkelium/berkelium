@@ -8,7 +8,15 @@
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/PipeGroup.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
+#include <Berkelium/Impl/Impl.hpp>
+
+#ifdef BERKELIUM_TRACE_IO_DATA
+#define trace 1
+#else
+#define trace 0
+#endif
 
 using Berkelium::impl::Filesystem;
 
@@ -21,36 +29,85 @@ namespace impl {
 class PipeWindowsImpl : public Pipe {
 private:
 	LoggerRef logger;
+	PipeGroupRef group;
 	const std::string name;
+	const std::string dir;
+	const std::string full;
+	const std::string alias;
+	bool read;
+	int fd;
+	//fd_set fds;
 
 public:
-	PipeWindowsImpl(LoggerRef logger, const std::string& name) :
+	PipeWindowsImpl(bool read, PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
 		Pipe(),
 		logger(logger),
-		name(name) {
+		group(group),
+		name(name),
+		dir(dir),
+		full(Filesystem::append(dir, name)),
+		alias(alias),
+		read(read),
+		fd(-1) {
 
-		Filesystem::createDirectoriesFor(name);
+		Filesystem::createDirectories(dir);
+
+		/*const char* p = full.c_str();
+		if(::access(p, F_OK) != 0 && ::mkfifo(p, 0700) != 0) {
+			logger->systemError("mkfifo", full);
+			return;
+		}
+		fd = ::open(p, O_RDWR);
+		if(fd == -1) {
+			logger->systemError("open", full);
+			return;
+		}*/
+
+		//fprintf(stderr, "new Pipe %s %d %s\n", name.c_str(), fd, alias.c_str());
 	}
 
 	virtual ~PipeWindowsImpl() {
-		Filesystem::removeFile(name);
+		/*if(group) {
+			group->unregisterPipe(this);
+		}
+		if(fd != -1) {
+			close(fd);
+			fd = -1;
+		}*/
+		Filesystem::removeFile(full);
 	}
 
 	virtual bool isEmpty() {
+        // TODO
 		return true;
 	}
 
 	virtual void send(MessageRef msg) {
+        // TODO
 	}
 
-	virtual void recv(MessageRef msg) {
+	virtual MessageRef recv() {
+        // TODO
+        return NULL;
 	}
 
 	void recv(char* to, size_t size) {
+        // TODO
 	}
 
-	virtual const std::string getPath() {
+	virtual const std::string getName() {
 		return name;
+	}
+
+	virtual const std::string getAlias() {
+		return alias;
+	}
+
+	int getPipeFd() {
+		if(!read) {
+			return -1;
+		}
+		return fd;
 	}
 };
 
@@ -62,11 +119,27 @@ Pipe::Pipe() {
 Pipe::~Pipe() {
 }
 
-PipeRef Pipe::getPipe(LoggerRef logger, const std::string& name) {
-	return PipeRef(new impl::PipeWindowsImpl(logger, name));
+PipeRef Pipe::getPipe(bool read, PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) {
+	PipeRef ret(new impl::PipeWindowsImpl(read, group, logger, dir, name, alias));
+    if(read && group) {
+		group->registerPipe(ret);
+	}
+	return ret;
 }
 
 } // namespace Ipc
+
+namespace impl {
+
+int getPipeFd(Ipc::PipeRef pipe) {
+	if(!pipe) {
+		Berkelium::impl::bk_error("getPipeFd: pipe is NULL!");
+		return 0;
+	}
+	return ((Ipc::impl::PipeWindowsImpl*)pipe.get())->getPipeFd();
+}
+
+} // namespace impl
 
 } // namespace Berkelium
 

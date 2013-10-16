@@ -191,8 +191,7 @@ PipeRef Pipe::getPipe(bool read, PipeGroupRef group, LoggerRef logger, const std
 
 namespace impl {
 
-int getPipeFd(Ipc::PipeRef pipe)
-{
+int getPipeFd(Ipc::PipeRef pipe) {
 	if(!pipe) {
 		Berkelium::impl::bk_error("getPipeFd: pipe is NULL!");
 		return 0;
