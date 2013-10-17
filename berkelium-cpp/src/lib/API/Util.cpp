@@ -32,8 +32,8 @@ std::string randomId(int length) {
 
 std::string getOption(int argc, char* argv[], const std::string& option) {
 	for(int i = 0; i < argc; i++) {
-		std::string tmp(argv[i]);
-		if(tmp.compare(0, option.length(), option) == 0) {
+        std::string tmp(argv[i]);
+        if(tmp.compare(0, option.length(), option) == 0) {
 			return tmp.substr(option.length());
 		}
 	}
@@ -48,11 +48,11 @@ std::string getOption(const std::string& cmdline, const std::string& option) {
 		elems.push_back(item);
 	}
 	int argc = elems.size();
-    std::vector<char*> argv(argc);
+    char** argv = new char*[argc];
 	for(int i = 0; i < argc; i++) {
-        argv.push_back((char*)elems[i].c_str());
+        argv[i] = (char*)elems[i].c_str();
 	}
-	return getOption(argc, (char**)&argv[0], option);
+	return getOption(argc, argv, option);
 }
 
 void parseCommandLine(RuntimeRef runtime, int argc, char* argv[]) {
