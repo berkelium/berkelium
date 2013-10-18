@@ -29,7 +29,7 @@ public:
 
 	static std::string absolute(const std::string& arg);
 
-    static void Filesystem::createDirectory(const std::string& dir);
+	static void createDirectory(const std::string& dir);
 
 	static void createDirectories(const std::string& dir);
 
