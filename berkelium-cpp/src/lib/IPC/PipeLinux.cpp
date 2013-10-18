@@ -93,7 +93,7 @@ public:
 		return select(fd + 1, &fds, NULL, NULL, &tv) != 1;
 	}
 
-	inline void dump(const char* msg, int fd, char* data, size_t size) {
+	inline void dump(const char* msg, int fd, int32_t ch, char* data, size_t size) {
 		std::stringstream str;
 		str << Berkelium::impl::getBerkeliumHostMode();
 		str << ' ';
@@ -104,7 +104,9 @@ public:
 		str << name;
 		str << ' ';
 		str << alias;
-		str << ' ';
+		str << '(';
+		str << ch;
+		str << ") ";
 		str << std::hex;
 		for(size_t i = 0; i < size; i++) {
 			str << (int)(data[i] & 0xFF);
@@ -124,7 +126,7 @@ public:
 		::write(fd, &size, 4);
 		//fprintf(stderr, "send: data...\n");
 		if(trace) {
-			dump("send", fd, (char*)msg->data(), size);
+			dump("send", fd, msg->getChannelId(), (char*)msg->data(), size);
 		}
 		::write(fd, msg->data(), size);
 		//fprintf(stderr, "send: done!\n");
@@ -139,7 +141,7 @@ public:
 		msg->setup(size - sizeof(int32_t));
 		recv((char*)msg->data(), size);
 		if(trace) {
-			dump("recv", fd, (char*)msg->data(), size);
+			dump("recv", fd, msg->getChannelId(), (char*)msg->data(), size);
 		}
 		return msg;
 	}

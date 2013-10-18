@@ -87,7 +87,16 @@ public:
 			return real->createChannel(alias)->getReverseChannel();
 		}
 		// nextId is only valid if "real" is not set
-		return getChannel(nextId++, alias);
+		int32_t id;
+		if(Berkelium::impl::isBerkeliumHostMode()) {
+			// host will create channel ids < 0
+			id = --nextId;
+		} else {
+			// library will create channel ids >= 0
+			id = nextId++;
+		}
+		fprintf(stderr, "allocated channel id %d\n", id);
+		return getChannel(id, alias);
 	}
 
 	virtual ChannelGroupRef getReverse() {
