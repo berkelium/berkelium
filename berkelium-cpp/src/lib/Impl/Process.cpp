@@ -15,7 +15,7 @@ namespace impl {
 Process::Process(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
 	name(Berkelium::Util::randomId()),
 	group(getPipeGroup(runtime)),
-	channels(Ipc::ChannelGroup::createGroup(logger, dir, "process", Util::randomId(), group)),
+	channels(Ipc::ChannelGroup::createGroup(logger, dir, Util::randomId(), "process", group)),
 	ipc(channels->createChannel("process.ipc")),
 	pipeout(Ipc::Pipe::getPipe(true, group, logger, dir, name + "1", "process.out")),
 	pipeerr(Ipc::Pipe::getPipe(true, group, logger, dir, name + "2", "process.err")),

@@ -26,6 +26,7 @@ private:
 	ChannelWRef self;
 	ChannelCallbackRef cb;
 	std::list<MessageRef> messages;
+	bool reading;
 	int32_t id;
 
 public:
@@ -39,6 +40,7 @@ public:
 		self(),
 		cb(),
 		messages(),
+		reading(false),
 		id(id) {
 	}
 
@@ -58,6 +60,7 @@ public:
 	}
 
 	virtual MessageRef recv(int32_t timeout) {
+		reading = true;
 		int64_t end = Util::currentTimeMillis() + timeout;
 		while(messages.empty()) {
 			if(timeout == -1) {
@@ -66,6 +69,7 @@ public:
 				int64_t now = Util::currentTimeMillis();
 				int64_t left = end - now;
 				if(left < 1) {
+					reading = false;
 					return MessageRef();
 				}
 				group->update((int32_t) left);
@@ -73,11 +77,16 @@ public:
 		}
 		MessageRef ret(messages.front());
 		messages.pop_front();
+		reading = false;
 		return ret;
 	}
 
 	virtual void queue(MessageRef msg) {
-		messages.push_back(msg);
+		if(reading || !cb) {
+			messages.push_back(msg);
+		} else {
+			cb->onDataReady(self.lock(), msg);
+		}
 	}
 
 	virtual ChannelRef getReverseChannel() {

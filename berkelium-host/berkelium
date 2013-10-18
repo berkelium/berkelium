@@ -43,6 +43,13 @@ done
 exit 0
 }
 
+function fake()
+{
+gdb --args $dir/../build/run/host-fake $*
+rm ~/.berkelium-debug
+exit 0
+}
+
 #
 # You can create an ~/.berkeliumrc with this content:
 #
@@ -57,6 +64,8 @@ exit 0
 [ -e ~/.berkeliumrc ] && . ~/.berkeliumrc
 
 [ "$1" = "debug" ] && berkelium_debug_gdb --berkelium-debug=`echo ~/.berkelium-debug`
+
+[ "$1" = "debug-fake" ] && fake --berkelium-debug=`echo ~/.berkelium-debug`
 
 [ "$BERKELIUM_DEBUG" = "gdb" ] && berkelium_debug_gdb $*
 
