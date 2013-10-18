@@ -17,6 +17,8 @@ class Filesystem {
 public:
 	static std::string getTemp();
 
+	static std::string createTemp();
+
 	static std::vector<std::string> split(const std::string& arg);
 
 	static std::string dirname(const std::string& arg);

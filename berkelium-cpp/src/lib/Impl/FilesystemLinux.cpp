@@ -26,14 +26,6 @@ std::string Filesystem::append(const std::string& dir, const std::string& append
 	return dir + seperator + append;
 }
 
-std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2) {
-	return dir + seperator + a1 + seperator + a2;
-}
-
-std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2, const std::string& a3) {
-	return dir + seperator + a1 + seperator + a2 + seperator + a3;
-}
-
 std::string Filesystem::absolute(const std::string& arg) {
 	char ret[PATH_MAX];
 	memset(ret, 0, PATH_MAX);
@@ -57,7 +49,7 @@ void Filesystem::removeFile(const std::string& file) {
 }
 
 void Filesystem::removeEmptyDir(const std::string& dir) {
-    RemoveDirectory(dir.c_str());
+	rmdir(dir.c_str());
 }
 
 bool Filesystem::exists(const std::string& arg) {

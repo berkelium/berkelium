@@ -26,14 +26,6 @@ std::string Filesystem::append(const std::string& dir, const std::string& append
 	return dir + seperator + append;
 }
 
-std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2) {
-	return append(append(dir, a1), a2);
-}
-
-std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2, const std::string& a3) {
-	return append(append(dir, a1, a2), a3);
-}
-
 std::string Filesystem::absolute(const std::string& arg) {
     TCHAR buffer[BUFSIZE];
     if(GetFullPathName(arg.c_str(), BUFSIZE, buffer, NULL) == 0) {

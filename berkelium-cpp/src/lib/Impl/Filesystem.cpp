@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <Berkelium/Impl/Filesystem.hpp>
+#include <Berkelium/API/Util.hpp>
 
 #include <sstream>
 #include <stdlib.h>
@@ -13,6 +14,20 @@ namespace impl {
 
 extern const char seperatorChar;
 extern const std::string seperator;
+
+std::string Filesystem::createTemp() {
+	std::string ret(append(getTemp(), Util::randomId()));
+	createDirectories(ret);
+	return ret;
+}
+
+std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2) {
+	return append(append(dir, a1), a2);
+}
+
+std::string Filesystem::append(const std::string& dir, const std::string& a1, const std::string& a2, const std::string& a3) {
+	return append(append(dir, a1, a2), a3);
+}
 
 std::vector<std::string> Filesystem::split(const std::string& arg) {
 	std::vector<std::string> ret;

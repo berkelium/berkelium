@@ -30,10 +30,11 @@ TEST_F(FileSystemTest, split) {
 
 TEST_F(FileSystemTest, tmp) {
 	USE_LOGGER(tmp);
-    
-    std::string temp = Filesystem::getTemp();
-	ASSERT_TRUE(Filesystem::exists(temp));
-	ASSERT_FALSE(Filesystem::exists("abcdefghijklmnopqrstuvwxyz"));
+
+	std::string temp = Filesystem::getTemp();
+	// getTemp() can't be really tested, it is not required that this directory exists yet
+	//ASSERT_TRUE(Filesystem::exists(temp));
+	ASSERT_FALSE(Filesystem::exists(Filesystem::append(temp, "abcdefghijklmnopqrstuvwxyz")));
 }
 
 TEST_F(FileSystemTest, createDeleteDir) {
