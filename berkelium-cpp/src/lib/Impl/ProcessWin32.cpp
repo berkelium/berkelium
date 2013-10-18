@@ -80,9 +80,6 @@ ProcessRef Process::create(RuntimeRef runtime, LoggerRef logger, const std::stri
 	return ProcessRef(new ProcessImpl(runtime, logger, dir));
 }
 
-Process::~Process() {
-}
-
 } // namespace impl
 
 } // namespace Berkelium
