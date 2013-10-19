@@ -57,7 +57,7 @@ public:
 	virtual ~ConsoleRedirector() {
 	}
 
-	virtual void onDataReady(Ipc::PipeRef pipe) {
+	virtual void onPipeDataReady(Ipc::PipeRef pipe) {
 		int fd = getPipeFd(pipe);
 
 		char buf[BUF_SIZE];

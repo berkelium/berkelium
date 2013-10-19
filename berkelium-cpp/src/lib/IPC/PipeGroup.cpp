@@ -156,7 +156,7 @@ public:
 				}
 				PipeCallbackRef cb(data->cb.lock());
 				if(cb) {
-					cb->onDataReady(ref);
+					cb->onPipeDataReady(ref);
 				} else {
 					bk_error("PipeGroup: no callback!");
 				}

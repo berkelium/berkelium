@@ -49,7 +49,7 @@ public:
 		return ret;
 	}
 
-	virtual void onDataReady(ChannelRef channel, MessageRef msg) {
+	virtual void onChannelDataReady(ChannelRef channel, MessageRef msg) {
 		fprintf(stderr, "BerkeliumHostTabImpl::onDataReady\n");
 		switch(CommandId cmd = msg->get_cmd()) {
 			default: {

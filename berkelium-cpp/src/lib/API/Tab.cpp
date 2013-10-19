@@ -12,7 +12,6 @@
 #include <Berkelium/IPC/Pipe.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>
-#include <Berkelium/Impl/BerkeliumCallback.hpp>
 
 namespace Berkelium {
 
@@ -24,14 +23,14 @@ Tab::~Tab() {
 
 namespace impl {
 
-class TabImpl : public Tab, public InternalUpdate {
+class TabImpl : public Tab, public Berkelium::Ipc::ChannelCallback {
 BERKELIUM_IMPL_CLASS(Tab)
 
 private:
 	TabWRef self;
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
-	Berkelium::Ipc::PipeCallbackRef cb;
+	Berkelium::Ipc::ChannelCallbackRef cb;
 	WindowRef parent;
 
 public:
@@ -48,8 +47,7 @@ public:
 		manager->unregisterTab();
 	}
 
-	virtual void internalUpdate() {
-		Ipc::MessageRef message(recv->recv());
+	virtual void onChannelDataReady(Ipc::ChannelRef channel, Ipc::MessageRef message) {
 		switch(Ipc::CommandId cmd = message->get_cmd()) {
 			default: {
 				logger->error() << "Tab: received unknown command '" << cmd << "'" << std::endl;
@@ -100,8 +98,8 @@ public:
 		TabImpl* impl = new TabImpl(window, ipc);
 		TabRef ret(impl);
 		impl->self = ret;
-		impl->cb.reset(new BerkeliumCallback<Tab, TabImpl>(ret));
-		getPipeGroup(impl->runtime)->registerCallback(ipc->getGroup(), impl->cb);
+		impl->cb.reset(new Berkelium::Ipc::ChannelCallbackDelegate<Tab, TabImpl>(ret));
+		ipc->registerCallback(impl->cb);
 		impl->manager->registerTab(ret);
 		return ret;
 	}

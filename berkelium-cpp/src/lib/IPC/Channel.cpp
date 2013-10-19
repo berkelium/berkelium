@@ -85,7 +85,7 @@ public:
 		if(reading || !cb) {
 			messages.push_back(msg);
 		} else {
-			cb->onDataReady(self.lock(), msg);
+			cb->onChannelDataReady(self.lock(), msg);
 		}
 	}
 

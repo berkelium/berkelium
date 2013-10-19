@@ -23,7 +23,30 @@ public:
 
 	virtual ~PipeCallback() = 0;
 
-	virtual void onDataReady(PipeRef pipe) = 0;
+	virtual void onPipeDataReady(PipeRef pipe) = 0;
+};
+
+template<class T, class I>
+class PipeCallbackDelegate : public PipeCallback {
+private:
+	std::weak_ptr<T> wref;
+
+public:
+	PipeCallbackDelegate(std::weak_ptr<T> wref) :
+		PipeCallback(),
+		wref(wref) {
+	}
+
+	virtual ~PipeCallbackDelegate() {
+	}
+
+	virtual void onPipeDataReady(PipeRef pipe) {
+		std::shared_ptr<T> ref(wref.lock());
+		if(ref) {
+			I* impl = (I*)ref.get();
+			impl->onPipeDataReady(pipe);
+		}
+	}
 };
 
 class Pipe {

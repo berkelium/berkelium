@@ -16,7 +16,6 @@
 #include <Berkelium/IPC/ChannelGroup.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>
-#include <Berkelium/Impl/BerkeliumCallback.hpp>
 
 #include <set>
 
@@ -38,7 +37,7 @@ struct set {
 typedef set<WindowWRef>::type WindowWRefSet;
 typedef set<HostDelegateWRef>::type HostDelegateWRefSet;
 
-class InstanceImpl : public Instance/*, public InternalUpdate*/ {
+class InstanceImpl : public Instance, public Berkelium::Ipc::ChannelCallback {
 BERKELIUM_IMPL_CLASS(Instance)
 
 private:
@@ -48,9 +47,7 @@ private:
 	ProfileRef profile;
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
-	/*
-	Berkelium::Ipc::PipeCallbackRef cb;
-	*/
+	Berkelium::Ipc::ChannelCallbackRef cb;
 	ProcessRef process;
 	WindowWRefSet windows;
 	HostDelegateWRefSet hosts;
@@ -101,9 +98,7 @@ public:
 		send->send(message);
 	}
 
-	/*
-	virtual void internalUpdate() {
-		Ipc::MessageRef message(recv->recv());
+	virtual void onChannelDataReady(Ipc::ChannelRef channel, Ipc::MessageRef message) {
 		switch(Ipc::CommandId cmd = message->get_cmd()) {
 			default: {
 				logger->error() << "Instance: received unknown command '" << cmd << "'" << std::endl;
@@ -111,7 +106,6 @@ public:
 			}
 		}
 	}
-	*/
 
 	virtual ProfileRef getProfile() {
 		return profile;
@@ -174,10 +168,8 @@ public:
 		InstanceImpl* impl = new InstanceImpl(executable, profile, ipc, process);
 		InstanceRef ret(impl);
 		impl->setSelf(ret);
-		/*
-		impl->cb.reset(new BerkeliumCallback<Instance, InstanceImpl>(ret));
-		getPipeGroup(impl->runtime)->registerCallback(ipc->getGroup(), impl->cb, false);
-		*/
+		impl->cb.reset(new Berkelium::Ipc::ChannelCallbackDelegate<Instance, InstanceImpl>(ret));
+		ipc->registerCallback(impl->cb);
 		impl->getManager()->registerInstance(ret);
 		//impl->createWindow(false);
 		return ret;

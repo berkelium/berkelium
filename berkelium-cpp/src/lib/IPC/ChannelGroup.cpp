@@ -8,7 +8,6 @@
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/API/Util.hpp>
-#include <Berkelium/Impl/BerkeliumCallback.hpp>
 
 #include <map>
 
@@ -20,7 +19,7 @@ namespace impl {
 
 typedef std::map<int32_t, ChannelRef> ChannelMap;
 
-class ChannelGroupImpl : public ChannelGroup, public Berkelium::impl::InternalUpdate {
+class ChannelGroupImpl : public ChannelGroup, public PipeCallback {
 private:
 	ChannelGroupWRef self;
 	ChannelGroupImpl* real;
@@ -117,7 +116,7 @@ public:
 		}
 	}
 
-	virtual void internalUpdate() {
+	virtual void onPipeDataReady(PipeRef pipe) {
 		Ipc::MessageRef msg(pin->recv());
 		ChannelMap::iterator it(map.find(msg->getChannelId()));
 		if(it == map.end()) {
@@ -145,10 +144,10 @@ public:
 		impl1->reverseRef = ret2;
 		impl2->reverseWRef = ret1;
 
-		impl1->cb.reset(new Berkelium::impl::BerkeliumCallback<ChannelGroup, ChannelGroupImpl>(ret1));
+		impl1->cb.reset(new PipeCallbackDelegate<ChannelGroup, ChannelGroupImpl>(ret1));
 		impl1->group->registerCallback(impl1->pin, impl1->cb);
 
-		impl2->cb.reset(new Berkelium::impl::BerkeliumCallback<ChannelGroup, ChannelGroupImpl>(ret2));
+		impl2->cb.reset(new PipeCallbackDelegate<ChannelGroup, ChannelGroupImpl>(ret2));
 		impl2->group->registerCallback(impl2->pin, impl2->cb);
 
 		return ret1;

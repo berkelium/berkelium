@@ -14,7 +14,6 @@
 #include <Berkelium/IPC/ChannelGroup.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>
-#include <Berkelium/Impl/BerkeliumCallback.hpp>
 
 namespace Berkelium {
 
@@ -26,7 +25,7 @@ Window::~Window() {
 
 namespace impl {
 
-class WindowImpl : public Window/*, public InternalUpdate*/ {
+class WindowImpl : public Window, public Berkelium::Ipc::ChannelCallback {
 BERKELIUM_IMPL_CLASS(Window)
 
 private:
@@ -35,9 +34,7 @@ private:
 	Ipc::ChannelGroupRef group;
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
-	/*
-	Berkelium::Ipc::PipeCallbackRef cb;
-	*/
+	Berkelium::Ipc::ChannelCallbackRef cb;
 	std::list<TabWRef> tabs;
 	const bool incognito;
 
@@ -60,9 +57,7 @@ public:
 		getManager()->unregisterWindow();
 	}
 
-	/*
-	virtual void internalUpdate() {
-		Ipc::MessageRef message(recv->recv());
+	virtual void onChannelDataReady(Ipc::ChannelRef channel, Ipc::MessageRef message) {
 		switch(Ipc::CommandId cmd = message->get_cmd()) {
 			default: {
 				logger->error() << "Window: received unknown command '" << cmd << "'" << std::endl;
@@ -70,7 +65,6 @@ public:
 			}
 		}
 	}
-	*/
 
 	virtual int32_t getTabCount() {
 		cleanupTabs();
@@ -128,10 +122,8 @@ public:
 		WindowImpl* impl = new WindowImpl(instance, channel, incognito);
 		WindowRef ret(impl);
 		impl->self = ret;
-		/*
-		impl->cb.reset(new BerkeliumCallback<Window, WindowImpl>(ret));
-		getPipeGroup(impl->runtime)->registerCallback(channel->getGroup(), impl->cb, false);
-		*/
+		impl->cb.reset(new Berkelium::Ipc::ChannelCallbackDelegate<Window, WindowImpl>(ret));
+		channel->registerCallback(impl->cb);
 		impl->manager->registerWindow(ret);
 		return ret;
 	}
