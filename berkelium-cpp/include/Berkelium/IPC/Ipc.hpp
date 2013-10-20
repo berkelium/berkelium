@@ -46,6 +46,7 @@ typedef std::weak_ptr<Pipe> PipeWRef;
 
 typedef enum {
 	exitHost,
+	ping,
 	createWindow,
 	createTab,
 	onReady,

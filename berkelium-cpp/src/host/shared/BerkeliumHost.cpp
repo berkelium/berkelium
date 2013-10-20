@@ -48,6 +48,7 @@ ChannelGroupRef channels;
 
 LoggerRef logger = Berkelium::Util::createRootLogger(NULL);
 ChannelRef ipc;
+ChannelRef ping;
 
 int initialised = 0;
 
@@ -126,17 +127,41 @@ void CreateWindow(Ipc::ChannelRef win, bool incognito) {
 }
 */
 
+int64_t lastPing = 0;
+
 bool BerkeliumHost::update(int32_t timeout) {
 	static bool started_send = false;
+
+	int64_t now = Util::currentTimeMillis();
 
 	if(!started_send) {
 		// send berkelium ipc startup message
 		MessageRef msg(Message::create(logger));
 		started_send = true;
 		msg->add_str("berkelium");
+		// send ping channel id
+		msg->add_32(ping->getId());
 		ipc->send(msg);
 		msg = ipc->recv();
 		logger->info("berkelium host is up and running!");
+		lastPing = now;
+	}
+
+	if(now - lastPing > 2000) {
+		lastPing = now;
+		MessageRef msg(Message::create(logger));
+		msg->add_cmd(CommandId::ping);
+		ping->send(msg);
+	}
+
+	int64_t lastRecv = group->getLastRecv();
+	if(lastRecv != 0 && now - lastRecv > 4000) {
+		static bool timeout = false;
+		if(!timeout) {
+			timeout = true;
+			logger->error("berkelium library timeout!");
+			BerkeliumHost::setDone();
+		}
 	}
 
 	/*
@@ -207,6 +232,8 @@ ProfileRef BerkeliumHost::init(const std::string& dir, const std::string& name) 
 	BerkeliumHostDelegate::init();
 	channels = ChannelGroup::createGroup(logger, dir, name, "host", group);
 	ipc = channels->getChannel(0, "berkelium-host-ipc");
+	ping = channels->createChannel("ping");
+
 	berkeliumHostInstance = BerkeliumHostInstance::createBerkeliumHostInstance(logger, ipc);
 
 	RuntimeRef runtime(BerkeliumFactory::createRuntime());

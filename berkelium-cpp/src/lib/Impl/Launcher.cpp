@@ -65,6 +65,7 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 		logger->error() << "ipc bad magic!" << std::endl;
 		return InstanceRef();
 	}
+	Ipc::ChannelRef ping(ipc->getGroup()->getChannel(msg->get_32(), "ping"));
 	msg->reset();
 	ipc->send(msg);
 	logger->debug() << "waiting for profile..." << std::endl;
@@ -77,7 +78,7 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 	}
 	logger->info() << "berkelium host process is up and running!" << std::endl;
 
-	return impl::newInstance(executable, profile, ipc, process);
+	return impl::newInstance(executable, profile, ipc, process, ping);
 }
 
 } // namespace impl

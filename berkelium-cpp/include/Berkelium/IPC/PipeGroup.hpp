@@ -33,6 +33,8 @@ public:
 
 	virtual void update(int32_t timeout) = 0;
 
+	virtual int64_t getLastRecv() = 0;
+
 	static PipeGroupRef create();
 };
 

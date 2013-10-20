@@ -32,6 +32,11 @@ std::string getOption(const std::string& cmdline, const std::string& option);
 
 void parseCommandLine(RuntimeRef runtime, int argc, char* argv[]);
 
+// Warning: you should not call this function,
+// use runtime->update(ms) to give berkelium a change
+// to process events in this time
+void sleep(int32_t ms);
+
 #ifdef WIN32
 std::string ws2s(const std::wstring&);
 std::wstring s2ws(const std::string&);

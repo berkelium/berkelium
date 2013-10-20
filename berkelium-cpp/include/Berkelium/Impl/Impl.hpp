@@ -76,7 +76,7 @@ TabRef newTab(WindowRef window, Ipc::ChannelRef ipc);
 WindowRef newWindow(InstanceRef instance, Ipc::ChannelRef channel, bool incognito);
 HostExecutableRef newHostExecutable(RuntimeRef runtime, const std::string&);
 InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, ProfileRef profile);
-InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process);
+InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process, Ipc::ChannelRef ping);
 HostVersionRef newVersion(RuntimeRef runtime, int32_t vMajor, int32_t vMinor, int32_t vBuild, int32_t vPatch);
 HostVersionRef newVersion(RuntimeRef runtime, const std::string& version);
 ManagerRef newManager(LogDelegateRef log);

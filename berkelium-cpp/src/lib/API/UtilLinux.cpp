@@ -43,6 +43,10 @@ std::string getEnv(const std::string& env, const std::string& defaultValue) {
 	return ret;
 }
 
+void sleep(int32_t ms) {
+	usleep(ms * 1000);
+}
+
 } // namespace Util
 
 } // namespace Berkelium

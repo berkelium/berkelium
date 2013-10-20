@@ -41,6 +41,7 @@ typedef std::map<Pipe*, PipeGroupData*> PipeMap;
 
 class PipeGroupImpl : public PipeGroup {
 private:
+	int64_t lastRecv;
 	PipeMap map;
 // TODO Windows
 #ifdef LINUX
@@ -50,6 +51,7 @@ private:
 public:
 	PipeGroupImpl() :
 		PipeGroup(),
+		lastRecv(0),
 		map() {
 	}
 
@@ -90,6 +92,10 @@ public:
 
 	virtual void registerCallback(ChannelGroupRef group, PipeCallbackRef callback) {
 		registerCallback(Berkelium::impl::getInputPipe(group), callback);
+	}
+
+	virtual int64_t getLastRecv() {
+		return lastRecv;
 	}
 
 	virtual void update(int32_t timeout) {
@@ -144,6 +150,7 @@ public:
 			bk_error("PipeGroup: select error %d", r);
 			return;
 		}
+		lastRecv = Util::currentTimeMillis();
 		for(PipeMap::iterator it(map.begin()); it != map.end(); it++) {
 			PipeGroupData* data = it->second;
 			if(data->fd == -1) {

@@ -21,7 +21,7 @@ using Berkelium::WindowRef;
 using Berkelium::TabRef;
 
 class WindowTest : public ::testing::Test {
-	DEFINE_LOGGER(IpcMessageTest);
+	DEFINE_LOGGER(WindowTest);
 };
 
 void createWindow(Berkelium::LoggerRef logger, WindowRef& ret, bool incognito) {

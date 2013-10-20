@@ -9,6 +9,7 @@
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/API/Window.hpp>
+#include <Berkelium/API/HostDelegate.hpp>
 #include <Berkelium/IPC/Channel.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/PipeGroup.hpp>
@@ -47,13 +48,14 @@ private:
 	ProfileRef profile;
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
+	Ipc::ChannelRef ping;
 	Berkelium::Ipc::ChannelCallbackRef cb;
 	ProcessRef process;
 	WindowWRefSet windows;
 	HostDelegateWRefSet hosts;
 
 public:
-	InstanceImpl(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process) :
+	InstanceImpl(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process, Ipc::ChannelRef ping) :
 		BERKELIUM_IMPL_CTOR3(Instance, ipc->getAlias(), executable),
 		self(),
 		group(ipc->getGroup()),
@@ -61,6 +63,7 @@ public:
 		profile(profile),
 		send(ipc),
 		recv(ipc->getReverseChannel()),
+		ping(ping),
 		/*
 		cb(),
 		*/
@@ -103,6 +106,19 @@ public:
 			default: {
 				logger->error() << "Instance: received unknown command '" << cmd << "'" << std::endl;
 				break;
+			}
+			case Ipc::CommandId::ping: {
+				onPing();
+				break;
+			}
+		}
+	}
+
+	void onPing() {
+		for(HostDelegateWRefSet::iterator it(hosts.begin()); it != hosts.end(); it++) {
+			HostDelegateRef ref = it->lock();
+			if(ref) {
+				ref->onPing(self.lock());
 			}
 		}
 	}
@@ -164,12 +180,13 @@ public:
 		return ret;
 	}
 
-	static InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process) {
-		InstanceImpl* impl = new InstanceImpl(executable, profile, ipc, process);
+	static InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process, Ipc::ChannelRef ping) {
+		InstanceImpl* impl = new InstanceImpl(executable, profile, ipc, process, ping);
 		InstanceRef ret(impl);
 		impl->setSelf(ret);
 		impl->cb.reset(new Berkelium::Ipc::ChannelCallbackDelegate<Instance, InstanceImpl>(ret));
 		ipc->registerCallback(impl->cb);
+		impl->ping->registerCallback(impl->cb);
 		impl->getManager()->registerInstance(ret);
 		//impl->createWindow(false);
 		return ret;
@@ -186,8 +203,8 @@ ManagerRef getManager(Instance* instance)
 	return impl->getManager();
 }
 
-InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process) {
-	return InstanceImpl::newInstance(executable, profile, ipc, process);
+InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process, Ipc::ChannelRef ping) {
+	return InstanceImpl::newInstance(executable, profile, ipc, process, ping);
 }
 
 } // namespace impl
