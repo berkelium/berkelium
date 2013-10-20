@@ -81,9 +81,10 @@ void BerkeliumHostDelegate::init()
 void BerkeliumHostDelegate::exit()
 {
 	BrowserList::GetInstance(chrome::HOST_DESKTOP_TYPE_NATIVE)->RemoveObserver(&observer);
-	if(any) {
-		any->tab_strip_model()->CloseAllTabs();
-		delete any;
+	for(std::set<Browser*>::iterator it(browsers.begin()); it != browsers.end(); it++) {
+		Browser* browser(*it);
+		browser->tab_strip_model()->CloseAllTabs();
+		delete browser;
 	}
 	chrome::Exit();
 }

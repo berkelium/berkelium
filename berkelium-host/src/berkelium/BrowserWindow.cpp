@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/ui/omnibox/location_bar.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view.h"
 #include "chrome/browser/profiles/profile.h"
@@ -94,12 +95,74 @@ public:
 
 */
 
+class BerkeliumChromiumLocationBar : public LocationBar {
+public:
+	virtual void ShowFirstRunBubble() {
+	}
+
+	virtual void SetInstantSuggestion(const InstantSuggestion& suggestion) {
+	}
+
+	virtual string16 GetInputString() const {
+		return string16();
+	}
+
+	virtual WindowOpenDisposition GetWindowOpenDisposition() const {
+		return NEW_FOREGROUND_TAB;
+	}
+
+	virtual content::PageTransition GetPageTransition() const {
+		return content::PAGE_TRANSITION_TYPED;
+	}
+
+	virtual void AcceptInput() {
+	}
+
+	virtual void FocusLocation(bool select_all) {
+	}
+
+	virtual void FocusSearch() {
+	}
+
+	virtual void UpdateContentSettingsIcons() {
+	}
+
+	virtual void UpdatePageActions() {
+	}
+
+	virtual void InvalidatePageActions() {
+	}
+
+	virtual void UpdateOpenPDFInReaderPrompt() {
+	}
+
+	virtual void SaveStateToContents(content::WebContents* contents) {
+	}
+
+	virtual void Revert() {
+	}
+
+	virtual const OmniboxView* GetLocationEntry() const {
+		return NULL;
+	}
+
+	virtual OmniboxView* GetLocationEntry() {
+		return NULL;
+	}
+
+	virtual LocationBarTesting* GetLocationBarForTesting() {
+		return NULL;
+	}
+
+	virtual ~BerkeliumChromiumLocationBar() {
+	}
+};
+
 class BerkeliumBrowserWindow : public BrowserWindow, public TabStripModelObserver/*, public BerkeliumChromiumWindow*/ {
 public:
 	BerkeliumBrowserWindow(Browser* browser) :
-		browser(browser),
-		ipc(Berkelium::BerkeliumHost::addWindow(browser)),
-		msg(/*ipc->getMessage()*/) {
+		locationBar(new BerkeliumChromiumLocationBar()),
+		browser(browser) {
 		fprintf(stderr, "this: %p\n", this);
 		fprintf(stderr, "browser: %p\n", browser);
 		fprintf(stderr, "tab_strip_model: %p\n", browser->tab_strip_model());
@@ -110,29 +173,11 @@ public:
 	virtual ~BerkeliumBrowserWindow() {
 		fprintf(stderr, "test1\n");
 		Berkelium::BerkeliumHost::removeWindow(browser);
-		ipc.reset();
+		delete locationBar;
 	}
-
-	/*
-	virtual void SetChannel(Berkelium::Ipc::ChannelRef channel) {
-		ipc = channel;
-	}
-
-	virtual Berkelium::Ipc::ChannelRef GetChannel() {
-		return ipc;
-	}
-
-	virtual void CloseWindow() {
-		delete browser;
-	}
-
-	virtual void Update() {
-	}
-	*/
 
 	virtual void Close() {
 		browser->tab_strip_model()->CloseAllTabs();
-		//Berkelium::closed.insert(browser);
 	}
 
 	virtual void TabInsertedAt(content::WebContents* contents, int index, bool foreground) {
@@ -140,14 +185,8 @@ public:
 	}
 
 private:
+	BerkeliumChromiumLocationBar* locationBar;
 	Browser* browser;
-	Berkelium::Ipc::ChannelRef ipc;
-	Berkelium::Ipc::MessageRef msg;
-
-	/*
-	BerkeliumChromiumWindowDelegate* bcwd;
-	BerkeliumChromiumWindowRef bcw;
-	*/
 
 /*
 	virtual void ActiveTabChanged(TabContents* old_contents, TabContents* new_contents, int index, bool user_gesture) {
@@ -193,7 +232,9 @@ private:
 	virtual void UpdateFullscreenExitBubbleContent(const GURL&, FullscreenExitBubbleType) {X;}
 	virtual bool ShouldHideUIForFullscreen() const {X;return true;}
 	virtual bool IsFullscreenBubbleVisible() const {X;return false;}
-	virtual LocationBar* GetLocationBar() const {X;return NULL;}
+	virtual LocationBar* GetLocationBar() const {
+		return locationBar;
+	}
 	virtual void SetFocusToLocationBar(bool) {X;}
 	virtual void UpdateReloadStopState(bool, bool) {X;}
 	virtual void UpdateToolbar(content::WebContents*, bool) {X;}

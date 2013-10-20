@@ -24,13 +24,13 @@ export LD_LIBRARY_PATH="`readlink -f $base/lib.target`"
 function berkelium_default()
 {
 update_ld_path
-exec ./berkelium $*
+./berkelium $*
 }
 
 function berkelium_debug_gdb()
 {
 update_ld_path
-exec gdb --args ./berkelium $*
+gdb --args ./berkelium $*
 }
 
 function berkelium_debug_external()
@@ -46,8 +46,6 @@ exit 0
 function fake()
 {
 gdb --args $dir/../build/run/host-fake $*
-rm ~/.berkelium-debug
-exit 0
 }
 
 #
@@ -63,12 +61,27 @@ exit 0
 
 [ -e ~/.berkeliumrc ] && . ~/.berkeliumrc
 
-[ "$1" = "debug" ] && berkelium_debug_gdb --berkelium-debug=`echo ~/.berkelium-debug`
+if [ "$1" = "debug" ]; then
+	berkelium_debug_gdb `cat ~/.berkelium-debug`
+	rm ~/.berkelium-debug
+	exit 0
+fi
 
-[ "$1" = "debug-fake" ] && fake --berkelium-debug=`echo ~/.berkelium-debug`
+if [ "$1" = "debug-fake" ]; then
+	fake --berkelium-debug=`echo ~/.berkelium-debug`
+	rm ~/.berkelium-debug
+	exit 0
+fi
 
-[ "$BERKELIUM_DEBUG" = "gdb" ] && berkelium_debug_gdb $*
+if [ "$BERKELIUM_DEBUG" = "gdb" ]; then
+	berkelium_debug_gdb $*
+	exit 0
+fi
 
-[ "$BERKELIUM_DEBUG" = "external" ] && berkelium_debug_external $*
+if [ "$BERKELIUM_DEBUG" = "external" ]; then
+	berkelium_debug_external $*
+	exit 0
+fi
+
 
 berkelium_default $*
