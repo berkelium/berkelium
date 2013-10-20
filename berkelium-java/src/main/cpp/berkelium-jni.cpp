@@ -37,6 +37,7 @@ const char* BK_Java_Class_Names[] = {
 	NULL,
       "org/berkelium/impl/TabImpl",
 	NULL,
+	NULL,
 };
 
 // =========================================
@@ -379,6 +380,13 @@ JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_addLogDelegate(JNIEnv
 	BK_Env bkenv;
 	setupBkEnv(bkenv, env);
 	BK_Runtime_addLogDelegate(&bkenv, (void*)_this, (BK_LogDelegate)delegate);
+}
+
+JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_addUpdateEvent(JNIEnv* env, jobject _this, jobject update, jint timeout)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	BK_Runtime_addUpdateEvent(&bkenv, (void*)_this, (BK_Update)update, timeout);
 }
 
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_createTemporaryProfile(JNIEnv* env, jobject _this)

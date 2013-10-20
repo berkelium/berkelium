@@ -17,6 +17,9 @@ public interface Runtime extends BerkeliumObject  {
 	// Processes all Pending Events. Waits up to timeout ms for new events.
 	void update(int timeout);
 
+	// Calls given update method after given timeout (in ms).
+	void addUpdateEvent(Update update, int timeout);
+
 	// Sets the Path to the HostExecutable Object used by forSystemInstalled.
 	void setDefaultExecutable(String pathTo);
 

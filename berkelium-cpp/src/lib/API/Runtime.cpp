@@ -121,6 +121,9 @@ public:
 		return HostExecutableRef(newHostExecutable(getSelf(), pathTo));
 	}
 
+	virtual void addUpdateEvent(UpdateRef update, int32_t timeout) {
+	}
+
 	virtual HostExecutableRef forSystemInstalled() {
 		std::string path;
 

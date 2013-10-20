@@ -13,6 +13,7 @@ import org.berkelium.api.LogType;
 import org.berkelium.api.Logger;
 import org.berkelium.api.Profile;
 import org.berkelium.api.Runtime;
+import org.berkelium.api.Update;
 
 // =========================================
 // WARNING:
@@ -29,6 +30,9 @@ class RuntimeImpl implements Runtime, BerkeliumObjectImpl {
 
 	@Override
 	public native void update(int timeout);
+
+	@Override
+	public native void addUpdateEvent(Update update, int timeout);
 
 	@Override
 	public native void setDefaultExecutable(String pathTo);

@@ -23,6 +23,7 @@
 #include <Berkelium/API/WindowDelegate.hpp>
 #include <Berkelium/API/Tab.hpp>
 #include <Berkelium/API/TabDelegate.hpp>
+#include <Berkelium/API/Update.hpp>
 
 #include <berkelium.h>
 
@@ -542,6 +543,9 @@ const char* BK_Env_Enum_To_String_Or_Null(BK_Env_Enum type)
 		case TabDelegate:
 			return "TabDelegate";
 
+		case Update:
+			return "Update";
+
 		default:
 			return NULL;
 	}
@@ -766,6 +770,23 @@ extern "C" void BK_Runtime_update(BK_Env* env, BK_Runtime self, bk_int32 timeout
 	}
 
 	_this->update(timeout);
+}
+
+extern "C" void BK_Runtime_addUpdateEvent(BK_Env* env, BK_Runtime self, BK_Update update, bk_int32 timeout)
+{
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
+	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
+
+	if(!_this) {
+		bk_error("error: _this in '%s' %p not found!", __FUNCTION__, self);
+		return;
+	}
+
+	_this->addUpdateEvent(mapInUpdateRef(env, update), timeout);
 }
 
 extern "C" void BK_Runtime_setDefaultExecutable(BK_Env* env, BK_Runtime self, bk_string pathTo)

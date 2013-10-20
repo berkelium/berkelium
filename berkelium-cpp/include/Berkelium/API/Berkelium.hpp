@@ -105,6 +105,10 @@ class TabDelegate;
 typedef std::shared_ptr<TabDelegate> TabDelegateRef;
 typedef std::weak_ptr<TabDelegate> TabDelegateWRef;
 
+class Update;
+typedef std::shared_ptr<Update> UpdateRef;
+typedef std::weak_ptr<Update> UpdateWRef;
+
 typedef std::list<WindowRef> WindowList;
 typedef std::shared_ptr<WindowList> WindowListRef;
 

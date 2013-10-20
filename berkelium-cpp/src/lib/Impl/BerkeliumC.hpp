@@ -11,6 +11,27 @@ inline char* malloc(const std::string& msg) {
 	return ret;
 }
 
+class BkUpdateMapper : public Berkelium::Update
+{
+private:
+	BK_Env* env;
+	BK_Update delegate;
+public:
+	BkUpdateMapper(BK_Env* env, BK_Update delegate)
+		: Berkelium::Update(),
+		env(env),
+		delegate(delegate) {
+	}
+
+	virtual ~BkUpdateMapper() {
+		free(delegate);
+	}
+
+	virtual void update() {
+		delegate->update(env, delegate);
+	}
+};
+
 class BkLogDelegateMapper : public Berkelium::LogDelegate
 {
 private:
@@ -151,6 +172,21 @@ inline Berkelium::LogDelegateRef mapInLogDelegateRef(BK_Env* env, bk_ext_obj ext
 	BERKELIUM_C_TRACE_RETURN(log);
 
 	return Berkelium::LogDelegateRef(new BkLogDelegateMapper(env, log));
+}
+
+inline Berkelium::UpdateRef mapInUpdateRef(BK_Env* env, bk_ext_obj extId)
+{
+	BERKELIUM_C_TRACE_STATIC();
+
+	BK_Update update = (BK_Update)env->mapIn(Update, extId, env->data);
+	if(update == NULL) {
+		bk_error("error: '%s' returned NULL!", __FUNCTION__);
+		return Berkelium::UpdateRef();
+	}
+
+	BERKELIUM_C_TRACE_RETURN(update);
+
+	return Berkelium::UpdateRef(new BkUpdateMapper(env, update));
 }
 
 inline Berkelium::HostDelegateRef mapInHostDelegateRef(BK_Env* env, bk_ext_obj extId)

@@ -33,13 +33,14 @@ typedef enum {
 	Window,
 	WindowDelegate,
 	Tab,
-	TabDelegate
+	TabDelegate,
+	Update
 } BK_Env_Enum;
 
 const char* BK_Env_Enum_To_String_Or_Null(BK_Env_Enum type);
 const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type);
 
-#define BK_Env_Enum_MAX 13
+#define BK_Env_Enum_MAX 14
 
 typedef int32_t bk_int32;
 typedef int32_t bk_bool;
@@ -170,6 +171,19 @@ struct _BK_TabDelegate {
 };
 
 // =========================================
+// delegate Update
+// =========================================
+
+typedef struct _BK_Update* BK_Update;
+
+typedef void BK_Update_update(BK_Env* env, BK_Update self);
+
+struct _BK_Update {
+	bk_ext_obj self;
+	BK_Update_update* update;
+};
+
+// =========================================
 // interface HostVersion
 // =========================================
 
@@ -214,6 +228,9 @@ BK_Runtime BK_BerkeliumFactory_createRuntimeWithLog(BK_Env* env, BK_LogDelegate 
 
 // Processes all Pending Events. Waits up to timeout ms for new events.
 void BK_Runtime_update(BK_Env* env, BK_Runtime self, bk_int32 timeout);
+
+// Calls given update method after given timeout (in ms).
+void BK_Runtime_addUpdateEvent(BK_Env* env, BK_Runtime self, BK_Update update, bk_int32 timeout);
 
 // Sets the Path to the HostExecutable Object used by forSystemInstalled.
 void BK_Runtime_setDefaultExecutable(BK_Env* env, BK_Runtime self, bk_string pathTo);
