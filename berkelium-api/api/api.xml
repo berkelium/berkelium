@@ -260,6 +260,10 @@
 			<arg type="Instance" name="instance"/>
 			<short>Called if the host process was properly closed.</short>
 		</entry>
+		<entry name="onPing">
+			<arg type="Instance" name="instance"/>
+			<short>Called when a ping was recv from the host.</short>
+		</entry>
 	</group>
 	<group type="interface" name="Instance">
 		<short>Represents a running berkelium host instance.</short>

@@ -59,6 +59,11 @@ public:
 		bk_error("BkHostDelegateMapper::onClosed not full implemented");
 		delegate->onClosed(env, delegate, NULL);
 	}
+
+	virtual void onPing(Berkelium::InstanceRef instance) {
+		bk_error("BkHostDelegateMapper::onPing not full implemented");
+		delegate->onPing(env, delegate, NULL);
+	}
 };
 
 class BkTabDelegateMapper : public Berkelium::TabDelegate

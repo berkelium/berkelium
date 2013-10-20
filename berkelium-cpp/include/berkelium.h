@@ -126,11 +126,13 @@ typedef struct _BK_HostDelegate* BK_HostDelegate;
 
 typedef void BK_HostDelegate_onCrashed(BK_Env* env, BK_HostDelegate self, BK_Instance instance);
 typedef void BK_HostDelegate_onClosed(BK_Env* env, BK_HostDelegate self, BK_Instance instance);
+typedef void BK_HostDelegate_onPing(BK_Env* env, BK_HostDelegate self, BK_Instance instance);
 
 struct _BK_HostDelegate {
 	bk_ext_obj self;
 	BK_HostDelegate_onCrashed* onCrashed;
 	BK_HostDelegate_onClosed* onClosed;
+	BK_HostDelegate_onPing* onPing;
 };
 
 // =========================================

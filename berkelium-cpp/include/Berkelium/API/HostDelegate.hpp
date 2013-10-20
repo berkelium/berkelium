@@ -31,6 +31,9 @@ public:
 
 	// Called if the host process was properly closed.
 	virtual void onClosed(InstanceRef instance) = 0;
+
+	// Called when a ping was recv from the host.
+	virtual void onPing(InstanceRef instance) = 0;
 };
 
 } // namespace Berkelium

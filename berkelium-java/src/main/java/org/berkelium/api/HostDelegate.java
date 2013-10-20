@@ -20,4 +20,7 @@ public interface HostDelegate {
 
 	// Called if the host process was properly closed.
 	void onClosed(Instance instance);
+
+	// Called when a ping was recv from the host.
+	void onPing(Instance instance);
 }
