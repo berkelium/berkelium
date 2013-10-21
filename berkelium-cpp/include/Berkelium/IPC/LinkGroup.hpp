@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BERKELIUM_IPC_PIPE_GROUP_HPP_
-#define BERKELIUM_IPC_PIPE_GROUP_HPP_
+#ifndef BERKELIUM_IPC_LINK_GROUP_HPP_
+#define BERKELIUM_IPC_LINK_GROUP_HPP_
 #pragma once
 
 #ifndef BERKELIUM_CPP_IMPL
@@ -42,4 +42,4 @@ public:
 
 } // namespace Berkelium
 
-#endif // BERKELIUM_IPC_PIPE_GROUP_HPP_
+#endif // BERKELIUM_IPC_LINK_GROUP_HPP_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BERKELIUM_IPC_PIPE_HPP_
-#define BERKELIUM_IPC_PIPE_HPP_
+#ifndef BERKELIUM_IPC_LINK_HPP_
+#define BERKELIUM_IPC_LINK_HPP_
 #pragma once
 
 #ifndef BERKELIUM_CPP_IMPL
@@ -76,10 +76,11 @@ public:
 
 namespace impl {
 
+// TODO linux only...
     extern int getLinkFd(Ipc::LinkRef pipe);
 
 } // namespace impl
 
 } // namespace Berkelium
 
-#endif // BERKELIUM_IPC_PIPE_HPP_
+#endif // BERKELIUM_IPC_LINK_HPP_
