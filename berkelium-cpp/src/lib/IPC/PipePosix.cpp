@@ -7,8 +7,8 @@
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
-#include <Berkelium/IPC/Pipe.hpp>
-#include <Berkelium/IPC/PipeGroup.hpp>
+#include <Berkelium/IPC/Link.hpp>
+#include <Berkelium/IPC/LinkGroup.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 

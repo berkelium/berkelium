@@ -12,8 +12,8 @@
 #include <Berkelium/API/HostDelegate.hpp>
 #include <Berkelium/IPC/Channel.hpp>
 #include <Berkelium/IPC/Message.hpp>
-#include <Berkelium/IPC/PipeGroup.hpp>
-#include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/LinkGroup.hpp>
+#include <Berkelium/IPC/Link.hpp>
 #include <Berkelium/IPC/ChannelGroup.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>

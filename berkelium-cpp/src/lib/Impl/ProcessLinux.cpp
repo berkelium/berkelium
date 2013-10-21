@@ -8,8 +8,8 @@
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Process.hpp>
-#include <Berkelium/IPC/Pipe.hpp>
-#include <Berkelium/IPC/PipeGroup.hpp>
+#include <Berkelium/IPC/Link.hpp>
+#include <Berkelium/IPC/LinkGroup.hpp>
 
 #include <sys/wait.h>
 #include <unistd.h>

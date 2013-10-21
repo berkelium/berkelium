@@ -4,9 +4,9 @@
 
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Logger.hpp>
-#include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/Link.hpp>
 #include <Berkelium/IPC/Message.hpp>
-#include <Berkelium/IPC/PipeGroup.hpp>
+#include <Berkelium/IPC/LinkGroup.hpp>
 #include <Berkelium/IPC/ChannelGroup.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 

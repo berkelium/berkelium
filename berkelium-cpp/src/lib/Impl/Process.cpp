@@ -5,7 +5,7 @@
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
-#include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/Link.hpp>
 #include <Berkelium/IPC/ChannelGroup.hpp>
 
 namespace Berkelium {

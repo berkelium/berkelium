@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <Berkelium/IPC/ChannelGroup.hpp>
-#include <Berkelium/IPC/PipeGroup.hpp>
-#include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/LinkGroup.hpp>
+#include <Berkelium/IPC/Link.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/API/Util.hpp>

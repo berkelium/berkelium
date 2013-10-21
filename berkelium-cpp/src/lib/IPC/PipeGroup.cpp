@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include <Berkelium/API/Util.hpp>
-#include <Berkelium/IPC/PipeGroup.hpp>
+#include <Berkelium/IPC/LinkGroup.hpp>
 #include <Berkelium/IPC/Ipc.hpp>
-#include <Berkelium/IPC/Pipe.hpp>
+#include <Berkelium/IPC/Link.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
 #include <map>
