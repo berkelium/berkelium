@@ -64,7 +64,7 @@ public:
 class RuntimeImpl : public Runtime {
 private:
 	LoggerRef logger;
-	Ipc::PipeGroupRef group;
+	Ipc::LinkGroupRef group;
 	std::string defaultExecutable;
 	LogDelegateRefSet logs;
 	LogDelegateRef target;
@@ -77,7 +77,7 @@ private:
 	RuntimeImpl(LogDelegateRef master, ManagerRef manager) :
 		Runtime(),
 		logger(),
-		group(Ipc::PipeGroup::create()),
+		group(Ipc::LinkGroup::create()),
 		defaultExecutable(""),
 		logs(),
 		target(new RuntimeLogDelegate()),
@@ -206,7 +206,7 @@ public:
 		}
 	}
 
-	Ipc::PipeGroupRef getPipeGroup() {
+	Ipc::LinkGroupRef getLinkGroup() {
 		return group;
 	}
 };
@@ -220,14 +220,14 @@ ManagerRef getManager(Runtime* runtime)
 	return impl->getManager();
 }
 
-Ipc::PipeGroupRef getPipeGroup(RuntimeRef runtime)
+Ipc::LinkGroupRef getLinkGroup(RuntimeRef runtime)
 {
 	if(!runtime) {
-		bk_error("getPipeGroup(Runtime* = null)");
-		return Ipc::PipeGroupRef();
+		bk_error("getLinkGroup(Runtime* = null)");
+		return Ipc::LinkGroupRef();
 	}
 	RuntimeImpl* impl = (RuntimeImpl*)runtime.get();
-	return impl->getPipeGroup();
+	return impl->getLinkGroup();
 }
 
 } // namespace impl

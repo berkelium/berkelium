@@ -20,8 +20,8 @@ using Berkelium::Ipc::Channel;
 using Berkelium::Ipc::ChannelRef;
 using Berkelium::Ipc::ChannelGroup;
 using Berkelium::Ipc::ChannelGroupRef;
-using Berkelium::Ipc::PipeGroup;
-using Berkelium::Ipc::PipeGroupRef;
+using Berkelium::Ipc::LinkGroup;
+using Berkelium::Ipc::LinkGroupRef;
 
 namespace {
 
@@ -38,7 +38,7 @@ TEST_F(ChannelTest, simple) {
 	Berkelium::ProfileRef profile;
 	std::string dir = createTempPath(profile);
 	std::string name(Berkelium::Util::randomId());
-	PipeGroupRef pipeGroup(PipeGroup::create());
+	LinkGroupRef pipeGroup(LinkGroup::create());
 	ChannelGroupRef clientGroup(ChannelGroup::createGroup(logger, dir, name, "test client", pipeGroup, false));
 	ChannelGroupRef serverGroup(ChannelGroup::createGroup(logger, dir, name, "test server", pipeGroup, true));
 
@@ -74,7 +74,7 @@ TEST_F(ChannelTest, dual) {
 	Berkelium::ProfileRef profile;
 	std::string dir = createTempPath(profile);
 	std::string name(Berkelium::Util::randomId());
-	PipeGroupRef pipeGroup(PipeGroup::create());
+	LinkGroupRef pipeGroup(LinkGroup::create());
 	ChannelGroupRef clientGroup(ChannelGroup::createGroup(logger, dir, name, "test clientGroup", pipeGroup, false));
 	ChannelGroupRef serverGroup(ChannelGroup::createGroup(logger, dir, name, "test server", pipeGroup, true));
 
@@ -118,7 +118,7 @@ TEST_F(ChannelTest, free) {
 	USE_LOGGER(free);
 	Berkelium::ProfileRef profile;
 	std::string dir = createTempPath(profile);
-	PipeGroupRef pipeGroup(PipeGroup::create());
+	LinkGroupRef pipeGroup(LinkGroup::create());
 	std::string name(Berkelium::Util::randomId());
 	ChannelGroupRef group(ChannelGroup::createGroup(logger, dir, name, "test clientGroup", pipeGroup, false));
 

@@ -26,10 +26,10 @@ namespace Ipc {
 
 namespace impl {
 
-class PipeWindowsImpl : public Pipe {
+class LinkWindowsImpl : public Link {
 private:
 	LoggerRef logger;
-	PipeGroupRef group;
+	LinkGroupRef group;
 	const std::string name;
 	const std::string dir;
 	const std::string full;
@@ -39,8 +39,8 @@ private:
 	//fd_set fds;
 
 public:
-	PipeWindowsImpl(bool read, PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
-		Pipe(),
+	LinkWindowsImpl(bool read, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
+		Link(),
 		logger(logger),
 		group(group),
 		name(name),
@@ -63,12 +63,12 @@ public:
 			return;
 		}*/
 
-		//fprintf(stderr, "new Pipe %s %d %s\n", name.c_str(), fd, alias.c_str());
+		//fprintf(stderr, "new Link %s %d %s\n", name.c_str(), fd, alias.c_str());
 	}
 
-	virtual ~PipeWindowsImpl() {
+	virtual ~LinkWindowsImpl() {
 		/*if(group) {
-			group->unregisterPipe(this);
+			group->unregisterLink(this);
 		}
 		if(fd != -1) {
 			close(fd);
@@ -103,7 +103,7 @@ public:
 		return alias;
 	}
 
-	int getPipeFd() {
+	int getLinkFd() {
 		if(!read) {
 			return -1;
 		}
@@ -113,16 +113,16 @@ public:
 
 } // namespace impl
 
-Pipe::Pipe() {
+Link::Link() {
 }
 
-Pipe::~Pipe() {
+Link::~Link() {
 }
 
-PipeRef Pipe::getPipe(bool read, PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) {
-	PipeRef ret(new impl::PipeWindowsImpl(read, group, logger, dir, name, alias));
+LinkRef Link::getLink(bool read, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) {
+	LinkRef ret(new impl::LinkWindowsImpl(read, group, logger, dir, name, alias));
     if(read && group) {
-		group->registerPipe(ret);
+		group->registerLink(ret);
 	}
 	return ret;
 }
@@ -131,12 +131,12 @@ PipeRef Pipe::getPipe(bool read, PipeGroupRef group, LoggerRef logger, const std
 
 namespace impl {
 
-int getPipeFd(Ipc::PipeRef pipe) {
+int getLinkFd(Ipc::LinkRef pipe) {
 	if(!pipe) {
-		Berkelium::impl::bk_error("getPipeFd: pipe is NULL!");
+		Berkelium::impl::bk_error("getLinkFd: pipe is NULL!");
 		return 0;
 	}
-	return ((Ipc::impl::PipeWindowsImpl*)pipe.get())->getPipeFd();
+	return ((Ipc::impl::LinkWindowsImpl*)pipe.get())->getLinkFd();
 }
 
 } // namespace impl

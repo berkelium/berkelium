@@ -10,7 +10,7 @@
 
 #include <map>
 
-using Berkelium::impl::getPipeFd;
+using Berkelium::impl::getLinkFd;
 using Berkelium::impl::bk_error;
 
 #ifdef BERKELIUM_TRACE_IO_SELECT
@@ -23,64 +23,64 @@ namespace Berkelium {
 
 namespace Ipc {
 
-PipeCallback::PipeCallback() {
+LinkCallback::LinkCallback() {
 }
 
-PipeCallback::~PipeCallback() {
+LinkCallback::~LinkCallback() {
 }
 
 namespace impl {
 
-struct PipeGroupData {
-	PipeWRef ref;
-	PipeCallbackWRef cb;
+struct LinkGroupData {
+	LinkWRef ref;
+	LinkCallbackWRef cb;
 	int fd;
 };
 
-typedef std::map<Pipe*, PipeGroupData*> PipeMap;
+typedef std::map<Link*, LinkGroupData*> LinkMap;
 
-class PipeGroupImpl : public PipeGroup {
+class LinkGroupImpl : public LinkGroup {
 private:
 	int64_t lastRecv;
-	PipeMap map;
+	LinkMap map;
 // TODO Windows
 #ifdef LINUX
 	fd_set fds;
 #endif
 
 public:
-	PipeGroupImpl() :
-		PipeGroup(),
+	LinkGroupImpl() :
+		LinkGroup(),
 		lastRecv(0),
 		map() {
 	}
 
-	virtual ~PipeGroupImpl() {
+	virtual ~LinkGroupImpl() {
 	}
 
-	virtual void registerPipe(PipeRef pipe) {
+	virtual void registerLink(LinkRef pipe) {
 		//Berkelium::impl::bk_error("register pipe %p %s", channel.get(), channel->getName().c_str());
-		PipeGroupData* data = new PipeGroupData();
+		LinkGroupData* data = new LinkGroupData();
 		data->ref = pipe;
-		data->fd = getPipeFd(pipe);
-		map.insert(std::pair<Pipe*, PipeGroupData*>(pipe.get(), data));
+		data->fd = getLinkFd(pipe);
+		map.insert(std::pair<Link*, LinkGroupData*>(pipe.get(), data));
 	}
 
-	virtual void unregisterPipe(Pipe* pipe) {
+	virtual void unregisterLink(Link* pipe) {
 		//Berkelium::impl::bk_error("unregister pipe %p", channel);
-		PipeMap::iterator it(map.find(pipe));
+		LinkMap::iterator it(map.find(pipe));
 		if(it != map.end()) {
-			PipeGroupData* data = it->second;
+			LinkGroupData* data = it->second;
 			delete data;
 			map.erase(it);
 		}
 	}
 
-	virtual void registerCallback(PipeRef pipe, PipeCallbackRef callback) {
+	virtual void registerCallback(LinkRef pipe, LinkCallbackRef callback) {
 		//Berkelium::impl::bk_error("register callback %p", pipe.get());
-		PipeMap::iterator it(map.find(pipe.get()));
+		LinkMap::iterator it(map.find(pipe.get()));
 		if(it != map.end()) {
-			PipeGroupData* data = it->second;
+			LinkGroupData* data = it->second;
 			if(data->fd == -1) {
 				Berkelium::impl::bk_error("register callback %p failed: no fd!", pipe.get());
 			}
@@ -90,8 +90,8 @@ public:
 		}
 	}
 
-	virtual void registerCallback(ChannelGroupRef group, PipeCallbackRef callback) {
-		registerCallback(Berkelium::impl::getInputPipe(group), callback);
+	virtual void registerCallback(ChannelGroupRef group, LinkCallbackRef callback) {
+		registerCallback(Berkelium::impl::getInputLink(group), callback);
 	}
 
 	virtual int64_t getLastRecv() {
@@ -121,11 +121,11 @@ public:
 		FD_ZERO(&fds);
 		int nfds = 0;
 		if(trace) {
-			bk_error("PipeGroup: selecting...");
+			bk_error("LinkGroup: selecting...");
 		}
-		for(PipeMap::iterator it(map.begin()); it != map.end(); it++) {
-			PipeGroupData* data = it->second;
-			PipeRef ref(data->ref.lock());
+		for(LinkMap::iterator it(map.begin()); it != map.end(); it++) {
+			LinkGroupData* data = it->second;
+			LinkRef ref(data->ref.lock());
 			if(ref) {
 				int fd = data->fd;
 				if(fd == -1) {
@@ -136,7 +136,7 @@ public:
 				if(trace) {
 					//if(ref->getAlias().substr(0, 7) != "process")
 					//if(ref->getAlias() != "berkelium-host-ipc")
-					bk_error("PipeGroup: waiting for %s %d %s", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
+					bk_error("LinkGroup: waiting for %s %d %s", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
 				}
 			}
 		}
@@ -147,25 +147,25 @@ public:
 		if(r == 0) {
 			return;
 		} else if(r == -1) {
-			bk_error("PipeGroup: select error %d", r);
+			bk_error("LinkGroup: select error %d", r);
 			return;
 		}
 		lastRecv = Util::currentTimeMillis();
-		for(PipeMap::iterator it(map.begin()); it != map.end(); it++) {
-			PipeGroupData* data = it->second;
+		for(LinkMap::iterator it(map.begin()); it != map.end(); it++) {
+			LinkGroupData* data = it->second;
 			if(data->fd == -1) {
 				continue;
 			}
 			if(FD_ISSET(data->fd, &fds)) {
-				PipeRef ref(data->ref.lock());
+				LinkRef ref(data->ref.lock());
 				if(trace) {
-					bk_error("PipeGroup: selected %s %d %s", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
+					bk_error("LinkGroup: selected %s %d %s", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
 				}
-				PipeCallbackRef cb(data->cb.lock());
+				LinkCallbackRef cb(data->cb.lock());
 				if(cb) {
-					cb->onPipeDataReady(ref);
+					cb->onLinkDataReady(ref);
 				} else {
-					bk_error("PipeGroup: no callback!");
+					bk_error("LinkGroup: no callback!");
 				}
 			}
 		}
@@ -175,14 +175,14 @@ public:
 
 } // namespace impl
 
-PipeGroup::PipeGroup() {
+LinkGroup::LinkGroup() {
 }
 
-PipeGroup::~PipeGroup() {
+LinkGroup::~LinkGroup() {
 }
 
-PipeGroupRef PipeGroup::create() {
-	return PipeGroupRef(new impl::PipeGroupImpl());
+LinkGroupRef LinkGroup::create() {
+	return LinkGroupRef(new impl::LinkGroupImpl());
 }
 
 } // namespace Ipc

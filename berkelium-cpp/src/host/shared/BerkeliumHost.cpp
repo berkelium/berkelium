@@ -35,15 +35,15 @@ using Ipc::Channel;
 using Ipc::ChannelRef;
 using Ipc::ChannelGroup;
 using Ipc::ChannelGroupRef;
-using Ipc::PipeGroup;
-using Ipc::PipeGroupRef;
+using Ipc::LinkGroup;
+using Ipc::LinkGroupRef;
 using Ipc::Message;
 using Ipc::MessageRef;
 
 bool berkeliumDone = false;
 BerkeliumHostInstanceRef berkeliumHostInstance;
 
-PipeGroupRef group(PipeGroup::create());
+LinkGroupRef group(LinkGroup::create());
 ChannelGroupRef channels;
 
 LoggerRef logger = Berkelium::Util::createRootLogger(NULL);

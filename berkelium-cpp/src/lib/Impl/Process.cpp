@@ -14,11 +14,11 @@ namespace impl {
 
 Process::Process(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
 	name(Berkelium::Util::randomId()),
-	group(getPipeGroup(runtime)),
+	group(getLinkGroup(runtime)),
 	channels(Ipc::ChannelGroup::createGroup(logger, dir, Util::randomId(), "process", group)),
 	ipc(channels->createChannel("process.ipc")),
-	pipeout(Ipc::Pipe::getPipe(true, group, logger, dir, name + "1", "process.out")),
-	pipeerr(Ipc::Pipe::getPipe(true, group, logger, dir, name + "2", "process.err")),
+	pipeout(Ipc::Link::getLink(true, group, logger, dir, name + "1", "process.out")),
+	pipeerr(Ipc::Link::getLink(true, group, logger, dir, name + "2", "process.err")),
 	logger(logger) {
 }
 

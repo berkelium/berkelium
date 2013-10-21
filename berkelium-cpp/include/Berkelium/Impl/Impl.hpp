@@ -88,9 +88,9 @@ ProfileRef createTemporaryProfile(RuntimeRef runtime);
 LoggerRef newLogger(LogDelegateRef target, RuntimeRef runtime, const std::string& clazz, const std::string& name);
 LogDelegateRef newLogDelegate();
 Ipc::ChannelRef createChannel(LoggerRef logger, int32_t id, Ipc::ChannelGroupRef group, const std::string& alias);
-Ipc::PipeGroupRef getPipeGroup(RuntimeRef runtime);
+Ipc::LinkGroupRef getLinkGroup(RuntimeRef runtime);
 void setLoggerPrefix(RuntimeRef runtime, const std::string& name);
-Ipc::PipeRef getInputPipe(Ipc::ChannelGroupRef group);
+Ipc::LinkRef getInputLink(Ipc::ChannelGroupRef group);
 
 void bk_error(const char* format, ...);
 
@@ -126,7 +126,7 @@ public:											\
 	_BERKELIUM_IMPL_CTOR(TypeName, name, rt->getRuntime())
 
 #ifdef LINUX
-int getPipeFd(Ipc::PipeRef pipe);
+int getLinkFd(Ipc::LinkRef pipe);
 #endif
 
 } // namespace impl

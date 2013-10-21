@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Channel.hpp>
-#include <Berkelium/IPC/PipeGroup.hpp>
+#include <Berkelium/IPC/LinkGroup.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
 #include <queue>
@@ -98,8 +98,8 @@ using Berkelium::ProfileRef;
 using Berkelium::LoggerRef;
 using Berkelium::Ipc::Channel;
 using Berkelium::Ipc::ChannelRef;
-using Berkelium::Ipc::PipeGroup;
-using Berkelium::Ipc::PipeGroupRef;
+using Berkelium::Ipc::LinkGroup;
+using Berkelium::Ipc::LinkGroupRef;
 using Berkelium::Ipc::Message;
 using Berkelium::Ipc::MessageRef;
 using Berkelium::Ipc::CommandId;
@@ -157,7 +157,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	PipeGroupRef group(PipeGroup::create());
+	LinkGroupRef group(LinkGroup::create());
 
 	logger->debug() << "starting host fake!" << std::endl;
 	ChannelRef ipc = Channel::getChannel(group, logger, dir, id, "host-fake", false);

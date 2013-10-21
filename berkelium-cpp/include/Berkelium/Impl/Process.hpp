@@ -22,11 +22,11 @@ namespace impl {
 class Process {
 protected:
 	std::string name;
-	Ipc::PipeGroupRef group;
+	Ipc::LinkGroupRef group;
 	Ipc::ChannelGroupRef channels;
 	Ipc::ChannelRef ipc;
-	Ipc::PipeRef pipeout;
-	Ipc::PipeRef pipeerr;
+	Ipc::LinkRef pipeout;
+	Ipc::LinkRef pipeerr;
 
 	const LoggerRef logger;
 

@@ -16,47 +16,47 @@ namespace Berkelium {
 
 namespace Ipc {
 
-class PipeCallback
+class LinkCallback
 {
 public:
-	PipeCallback();
+	LinkCallback();
 
-	virtual ~PipeCallback() = 0;
+	virtual ~LinkCallback() = 0;
 
-	virtual void onPipeDataReady(PipeRef pipe) = 0;
+	virtual void onLinkDataReady(LinkRef pipe) = 0;
 };
 
 template<class T, class I>
-class PipeCallbackDelegate : public PipeCallback {
+class LinkCallbackDelegate : public LinkCallback {
 private:
 	std::weak_ptr<T> wref;
 
 public:
-	PipeCallbackDelegate(std::weak_ptr<T> wref) :
-		PipeCallback(),
+	LinkCallbackDelegate(std::weak_ptr<T> wref) :
+		LinkCallback(),
 		wref(wref) {
 	}
 
-	virtual ~PipeCallbackDelegate() {
+	virtual ~LinkCallbackDelegate() {
 	}
 
-	virtual void onPipeDataReady(PipeRef pipe) {
+	virtual void onLinkDataReady(LinkRef pipe) {
 		std::shared_ptr<T> ref(wref.lock());
 		if(ref) {
 			I* impl = (I*)ref.get();
-			impl->onPipeDataReady(pipe);
+			impl->onLinkDataReady(pipe);
 		}
 	}
 };
 
-class Pipe {
+class Link {
 protected:
-	Pipe();
+	Link();
 
 public:
-	static PipeRef getPipe(bool read, PipeGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias);
+	static LinkRef getLink(bool read, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias);
 
-	virtual ~Pipe() = 0;
+	virtual ~Link() = 0;
 
 	// Returns true if there are no pending messages to receive.
 	virtual bool isEmpty() = 0;
@@ -76,7 +76,7 @@ public:
 
 namespace impl {
 
-    extern int getPipeFd(Ipc::PipeRef pipe);
+    extern int getLinkFd(Ipc::LinkRef pipe);
 
 } // namespace impl
 

@@ -37,10 +37,10 @@ int exec(const std::vector<std::string>& args) {
 
 #define BUF_SIZE 1024
 
-using Berkelium::Ipc::PipeCallback;
-using Berkelium::Ipc::PipeCallbackRef;
+using Berkelium::Ipc::LinkCallback;
+using Berkelium::Ipc::LinkCallbackRef;
 
-class ConsoleRedirector : public PipeCallback
+class ConsoleRedirector : public LinkCallback
 {
 private:
 	RuntimeRef runtime;
@@ -49,7 +49,7 @@ private:
 
 public:
 	ConsoleRedirector(RuntimeRef runtime, LogType type) :
-		Berkelium::Ipc::PipeCallback(),
+		Berkelium::Ipc::LinkCallback(),
 		runtime(runtime),
 		type(type) {
 	}
@@ -57,8 +57,8 @@ public:
 	virtual ~ConsoleRedirector() {
 	}
 
-	virtual void onPipeDataReady(Ipc::PipeRef pipe) {
-		int fd = getPipeFd(pipe);
+	virtual void onLinkDataReady(Ipc::LinkRef pipe) {
+		int fd = getLinkFd(pipe);
 
 		char buf[BUF_SIZE];
 
@@ -110,8 +110,8 @@ public:
 
 class ProcessLinuxImpl : public Process {
 private:
-	PipeCallbackRef out;
-	PipeCallbackRef err;
+	LinkCallbackRef out;
+	LinkCallbackRef err;
 	pid_t pid;
 	int exit;
 
@@ -167,8 +167,8 @@ public:
 		}
 		case 0: {
 			if(redirect) {
-				dup2(getPipeFd(pipeout), 1);
-				dup2(getPipeFd(pipeerr), 2);
+				dup2(getLinkFd(pipeout), 1);
+				dup2(getLinkFd(pipeerr), 2);
 			}
 			int ret = exec(args);
 			logger->systemError(("launch " + args[0]).c_str());

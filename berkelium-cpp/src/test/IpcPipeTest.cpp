@@ -10,9 +10,9 @@
 #include "gtest/gtest.h"
 #include "test.h"
 
-using Berkelium::Ipc::Pipe;
-using Berkelium::Ipc::PipeRef;
-using Berkelium::Ipc::PipeGroupRef;
+using Berkelium::Ipc::Link;
+using Berkelium::Ipc::LinkRef;
+using Berkelium::Ipc::LinkGroupRef;
 using Berkelium::Ipc::Message;
 using Berkelium::Ipc::MessageRef;
 using Berkelium::Util::randomId;
@@ -20,22 +20,22 @@ using Berkelium::impl::Filesystem;
 
 namespace {
 
-class PipeTest : public ::testing::Test {
-	DEFINE_LOGGER(PipeTest);
+class LinkTest : public ::testing::Test {
+	DEFINE_LOGGER(LinkTest);
 };
 
-TEST_F(PipeTest, create) {
+TEST_F(LinkTest, create) {
 	USE_LOGGER(create);
-	ASSERT_NOT_NULL(Pipe::getPipe(false, PipeGroupRef(), logger, Filesystem::getTemp(), randomId(), "testCreatePipe"));
+	ASSERT_NOT_NULL(Link::getLink(false, LinkGroupRef(), logger, Filesystem::getTemp(), randomId(), "testCreateLink"));
 }
 
-TEST_F(PipeTest, remove) {
+TEST_F(LinkTest, remove) {
 	USE_LOGGER(create);
 	std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
 	std::string name(randomId());
 	ASSERT_FALSE(Filesystem::exists(dir));
 	{
-		PipeRef pipe = Pipe::getPipe(false, PipeGroupRef(), getLogger("remove"), dir, name, "testRemovePipe");
+		LinkRef pipe = Link::getLink(false, LinkGroupRef(), getLogger("remove"), dir, name, "testRemoveLink");
 		ASSERT_TRUE(Filesystem::exists(dir));
 		ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name)));
 	}
@@ -43,13 +43,13 @@ TEST_F(PipeTest, remove) {
 	Filesystem::removeDir(dir);
 }
 
-TEST_F(PipeTest, sendRecv) {
+TEST_F(LinkTest, sendRecv) {
 	USE_LOGGER(create);
 	std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
 		std::string name(randomId());
 	ASSERT_FALSE(Filesystem::exists(dir));
 	{
-		PipeRef pipe = Pipe::getPipe(false, PipeGroupRef(), getLogger("sendRecv"), dir, name, "testSendRecvPipe");
+		LinkRef pipe = Link::getLink(false, LinkGroupRef(), getLogger("sendRecv"), dir, name, "testSendRecvLink");
 		ASSERT_TRUE(Filesystem::exists(dir));
 		ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name)));
 		ASSERT_TRUE(pipe->isEmpty());

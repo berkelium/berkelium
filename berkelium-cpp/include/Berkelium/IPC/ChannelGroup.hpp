@@ -35,9 +35,9 @@ public:
 
 	virtual ChannelRef createChannel(const std::string& alias) = 0;
 
-	static ChannelGroupRef createGroup(LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, PipeGroupRef group);
+	static ChannelGroupRef createGroup(LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, LinkGroupRef group);
 
-	static ChannelGroupRef createGroup(LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, PipeGroupRef group, bool server);
+	static ChannelGroupRef createGroup(LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, LinkGroupRef group, bool server);
 };
 
 } // namespace Ipc

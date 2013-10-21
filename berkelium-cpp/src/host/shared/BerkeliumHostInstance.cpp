@@ -17,7 +17,7 @@ namespace Berkelium {
 
 using Ipc::CommandId;
 using Ipc::ChannelRef;
-using Ipc::PipeRef;
+using Ipc::LinkRef;
 using Ipc::MessageRef;
 
 namespace impl {

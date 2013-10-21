@@ -16,9 +16,9 @@ namespace Berkelium {
 
 namespace Ipc {
 
-class PipeCallback;
-typedef std::shared_ptr<PipeCallback> PipeCallbackRef;
-typedef std::weak_ptr<PipeCallback> PipeCallbackWRef;
+class LinkCallback;
+typedef std::shared_ptr<LinkCallback> LinkCallbackRef;
+typedef std::weak_ptr<LinkCallback> LinkCallbackWRef;
 
 class ChannelCallback;
 typedef std::shared_ptr<ChannelCallback> ChannelCallbackRef;
@@ -32,17 +32,17 @@ class ChannelGroup;
 typedef std::shared_ptr<ChannelGroup> ChannelGroupRef;
 typedef std::weak_ptr<ChannelGroup> ChannelGroupWRef;
 
-class PipeGroup;
-typedef std::shared_ptr<PipeGroup> PipeGroupRef;
-typedef std::weak_ptr<PipeGroup> PipeGroupWRef;
+class LinkGroup;
+typedef std::shared_ptr<LinkGroup> LinkGroupRef;
+typedef std::weak_ptr<LinkGroup> LinkGroupWRef;
 
 class Message;
 typedef std::shared_ptr<Message> MessageRef;
 typedef std::weak_ptr<Message> MessageWRef;
 
-class Pipe;
-typedef std::shared_ptr<Pipe> PipeRef;
-typedef std::weak_ptr<Pipe> PipeWRef;
+class Link;
+typedef std::shared_ptr<Link> LinkRef;
+typedef std::weak_ptr<Link> LinkWRef;
 
 typedef enum {
 	exitHost,
