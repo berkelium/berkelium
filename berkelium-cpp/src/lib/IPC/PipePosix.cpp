@@ -7,8 +7,7 @@
 #include <Berkelium/API/BerkeliumFactory.hpp>
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
-#include <Berkelium/IPC/Link.hpp>
-#include <Berkelium/IPC/LinkGroup.hpp>
+#include <Berkelium/IPC/PipePosix.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
@@ -33,10 +32,9 @@ namespace Ipc {
 
 namespace impl {
 
-class LinkLinuxImpl : public Link {
+class PipePosixImpl : public PipePosix {
 private:
 	LoggerRef logger;
-	LinkGroupRef group;
 	const std::string name;
 	const std::string dir;
 	const std::string full;
@@ -46,10 +44,9 @@ private:
 	fd_set fds;
 
 public:
-	LinkLinuxImpl(bool read, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
-		Link(),
+	PipePosixImpl(bool read, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
+		PipePosix(),
 		logger(logger),
-		group(group),
 		name(name),
 		dir(dir),
 		full(Filesystem::append(dir, name)),
@@ -73,10 +70,7 @@ public:
 		//fprintf(stderr, "new Link %s %d %s\n", name.c_str(), fd, alias.c_str());
 	}
 
-	virtual ~LinkLinuxImpl() {
-		if(group) {
-			group->unregisterLink(this);
-		}
+	virtual ~PipePosixImpl() {
 		if(fd != -1) {
 			close(fd);
 			fd = -1;
@@ -175,30 +169,27 @@ public:
 
 } // namespace impl
 
-Link::Link() {
+PipePosix::PipePosix() :
+	Link() {
 }
 
-Link::~Link() {
+PipePosix::~PipePosix() {
 }
 
-LinkRef Link::getLink(bool read, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) {
-	LinkRef ret(new impl::LinkLinuxImpl(read, group, logger, dir, name, alias));
-	if(read && group) {
-		group->registerLink(ret);
-	}
-	return ret;
+PipePosixRef PipePosix::create(bool read, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) {
+	return PipePosixRef(new impl::PipePosixImpl(read, logger, dir, name, alias));
 }
 
 } // namespace Ipc
 
 namespace impl {
 
-int getLinkFd(Ipc::LinkRef pipe) {
+int getLinkFd(Ipc::PipePosixRef pipe) {
 	if(!pipe) {
 		Berkelium::impl::bk_error("getLinkFd: pipe is NULL!");
 		return 0;
 	}
-	return ((Ipc::impl::LinkLinuxImpl*)pipe.get())->getLinkFd();
+	return ((Ipc::impl::PipePosixImpl*)pipe.get())->getLinkFd();
 }
 
 } // namespace impl

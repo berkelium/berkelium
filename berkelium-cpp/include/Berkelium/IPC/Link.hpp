@@ -74,13 +74,6 @@ public:
 
 } // namespace Ipc
 
-namespace impl {
-
-// TODO linux only...
-    extern int getLinkFd(Ipc::LinkRef pipe);
-
-} // namespace impl
-
 } // namespace Berkelium
 
 #endif // BERKELIUM_IPC_LINK_HPP_

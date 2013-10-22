@@ -127,6 +127,7 @@ public:											\
 
 #ifdef LINUX
 int getLinkFd(Ipc::LinkRef pipe);
+int getLinkFd(Ipc::PipePosixRef pipe);
 #endif
 
 } // namespace impl

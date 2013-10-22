@@ -16,6 +16,12 @@ namespace Berkelium {
 
 namespace Ipc {
 
+#ifdef LINUX
+class PipePosix;
+typedef std::shared_ptr<PipePosix> PipePosixRef;
+typedef std::weak_ptr<PipePosix> PipePosixWRef;
+#endif // LINUX
+
 class LinkCallback;
 typedef std::shared_ptr<LinkCallback> LinkCallbackRef;
 typedef std::weak_ptr<LinkCallback> LinkCallbackWRef;
