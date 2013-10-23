@@ -105,6 +105,10 @@ public:
 		manager->unregisterRuntime();
 	}
 
+	virtual const std::string getDebugObjectStats() {
+		return manager->toString();
+	}
+
 	RuntimeRef getSelf() {
 		return self.lock();
 	}

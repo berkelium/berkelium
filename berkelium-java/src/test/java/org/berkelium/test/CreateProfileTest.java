@@ -2,28 +2,21 @@ package org.berkelium.test;
 
 import org.berkelium.api.Profile;
 import org.berkelium.api.Runtime;
-import org.berkelium.impl.TestHelper;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class CreateProfileTest extends AbstractTest {
+public class CreateProfileTest extends AbstractRuntimeTest {
 	interface GetProfile {
 		Profile getProfile(Runtime runtime);
 	}
 
 	public void testProfile(String name, GetProfile gp) {
-		Runtime runtime = TestHelper.createRuntime();
+		Profile profile = gp.getProfile(runtime);
 		assertChangedAndPush();
 		{
-			Profile profile = gp.getProfile(runtime);
-			assertChangedAndPush();
-			{
-				Assert.assertEquals(name, profile.getApplicationName());
-			}
-			profile.dispose();
-			popAndAssert();
+			Assert.assertEquals(name, profile.getApplicationName());
 		}
-		runtime.dispose();
+		profile.dispose();
 		popAndAssert();
 	}
 

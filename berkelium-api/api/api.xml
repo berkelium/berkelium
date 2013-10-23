@@ -74,6 +74,9 @@
 		</entry>
 	</group>
 	<group type="interface" name="Runtime">
+		<entry name="getDebugObjectStats" ret="string">
+			<short>String with object count debug informations.</short>
+		</entry>
 		<entry name="update">
 			<arg type="int32" name="timeout"/>
 			<short>Processes all Pending Events. Waits up to timeout ms for new events.</short>

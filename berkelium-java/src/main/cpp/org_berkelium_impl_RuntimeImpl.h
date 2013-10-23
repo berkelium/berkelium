@@ -17,6 +17,14 @@ JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_dispose
 
 /*
  * Class:     org_berkelium_impl_RuntimeImpl
+ * Method:    getDebugObjectStats
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_berkelium_impl_RuntimeImpl_getDebugObjectStats
+  (JNIEnv *, jobject);
+
+/*
+ * Class:     org_berkelium_impl_RuntimeImpl
  * Method:    update
  * Signature: (I)V
  */

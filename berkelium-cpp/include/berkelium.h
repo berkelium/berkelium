@@ -226,6 +226,9 @@ BK_Runtime BK_BerkeliumFactory_createRuntimeWithLog(BK_Env* env, BK_LogDelegate 
 // interface Runtime
 // =========================================
 
+// String with object count debug informations.
+bk_string BK_Runtime_getDebugObjectStats(BK_Env* env, BK_Runtime self);
+
 // Processes all Pending Events. Waits up to timeout ms for new events.
 void BK_Runtime_update(BK_Env* env, BK_Runtime self, bk_int32 timeout);
 

@@ -7,6 +7,7 @@
 #include <Berkelium/Impl/Impl.hpp>
 
 #include <map>
+#include <sstream>
 
 namespace Berkelium {
 
@@ -25,8 +26,21 @@ class TypeManager {
 	typedef typename MapT::iterator MapIt;
 
 	MapT map;
+	std::string name;
 
 public:
+	TypeManager(const char* name) :
+		map(),
+		name(name) {
+	}
+
+	void toString(std::stringstream& ss) {
+		if(map.empty()) {
+			return;
+		}
+		ss << name << " " << map.size() << "\n";
+	}
+
 	void registerRef(std::shared_ptr<T> ref, ManagerWRef manager) {
 		map.insert(std::pair<void*, std::weak_ptr<T>>(ref.get(), ref));
 	}
@@ -55,11 +69,11 @@ private:
 
 	LogDelegateRef logger;
 
-	std::map<void*, void*> lockedMap;
-
 #define ALL_TYPES(X) TypeManager<X> X##Manager;
 #include "AllTypes.hpp"
 #undef ALL_TYPES
+
+	std::map<void*, void*> lockedMap;
 
 	ManagerImpl(const ManagerImpl&);
 	void operator=(const ManagerImpl&);
@@ -72,7 +86,13 @@ public:
 	ManagerImpl(LogDelegateRef logger) :
 		Manager(),
 		self(),
-		logger(logger) {
+		logger(logger),
+
+#define ALL_TYPES(X) X##Manager(#X),
+#include "AllTypes.hpp"
+#undef ALL_TYPES
+
+		lockedMap() {
 	}
 
 	virtual ~ManagerImpl() {
@@ -114,6 +134,16 @@ public:
 		}
 		lockedMap.erase(it);
 		return it->second;
+	}
+
+	virtual std::string toString() {
+		std::stringstream ret;
+
+#define ALL_TYPES(X) X##Manager.toString(ret);
+#include "AllTypes.hpp"
+#undef ALL_TYPES
+
+		return ret.str();
 	}
 };
 

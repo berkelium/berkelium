@@ -57,6 +57,8 @@ public:
 	virtual void lock(void* id, void* obj) = 0;
 
 	virtual void* unlock(void* id) = 0;
+
+	virtual std::string toString() = 0;
 };
 
 } // namespace impl

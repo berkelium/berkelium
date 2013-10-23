@@ -12,9 +12,14 @@ import org.mockito.Mockito;
 import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class RuntimeWithLogTest extends AbstractTest {
+public class RuntimeWithLogTest extends AbstractRuntimeTest {
 	@Mock
 	private LogDelegate log;
+
+	@Override
+	protected Runtime createRuntime() {
+		return BerkeliumFactory.getInstance().createRuntimeWithLog(log);
+	}
 
 	@Test
 	public void testRuntimeWithLogDispose() {
@@ -25,22 +30,16 @@ public class RuntimeWithLogTest extends AbstractTest {
 		final String warn = "warn: Hello World!";
 		final String error = "error: Hello World!";
 
-		Runtime runtime = BerkeliumFactory.getInstance().createRuntimeWithLog(log);
+		Logger logger = runtime.getLogger(clazz, name);
 		assertChangedAndPush();
 		{
-			Logger logger = runtime.getLogger(clazz, name);
-			assertChangedAndPush();
-			{
-				logger.debug(debug);
-				logger.info(info);
-				logger.warn(warn);
-				logger.error(error);
-				assertUnchanged();
-			}
-			logger.dispose();
-			popAndAssert();
+			logger.debug(debug);
+			logger.info(info);
+			logger.warn(warn);
+			logger.error(error);
+			assertUnchanged();
 		}
-		runtime.dispose();
+		logger.dispose();
 		popAndAssert();
 
 		// TODO

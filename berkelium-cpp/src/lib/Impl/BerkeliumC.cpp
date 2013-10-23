@@ -755,6 +755,23 @@ extern "C" BK_Runtime BK_BerkeliumFactory_createRuntimeWithLog(BK_Env* env, BK_L
 // interface Runtime
 // =========================================
 
+extern "C" bk_string BK_Runtime_getDebugObjectStats(BK_Env* env, BK_Runtime self)
+{
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
+	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
+
+	if(!_this) {
+		bk_error("error: _this in '%s' %p not found!", __FUNCTION__, self);
+		return NULL;
+	}
+
+	return newString(_this->getDebugObjectStats());
+}
+
 extern "C" void BK_Runtime_update(BK_Env* env, BK_Runtime self, bk_int32 timeout)
 {
 	BERKELIUM_C_TRACE();

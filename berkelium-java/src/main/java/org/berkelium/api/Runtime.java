@@ -14,6 +14,9 @@ package org.berkelium.api;
 
 public interface Runtime extends BerkeliumObject  {
 
+	// String with object count debug informations.
+	String getDebugObjectStats();
+
 	// Processes all Pending Events. Waits up to timeout ms for new events.
 	void update(int timeout);
 

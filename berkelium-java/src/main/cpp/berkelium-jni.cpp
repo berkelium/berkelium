@@ -452,6 +452,13 @@ JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_getChromiumProfile
 	return BK_TO_JOBJECT(BK_Runtime_getChromiumProfile(&bkenv, (void*)_this));
 }
 
+JNIEXPORT jstring JNICALL Java_org_berkelium_impl_RuntimeImpl_getDebugObjectStats(JNIEnv* env, jobject _this)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	return BK_TO_JSTRING(env, BK_Runtime_getDebugObjectStats(&bkenv, (void*)_this));
+}
+
 JNIEXPORT jobject JNICALL Java_org_berkelium_impl_RuntimeImpl_getLogger(JNIEnv* env, jobject _this, jstring clazz, jstring name)
 {
 	BK_Env bkenv;
