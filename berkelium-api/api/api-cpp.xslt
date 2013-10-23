@@ -103,6 +103,7 @@ public:
 	</xsl:choose>
 	<xsl:call-template name="type">
 		<xsl:with-param name="name" select="@ret"/>
+		<xsl:with-param name="ret" select="'true'"/>
 	</xsl:call-template>
 	<xsl:text> </xsl:text>
 	<xsl:value-of select="@name"/>

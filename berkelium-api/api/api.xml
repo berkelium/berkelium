@@ -11,7 +11,7 @@
 	<mapping type="cpp" class-postfix="Ref">
 		<type name="int32" value="int32_t"/>
 		<type name="bool" value="bool"/>
-		<type name="string" value="const std::string&amp;"/>
+		<type name="string" value="const std::string&amp;" ret="const std::string"/>
 		<type name="Rect" value="RectRef"/>
 		<type name="WindowList" value="WindowListRef"/>
 		<type name="TabList" value="TabListRef"/>

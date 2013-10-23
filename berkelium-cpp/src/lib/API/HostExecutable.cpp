@@ -39,7 +39,7 @@ public:
 		manager->unregisterHostExecutable();
 	}
 
-	virtual const std::string& getPath() {
+	virtual const std::string getPath() {
 		return path;
 	}
 

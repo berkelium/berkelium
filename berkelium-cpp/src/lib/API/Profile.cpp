@@ -70,7 +70,7 @@ public:
 private:
 	bool warned;
 
-	std::string getHostname() {
+	virtual std::string getHostname() {
 		char tmp[HOST_NAME_MAX];
 		gethostname(tmp, HOST_NAME_MAX);
 		return std::string(tmp);
@@ -81,7 +81,7 @@ public:
 	std::ofstream lockfile;
 #endif
 
-	std::string getLockFile() {
+	virtual std::string getLockFile() {
 #ifdef LINUX
 		return Filesystem::append(path, "SingletonLock");
 #elif OS_WINDOWS
@@ -89,7 +89,7 @@ public:
 #endif
 	}
 
-	bool isInUse() {
+	virtual bool isInUse() {
 #ifdef OS_WINDOWS
 		std::string lock(getLockFile());
 		if(!Filesystem::exists(lock)) {
@@ -140,7 +140,7 @@ public:
 #endif
 	}
 
-	void setLocked(bool locked) {
+	virtual void setLocked(bool locked) {
 		if(this->locked == locked) {
 			return;
 		}
@@ -174,29 +174,29 @@ public:
 		this->locked = locked;
 	}
 
-	bool isLocked() {
+	virtual bool isLocked() {
 		return locked;
 	}
 
-	bool isFound() {
+	virtual bool isFound() {
 		return Filesystem::exists(path);
 	}
 
-	bool isSameVersion() {
+	virtual bool isSameVersion() {
 		// TODO
 		return true;
 	}
 
-	bool isTooNew() {
+	virtual bool isTooNew() {
 		// TODO
 		return false;
 	}
 
-	const std::string& getApplicationName() {
+	virtual const std::string getApplicationName() {
 		return application;
 	}
 
-	const std::string& getProfilePath() {
+	virtual const std::string getProfilePath() {
 		return path;
 	}
 };

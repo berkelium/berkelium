@@ -34,12 +34,16 @@
 <!-- Argument Type                                                 -->
 <!-- ============================================================= -->
 <xsl:template name="type">
+	<xsl:param name="ret" select="'false'"/>
 	<xsl:param name="name" select="''"/>
 	<xsl:param name="lang" select="$lang"/>
 	<xsl:variable name="mapping" select="/api/mapping[@type=$lang]"/>
 	<xsl:variable name="type" select="$mapping/type[@name = $name]"/>
 	<xsl:variable name="group" select="/api/group[@name = $name]"/>
 	<xsl:choose>
+		<xsl:when test="$type/@ret and $ret='true'">
+			<xsl:value-of select="$type/@ret"/>
+		</xsl:when>
 		<xsl:when test="$type/@value">
 			<!-- mapping/type -->
 			<xsl:value-of select="$type/@value"/>

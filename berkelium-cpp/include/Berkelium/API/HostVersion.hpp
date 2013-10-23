@@ -29,7 +29,7 @@ public:
 	virtual RuntimeRef getRuntime() = 0;
 
 	// Returns the berkelium host version e.g. “22.0.1229.94”
-	virtual const std::string& getVersionString() = 0;
+	virtual const std::string getVersionString() = 0;
 
 	// Returns the Major Version, e.g. “22”
 	virtual int32_t getMajor() = 0;

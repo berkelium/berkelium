@@ -51,7 +51,7 @@ public:
 		manager->unregisterHostVersion();
 	}
 
-	virtual const std::string& getVersionString() {
+	virtual const std::string getVersionString() {
 		return version;
 	}
 

@@ -42,10 +42,10 @@ public:
 	virtual bool isTooNew() = 0;
 
 	// Returns the name of the application or “berkelium” if not specified.
-	virtual const std::string& getApplicationName() = 0;
+	virtual const std::string getApplicationName() = 0;
 
 	// Returns the full path to the used Profile.
-	virtual const std::string& getProfilePath() = 0;
+	virtual const std::string getProfilePath() = 0;
 
 	// Lock or Unlock the Profile so another instance can't open it for writing.
 	virtual void setLocked(bool locked) = 0;
