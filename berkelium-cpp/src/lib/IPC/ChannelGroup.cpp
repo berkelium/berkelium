@@ -17,7 +17,8 @@ namespace Ipc {
 
 namespace impl {
 
-typedef std::map<int32_t, ChannelRef> ChannelMap;
+typedef std::map<int32_t, ChannelWRef> ChannelMap;
+typedef std::pair<int32_t, ChannelWRef> ChannelMapPair;
 
 class ChannelGroupImpl : public ChannelGroup, public LinkCallback {
 private:
@@ -77,8 +78,8 @@ public:
 			return real->getChannel(id, alias)->getReverseChannel();
 		}
 		ChannelRef ret(Berkelium::impl::createChannel(logger, id, self.lock(), alias));
-		map.insert(std::pair<int32_t, ChannelRef>(id, ret));
-		other->map.insert(std::pair<int32_t, ChannelRef>(id, ret->getReverseChannel()));
+		map.insert(ChannelMapPair(id, ret));
+		other->map.insert(ChannelMapPair(id, ret->getReverseChannel()));
 		return ret;
 	}
 

@@ -10,6 +10,7 @@
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/API/BerkeliumFactory.hpp>
+#include <Berkelium/Impl/Impl.hpp>
 
 #include "gtest/gtest.h"
 #include "test.h"
@@ -31,6 +32,27 @@ class ChannelTest : public ::testing::Test {
 
 std::string createTempPath(Berkelium::ProfileRef& profile) {
 	return Berkelium::BerkeliumFactory::getDefaultRuntime()->createTemporaryProfile()->getProfilePath();
+}
+
+TEST_F(ChannelTest, objectCount) {
+	USE_LOGGER(objectCount);
+	std::string initial(Berkelium::impl::getBerkeliumObjectCount());
+	Berkelium::ProfileRef profile;
+	std::string dir = createTempPath(profile);
+	std::string name(Berkelium::Util::randomId());
+	LinkGroupRef pipeGroup(LinkGroup::create());
+	ChannelGroupRef channels(ChannelGroup::createGroup(logger, dir, name, "test client", pipeGroup, false));
+	ASSERT_STRNE(initial.c_str(), Berkelium::impl::getBerkeliumObjectCount().c_str());
+	pipeGroup.reset();
+	ASSERT_STRNE(initial.c_str(), Berkelium::impl::getBerkeliumObjectCount().c_str());
+	profile.reset();
+	ASSERT_STRNE(initial.c_str(), Berkelium::impl::getBerkeliumObjectCount().c_str());
+	ChannelRef channel(channels->createChannel("process.ipc"));
+	ASSERT_STRNE(initial.c_str(), Berkelium::impl::getBerkeliumObjectCount().c_str());
+	channels.reset();
+	ASSERT_STRNE(initial.c_str(), Berkelium::impl::getBerkeliumObjectCount().c_str());
+	channel.reset();
+	ASSERT_STREQ(initial.c_str(), Berkelium::impl::getBerkeliumObjectCount().c_str());
 }
 
 TEST_F(ChannelTest, simple) {
