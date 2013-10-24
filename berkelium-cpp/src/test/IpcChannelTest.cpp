@@ -145,19 +145,19 @@ TEST_F(ChannelTest, free) {
 	ChannelGroupRef group(ChannelGroup::createGroup(logger, dir, name, "test clientGroup", pipeGroup, false));
 
 	ChannelRef c1 = group->createChannel("test");
-	ASSERT_EQ(2, c1.use_count());
+	ASSERT_TRUE(c1.unique());
 	void* org = c1.get();
 	ChannelRef c2 = c1;
-	ASSERT_EQ(3, c2.use_count());
+	ASSERT_EQ(2, c2.use_count());
 	ASSERT_EQ(org, c2.get());
 
 	c1.reset();
 	ASSERT_NOT_NULL(c2);
-	ASSERT_EQ(2, c2.use_count());
+	ASSERT_TRUE(c2.unique());
 
 	c1 = c2->getReverseChannel();
-	ASSERT_EQ(3, c1.use_count());
-	ASSERT_EQ(2, c2.use_count());
+	ASSERT_EQ(2, c1.use_count());
+	ASSERT_TRUE(c2.unique());
 	ASSERT_NE(c1.get(), c2.get());
 
 	c2.reset();
@@ -166,7 +166,9 @@ TEST_F(ChannelTest, free) {
 	ChannelRef dummy = group->getChannel(c1->getId(), "test");
 
 	c2 = c1->getReverseChannel();
-	ASSERT_EQ(2, c2.use_count());
+	// it is required to hold an ref to the channel,
+	// otherwise the channel is not valid anymore...
+	ASSERT_NULL(c2);
 }
 
 } // namespace
