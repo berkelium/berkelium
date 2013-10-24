@@ -7,6 +7,8 @@
 
 #include "berkelium.h"
 
+#include <Berkelium/Impl/Impl.hpp>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -280,6 +282,11 @@ inline BK_LogSource LogSource_TO_BK(JNIEnv* env, jobject instance)
 inline BK_LogType LogType_TO_BK(JNIEnv* env, jobject instance)
 {
 	return (BK_LogType)env->CallIntMethod(instance, LogType_ordinal_Java);
+}
+
+JNIEXPORT jstring JNICALL Java_org_berkelium_impl_BerkeliumJavaImpl_getNativeObjectCount(JNIEnv* env, jclass)
+{
+	return BK_TO_JSTRING(env, strdup(Berkelium::impl::getBerkeliumObjectCount().c_str()));
 }
 
 #endif // BERKELIUM_JNI_HPP__

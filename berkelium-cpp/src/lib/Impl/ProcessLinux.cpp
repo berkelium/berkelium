@@ -52,9 +52,11 @@ public:
 		Berkelium::Ipc::LinkCallback(),
 		runtime(runtime),
 		type(type) {
+		TRACE_OBJECT_NEW("ConsoleRedirector");
 	}
 
 	virtual ~ConsoleRedirector() {
+		TRACE_OBJECT_DELETE("ConsoleRedirector");
 	}
 
 	virtual void onLinkDataReady(Ipc::LinkRef pipe) {
@@ -122,11 +124,13 @@ public:
 		err(new ConsoleRedirector(runtime, LogType::StdErr)),
 		pid(-1),
 		exit(-1) {
+		TRACE_OBJECT_NEW("ProcessLinux");
 		group->registerCallback(pipeout, out);
 		group->registerCallback(pipeerr, err);
 	}
 
 	virtual ~ProcessLinuxImpl() {
+		TRACE_OBJECT_DELETE("ProcessLinux");
 		if(pid == -1) return;
 		logger->debug() << "waiting for pid " << pid << "..." << std::endl;
 		wait(0);

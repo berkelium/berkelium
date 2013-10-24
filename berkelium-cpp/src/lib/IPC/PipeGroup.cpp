@@ -24,9 +24,11 @@ namespace Berkelium {
 namespace Ipc {
 
 LinkCallback::LinkCallback() {
+	TRACE_OBJECT_NEW("LinkCallback");
 }
 
 LinkCallback::~LinkCallback() {
+	TRACE_OBJECT_DELETE("LinkCallback");
 }
 
 namespace impl {
@@ -53,9 +55,11 @@ public:
 		LinkGroup(),
 		lastRecv(0),
 		map() {
+		TRACE_OBJECT_NEW("LinkGroupImpl");
 	}
 
 	virtual ~LinkGroupImpl() {
+		TRACE_OBJECT_DELETE("LinkGroupImpl");
 	}
 
 	virtual void registerLink(LinkRef pipe) {

@@ -8,6 +8,8 @@ class BerkeliumJavaImpl {
 	private final static Map<Long, BerkeliumObjectImpl> n2j = new HashMap<Long, BerkeliumObjectImpl>();
 	private final static Map<BerkeliumObjectImpl, Long> j2n = new HashMap<BerkeliumObjectImpl, Long>();
 
+	public static synchronized native String getNativeObjectCount();
+
 	public static synchronized int getObjectCount() {
 		return n2j.size();
 	}

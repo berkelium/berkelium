@@ -7,6 +7,14 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+/*
+ * Class:     org_berkelium_impl_BerkeliumJavaImpl
+ * Method:    getNativeObjectCount
+ * Signature: ()Ljava/lang/String;
+ */
+JNIEXPORT jstring JNICALL Java_org_berkelium_impl_BerkeliumJavaImpl_getNativeObjectCount
+  (JNIEnv *, jclass);
+
 #ifdef __cplusplus
 }
 #endif

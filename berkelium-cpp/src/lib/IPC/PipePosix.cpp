@@ -53,6 +53,7 @@ public:
 		alias(alias),
 		read(read),
 		fd(-1) {
+		TRACE_OBJECT_NEW("PipePosixImpl");
 
 		Filesystem::createDirectories(dir);
 
@@ -71,6 +72,7 @@ public:
 	}
 
 	virtual ~PipePosixImpl() {
+		TRACE_OBJECT_DELETE("PipePosixImpl");
 		if(fd != -1) {
 			close(fd);
 			fd = -1;

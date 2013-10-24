@@ -130,6 +130,19 @@ int getLinkFd(Ipc::LinkRef pipe);
 int getLinkFd(Ipc::PipePosixRef pipe);
 #endif
 
+#ifdef BERKELIUM_TRACE_ALL_OBJECTS
+void updateCount(const char* name, bool up);
+std::string getBerkeliumObjectCount();
+#define TRACE_OBJECT_NEW(x) Berkelium::impl::updateCount(#x, true)
+#define TRACE_OBJECT_DELETE(x) Berkelium::impl::updateCount(#x, false)
+#else
+inline std::string berkeliumObjectList() {
+	return "";
+}
+#define TRACE_OBJECT_NEW(x)
+#define TRACE_OBJECT_DELETE(x)
+#endif // BERKELIUM_TRACE_ALL_OBJECTS
+
 } // namespace impl
 
 } // namespace Berkelium

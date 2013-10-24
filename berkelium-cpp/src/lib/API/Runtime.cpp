@@ -19,9 +19,11 @@ using Berkelium::impl::Filesystem;
 namespace Berkelium {
 
 Runtime::Runtime() {
+	TRACE_OBJECT_NEW("Runtime");
 }
 
 Runtime::~Runtime() {
+	TRACE_OBJECT_DELETE("Runtime");
 }
 
 namespace {
@@ -49,9 +51,11 @@ class RuntimeLogDelegate : public LogDelegate {
 public:
 	RuntimeLogDelegate() :
 		LogDelegate() {
+		TRACE_OBJECT_NEW("RuntimeLogDelegate");
 	}
 
 	virtual ~RuntimeLogDelegate() {
+		TRACE_OBJECT_DELETE("RuntimeLogDelegate");
 	}
 
 	virtual void log(RuntimeRef runtime, LogSource source, LogType type, const std::string& clazz, const std::string& name, const std::string& message) {
@@ -84,6 +88,7 @@ private:
 		manager(manager),
 		self() {
 		addLogDelegate(master);
+		TRACE_OBJECT_NEW("RuntimeImpl");
 	}
 
 public:
@@ -102,6 +107,7 @@ public:
 	}
 
 	virtual ~RuntimeImpl() {
+		TRACE_OBJECT_DELETE("RuntimeImpl");
 		manager->unregisterRuntime();
 	}
 

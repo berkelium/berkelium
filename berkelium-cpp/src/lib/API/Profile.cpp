@@ -25,9 +25,11 @@
 namespace Berkelium {
 
 Profile::Profile() {
+	TRACE_OBJECT_NEW("Profile");
 }
 
 Profile::~Profile() {
+	TRACE_OBJECT_DELETE("Profile");
 }
 
 namespace impl {
@@ -52,10 +54,12 @@ public:
 		, warned(false)
 #endif
 	{
+		TRACE_OBJECT_NEW("ProfileImpl");
 		Filesystem::createDirectories(path);
 	}
 
 	virtual ~ProfileImpl() {
+		TRACE_OBJECT_DELETE("ProfileImpl");
 		getManager()->unregisterProfile();
 		if(isLocked()) {
 			setLocked(false);

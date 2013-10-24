@@ -13,9 +13,11 @@
 namespace Berkelium {
 
 HostVersion::HostVersion() {
+	TRACE_OBJECT_NEW("HostVersion");
 }
 
 HostVersion::~HostVersion() {
+	TRACE_OBJECT_DELETE("HostVersion");
 }
 
 namespace impl {
@@ -45,9 +47,11 @@ public:
 		build(build),
 		patch(patch),
 		version(toVersionString(vmajor, vminor, build, patch)) {
+		TRACE_OBJECT_NEW("HostVersionImpl");
 	}
 
 	virtual ~HostVersionImpl() {
+		TRACE_OBJECT_DELETE("HostVersionImpl");
 		manager->unregisterHostVersion();
 	}
 

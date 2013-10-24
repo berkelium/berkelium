@@ -49,6 +49,7 @@ public:
 		alias(alias),
 		read(read),
 		fd(-1) {
+		TRACE_OBJECT_NEW("LinkWindowsImpl");
 
 		Filesystem::createDirectories(dir);
 
@@ -67,6 +68,7 @@ public:
 	}
 
 	virtual ~LinkWindowsImpl() {
+		TRACE_OBJECT_DELETE("LinkWindowsImpl");
 		/*if(group) {
 			group->unregisterLink(this);
 		}

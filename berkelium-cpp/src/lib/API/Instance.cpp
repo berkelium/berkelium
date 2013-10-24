@@ -23,9 +23,11 @@
 namespace Berkelium {
 
 Instance::Instance() {
+	TRACE_OBJECT_NEW("Instance");
 }
 
 Instance::~Instance() {
+	TRACE_OBJECT_DELETE("Instance");
 }
 
 namespace impl {
@@ -70,9 +72,11 @@ public:
 		process(process),
 		windows(),
 		hosts() {
+		TRACE_OBJECT_NEW("InstanceImpl");
 	}
 
 	~InstanceImpl() {
+		TRACE_OBJECT_DELETE("InstanceImpl");
 		getManager()->unregisterInstance();
 		// TODO only call close if ipc is open...
 		close();

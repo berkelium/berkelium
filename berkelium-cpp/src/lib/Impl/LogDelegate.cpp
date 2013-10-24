@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <Berkelium/API/LogDelegate.hpp>
+#include <Berkelium/Impl/Impl.hpp>
 
 #include <sstream>
 #if OS_WINDOWS
@@ -44,9 +45,11 @@ class LogDelegateImpl : public LogDelegate {
 public:
 	LogDelegateImpl() :
 		LogDelegate() {
+		TRACE_OBJECT_NEW("LogDelegateImpl");
 	}
 
 	virtual ~LogDelegateImpl() {
+		TRACE_OBJECT_DELETE("LogDelegateImpl");
 	}
 
 	virtual void log(RuntimeRef runtime, LogSource source, LogType type, const std::string& clazz, const std::string& name, const std::string& message) {

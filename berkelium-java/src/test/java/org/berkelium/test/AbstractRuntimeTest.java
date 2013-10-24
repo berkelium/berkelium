@@ -12,6 +12,7 @@ import org.junit.Test;
 public abstract class AbstractRuntimeTest {
 	private LinkedList<Integer> objectCount = new LinkedList<Integer>();
 	private LinkedList<String> objectDump = new LinkedList<String>();
+	private LinkedList<String> nativeDump = new LinkedList<String>();
 	protected Runtime runtime;
 
 	protected Runtime createRuntime() {
@@ -34,16 +35,19 @@ public abstract class AbstractRuntimeTest {
 		popAndAssert();
 		Assert.assertEquals(1, objectCount.size());
 		Assert.assertEquals(1, objectDump.size());
+		Assert.assertEquals(1, nativeDump.size());
 	}
 
 	protected void pushObjectCount() {
 		objectCount.addLast(TestHelper.getObjectCount());
 		objectDump.addLast(getStats());
+		nativeDump.addLast(TestHelper.getNativeObjectCount());
 	}
 
 	protected void popAndAssert() {
 		objectCount.removeLast();
 		objectDump.removeLast();
+		nativeDump.removeLast();
 		assertUnchanged();
 	}
 
@@ -51,6 +55,7 @@ public abstract class AbstractRuntimeTest {
 		Assert.assertNotEquals(objectCount.peekLast(), TestHelper.getObjectCount());
 		/* TODO check memory leaks in berkelium
 		Assert.assertNotEquals(objectDump.peekLast(), getStats());
+		Assert.assertNotEquals(nativeDump.peekLast(), TestHelper.getNativeObjectCount());
 		*/
 	}
 
@@ -58,6 +63,7 @@ public abstract class AbstractRuntimeTest {
 		Assert.assertEquals(objectCount.peekLast(), TestHelper.getObjectCount());
 		/* TODO check memory leaks in berkelium
 		Assert.assertEquals(objectDump.peekLast(), getStats());
+		Assert.assertEquals(nativeDump.peekLast(), TestHelper.getNativeObjectCount());
 		*/
 	}
 

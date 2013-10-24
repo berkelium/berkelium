@@ -16,9 +16,11 @@
 namespace Berkelium {
 
 Tab::Tab() {
+	TRACE_OBJECT_NEW("Tab");
 }
 
 Tab::~Tab() {
+	TRACE_OBJECT_DELETE("Tab");
 }
 
 namespace impl {
@@ -41,9 +43,11 @@ public:
 		recv(ipc->getReverseChannel()),
 		cb(),
 		parent(parent) {
+		TRACE_OBJECT_NEW("TabImpl");
 	}
 
 	virtual ~TabImpl() {
+		TRACE_OBJECT_DELETE("TabImpl");
 		manager->unregisterTab();
 	}
 

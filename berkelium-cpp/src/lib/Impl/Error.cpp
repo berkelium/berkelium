@@ -15,7 +15,6 @@ namespace impl {
 
 void bk_error(const char* format, ...)
 {
-
 	char buffer[BUF_SIZE];
 	va_list va;
 	va_start(va, format);

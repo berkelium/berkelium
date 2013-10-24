@@ -20,9 +20,11 @@ Process::Process(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
 	pipeout(Ipc::Link::getLink(true, group, logger, dir, name + "1", "process.out")),
 	pipeerr(Ipc::Link::getLink(true, group, logger, dir, name + "2", "process.err")),
 	logger(logger) {
+	TRACE_OBJECT_NEW("Process");
 }
 
 Process::~Process() {
+	TRACE_OBJECT_DELETE("Process");
 }
 
 } // namespace impl

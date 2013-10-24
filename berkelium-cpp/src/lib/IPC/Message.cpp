@@ -5,6 +5,7 @@
 #include <Berkelium/API/LogDelegate.hpp>
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
+#include <Berkelium/Impl/Impl.hpp>
 #include <cstring>
 
 namespace Berkelium {
@@ -33,9 +34,11 @@ public:
 		real(new uint8_t[capacity + sizeof(int32_t)]),
 		buffer(real + sizeof(int32_t)),
 		id((int32_t*)real) {
+		TRACE_OBJECT_NEW("MessageImpl");
 	}
 
 	virtual ~MessageImpl() {
+		TRACE_OBJECT_DELETE("MessageImpl");
 		capacity = 0;
 		wp = 0;
 		rp = 0;
@@ -232,9 +235,11 @@ public:
 } // namespace impl
 
 Message::Message() {
+	TRACE_OBJECT_NEW("Message");
 }
 
 Message::~Message() {
+	TRACE_OBJECT_DELETE("Message");
 }
 
 MessageRef Message::create(LoggerRef logger) {

@@ -14,9 +14,11 @@
 namespace Berkelium {
 
 Logger::Logger() {
+	TRACE_OBJECT_NEW("Logger");
 }
 
 Logger::~Logger() {
+	TRACE_OBJECT_DELETE("Logger");
 }
 
 namespace impl {
@@ -39,6 +41,11 @@ public:
 		type(),
 		clazz(),
 		name() {
+		TRACE_OBJECT_NEW("LoggerStreamBuffer");
+	}
+
+	~LoggerStreamBuffer() {
+		TRACE_OBJECT_DELETE("LoggerStreamBuffer");
 	}
 
 	virtual int sync() {
@@ -74,9 +81,11 @@ public:
 	LoggerStream(LoggerStreamBuffer* buf) :
 		std::ostream(buf),
 		buf(buf) {
+		TRACE_OBJECT_NEW("LoggerStream");
 	}
 
 	~LoggerStream() {
+		TRACE_OBJECT_DELETE("LoggerStream");
 	}
 
 	void setMode(LogDelegateRef target, RuntimeWRef runtime, const LogType type, const std::string& clazz, const std::string& name) {
@@ -106,9 +115,12 @@ public:
 		clazz(clazz),
 		name(name),
 		prefix(){
+		TRACE_OBJECT_NEW("LoggerImpl");
+
 	}
 
 	virtual ~LoggerImpl() {
+		TRACE_OBJECT_DELETE("LoggerImpl");
 		if(manager) {
 			manager->unregisterLogger();
 		}

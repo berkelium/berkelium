@@ -42,9 +42,11 @@ public:
 		messages(),
 		reading(false),
 		id(id) {
+		TRACE_OBJECT_NEW("ChannelImpl");
 	}
 
 	virtual ~ChannelImpl() {
+		TRACE_OBJECT_DELETE("ChannelImpl");
 	}
 
 	virtual void registerCallback(ChannelCallbackRef cb) {
@@ -128,15 +130,19 @@ public:
 } // namespace impl
 
 Channel::Channel() {
+	TRACE_OBJECT_NEW("Channel");
 }
 
 Channel::~Channel() {
+	TRACE_OBJECT_DELETE("Channel");
 }
 
 ChannelCallback::ChannelCallback() {
+	TRACE_OBJECT_NEW("ChannelCallback");
 }
 
 ChannelCallback::~ChannelCallback() {
+	TRACE_OBJECT_DELETE("ChannelCallback");
 }
 
 } // namespace Ipc

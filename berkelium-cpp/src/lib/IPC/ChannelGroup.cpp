@@ -59,11 +59,13 @@ private:
 		cb(),
 		pin(Link::getLink(true, group, logger, dir, name + getExt(server, reverse), alias + getExt(server, reverse) + (server ? "Server" : "") + (reverse ? "Reverse" : "") + "In")),
 		pout(Link::getLink(false, group, logger, dir, name + getExt(!server, reverse), alias + getExt(!server, reverse) + (!server ? "Server" : "") + (reverse ? "Reverse" : "") + "Out")) {
+		TRACE_OBJECT_NEW("ChannelGroupImpl");
 	}
 
 public:
 
 	virtual ~ChannelGroupImpl() {
+		TRACE_OBJECT_DELETE("ChannelGroupImpl");
 	}
 
 	virtual std::string getName() {

@@ -32,6 +32,11 @@ public:
 	TypeManager(const char* name) :
 		map(),
 		name(name) {
+		TRACE_OBJECT_NEW("TypeManager");
+	}
+
+	~TypeManager() {
+		TRACE_OBJECT_DELETE("TypeManager");
 	}
 
 	void toString(std::stringstream& ss) {
@@ -93,9 +98,11 @@ public:
 #undef ALL_TYPES
 
 		lockedMap() {
+		TRACE_OBJECT_NEW("ManagerImpl");
 	}
 
 	virtual ~ManagerImpl() {
+		TRACE_OBJECT_DELETE("ManagerImpl");
 	}
 
 #define FUNCTION_NAME(X, Y) X ## Y

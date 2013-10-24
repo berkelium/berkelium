@@ -13,9 +13,11 @@
 namespace Berkelium {
 
 HostExecutable::HostExecutable() {
+	TRACE_OBJECT_NEW("HostExecutable");
 }
 
 HostExecutable::~HostExecutable() {
+	TRACE_OBJECT_DELETE("HostExecutable");
 }
 
 namespace impl {
@@ -33,9 +35,11 @@ public:
 	HostExecutableImpl(RuntimeRef runtime, const std::string& path) :
 		BERKELIUM_IMPL_CTOR1(HostExecutable),
 		path(path) {
+		TRACE_OBJECT_NEW("HostExecutableImpl");
 	}
 
 	virtual ~HostExecutableImpl() {
+		TRACE_OBJECT_DELETE("HostExecutableImpl");
 		manager->unregisterHostExecutable();
 	}
 

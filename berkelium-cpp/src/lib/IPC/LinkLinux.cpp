@@ -43,9 +43,11 @@ public:
 		pout(PipePosix::create(false, logger, dir, name, alias + "Out")),
 		name(name),
 		alias(alias) {
+		TRACE_OBJECT_NEW("LinkLinuxImpl");
 	}
 
 	virtual ~LinkLinuxImpl() {
+		TRACE_OBJECT_DELETE("LinkLinuxImpl");
 		if(group) {
 			group->unregisterLink(this);
 		}

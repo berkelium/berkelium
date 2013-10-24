@@ -32,9 +32,11 @@ public:
 		ZeroMemory(&si, sizeof(si));
 		si.cb = sizeof(si);
 		ZeroMemory(&pi, sizeof(pi));
+		TRACE_OBJECT_NEW("ProcessWin32");
 	}
 
 	virtual ~ProcessImpl() {
+		TRACE_OBJECT_DELETE("ProcessWin32");
 		if(!started) return;
 		// Wait until child process exits.
 		WaitForSingleObject(pi.hProcess, INFINITE);

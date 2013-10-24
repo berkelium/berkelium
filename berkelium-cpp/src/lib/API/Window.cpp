@@ -51,9 +51,11 @@ public:
 		*/
 		tabs(),
 		incognito(incognito) {
+		TRACE_OBJECT_NEW("WindowImpl");
 	}
 
 	virtual ~WindowImpl() {
+		TRACE_OBJECT_DELETE("WindowImpl");
 		getManager()->unregisterWindow();
 	}
 
