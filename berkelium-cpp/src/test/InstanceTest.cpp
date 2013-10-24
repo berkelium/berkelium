@@ -8,6 +8,7 @@
 #include <Berkelium/API/HostDelegate.hpp>
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/API/Util.hpp>
+#include <Berkelium/Impl/Impl.hpp>
 #include "gtest/gtest.h"
 
 #include "test.h"
@@ -120,6 +121,18 @@ TEST_F(InstanceTest, crash) {
 	}
 	logger->info() << "host not terminated within 30s, test failed!" << std::endl;
 	ASSERT_TRUE(false);
+}
+
+TEST_F(InstanceTest, launchMemoryLeak) {
+	USE_LOGGER(launchMemoryLeak);
+
+	std::string initial(Berkelium::impl::getBerkeliumObjectCount());
+	InstanceRef subject;
+	createInstance(logger, subject);
+	ASSERT_NOT_NULL(subject);
+	ASSERT_STRNE(initial.c_str(), Berkelium::impl::getBerkeliumObjectCount().c_str());
+	subject.reset();
+	ASSERT_STREQ(initial.c_str(), Berkelium::impl::getBerkeliumObjectCount().c_str());
 }
 
 } // namespace

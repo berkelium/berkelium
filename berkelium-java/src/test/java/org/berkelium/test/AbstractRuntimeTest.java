@@ -53,18 +53,14 @@ public abstract class AbstractRuntimeTest {
 
 	protected void assertChanged() {
 		Assert.assertNotEquals(objectCount.peekLast(), TestHelper.getObjectCount());
-		/* TODO check memory leaks in berkelium
 		Assert.assertNotEquals(objectDump.peekLast(), getStats());
 		Assert.assertNotEquals(nativeDump.peekLast(), TestHelper.getNativeObjectCount());
-		*/
 	}
 
 	protected void assertUnchanged() {
 		Assert.assertEquals(objectCount.peekLast(), TestHelper.getObjectCount());
-		/* TODO check memory leaks in berkelium
 		Assert.assertEquals(objectDump.peekLast(), getStats());
 		Assert.assertEquals(nativeDump.peekLast(), TestHelper.getNativeObjectCount());
-		*/
 	}
 
 	protected void assertChangedAndPush() {

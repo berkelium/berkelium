@@ -26,9 +26,9 @@ public abstract class AbstractInstanceTest extends AbstractRuntimeTest {
 	public void after() {
 		instance.dispose();
 		popAndAssert();
-		host.dispose();
-		popAndAssert();
 		profile.dispose();
+		popAndAssert();
+		host.dispose();
 		popAndAssert();
 		super.after();
 	}
