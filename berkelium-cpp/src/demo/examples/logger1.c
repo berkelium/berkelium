@@ -17,7 +17,6 @@ void log_delegate(BK_Env* env, BK_LogDelegate self, BK_Runtime runtime, BK_LogSo
 int main(int argc, char* argv[])
 {
 	BK_LogDelegate log = (BK_LogDelegate)malloc(sizeof(struct _BK_LogDelegate));
-	log->log = log_delegate;
 
 	BK_Runtime runtime = BK_BerkeliumFactory_createRuntimeWithLog(/*HINT:BK_ENV*/NULL/*HINT*/, log);
 
@@ -25,6 +24,9 @@ int main(int argc, char* argv[])
 	/*BLUE*/// Berkelium itself creates log messages that are delegated to the Log Delegate/*BLUE*/
 	/*BLUE*/// Because of this it is not necessary to use the Logger Classes directly/*BLUE*/
 	BK_Logger logger = BK_Runtime_getLogger(/*HINT:BK_ENV*/NULL/*HINT*/, runtime, strdup("logger1"), strdup(""));
+    
+	log->log = log_delegate;
+
 	// Create a Log Message to demonstrate the LogDelegate
 	BK_Logger_info(/*HINT:BK_ENV*/NULL/*HINT*/, logger, strdup("Hello World!"));
 
