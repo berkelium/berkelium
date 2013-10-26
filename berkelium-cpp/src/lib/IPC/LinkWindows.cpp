@@ -131,6 +131,18 @@ LinkRef Link::getLink(bool read, LinkGroupRef group, LoggerRef logger, const std
 
 } // namespace Ipc
 
+namespace impl {
+
+int getLinkFd(Ipc::LinkRef pipe) {
+	if(!pipe) {
+		Berkelium::impl::bk_error("getLinkFd: pipe is NULL!");
+		return 0;
+	}
+	return ((Ipc::impl::LinkWindowsImpl*)pipe.get())->getLinkFd();
+}
+
+} // namespace Ipc
+
 } // namespace Berkelium
 
 #endif // OS_WINDOWS

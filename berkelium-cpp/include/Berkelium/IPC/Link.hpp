@@ -74,6 +74,12 @@ public:
 
 } // namespace Ipc
 
+namespace impl {
+
+int getLinkFd(Ipc::LinkRef pipe);
+
+} // namespace impl
+
 } // namespace Berkelium
 
 #endif // BERKELIUM_IPC_LINK_HPP_
