@@ -30,7 +30,7 @@ public interface Profile extends BerkeliumObject  {
 	// Returns true if this profile is from a newer berkelium host version.
 	boolean isTooNew();
 
-	// Returns the name of the application or “berkelium” if not specified.
+	// Returns the name of the application or "berkelium" if not specified.
 	String getApplicationName();
 
 	// Returns the full path to the used Profile.

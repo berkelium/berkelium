@@ -35,6 +35,6 @@ public interface Tab extends BerkeliumObject  {
 	// Set the size of this tab.
 	void resize(int width, int height);
 
-	// Set the URL of this tab. A new tab has the url “about:blank”.
+	// Set the URL of this tab. A new tab has the url "about:blank".
 	void navigateTo(String url);
 }
