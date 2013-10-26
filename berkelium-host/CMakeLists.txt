@@ -26,13 +26,17 @@ ENDMACRO()
 
 SET(ZIP_DEST "${CMAKE_CURRENT_BINARY_DIR}/zip-${BERKELIUM_PLATFORM}")
 
-COPY("berkelium" "${CMAKE_CURRENT_SOURCE_DIR}/dist/linux" "${ZIP_DEST}")
-COPY("berkelium" "${CMAKE_CURRENT_SOURCE_DIR}/run" "${ZIP_DEST}/run")
-COPY("chrome.pak" "${BERKELIUM_CHROMIUM_DIR}" "${ZIP_DEST}/run")
-COPY("chrome_100_percent.pak" "${BERKELIUM_CHROMIUM_DIR}" "${ZIP_DEST}/run")
-COPY("resources.pak" "${BERKELIUM_CHROMIUM_DIR}" "${ZIP_DEST}/run")
-COPY_DIR("${BERKELIUM_CHROMIUM_DIR}/locales" "${ZIP_DEST}/run/locales")
-COPY_DIR("${BERKELIUM_CHROMIUM_DIR}/lib.target" "${ZIP_DEST}/run/lib.target")
+IF("${CMAKE_SYSTEM_NAME}" STREQUAL "Windows")
+    ## TODO
+ELSE()
+	COPY("berkelium" "${CMAKE_CURRENT_SOURCE_DIR}/dist/linux" "${ZIP_DEST}")
+	COPY("berkelium" "${CMAKE_CURRENT_SOURCE_DIR}/run" "${ZIP_DEST}/run")
+	COPY("chrome.pak" "${BERKELIUM_CHROMIUM_DIR}" "${ZIP_DEST}/run")
+	COPY("chrome_100_percent.pak" "${BERKELIUM_CHROMIUM_DIR}" "${ZIP_DEST}/run")
+	COPY("resources.pak" "${BERKELIUM_CHROMIUM_DIR}" "${ZIP_DEST}/run")
+	COPY_DIR("${BERKELIUM_CHROMIUM_DIR}/locales" "${ZIP_DEST}/run/locales")
+	COPY_DIR("${BERKELIUM_CHROMIUM_DIR}/lib.target" "${ZIP_DEST}/run/lib.target")
+ENDIF()
 
 FIND_PACKAGE(Java)
 
