@@ -233,7 +233,6 @@ var source={
 "int main(int argc, char* argv[])\n" +
 "{\n" +
 "\tBK_LogDelegate log = (BK_LogDelegate)malloc(sizeof(struct _BK_LogDelegate));\n" +
-"\tlog->log = log_delegate;\n" +
 "\n" +
 "\tBK_Runtime runtime = BK_BerkeliumFactory_createRuntimeWithLog(/*HINT:BK_ENV*/NULL/*HINT*/, log);\n" +
 "\n" +
@@ -241,6 +240,9 @@ var source={
 "\t/*BLUE*/// Berkelium itself creates log messages that are delegated to the Log Delegate/*BLUE*/\n" +
 "\t/*BLUE*/// Because of this it is not necessary to use the Logger Classes directly/*BLUE*/\n" +
 "\tBK_Logger logger = BK_Runtime_getLogger(/*HINT:BK_ENV*/NULL/*HINT*/, runtime, strdup(\"logger1\"), strdup(\"\"));\n" +
+"    \n" +
+"\tlog->log = log_delegate;\n" +
+"\n" +
 "\t// Create a Log Message to demonstrate the LogDelegate\n" +
 "\tBK_Logger_info(/*HINT:BK_ENV*/NULL/*HINT*/, logger, strdup(\"Hello World!\"));\n" +
 "\n" +
