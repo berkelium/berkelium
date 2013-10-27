@@ -204,8 +204,7 @@ var source={
 "\tlogger->info() << \"waiting 10s...\" << std::endl;\n" +
 "\n" +
 "\tfor(int i = 0; i < 10000; i += 100) {\n" +
-"\t\tinstance->internalUpdate();\n" +
-"\t\tBerkelium::Util::sleep(100);\n" +
+"\t\truntime->update(100);\n" +
 "\t}\n" +
 "\n" +
 "\tlogger->info() << \"shutting down browser...\" << std::endl;\n" +
@@ -221,13 +220,35 @@ var source={
 "\n" +
 "#include <berkelium.h>\n" +
 "#include <stdio.h>\n" +
+"#include <string.h>\n" +
+"#include <stdlib.h>\n" +
+"\n" +
+"void log_delegate(BK_Env* env, BK_LogDelegate self, BK_Runtime runtime, BK_LogSource source, BK_LogType type,\n" +
+"\t\tbk_string clazz, bk_string name, bk_string message)\n" +
+"{\n" +
+"\t// just a demo: write log message to System.err...\n" +
+"\t/*GREEN*/fprintf(stderr, \"%s %s %s\\n\", clazz, name, message);/*GREEN*/\n" +
+"}\n" +
 "\n" +
 "int main(int argc, char* argv[])\n" +
 "{\n" +
-"\tBK_Runtime runtime = BK_BerkeliumFactory_createRuntime(/*HINT:BK_ENV*/NULL/*HINT*/);\n" +
+"\tBK_LogDelegate log = (BK_LogDelegate)malloc(sizeof(struct _BK_LogDelegate));\n" +
 "\n" +
-"\t/*GREEN*/// Runtime will be freed here/*GREEN*/\n" +
-"\t/*GREEN*/BK_Runtime_free(/*HINT:BK_ENV*/NULL/*HINT*/, runtime);/*GREEN*/\n" +
+"\tBK_Runtime runtime = BK_BerkeliumFactory_createRuntimeWithLog(/*HINT:BK_ENV*/NULL/*HINT*/, log);\n" +
+"\n" +
+"\t/*BLUE*/// The Logger Code here is only necessary to demonstrate an invocation of the LogDelegate/*BLUE*/\n" +
+"\t/*BLUE*/// Berkelium itself creates log messages that are delegated to the Log Delegate/*BLUE*/\n" +
+"\t/*BLUE*/// Because of this it is not necessary to use the Logger Classes directly/*BLUE*/\n" +
+"\tBK_Logger logger = BK_Runtime_getLogger(/*HINT:BK_ENV*/NULL/*HINT*/, runtime, strdup(\"logger1\"), strdup(\"\"));\n" +
+"    \n" +
+"\tlog->log = log_delegate;\n" +
+"\n" +
+"\t// Create a Log Message to demonstrate the LogDelegate\n" +
+"\tBK_Logger_info(/*HINT:BK_ENV*/NULL/*HINT*/, logger, strdup(\"Hello World!\"));\n" +
+"\n" +
+"\tBK_Logger_free(/*HINT:BK_ENV*/NULL/*HINT*/, logger);\n" +
+"\n" +
+"\tBK_Runtime_free(/*HINT:BK_ENV*/NULL/*HINT*/, runtime);\n" +
 "\n" +
 "\treturn 0;\n" +
 "}\n" +
@@ -254,14 +275,14 @@ var source={
 "int main(int argc, char* argv[])\n" +
 "{\n" +
 "\t// This LogDelegate will receive all Log Messages from Berkelium\n" +
-"\tBerkelium::LogDelegateRef log(/*GREEN*/new DemoLogDelegate()/*GREEN*/); \n" +
+"\tBerkelium::LogDelegateRef log(/*GREEN*/new DemoLogDelegate()/*GREEN*/);\n" +
 "\t// Create Runtime, use given Log Delegate\n" +
 "\tBerkelium::RuntimeRef runtime(/*GREEN*/Berkelium::BerkeliumFactory::createRuntimeWithLog(log)/*GREEN*/);\n" +
 "\n" +
 "\t/*BLUE*/// The Logger Code here is only necessary to demonstrate an invocation of the LogDelegate/*BLUE*/\n" +
 "\t/*BLUE*/// Berkelium itself creates log messages that are delegated to the Log Delegate/*BLUE*/\n" +
 "\t/*BLUE*/// Because of this it is not necessary to use the Logger Classes directly/*BLUE*/\n" +
-"\tBerkelium::LoggerRef logger = runtime->getLogger(\"runtime3\", \"\");\n" +
+"\tBerkelium::LoggerRef logger = runtime->getLogger(\"logger1\", \"\");\n" +
 "\t// Create a Log Message to demonstrate the LogDelegate\n" +
 "\tlogger->info(\"Hello World!\");\n" +
 "\n" +
@@ -373,8 +394,7 @@ var source={
 "\tlogger->debug() << \"tested!\" << std::endl;\n" +
 "\n" +
 "\tfor(int i = 0; i < 2000; i += 100) {\n" +
-"\t\tinstance->internalUpdate();\n" +
-"\t\tBerkelium::Util::sleep(100);\n" +
+"\t\truntime->update(100);\n" +
 "\t}\n" +
 "\n" +
 "\tlogger->debug() << \"closing window...\" << std::endl;\n" +
@@ -391,10 +411,9 @@ var source={
 "\n" +
 "\tlogger->info() << \"pngrenderer finished!\" << std::endl;\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/demos/Demo1.java":
+"","berkelium-java/src/test/java/org/berkelium/demo/demos/Demo1.java":
 "package org.berkelium.demo.demos;\n" +
 "\n" +
-"import org.berkelium.api.BerkeliumFactory;\n" +
 "import org.berkelium.api.HostExecutable;\n" +
 "import org.berkelium.api.HostVersion;\n" +
 "import org.berkelium.api.Runtime;\n" +
@@ -412,26 +431,34 @@ var source={
 "\t\tlogger.debug(\"profile path: \" + profile.getProfilePath());\n" +
 "\t\tlogger.debug(\"profile is found: \" + profile.isFound());\n" +
 "\t\tlogger.debug(\"profile in use: \" + profile.isInUse());\n" +
+"\n" +
+"\t\tprofile.dispose();\n" +
 "\t}\n" +
 "\n" +
 "\tpublic static void main(String[] args) {\n" +
-"\t\tRuntime runtime = BerkeliumFactory.getInstance().createRuntime();\n" +
+"\t\tRuntime runtime = Util.createRuntimeWithLog();\n" +
 "\n" +
-"\t\tLogger logger = Util.createRootLogger(runtime);\n" +
+"\t\tLogger logger = runtime.getLogger(Demo1.class.getName(), \"\");\n" +
 "\n" +
 "\t\tlogger.info(\"berkelium demo application...\");\n" +
 "\t\tHostExecutable host = runtime.forSystemInstalled();\n" +
 "\n" +
 "\t\tHostVersion version = host.getVersion();\n" +
+"\t\thost.dispose();\n" +
+"\n" +
 "\t\tlogger.info(\"host version string: \" + version);\n" +
+"\t\tversion.dispose();\n" +
 "\n" +
 "\t\tdumpProfile(logger, \"temporary\", runtime.createTemporaryProfile());\n" +
 "\t\tdumpProfile(logger, \"Chrome\", runtime.getChromeProfile());\n" +
 "\t\tdumpProfile(logger, \"Chromium\", runtime.getChromiumProfile());\n" +
 "\t\tdumpProfile(logger, \"Berkelium\", runtime.forProfile(\"berkelium\"));\n" +
+"\t\truntime.dispose();\n" +
+"\n" +
+"\t\tlogger.dispose();\n" +
 "\t}\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/demos/Demo2.java":
+"","berkelium-java/src/test/java/org/berkelium/demo/demos/Demo2.java":
 "package org.berkelium.demo.demos;\n" +
 "\n" +
 "import org.berkelium.api.BerkeliumFactory;\n" +
@@ -444,7 +471,6 @@ var source={
 "import org.berkelium.api.Logger;\n" +
 "import org.berkelium.api.Profile;\n" +
 "import org.berkelium.api.Tab;\n" +
-"import org.berkelium.api.Util;\n" +
 "import org.berkelium.api.Window;\n" +
 "\n" +
 "public class Demo2 {\n" +
@@ -459,7 +485,7 @@ var source={
 "\tpublic static void main(String[] args) throws InterruptedException {\n" +
 "\t\tRuntime runtime = BerkeliumFactory.getInstance().createRuntimeWithLog(log);\n" +
 "\n" +
-"\t\tLogger logger = Util.createRootLogger(runtime);\n" +
+"\t\tLogger logger = runtime.getLogger(Demo2.class.getName(), \"\");\n" +
 "\n" +
 "\t\tlogger.info(\"berkelium demo application...\");\n" +
 "\t\tHostExecutable host = runtime.forSystemInstalled();\n" +
@@ -485,8 +511,7 @@ var source={
 "\t\tlogger.info(\"waiting 10s...\");\n" +
 "\n" +
 "\t\tfor(int i = 0; i < 10000; i += 100) {\n" +
-"\t\t\tinstance.internalUpdate();\n" +
-"\t\t\tThread.sleep(100);\n" +
+"\t\t\truntime.update(100);\n" +
 "\t\t}\n" +
 "\n" +
 "\t\tlogger.info(\"shutting down browser...\");\n" +
@@ -512,9 +537,114 @@ var source={
 "\t\truntime.dispose();\n" +
 "\n" +
 "\t\tlogger.info(\"disposed!\");\n" +
+"\n" +
+"\t\tlogger.dispose();\n" +
 "\t}\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/examples/Logger1.java":
+"","berkelium-java/src/test/java/org/berkelium/demo/demos/Demo3.java":
+"package org.berkelium.demo.demos;\n" +
+"\n" +
+"import org.berkelium.api.HostExecutable;\n" +
+"import org.berkelium.api.Instance;\n" +
+"import org.berkelium.api.Logger;\n" +
+"import org.berkelium.api.Profile;\n" +
+"import org.berkelium.api.Rect;\n" +
+"import org.berkelium.api.Runtime;\n" +
+"import org.berkelium.api.Tab;\n" +
+"import org.berkelium.api.TabDelegate;\n" +
+"import org.berkelium.api.Util;\n" +
+"import org.berkelium.api.Window;\n" +
+"\n" +
+"public class Demo3 {\n" +
+"\tprivate final static TabDelegate tabDelegate = new TabDelegate() {\n" +
+"\t\t@Override\n" +
+"\t\tpublic void onTitleChanged(Tab tab, String title) {\n" +
+"\t\t\tSystem.err.println(\"onTitleChanged \" + title);\n" +
+"\t\t}\n" +
+"\n" +
+"\t\t@Override\n" +
+"\t\tpublic void onPaintDone(Tab tab, Rect rect) {\n" +
+"\t\t\tSystem.err.println(\"onPaintDone\");\n" +
+"\t\t}\n" +
+"\n" +
+"\t\t@Override\n" +
+"\t\tpublic void onPaint(Tab tab) {\n" +
+"\t\t\tSystem.err.println(\"onPaint\");\n" +
+"\t\t}\n" +
+"\n" +
+"\t\t@Override\n" +
+"\t\tpublic void onClosed(Tab tab) {\n" +
+"\t\t\tSystem.err.println(\"onClosed\");\n" +
+"\t\t}\n" +
+"\n" +
+"\t\t@Override\n" +
+"\t\tpublic void onReady(Tab tab) {\n" +
+"\t\t\tSystem.err.println(\"onReady\");\n" +
+"\t\t}\n" +
+"\t};\n" +
+"\n" +
+"\tpublic static void main(String[] args) throws InterruptedException {\n" +
+"\t\tRuntime runtime = Util.createRuntimeWithLog();\n" +
+"\n" +
+"\t\tLogger logger = runtime.getLogger(Demo3.class.getName(), \"\");\n" +
+"\n" +
+"\t\tlogger.info(\"berkelium demo application...\");\n" +
+"\t\tHostExecutable host = runtime.forSystemInstalled();\n" +
+"\n" +
+"\t\tif(host == null) {\n" +
+"\t\t\tlogger.error(\"berkelium host executable not found!\");\n" +
+"\t\t\treturn;\n" +
+"\t\t}\n" +
+"\n" +
+"\t\tProfile profile = runtime.createTemporaryProfile();\n" +
+"\t\tlogger.info(\"starting berkelium browser...\");\n" +
+"\n" +
+"\t\tInstance instance = runtime.open(host, profile);\n" +
+"\t\tif(instance == null) {\n" +
+"\t\t\tlogger.info(\"berkelium browser can not be started!\");\n" +
+"\t\t\treturn;\n" +
+"\t\t}\n" +
+"\t\tlogger.info(\"berkelium browser is running!\");\n" +
+"\n" +
+"\t\tWindow win = instance.createWindow(false);\n" +
+"\t\tTab tab = win.createTab();\n" +
+"\n" +
+"\t\ttab.addTabDelegate(tabDelegate);\n" +
+"\n" +
+"\t\tlogger.info(\"waiting 10s...\");\n" +
+"\n" +
+"\t\tfor(int i = 0; i < 10000; i += 100) {\n" +
+"\t\t\truntime.update(100);\n" +
+"\t\t}\n" +
+"\n" +
+"\t\tlogger.info(\"shutting down browser...\");\n" +
+"\n" +
+"\t\tinstance.close();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose tab...\");\n" +
+"\t\ttab.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose window...\");\n" +
+"\t\twin.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose instance...\");\n" +
+"\t\tinstance.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose profile...\");\n" +
+"\t\tprofile.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose host...\");\n" +
+"\t\thost.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"dispose runtime...\");\n" +
+"\t\truntime.dispose();\n" +
+"\n" +
+"\t\tlogger.info(\"disposed!\");\n" +
+"\n" +
+"\t\tlogger.dispose();\n" +
+"\t}\n" +
+"}\n" +
+"","berkelium-java/src/test/java/org/berkelium/demo/examples/Logger1.java":
 "// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
 "// Use of this source code is governed by a BSD-style license that can be\n" +
 "// found in the LICENSE file.\n" +
@@ -557,7 +687,7 @@ var source={
 "\t\truntime.dispose();\n" +
 "\t}\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/examples/Runtime1.java":
+"","berkelium-java/src/test/java/org/berkelium/demo/examples/Runtime1.java":
 "// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
 "// Use of this source code is governed by a BSD-style license that can be\n" +
 "// found in the LICENSE file.\n" +
@@ -575,7 +705,7 @@ var source={
 "\t\truntime.dispose();\n" +
 "\t}\n" +
 "}\n" +
-"","berkelium-java/src/main/java/org/berkelium/demo/examples/Runtime2.java":
+"","berkelium-java/src/test/java/org/berkelium/demo/examples/Runtime2.java":
 "// Copyright (c) 2013 The Berkelium Authors. All rights reserved.\n" +
 "// Use of this source code is governed by a BSD-style license that can be\n" +
 "// found in the LICENSE file.\n" +
