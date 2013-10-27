@@ -28,19 +28,19 @@ public:
 	// Returns the associated Runtime.
 	virtual RuntimeRef getRuntime() = 0;
 
-	// Returns the berkelium host version e.g. “22.0.1229.94”
+	// Returns the berkelium host version e.g. "22.0.1229.94"
 	virtual const std::string getVersionString() = 0;
 
-	// Returns the Major Version, e.g. “22”
+	// Returns the Major Version, e.g. "22"
 	virtual int32_t getMajor() = 0;
 
 	// Returns the Minor Version, always zero?
 	virtual int32_t getMinor() = 0;
 
-	// Returns the Build Version, e.g. “1229”
+	// Returns the Build Version, e.g. "1229"
 	virtual int32_t getBuild() = 0;
 
-	// Returns the Patch Version, e.g. “94”
+	// Returns the Patch Version, e.g. "94"
 	virtual int32_t getPatch() = 0;
 
 	// Returns true if the given Version is less or equal to the version of the executable represented by this executable object.

@@ -46,7 +46,7 @@ public:
 	// Set the size of this tab.
 	virtual void resize(int32_t width, int32_t height) = 0;
 
-	// Set the URL of this tab. A new tab has the url “about:blank”.
+	// Set the URL of this tab. A new tab has the url "about:blank".
 	virtual void navigateTo(const std::string& url) = 0;
 };
 

@@ -190,19 +190,19 @@ struct _BK_Update {
 // Returns the associated Runtime.
 BK_Runtime BK_HostVersion_getRuntime(BK_Env* env, BK_HostVersion self);
 
-// Returns the berkelium host version e.g. “22.0.1229.94”
+// Returns the berkelium host version e.g. "22.0.1229.94"
 bk_string BK_HostVersion_getVersionString(BK_Env* env, BK_HostVersion self);
 
-// Returns the Major Version, e.g. “22”
+// Returns the Major Version, e.g. "22"
 bk_int32 BK_HostVersion_getMajor(BK_Env* env, BK_HostVersion self);
 
 // Returns the Minor Version, always zero?
 bk_int32 BK_HostVersion_getMinor(BK_Env* env, BK_HostVersion self);
 
-// Returns the Build Version, e.g. “1229”
+// Returns the Build Version, e.g. "1229"
 bk_int32 BK_HostVersion_getBuild(BK_Env* env, BK_HostVersion self);
 
-// Returns the Patch Version, e.g. “94”
+// Returns the Patch Version, e.g. "94"
 bk_int32 BK_HostVersion_getPatch(BK_Env* env, BK_HostVersion self);
 
 // Returns true if the given Version is less or equal to the version of the executable represented by this executable object.
@@ -316,7 +316,7 @@ bk_bool BK_Profile_isSameVersion(BK_Env* env, BK_Profile self);
 // Returns true if this profile is from a newer berkelium host version.
 bk_bool BK_Profile_isTooNew(BK_Env* env, BK_Profile self);
 
-// Returns the name of the application or “berkelium” if not specified.
+// Returns the name of the application or "berkelium" if not specified.
 bk_string BK_Profile_getApplicationName(BK_Env* env, BK_Profile self);
 
 // Returns the full path to the used Profile.
@@ -423,7 +423,7 @@ BK_Window BK_Tab_getWindow(BK_Env* env, BK_Tab self);
 // Set the size of this tab.
 void BK_Tab_resize(BK_Env* env, BK_Tab self, bk_int32 width, bk_int32 height);
 
-// Set the URL of this tab. A new tab has the url “about:blank”.
+// Set the URL of this tab. A new tab has the url "about:blank".
 void BK_Tab_navigateTo(BK_Env* env, BK_Tab self, bk_string url);
 void BK_Tab_free(BK_Env*, BK_Tab self);
 

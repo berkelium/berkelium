@@ -41,7 +41,7 @@ public:
 	// Returns true if this profile is from a newer berkelium host version.
 	virtual bool isTooNew() = 0;
 
-	// Returns the name of the application or “berkelium” if not specified.
+	// Returns the name of the application or "berkelium" if not specified.
 	virtual const std::string getApplicationName() = 0;
 
 	// Returns the full path to the used Profile.

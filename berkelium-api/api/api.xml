@@ -38,19 +38,19 @@
 			<short>Returns the associated Runtime.</short>
 		</entry>
 		<entry name="getVersionString" ret="string">
-			<short>Returns the berkelium host version e.g. “22.0.1229.94”</short>
+			<short>Returns the berkelium host version e.g. "22.0.1229.94"</short>
 		</entry>
 		<entry name="getMajor" ret="int32">
-			<short>Returns the Major Version, e.g. “22”</short>
+			<short>Returns the Major Version, e.g. "22"</short>
 		</entry>
 		<entry name="getMinor" ret="int32">
 			<short>Returns the Minor Version, always zero?</short>
 		</entry>
 		<entry name="getBuild" ret="int32">
-			<short>Returns the Build Version, e.g. “1229”</short>
+			<short>Returns the Build Version, e.g. "1229"</short>
 		</entry>
 		<entry name="getPatch" ret="int32">
-			<short>Returns the Patch Version, e.g. “94”</short>
+			<short>Returns the Patch Version, e.g. "94"</short>
 		</entry>
 		<entry name="isMinVersion" ret="bool">
 			<arg type="string" name="version"/>
@@ -186,7 +186,7 @@
 			<short>Returns true if this profile is from a newer berkelium host version.</short>
 		</entry>
 		<entry name="getApplicationName" ret="string">
-			<short>Returns the name of the application or “berkelium” if not specified.</short>
+			<short>Returns the name of the application or "berkelium" if not specified.</short>
 		</entry>
 		<entry name="getProfilePath" ret="string">
 			<short>Returns the full path to the used Profile.</short>
@@ -364,7 +364,7 @@
 		</entry>
 		<entry name="navigateTo">
 			<arg type="string" name="url"/>
-			<short>Set the URL of this tab. A new tab has the url “about:blank”.</short>
+			<short>Set the URL of this tab. A new tab has the url "about:blank".</short>
 			<short>This function should be called after all event listeners are registered.</short>
 		</entry>
 	</group>
