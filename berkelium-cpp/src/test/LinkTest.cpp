@@ -30,36 +30,41 @@ TEST_F(LinkTest, create) {
 }
 
 TEST_F(LinkTest, remove) {
-	USE_LOGGER(create);
+	USE_LOGGER(remove);
 	std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
 	std::string name(randomId());
 	ASSERT_FALSE(Filesystem::exists(dir));
 	{
-		LinkRef pipe = Link::getLink(false, LinkGroupRef(), getLogger("remove"), dir, name, "testRemoveLink");
+		LinkRef pipe = Link::getLink(true, LinkGroupRef(), getLogger("remove"), dir, name, "testRemoveLink");
 		ASSERT_TRUE(Filesystem::exists(dir));
-		ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name)));
+		ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name + "1")));
 	}
 	ASSERT_FALSE(Filesystem::exists(Filesystem::append(dir, name)));
 	Filesystem::removeDir(dir);
 }
 
 TEST_F(LinkTest, sendRecv) {
-	USE_LOGGER(create);
+	USE_LOGGER(sendRecv);
 	std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
-		std::string name(randomId());
+	std::string name(randomId());
 	ASSERT_FALSE(Filesystem::exists(dir));
 	{
-		LinkRef pipe = Link::getLink(false, LinkGroupRef(), getLogger("sendRecv"), dir, name, "testSendRecvLink");
+		LinkRef link1 = Link::getLink(true, LinkGroupRef(), getLogger("sendRecv"), dir, name, "testSendRecvLink");
 		ASSERT_TRUE(Filesystem::exists(dir));
-		ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name)));
-		ASSERT_TRUE(pipe->isEmpty());
+		ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name + "1")));
+		ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name + "2")));
+		LinkRef link2 = Link::getLink(false, LinkGroupRef(), getLogger("sendRecv"), dir, name, "testSendRecvLink");
+		ASSERT_TRUE(link1->isEmpty());
+		ASSERT_TRUE(link2->isEmpty());
 		MessageRef msg(Message::create(logger));
 		msg->add_str("hello");
-		pipe->send(msg);
-		ASSERT_FALSE(pipe->isEmpty());
-		msg = pipe->recv();
+		link1->send(msg);
+		ASSERT_TRUE(link1->isEmpty());
+		ASSERT_FALSE(link2->isEmpty());
+		msg = link2->recv();
 		std::string recv = msg->get_str();
-		ASSERT_TRUE(pipe->isEmpty());
+		ASSERT_TRUE(link1->isEmpty());
+		ASSERT_TRUE(link2->isEmpty());
 		ASSERT_EQ(0, recv.compare("hello"));
 	}
 	ASSERT_FALSE(Filesystem::exists(Filesystem::append(dir, name)));

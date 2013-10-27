@@ -23,43 +23,26 @@ typedef std::pair<int32_t, ChannelWRef> ChannelMapPair;
 class ChannelGroupImpl : public ChannelGroup, public LinkCallback {
 private:
 	ChannelGroupWRef self;
-	ChannelGroupImpl* real;
-	ChannelGroupImpl* other;
 	LoggerRef logger;
 	const std::string dir;
 	const std::string name;
 	LinkGroupRef group;
-	ChannelGroupRef reverseRef;
-	ChannelGroupWRef reverseWRef;
 	int32_t nextId;
 	ChannelMap map;
 	Berkelium::Ipc::LinkCallbackRef cb;
-	LinkRef pin;
-	LinkRef pout;
+	LinkRef link;
 
-	static inline std::string getExt(const bool server, const bool reverse) {
-		if(reverse) {
-			return server ? "3" : "4";
-		}
-		return server ? "1" : "2";
-	}
-
-	ChannelGroupImpl(LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, LinkGroupRef group, const bool server, const bool reverse) :
+	ChannelGroupImpl(LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, LinkGroupRef group, const bool server) :
 		ChannelGroup(),
 		self(),
-		real(NULL),
-		other(NULL),
 		logger(logger),
 		dir(dir),
 		name(name),
 		group(group),
-		reverseRef(),
-		reverseWRef(),
 		nextId(0),
 		map(),
 		cb(),
-		pin(Link::getLink(true, group, logger, dir, name + getExt(server, reverse), alias + getExt(server, reverse) + (server ? "Server" : "") + (reverse ? "Reverse" : "") + "In")),
-		pout(Link::getLink(false, group, logger, dir, name + getExt(!server, reverse), alias + getExt(!server, reverse) + (!server ? "Server" : "") + (reverse ? "Reverse" : "") + "Out")) {
+		link(Link::getLink(server, group, logger, dir, name, alias)) {
 		TRACE_OBJECT_NEW("ChannelGroupImpl");
 	}
 
@@ -74,43 +57,37 @@ public:
 	}
 
 	virtual ChannelRef getChannel(int32_t id, const std::string& alias) {
-		if(real) {
-			return real->getChannel(id, alias)->getReverseChannel();
-		}
 		ChannelRef ret(Berkelium::impl::createChannel(logger, id, self.lock(), alias));
 		map.insert(ChannelMapPair(id, ret));
-		other->map.insert(ChannelMapPair(id, ret->getReverseChannel()));
+		map.insert(ChannelMapPair(id + 1, ret->getReverseChannel()));
 		return ret;
 	}
 
 	virtual ChannelRef createChannel(const std::string& alias) {
-		if(real) {
-			// nextId is unused in this instance
-			return real->createChannel(alias)->getReverseChannel();
-		}
 		// nextId is only valid if "real" is not set
 		int32_t id;
 		if(Berkelium::impl::isBerkeliumHostMode()) {
 			// host will create channel ids < 0
 			id = --nextId;
+			id *= 2;
+			// -2, -4, -6, -8, -10... are default channels,
+			// -1, -3, -5, -7, -9... are reverse channels.
 		} else {
 			// library will create channel ids >= 0
 			id = nextId++;
+			id *= 2;
+			// 0, 2, 4, 6, 8... are default channels,
+			// 1, 3, 5, 7, 9... are reverse channels.
 		}
+		// reverse channel id: see ChannelImpl::create
+		// -> id + 1
 		fprintf(stderr, "allocated channel id %d\n", id);
 		return getChannel(id, alias);
 	}
 
-	virtual ChannelGroupRef getReverse() {
-		if(reverseRef) {
-			return reverseRef;
-		}
-		return reverseWRef.lock();
-	}
-
 	virtual void send(int32_t id, Ipc::MessageRef msg) {
 		msg->setChannelId(id);
-		pout->send(msg);
+		link->send(msg);
 	}
 
 	virtual void update(int32_t timeout) {
@@ -120,10 +97,11 @@ public:
 	}
 
 	virtual void onLinkDataReady(LinkRef pipe) {
-		Ipc::MessageRef msg(pin->recv());
-		ChannelMap::iterator it(map.find(msg->getChannelId()));
+		Ipc::MessageRef msg(link->recv());
+		int32_t id(msg->getChannelId());
+		ChannelMap::iterator it(map.find(id));
 		if(it == map.end()) {
-			logger->error("Received invalid Channel ID");
+			logger->error() << "Received invalid Channel ID " << id << std::endl;
 			return;
 		}
 		ChannelRef ch(it->second);
@@ -135,29 +113,19 @@ public:
 	}
 
 	static ChannelGroupRef create(LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, LinkGroupRef group, bool server) {
-		ChannelGroupImpl* impl1 = new ChannelGroupImpl(logger, dir, name, alias, group, server, false);
-		ChannelGroupImpl* impl2 = new ChannelGroupImpl(logger, dir, name, alias, group, server, true);
-		ChannelGroupRef ret1(impl1);
-		ChannelGroupRef ret2(impl2);
+		ChannelGroupImpl* impl = new ChannelGroupImpl(logger, dir, name, alias, group, server);
+		ChannelGroupRef ret(impl);
 
-		impl1->self = ret1;
-		impl2->self = ret2;
-		impl2->real = impl1;
-		impl1->other = impl2;
-		impl1->reverseRef = ret2;
-		impl2->reverseWRef = ret1;
+		impl->self = ret;
 
-		impl1->cb.reset(new LinkCallbackDelegate<ChannelGroup, ChannelGroupImpl>(ret1));
-		impl1->group->registerCallback(impl1->pin, impl1->cb);
+		impl->cb.reset(new LinkCallbackDelegate<ChannelGroup, ChannelGroupImpl>(ret));
+		impl->group->registerCallback(impl->link, impl->cb);
 
-		impl2->cb.reset(new LinkCallbackDelegate<ChannelGroup, ChannelGroupImpl>(ret2));
-		impl2->group->registerCallback(impl2->pin, impl2->cb);
-
-		return ret1;
+		return ret;
 	}
 
 	Ipc::LinkRef getInputLink() {
-		return pin;
+		return link;
 	}
 };
 

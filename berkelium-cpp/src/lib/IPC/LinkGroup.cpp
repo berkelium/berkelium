@@ -62,17 +62,17 @@ public:
 		TRACE_OBJECT_DELETE("LinkGroupImpl");
 	}
 
-	virtual void registerLink(LinkRef pipe) {
-		//Berkelium::impl::bk_error("register pipe %p %s", channel.get(), channel->getName().c_str());
+	virtual void registerLink(LinkRef link) {
 		LinkGroupData* data = new LinkGroupData();
-		data->ref = pipe;
-		data->fd = getLinkFd(pipe);
-		map.insert(std::pair<Link*, LinkGroupData*>(pipe.get(), data));
+		data->ref = link;
+		data->fd = getLinkFd(link);
+		map.insert(std::pair<Link*, LinkGroupData*>(link.get(), data));
+		Berkelium::impl::bk_error("register link %p %s fd:%d", link.get(), link->getName().c_str(), data->fd);
 	}
 
-	virtual void unregisterLink(Link* pipe) {
-		//Berkelium::impl::bk_error("unregister pipe %p", channel);
-		LinkMap::iterator it(map.find(pipe));
+	virtual void unregisterLink(Link* link) {
+		Berkelium::impl::bk_error("unregister link %p", link);
+		LinkMap::iterator it(map.find(link));
 		if(it != map.end()) {
 			LinkGroupData* data = it->second;
 			delete data;
@@ -80,17 +80,17 @@ public:
 		}
 	}
 
-	virtual void registerCallback(LinkRef pipe, LinkCallbackRef callback) {
-		//Berkelium::impl::bk_error("register callback %p", pipe.get());
-		LinkMap::iterator it(map.find(pipe.get()));
+	virtual void registerCallback(LinkRef link, LinkCallbackRef callback) {
+		Berkelium::impl::bk_error("register callback %p", link.get());
+		LinkMap::iterator it(map.find(link.get()));
 		if(it != map.end()) {
 			LinkGroupData* data = it->second;
 			if(data->fd == -1) {
-				Berkelium::impl::bk_error("register callback %p failed: no fd!", pipe.get());
+				Berkelium::impl::bk_error("register callback %p failed: no fd!", link.get());
 			}
 			data->cb = callback;
 		} else {
-			Berkelium::impl::bk_error("register callback %p failed!", pipe.get());
+			Berkelium::impl::bk_error("register callback %p failed!", link.get());
 		}
 	}
 

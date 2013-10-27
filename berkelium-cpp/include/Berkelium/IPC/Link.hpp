@@ -54,7 +54,7 @@ protected:
 	Link();
 
 public:
-	static LinkRef getLink(bool read, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias);
+	static LinkRef getLink(bool server, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias);
 
 	virtual ~Link() = 0;
 

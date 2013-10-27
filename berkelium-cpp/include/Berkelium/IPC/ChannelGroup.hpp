@@ -29,8 +29,6 @@ public:
 
 	virtual void update(int32_t timeout) = 0;
 
-	virtual ChannelGroupRef getReverse() = 0;
-
 	virtual ChannelRef getChannel(int32_t id, const std::string& alias) = 0;
 
 	virtual ChannelRef createChannel(const std::string& alias) = 0;

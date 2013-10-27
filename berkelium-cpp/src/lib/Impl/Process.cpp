@@ -17,8 +17,6 @@ Process::Process(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
 	group(getLinkGroup(runtime)),
 	channels(Ipc::ChannelGroup::createGroup(logger, dir, Util::randomId(), "process", group)),
 	ipc(channels->createChannel("process.ipc")),
-	pipeout(Ipc::Link::getLink(true, group, logger, dir, name + "1", "process.out")),
-	pipeerr(Ipc::Link::getLink(true, group, logger, dir, name + "2", "process.err")),
 	logger(logger) {
 	TRACE_OBJECT_NEW("Process");
 }

@@ -116,7 +116,7 @@ public:
 
 	static ChannelRef create(LoggerRef logger, int32_t id, ChannelGroupRef group, const std::string& alias) {
 		ChannelImpl* impl1 = new ChannelImpl(logger, id, group, alias);
-		ChannelImpl* impl2 = new ChannelImpl(logger, id, group->getReverse(), alias);
+		ChannelImpl* impl2 = new ChannelImpl(logger, id + 1, group, alias);
 		ChannelRef ret1(impl1);
 		ChannelRef ret2(impl2);
 		impl1->self = ret1;

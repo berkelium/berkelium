@@ -25,8 +25,6 @@ protected:
 	Ipc::LinkGroupRef group;
 	Ipc::ChannelGroupRef channels;
 	Ipc::ChannelRef ipc;
-	Ipc::LinkRef pipeout;
-	Ipc::LinkRef pipeerr;
 
 	const LoggerRef logger;
 

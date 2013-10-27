@@ -114,6 +114,8 @@ class ProcessLinuxImpl : public Process {
 private:
 	LinkCallbackRef out;
 	LinkCallbackRef err;
+	Ipc::LinkRef pipeout;
+	Ipc::LinkRef pipeerr;
 	pid_t pid;
 	int exit;
 
@@ -122,6 +124,8 @@ public:
 		Process(runtime, logger, dir),
 		out(new ConsoleRedirector(runtime, LogType::StdOut)),
 		err(new ConsoleRedirector(runtime, LogType::StdErr)),
+		pipeout(Ipc::Link::getLink(false, group, logger, dir, name + "1", "process.out")),
+		pipeerr(Ipc::Link::getLink(false, group, logger, dir, name + "2", "process.err")),
 		pid(-1),
 		exit(-1) {
 		TRACE_OBJECT_NEW("ProcessLinux");

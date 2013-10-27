@@ -34,13 +34,17 @@ private:
 	std::string name;
 	std::string alias;
 
+	static inline std::string getExt(const bool server) {
+		return server ? "1" : "2";
+	}
+
 public:
-	LinkLinuxImpl(LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
+	LinkLinuxImpl(bool server, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
 		Link(),
 		logger(logger),
 		group(group),
-		pin(PipePosix::create(true, logger, dir, name, alias + "In")),
-		pout(PipePosix::create(false, logger, dir, name, alias + "Out")),
+		pin(PipePosix::create(true, logger, dir, name + getExt(server), alias + getExt(server) + "In")),
+		pout(PipePosix::create(false, logger, dir, name + getExt(!server), alias + getExt(!server) + "Out")),
 		name(name),
 		alias(alias) {
 		TRACE_OBJECT_NEW("LinkLinuxImpl");
@@ -86,9 +90,9 @@ Link::Link() {
 Link::~Link() {
 }
 
-LinkRef Link::getLink(bool read, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) {
-	LinkRef ret(new impl::LinkLinuxImpl(group, logger, dir, name, alias));
-	if(read && group) {
+LinkRef Link::getLink(bool server, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) {
+	LinkRef ret(new impl::LinkLinuxImpl(server, group, logger, dir, name, alias));
+	if(group) {
 		group->registerLink(ret);
 	}
 	return ret;
