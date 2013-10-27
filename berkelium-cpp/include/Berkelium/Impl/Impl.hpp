@@ -136,7 +136,7 @@ std::string getBerkeliumObjectCount();
 #define TRACE_OBJECT_NEW(x) Berkelium::impl::updateCount(#x, true)
 #define TRACE_OBJECT_DELETE(x) Berkelium::impl::updateCount(#x, false)
 #else
-inline std::string berkeliumObjectList() {
+inline std::string getBerkeliumObjectCount() {
 	return "";
 }
 #define TRACE_OBJECT_NEW(x)
