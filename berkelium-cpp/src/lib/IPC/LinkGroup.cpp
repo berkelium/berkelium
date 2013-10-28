@@ -67,11 +67,11 @@ public:
 		data->ref = link;
 		data->fd = getLinkFd(link);
 		map.insert(std::pair<Link*, LinkGroupData*>(link.get(), data));
-		Berkelium::impl::bk_error("register link %p %s fd:%d", link.get(), link->getName().c_str(), data->fd);
+		//Berkelium::impl::bk_error("register link %p %s fd:%d", link.get(), link->getName().c_str(), data->fd);
 	}
 
 	virtual void unregisterLink(Link* link) {
-		Berkelium::impl::bk_error("unregister link %p", link);
+		//Berkelium::impl::bk_error("unregister link %p", link);
 		LinkMap::iterator it(map.find(link));
 		if(it != map.end()) {
 			LinkGroupData* data = it->second;
@@ -81,7 +81,7 @@ public:
 	}
 
 	virtual void registerCallback(LinkRef link, LinkCallbackRef callback) {
-		Berkelium::impl::bk_error("register callback %p", link.get());
+		//Berkelium::impl::bk_error("register callback %p", link.get());
 		LinkMap::iterator it(map.find(link.get()));
 		if(it != map.end()) {
 			LinkGroupData* data = it->second;
