@@ -180,9 +180,11 @@ public:
 } // namespace impl
 
 LinkGroup::LinkGroup() {
+	TRACE_OBJECT_NEW("LinkGroup");
 }
 
 LinkGroup::~LinkGroup() {
+	TRACE_OBJECT_DELETE("LinkGroup");
 }
 
 LinkGroupRef LinkGroup::create() {

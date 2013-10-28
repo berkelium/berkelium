@@ -133,8 +133,8 @@ int getLinkFd(Ipc::PipePosixRef pipe);
 #ifdef BERKELIUM_TRACE_ALL_OBJECTS
 void updateCount(const char* name, bool up);
 std::string getBerkeliumObjectCount();
-#define TRACE_OBJECT_NEW(x) Berkelium::impl::updateCount(#x, true)
-#define TRACE_OBJECT_DELETE(x) Berkelium::impl::updateCount(#x, false)
+#define TRACE_OBJECT_NEW(x) Berkelium::impl::updateCount(x, true)
+#define TRACE_OBJECT_DELETE(x) Berkelium::impl::updateCount(x, false)
 #else
 inline std::string getBerkeliumObjectCount() {
 	return "";

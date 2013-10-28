@@ -132,9 +132,11 @@ public:
 } // namespace impl
 
 ChannelGroup::ChannelGroup() {
+	TRACE_OBJECT_NEW("ChannelGroup");
 }
 
 ChannelGroup::~ChannelGroup() {
+	TRACE_OBJECT_DELETE("ChannelGroup");
 }
 
 ChannelGroupRef ChannelGroup::createGroup(LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, LinkGroupRef group)
