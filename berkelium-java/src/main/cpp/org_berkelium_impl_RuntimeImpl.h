@@ -41,6 +41,14 @@ JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_addUpdateEvent
 
 /*
  * Class:     org_berkelium_impl_RuntimeImpl
+ * Method:    removeUpdateEvent
+ * Signature: (Lorg/berkelium/api/Update;)V
+ */
+JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_removeUpdateEvent
+  (JNIEnv *, jobject, jobject);
+
+/*
+ * Class:     org_berkelium_impl_RuntimeImpl
  * Method:    setDefaultExecutable
  * Signature: (Ljava/lang/String;)V
  */

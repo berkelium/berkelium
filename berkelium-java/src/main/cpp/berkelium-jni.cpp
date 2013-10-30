@@ -487,6 +487,13 @@ JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_removeLogDelegate(JNI
 	BK_Runtime_removeLogDelegate(&bkenv, (void*)_this, (BK_LogDelegate)delegate);
 }
 
+JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_removeUpdateEvent(JNIEnv* env, jobject _this, jobject update)
+{
+	BK_Env bkenv;
+	setupBkEnv(bkenv, env);
+	BK_Runtime_removeUpdateEvent(&bkenv, (void*)_this, (BK_Update)update);
+}
+
 JNIEXPORT void JNICALL Java_org_berkelium_impl_RuntimeImpl_setDefaultExecutable(JNIEnv* env, jobject _this, jstring pathTo)
 {
 	BK_Env bkenv;

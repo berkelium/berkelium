@@ -168,6 +168,17 @@ public:
 		updates.insert(UpdateRefMapPair(timeout + Util::currentTimeMillis(), update));
 	}
 
+	virtual void removeUpdateEvent(UpdateRef update) {
+		for(UpdateRefMapIt it = updates.begin(); it != updates.end(); it++) {
+			if(it->second == update) {
+				it = updates.erase(it);
+				if(it == updates.end()) {
+					return;
+				}
+			}
+		}
+	}
+
 	virtual HostExecutableRef forSystemInstalled() {
 		std::string path;
 

@@ -806,6 +806,23 @@ extern "C" void BK_Runtime_addUpdateEvent(BK_Env* env, BK_Runtime self, BK_Updat
 	_this->addUpdateEvent(mapInUpdateRef(env, update), timeout);
 }
 
+extern "C" void BK_Runtime_removeUpdateEvent(BK_Env* env, BK_Runtime self, BK_Update update)
+{
+	BERKELIUM_C_TRACE();
+	if(env == NULL) {
+		env = &simpleBerkeliumEnv::env;
+	}
+
+	Berkelium::RuntimeRef _this(mapInRuntimeRef(env, self));
+
+	if(!_this) {
+		bk_error("error: _this in '%s' %p not found!", __FUNCTION__, self);
+		return;
+	}
+
+	_this->removeUpdateEvent(mapInUpdateRef(env, update));
+}
+
 extern "C" void BK_Runtime_setDefaultExecutable(BK_Env* env, BK_Runtime self, bk_string pathTo)
 {
 	BERKELIUM_C_TRACE();

@@ -34,6 +34,9 @@ public:
 	// Calls given update method after given timeout (in ms).
 	virtual void addUpdateEvent(UpdateRef update, int32_t timeout) = 0;
 
+	// Removes given update method from update task list.
+	virtual void removeUpdateEvent(UpdateRef update) = 0;
+
 	// Sets the Path to the HostExecutable Object used by forSystemInstalled.
 	virtual void setDefaultExecutable(const std::string& pathTo) = 0;
 

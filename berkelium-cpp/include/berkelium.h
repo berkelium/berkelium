@@ -235,6 +235,9 @@ void BK_Runtime_update(BK_Env* env, BK_Runtime self, bk_int32 timeout);
 // Calls given update method after given timeout (in ms).
 void BK_Runtime_addUpdateEvent(BK_Env* env, BK_Runtime self, BK_Update update, bk_int32 timeout);
 
+// Removes given update method from update task list.
+void BK_Runtime_removeUpdateEvent(BK_Env* env, BK_Runtime self, BK_Update update);
+
 // Sets the Path to the HostExecutable Object used by forSystemInstalled.
 void BK_Runtime_setDefaultExecutable(BK_Env* env, BK_Runtime self, bk_string pathTo);
 
