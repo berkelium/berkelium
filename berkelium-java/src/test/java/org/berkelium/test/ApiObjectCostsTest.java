@@ -130,7 +130,7 @@ public class ApiObjectCostsTest {
 			"",
 			// Mac
 			"");
-	private final Costs CHECK_INSTANCE = new Costs("Instance 1\nInstanceImpl 1\n",
+	private final Costs CHECK_INSTANCE = new Costs("Instance 1\nInstanceImpl 1\nMessageImpl 1\nMessage 1\nUpdate 1\nInstancePinger 1\n",
 			// Linux
 			"",
 			// Windows

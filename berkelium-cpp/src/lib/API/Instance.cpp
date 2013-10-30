@@ -54,6 +54,8 @@ public:
 	void update();
 };
 
+typedef std::shared_ptr<InstancePinger> InstancePingerRef;
+
 class InstanceImpl : public Instance, public Berkelium::Ipc::ChannelCallback {
 BERKELIUM_IMPL_CLASS(Instance)
 
@@ -66,6 +68,7 @@ private:
 	Ipc::ChannelRef recv;
 	Ipc::ChannelRef ping;
 	Ipc::MessageRef pingMsg;
+	InstancePingerRef pinger;
 	Berkelium::Ipc::ChannelCallbackRef cb;
 	ProcessRef process;
 	WindowWRefSet windows;
@@ -82,6 +85,7 @@ public:
 		recv(ipc->getReverseChannel()),
 		ping(ping),
 		pingMsg(Ipc::Message::create(logger)),
+		pinger(),
 		cb(),
 		process(process),
 		windows(),
@@ -90,6 +94,9 @@ public:
 	}
 
 	~InstanceImpl() {
+		if(pinger) {
+			runtime->removeUpdateEvent(pinger);
+		}
 		TRACE_OBJECT_DELETE("InstanceImpl");
 		getManager()->unregisterInstance();
 		// TODO only call close if ipc is open...
@@ -118,7 +125,8 @@ public:
 		pingMsg->add_cmd(Ipc::CommandId::ping);
 		ping->send(pingMsg);
 
-		runtime->addUpdateEvent(UpdateRef(new InstancePinger(self)), 250);
+		pinger = InstancePingerRef(new InstancePinger(self));
+		runtime->addUpdateEvent(pinger, 250);
 	}
 
 	virtual void close() {
@@ -234,8 +242,6 @@ InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::C
 	return InstanceImpl::newInstance(executable, profile, ipc, process, ping);
 }
 
-InstanceWRef instance;
-
 InstancePinger::InstancePinger(InstanceWRef instance) :
 	Update(),
 	instance(instance)
@@ -255,7 +261,6 @@ void InstancePinger::update()
 		((InstanceImpl*)locked.get())->sendPing();
 	}
 }
-
 
 } // namespace impl
 
