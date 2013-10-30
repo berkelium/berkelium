@@ -114,7 +114,7 @@ public:											\
 	TypeName(),											\
 	runtime(rt),										\
 	manager(Berkelium::impl::getManager(runtime)),		\
-	logger(runtime->getLogger("##TypeName##", name))
+	logger(runtime->getLogger(#TypeName, name))
 
 #define BERKELIUM_IMPL_CTOR1(TypeName)			\
 	_BERKELIUM_IMPL_CTOR(TypeName, "", runtime)
