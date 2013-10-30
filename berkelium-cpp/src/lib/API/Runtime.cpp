@@ -7,12 +7,14 @@
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/API/LogDelegate.hpp>
+#include <Berkelium/API/Update.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
 #include <Berkelium/Impl/Manager.hpp>
 #include <Berkelium/IPC/LinkGroup.hpp>
 
 #include <set>
+#include <map>
 
 using Berkelium::impl::Filesystem;
 
@@ -65,12 +67,17 @@ public:
 	}
 };
 
+typedef std::map<int64_t, UpdateRef> UpdateRefMap;
+typedef std::pair<int64_t, UpdateRef> UpdateRefMapPair;
+typedef UpdateRefMap::iterator UpdateRefMapIt;
+
 class RuntimeImpl : public Runtime {
 private:
 	LoggerRef logger;
 	Ipc::LinkGroupRef group;
 	std::string defaultExecutable;
 	LogDelegateRefSet logs;
+	UpdateRefMap updates;
 	LogDelegateRef target;
 	ManagerRef manager;
 	RuntimeWRef self;
@@ -84,6 +91,7 @@ private:
 		group(Ipc::LinkGroup::create()),
 		defaultExecutable(""),
 		logs(),
+		updates(),
 		target(new RuntimeLogDelegate()),
 		manager(manager),
 		self() {
@@ -120,7 +128,32 @@ public:
 	}
 
 	virtual void update(int32_t timeout) {
-		group->update(timeout);
+		while(true) {
+			int64_t now = Util::currentTimeMillis();
+			UpdateRefMapIt it(updates.begin());
+			for(; it != updates.end(); it++) {
+				if(it->first <= now) {
+					it->second->update();
+					it = updates.erase(it);
+					if(it == updates.end()) {
+						break;
+					}
+				} else {
+					break;
+				}
+			}
+			if(it != updates.end() && it->first < now + timeout) {
+				int32_t t = it->first - now;
+				group->update(t);
+				timeout -= t;
+				if(timeout <= 0) {
+					return;
+				}
+				continue;
+			}
+			group->update(timeout);
+			break;
+		}
 	}
 
 	virtual void setDefaultExecutable(const std::string& pathTo) {
@@ -132,6 +165,7 @@ public:
 	}
 
 	virtual void addUpdateEvent(UpdateRef update, int32_t timeout) {
+		updates.insert(UpdateRefMapPair(timeout + Util::currentTimeMillis(), update));
 	}
 
 	virtual HostExecutableRef forSystemInstalled() {

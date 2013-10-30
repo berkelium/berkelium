@@ -10,6 +10,7 @@
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/API/Window.hpp>
 #include <Berkelium/API/HostDelegate.hpp>
+#include <Berkelium/API/Update.hpp>
 #include <Berkelium/IPC/Channel.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/LinkGroup.hpp>
@@ -40,6 +41,19 @@ struct set {
 typedef set<WindowWRef>::type WindowWRefSet;
 typedef set<HostDelegateWRef>::type HostDelegateWRefSet;
 
+class InstancePinger : public Update
+{
+private:
+	InstanceWRef instance;
+
+public:
+	InstancePinger(InstanceWRef instance);
+
+	virtual ~InstancePinger();
+
+	void update();
+};
+
 class InstanceImpl : public Instance, public Berkelium::Ipc::ChannelCallback {
 BERKELIUM_IMPL_CLASS(Instance)
 
@@ -51,6 +65,7 @@ private:
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
 	Ipc::ChannelRef ping;
+	Ipc::MessageRef pingMsg;
 	Berkelium::Ipc::ChannelCallbackRef cb;
 	ProcessRef process;
 	WindowWRefSet windows;
@@ -66,9 +81,8 @@ public:
 		send(ipc),
 		recv(ipc->getReverseChannel()),
 		ping(ping),
-		/*
+		pingMsg(Ipc::Message::create(logger)),
 		cb(),
-		*/
 		process(process),
 		windows(),
 		hosts() {
@@ -97,6 +111,14 @@ public:
 
 	void setSelf(InstanceRef instance) {
 		self = instance;
+	}
+
+	void sendPing() {
+		pingMsg->reset();
+		pingMsg->add_cmd(Ipc::CommandId::ping);
+		ping->send(pingMsg);
+
+		runtime->addUpdateEvent(UpdateRef(new InstancePinger(self)), 250);
 	}
 
 	virtual void close() {
@@ -193,6 +215,7 @@ public:
 		impl->ping->registerCallback(impl->cb);
 		impl->getManager()->registerInstance(ret);
 		//impl->createWindow(false);
+		impl->sendPing();
 		return ret;
 	}
 };
@@ -210,6 +233,29 @@ ManagerRef getManager(Instance* instance)
 InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process, Ipc::ChannelRef ping) {
 	return InstanceImpl::newInstance(executable, profile, ipc, process, ping);
 }
+
+InstanceWRef instance;
+
+InstancePinger::InstancePinger(InstanceWRef instance) :
+	Update(),
+	instance(instance)
+{
+	TRACE_OBJECT_NEW("InstancePinger");
+}
+
+InstancePinger::~InstancePinger()
+{
+	TRACE_OBJECT_DELETE("InstancePinger");
+}
+
+void InstancePinger::update()
+{
+	InstanceRef locked(instance.lock());
+	if(locked) {
+		((InstanceImpl*)locked.get())->sendPing();
+	}
+}
+
 
 } // namespace impl
 
