@@ -97,8 +97,7 @@ TEST_F(InstanceTest, ping) {
 	ASSERT_TRUE(false);
 }
 
-// TODO not working yet
-TEST_F(InstanceTest, crash) {
+TEST_F(InstanceTest, onCrashed) {
 	USE_LOGGER(crash);
 
 	InstanceRef subject;
@@ -108,12 +107,68 @@ TEST_F(InstanceTest, crash) {
 	std::shared_ptr<TestHostDelegate> thd(new TestHostDelegate());
 	subject->addHostDelegate(thd);
 
+	Berkelium::impl::testHostCrash(subject);
+
+	Berkelium::RuntimeRef runtime(subject->getRuntime());
+
 	logger->info() << "waiting to to 30s..." << std::endl;
 	for(int i = 0; i < 30000; i += 100) {
-		// normaly, sleep should not be used.
-		// we use it here to let the host think the library process (we)
-		// are busy. this will cause host shutdown and lead to onCrashed called.
-		Berkelium::Util::sleep(100);
+		runtime->update(100);
+		ASSERT_EQ(0, thd->onClosedCount);
+		if(thd->onCrashedCount != 0) {
+			logger->info() << "host terminated, test ok!" << std::endl;
+			return;
+		}
+	}
+	logger->info() << "host not terminated within 30s, test failed!" << std::endl;
+	ASSERT_TRUE(false);
+}
+
+TEST_F(InstanceTest, onClosed) {
+	USE_LOGGER(crash);
+
+	InstanceRef subject;
+	createInstance(logger, subject);
+	ASSERT_NOT_NULL(subject);
+
+	std::shared_ptr<TestHostDelegate> thd(new TestHostDelegate());
+	subject->addHostDelegate(thd);
+
+	subject->close();
+
+	Berkelium::RuntimeRef runtime(subject->getRuntime());
+
+	logger->info() << "waiting to to 30s..." << std::endl;
+	for(int i = 0; i < 30000; i += 100) {
+		runtime->update(100);
+		ASSERT_EQ(0, thd->onCrashedCount);
+		if(thd->onClosedCount != 0) {
+			logger->info() << "host terminated, test ok!" << std::endl;
+			return;
+		}
+	}
+	logger->info() << "host not terminated within 30s, test failed!" << std::endl;
+	ASSERT_TRUE(false);
+}
+
+TEST_F(InstanceTest, onHang) {
+	USE_LOGGER(crash);
+
+	InstanceRef subject;
+	createInstance(logger, subject);
+	ASSERT_NOT_NULL(subject);
+
+	std::shared_ptr<TestHostDelegate> thd(new TestHostDelegate());
+	subject->addHostDelegate(thd);
+
+	Berkelium::impl::testHostHang(subject);
+
+	Berkelium::RuntimeRef runtime(subject->getRuntime());
+
+	logger->info() << "waiting to to 30s..." << std::endl;
+	for(int i = 0; i < 30000; i += 100) {
+		runtime->update(100);
+		ASSERT_EQ(0, thd->onClosedCount);
 		if(thd->onCrashedCount != 0) {
 			logger->info() << "host terminated, test ok!" << std::endl;
 			return;

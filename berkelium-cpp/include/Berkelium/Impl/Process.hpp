@@ -37,6 +37,8 @@ public:
 
 	virtual bool isRunning() = 0;
 
+	virtual bool isCrashed() = 0;
+
 	inline Ipc::ChannelGroupRef getChannelGroup() {
 		return channels;
 	}

@@ -92,6 +92,9 @@ Ipc::LinkGroupRef getLinkGroup(RuntimeRef runtime);
 void setLoggerPrefix(RuntimeRef runtime, const std::string& name);
 Ipc::LinkRef getInputLink(Ipc::ChannelGroupRef group);
 
+void testHostCrash(InstanceRef instance);
+void testHostHang(InstanceRef instance);
+
 void bk_error(const char* format, ...);
 
 #define BERKELIUM_IMPL_CLASS(TypeName)			\

@@ -160,7 +160,7 @@ bool BerkeliumHost::update(int32_t timeout) {
 		if(!timeout) {
 			timeout = true;
 			logger->error("berkelium library timeout!");
-			BerkeliumHost::setDone();
+			exit(1);
 		}
 	}
 

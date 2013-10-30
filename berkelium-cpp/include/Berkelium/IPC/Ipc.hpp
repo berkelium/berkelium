@@ -53,6 +53,7 @@ typedef std::weak_ptr<Link> LinkWRef;
 typedef enum {
 	exitHost,
 	ping,
+	debug,
 	createWindow,
 	createTab,
 	onReady,

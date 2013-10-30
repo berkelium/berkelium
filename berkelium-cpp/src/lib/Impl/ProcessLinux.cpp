@@ -147,8 +147,8 @@ public:
 			if(wp == 0 && options == WNOHANG) {
 				return true;
 			}
-			logger->debug() << "Child exited with status " << status << std::endl;
-			exit = status;
+			exit = WEXITSTATUS(status);
+			logger->debug() << "Child exited with status " << exit << std::endl;
 			pid = -1;
 			logger->info() << "berkelium host process terminated!" << std::endl;
 			return false;
@@ -165,6 +165,9 @@ public:
 		return wait(WNOHANG);
 	}
 
+	virtual bool isCrashed() {
+		return exit > 0;
+	}
 
 	virtual const bool start(const std::vector<std::string>& args) {
 		pid = fork();

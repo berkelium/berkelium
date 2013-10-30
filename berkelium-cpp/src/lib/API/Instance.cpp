@@ -121,6 +121,15 @@ public:
 	}
 
 	void sendPing() {
+		if(!process->isRunning()) {
+			if(process->isCrashed()) {
+				onCrashed();
+			} else {
+				onClosed();
+			}
+			return;
+		}
+
 		pingMsg->reset();
 		pingMsg->add_cmd(Ipc::CommandId::ping);
 		ping->send(pingMsg);
@@ -153,6 +162,24 @@ public:
 			HostDelegateRef ref = it->lock();
 			if(ref) {
 				ref->onPing(self.lock());
+			}
+		}
+	}
+
+	void onCrashed() {
+		for(HostDelegateWRefSet::iterator it(hosts.begin()); it != hosts.end(); it++) {
+			HostDelegateRef ref = it->lock();
+			if(ref) {
+				ref->onCrashed(self.lock());
+			}
+		}
+	}
+
+	void onClosed() {
+		for(HostDelegateWRefSet::iterator it(hosts.begin()); it != hosts.end(); it++) {
+			HostDelegateRef ref = it->lock();
+			if(ref) {
+				ref->onClosed(self.lock());
 			}
 		}
 	}
@@ -214,6 +241,13 @@ public:
 		return ret;
 	}
 
+	virtual void debugHost(int8_t cmd) {
+		Ipc::MessageRef message(Ipc::Message::create(logger));
+		message->add_cmd(Ipc::CommandId::debug);
+		message->add_8(cmd);
+		send->send(message);
+	}
+
 	static InstanceRef newInstance(HostExecutableRef executable, ProfileRef profile, Ipc::ChannelRef ipc, ProcessRef process, Ipc::ChannelRef ping) {
 		InstanceImpl* impl = new InstanceImpl(executable, profile, ipc, process, ping);
 		InstanceRef ret(impl);
@@ -259,6 +293,22 @@ void InstancePinger::update()
 	InstanceRef locked(instance.lock());
 	if(locked) {
 		((InstanceImpl*)locked.get())->sendPing();
+	}
+}
+
+void testHostCrash(InstanceRef instance)
+{
+	if(instance) {
+		InstanceImpl* impl = (InstanceImpl*)instance.get();
+		impl->debugHost(0);
+	}
+}
+
+void testHostHang(InstanceRef instance)
+{
+	if(instance) {
+		InstanceImpl* impl = (InstanceImpl*)instance.get();
+		impl->debugHost(1);
 	}
 }
 

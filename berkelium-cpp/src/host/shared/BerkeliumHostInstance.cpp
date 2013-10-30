@@ -7,6 +7,7 @@
 #include "BerkeliumHostWindow.hpp"
 
 #include <Berkelium/API/Logger.hpp>
+#include <Berkelium/API/Util.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Channel.hpp>
 #include <Berkelium/IPC/ChannelGroup.hpp>
@@ -66,6 +67,10 @@ public:
 				onExitHost();
 				break;
 			}
+			case CommandId::debug: {
+				onDebug(msg);
+				break;
+			}
 			default: {
 				logger->error() << "received unknown command '" << cmd << "'" << std::endl;
 				break;
@@ -89,6 +94,18 @@ public:
 
 	void onExitHost() {
 		BerkeliumHost::setDone();
+	}
+
+	void onDebug(MessageRef msg) {
+		int8_t cmd(msg->get_8());
+		if(cmd == 0) {
+			logger->debug("foreced host crash for unit test!");
+			exit(1);
+		} else if(cmd == 1) {
+			logger->debug("foreced host hang for unit test!");
+			// sleep 10s
+			Berkelium::Util::sleep(10000);
+		}
 	}
 };
 
