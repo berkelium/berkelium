@@ -12,11 +12,11 @@ using Berkelium::Ipc::MessageRef;
 
 namespace {
 
-class IpcMessageTest : public ::testing::Test {
-	DEFINE_LOGGER(IpcMessageTest);
+class MessageTest : public ::testing::Test {
+	DEFINE_LOGGER(MessageTest);
 };
 
-TEST_F(IpcMessageTest, create) {
+TEST_F(MessageTest, create) {
 	USE_LOGGER(create);
 	ASSERT_NOT_NULL(Message::create(logger));
 }
@@ -40,7 +40,7 @@ inline void dump(char* data, size_t size) {
 
 #define TEST_LR(l, r) ASSERT_EQ((size_t)l, m->length()); ASSERT_EQ((size_t)r, m->remaining())
 
-TEST_F(IpcMessageTest, test8) {
+TEST_F(MessageTest, test8) {
 	USE_LOGGER(test8);
 	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
@@ -58,7 +58,7 @@ TEST_F(IpcMessageTest, test8) {
 	m->reset();TEST_LR(0, 0);
 }
 
-TEST_F(IpcMessageTest, test16) {
+TEST_F(MessageTest, test16) {
 	USE_LOGGER(test16);
 	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
@@ -76,14 +76,14 @@ TEST_F(IpcMessageTest, test16) {
 	m->reset();TEST_LR(0, 0);
 }
 
-TEST_F(IpcMessageTest, uint) {
+TEST_F(MessageTest, uint) {
 	USE_LOGGER(uint);
 	MessageRef m = Message::create(logger);
 	m->add_32(1234567890);
 	ASSERT_EQ(1234567890, m->get_32());
 }
 
-TEST_F(IpcMessageTest, test32) {
+TEST_F(MessageTest, test32) {
 	USE_LOGGER(test32);
 	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
@@ -101,7 +101,7 @@ TEST_F(IpcMessageTest, test32) {
 	m->reset();TEST_LR(0, 0);
 }
 
-TEST_F(IpcMessageTest, test_c_str) {
+TEST_F(MessageTest, test_c_str) {
 	USE_LOGGER(test_c_str);
 	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
@@ -119,7 +119,7 @@ TEST_F(IpcMessageTest, test_c_str) {
 	m->reset();TEST_LR(0, 0);
 }
 
-TEST_F(IpcMessageTest, test_std_str) {
+TEST_F(MessageTest, test_std_str) {
 	USE_LOGGER(test_std_str);
 	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
@@ -137,7 +137,7 @@ TEST_F(IpcMessageTest, test_std_str) {
 	m->reset();TEST_LR(0, 0);
 }
 
-TEST_F(IpcMessageTest, test_setup) {
+TEST_F(MessageTest, test_setup) {
 	USE_LOGGER(test_setup);
 	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
@@ -158,7 +158,7 @@ TEST_F(IpcMessageTest, test_setup) {
 	m->reset();TEST_LR(0, 0);
 }
 
-TEST_F(IpcMessageTest, test_sendrecv) {
+TEST_F(MessageTest, test_sendrecv) {
 	USE_LOGGER(test_setup);
 	MessageRef m = Message::create(logger);
 	TEST_LR(0, 0);
