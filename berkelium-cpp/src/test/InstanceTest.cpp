@@ -138,7 +138,7 @@ TEST_F(InstanceTest, onClosed) {
 
 	Berkelium::RuntimeRef runtime(subject->getRuntime());
 
-	logger->info() << "waiting to to 30s..." << std::endl;
+	logger->info() << "waiting up to 30s..." << std::endl;
 	for(int i = 0; i < 30000; i += 100) {
 		runtime->update(100);
 		ASSERT_EQ(0, thd->onCrashedCount);
