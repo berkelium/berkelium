@@ -102,7 +102,7 @@ public class ApiObjectCostsTest {
 			"",
 			// Mac
 			"");
-	private final Costs CHECK_RUNTIME = new Costs("Runtime 1\nRuntimeImpl 1\n",
+	private final Costs CHECK_RUNTIME = new Costs("Runtime 1\nRuntimeImpl 1\nUpdateQueue 1\n",
 			// Linux
 			"",
 			// Windows

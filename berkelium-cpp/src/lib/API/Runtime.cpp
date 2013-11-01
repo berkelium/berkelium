@@ -11,6 +11,7 @@
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Filesystem.hpp>
 #include <Berkelium/Impl/Manager.hpp>
+#include <Berkelium/Impl/UpdateQueue.hpp>
 #include <Berkelium/IPC/LinkGroup.hpp>
 
 #include <set>
@@ -67,17 +68,13 @@ public:
 	}
 };
 
-typedef std::map<int64_t, UpdateRef> UpdateRefMap;
-typedef std::pair<int64_t, UpdateRef> UpdateRefMapPair;
-typedef UpdateRefMap::iterator UpdateRefMapIt;
-
 class RuntimeImpl : public Runtime {
 private:
 	LoggerRef logger;
 	Ipc::LinkGroupRef group;
 	std::string defaultExecutable;
 	LogDelegateRefSet logs;
-	UpdateRefMap updates;
+	UpdateQueueRef updates;
 	LogDelegateRef target;
 	ManagerRef manager;
 	RuntimeWRef self;
@@ -91,7 +88,7 @@ private:
 		group(Ipc::LinkGroup::create()),
 		defaultExecutable(""),
 		logs(),
-		updates(),
+		updates(new UpdateQueue(group)),
 		target(new RuntimeLogDelegate()),
 		manager(manager),
 		self() {
@@ -128,32 +125,7 @@ public:
 	}
 
 	virtual void update(int32_t timeout) {
-		while(true) {
-			int64_t now = Util::currentTimeMillis();
-			UpdateRefMapIt it(updates.begin());
-			for(; it != updates.end(); it++) {
-				if(it->first <= now) {
-					it->second->update();
-					it = updates.erase(it);
-					if(it == updates.end()) {
-						break;
-					}
-				} else {
-					break;
-				}
-			}
-			if(it != updates.end() && it->first < now + timeout) {
-				int32_t t = it->first - now;
-				group->update(t);
-				timeout -= t;
-				if(timeout <= 0) {
-					return;
-				}
-				continue;
-			}
-			group->update(timeout);
-			break;
-		}
+		updates->update(timeout);
 	}
 
 	virtual void setDefaultExecutable(const std::string& pathTo) {
@@ -165,18 +137,11 @@ public:
 	}
 
 	virtual void addUpdateEvent(UpdateRef update, int32_t timeout) {
-		updates.insert(UpdateRefMapPair(timeout + Util::currentTimeMillis(), update));
+		updates->addUpdateEvent(update, timeout);
 	}
 
 	virtual void removeUpdateEvent(UpdateRef update) {
-		for(UpdateRefMapIt it = updates.begin(); it != updates.end(); it++) {
-			if(it->second == update) {
-				it = updates.erase(it);
-				if(it == updates.end()) {
-					return;
-				}
-			}
-		}
+		updates->removeUpdateEvent(update);
 	}
 
 	virtual HostExecutableRef forSystemInstalled() {

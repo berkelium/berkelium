@@ -13,6 +13,8 @@
 #include <Berkelium/API/Berkelium.hpp>
 #include <Berkelium/IPC/Ipc.hpp>
 
+#include <map>
+
 namespace Berkelium {
 
 namespace impl {
@@ -28,6 +30,14 @@ typedef std::shared_ptr<Process> ProcessRef;
 class Manager;
 typedef std::shared_ptr<Manager> ManagerRef;
 typedef std::weak_ptr<Manager> ManagerWRef;
+
+class UpdateQueue;
+typedef std::shared_ptr<UpdateQueue> UpdateQueueRef;
+typedef std::weak_ptr<UpdateQueue> UpdateQueueWRef;
+
+typedef std::map<int64_t, UpdateRef> UpdateRefMap;
+typedef std::pair<int64_t, UpdateRef> UpdateRefMapPair;
+typedef UpdateRefMap::iterator UpdateRefMapIt;
 
 ManagerRef getManager(HostVersion* id);
 inline ManagerRef getManager(HostVersionRef id) {
