@@ -49,6 +49,13 @@ jclass LogDelegate_class;
 #define JavaID_LogDelegate_log "(Lorg/berkelium/api/Runtime;Lorg/berkelium/api/LogSource;Lorg/berkelium/api/LogType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V"
 jmethodID LogDelegate_log_Java;
 
+#define JavaID_TabDelegate "org/berkelium/api/TabDelegate"
+jclass TabDelegate_class;
+#define JavaID_TabDelegate_onClosed "(Lorg/berkelium/api/Tab;)V"
+jmethodID TabDelegate_onClosed_Java;
+#define JavaID_TabDelegate_onReady "(Lorg/berkelium/api/Tab;)V"
+jmethodID TabDelegate_onReady_Java;
+
 #define BERKELIUM_FIND_CLASS(n) \
 	c = env->FindClass(JavaID_ ## n);					\
 	if(c == NULL) {								\
@@ -98,6 +105,10 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
 
 	BERKELIUM_FIND_CLASS(LogDelegate);
 	BERKELIUM_GET_METHODID(LogDelegate, log);
+
+	BERKELIUM_FIND_CLASS(TabDelegate);
+	BERKELIUM_GET_METHODID(TabDelegate, onClosed);
+	BERKELIUM_GET_METHODID(TabDelegate, onReady);
 
 	for(int i = 0; i < BK_Env_Enum_MAX; i++) {
 		if(BK_Java_Class_Names[i] == NULL) {
@@ -168,25 +179,32 @@ void Berkelium_Java_LogDelegate_log(BK_Env* bkenv, BK_LogDelegate self, BK_Runti
 	//fprintf(stderr, "log done!\n");
 }
 
-void Berkelium_Java_TabDelegate_onClosed(BK_Env* env, BK_TabDelegate self, BK_Tab tab)
+void Berkelium_Java_TabDelegate_onClosed(BK_Env* bkenv, BK_TabDelegate self, BK_Tab tab)
+{
+	JNIEnv* env = getBerkeliumJavaVMForCallback();
+	if(env != NULL) {
+		env->CallVoidMethod((jobject)self->self, TabDelegate_onClosed_Java, NULL);
+	}
+}
+
+void Berkelium_Java_TabDelegate_onTitleChanged(BK_Env* bkenv, BK_TabDelegate self, BK_Tab tab, bk_string title)
 {
 }
 
-void Berkelium_Java_TabDelegate_onTitleChanged(BK_Env* env, BK_TabDelegate self, BK_Tab tab, bk_string title)
+void Berkelium_Java_TabDelegate_onPaint(BK_Env* bkenv, BK_TabDelegate self, BK_Tab tab)
 {
 }
 
-void Berkelium_Java_TabDelegate_onPaint(BK_Env* env, BK_TabDelegate self, BK_Tab tab)
+void Berkelium_Java_TabDelegate_onPaintDone(BK_Env* bkenv, BK_TabDelegate self, BK_Tab tab, BK_Rect rect)
 {
 }
 
-void Berkelium_Java_TabDelegate_onPaintDone(BK_Env* env, BK_TabDelegate self, BK_Tab tab, BK_Rect rect)
+void Berkelium_Java_TabDelegate_onReady(BK_Env* bkenv, BK_TabDelegate self, BK_Tab tab)
 {
-}
-
-void Berkelium_Java_TabDelegate_onReady(BK_Env* env, BK_TabDelegate self, BK_Tab tab)
-{
-	fprintf(stderr, "BerkeliumJava onReady\b");
+	JNIEnv* env = getBerkeliumJavaVMForCallback();
+	if(env != NULL) {
+		env->CallVoidMethod((jobject)self->self, TabDelegate_onReady_Java, NULL);
+	}
 }
 
 bk_bk_obj Berkelium_Java_MapIn(BK_Env_Enum type, bk_ext_obj bkJavaId, void* data)

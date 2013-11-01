@@ -104,7 +104,8 @@ public:
 	}
 
 	virtual void onClosed(Berkelium::TabRef tab) {
-		bk_error("BkTabDelegateMapper::onClosed not implemented");
+		bk_error("BkTabDelegateMapper::onClosed not full implemented");
+		delegate->onClosed(env, delegate, NULL);
 	}
 
 	virtual void onTitleChanged(Berkelium::TabRef tab, const std::string& title) {
@@ -120,7 +121,8 @@ public:
 	}
 
 	virtual void onReady(Berkelium::TabRef tab) {
-		bk_error("BkTabDelegateMapper::onReady not implemented");
+		bk_error("BkTabDelegateMapper::onReady not full implemented");
+		delegate->onReady(env, delegate, NULL);
 	}
 };
 

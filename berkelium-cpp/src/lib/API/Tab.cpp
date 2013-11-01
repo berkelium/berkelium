@@ -78,10 +78,6 @@ public:
 	virtual void sync() {
 	}
 
-	virtual TabDelegateRef getTabDelegate() {
-		return TabDelegateRef();
-	}
-
 	virtual void addTabDelegate(TabDelegateRef delegate) {
 		delegates.insert(delegate);
 	}
