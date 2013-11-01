@@ -241,7 +241,7 @@ public:
 		return ret;
 	}
 
-	virtual void debugHost(int8_t cmd) {
+	void debugHost(int8_t cmd) {
 		Ipc::MessageRef message(Ipc::Message::create(logger));
 		message->add_cmd(Ipc::CommandId::debug);
 		message->add_8(cmd);
@@ -253,7 +253,8 @@ public:
 		InstanceRef ret(impl);
 		impl->setSelf(ret);
 		impl->cb.reset(new Berkelium::Ipc::ChannelCallbackDelegate<Instance, InstanceImpl>(ret));
-		ipc->registerCallback(impl->cb);
+		impl->send->registerCallback(impl->cb);
+		impl->recv->registerCallback(impl->cb);
 		impl->ping->registerCallback(impl->cb);
 		impl->getManager()->registerInstance(ret);
 		//impl->createWindow(false);

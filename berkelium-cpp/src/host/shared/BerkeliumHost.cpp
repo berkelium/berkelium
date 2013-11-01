@@ -22,6 +22,7 @@
 #include <Berkelium/IPC/ChannelGroup.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/Impl/Impl.hpp>
+#include <Berkelium/Impl/UpdateQueue.hpp>
 
 #include <set>
 #include <map>
@@ -39,11 +40,14 @@ using Ipc::LinkGroup;
 using Ipc::LinkGroupRef;
 using Ipc::Message;
 using Ipc::MessageRef;
+using impl::UpdateQueue;
+using impl::UpdateQueueRef;
 
 bool berkeliumDone = false;
 BerkeliumHostInstanceRef berkeliumHostInstance;
 
 LinkGroupRef group(LinkGroup::create());
+UpdateQueueRef updates(new UpdateQueue(group));
 ChannelGroupRef channels;
 
 LoggerRef logger = Berkelium::Util::createRootLogger(NULL);
@@ -172,7 +176,7 @@ bool BerkeliumHost::update(int32_t timeout) {
 	closed.clear();
 	*/
 
-	group->update(timeout);
+	updates->update(timeout);
 	/*
 	for(std::map<Browser*,ChannelRef>::iterator it = browserMap.begin(); it != browserMap.end(); it++) {
 		process(it->second, it->first);
@@ -271,6 +275,16 @@ bool BerkeliumHost::isDone() {
 
 void BerkeliumHost::setDone() {
 	berkeliumDone = true;
+}
+
+void BerkeliumHost::addUpdateEvent(UpdateRef update, int32_t timeout)
+{
+	updates->addUpdateEvent(update, timeout);
+}
+
+void BerkeliumHost::removeUpdateEvent(UpdateRef update)
+{
+	updates->removeUpdateEvent(update);
 }
 
 } // namespace Berkelium

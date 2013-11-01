@@ -38,6 +38,10 @@ public:
 	static Ipc::ChannelRef addTab(void*);
 
 	static void removeTab(void*);
+
+	static void addUpdateEvent(UpdateRef update, int32_t timeout);
+
+	static void removeUpdateEvent(UpdateRef update);
 };
 
 } // namespace Berkelium

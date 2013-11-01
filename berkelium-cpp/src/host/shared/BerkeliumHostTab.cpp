@@ -4,7 +4,9 @@
 
 #include "BerkeliumHostDelegate.hpp"
 #include "BerkeliumHostTab.hpp"
+#include "BerkeliumHost.hpp"
 
+#include <Berkelium/API/Update.hpp>
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/Channel.hpp>
@@ -18,11 +20,28 @@ using Ipc::MessageRef;
 
 namespace impl {
 
+class BerkeliumHostTabReadyFake : public Update
+{
+private:
+	BerkeliumHostTabRef tab;
+
+public:
+	BerkeliumHostTabReadyFake(BerkeliumHostTabRef tab) :
+		tab(tab) {
+	}
+
+	virtual ~BerkeliumHostTabReadyFake() {
+	}
+
+	virtual void update();
+};
+
 class BerkeliumHostTabImpl : public BerkeliumHostTab {
 private:
 	BerkeliumHostWindowWRef window;
 	LoggerRef logger;
-	ChannelRef ipc;
+	ChannelRef recv;
+	ChannelRef send;
 	void* nativeWindow;
 	void* nativeTab;
 
@@ -30,7 +49,8 @@ private:
 		BerkeliumHostTab(),
 		window(window),
 		logger(logger),
-		ipc(ipc),
+		recv(ipc),
+		send(ipc->getReverseChannel()),
 		nativeWindow(window->getNative()),
 		nativeTab(BerkeliumHostDelegate::createTab(nativeWindow)) {
 		fprintf(stderr, "new BerkeliumHostTabImpl\n");
@@ -46,6 +66,7 @@ public:
 		BerkeliumHostTabImpl* impl = new BerkeliumHostTabImpl(window, logger, ipc);
 		BerkeliumHostTabRef ret(impl);
 		ipc->registerCallback(ret);
+		BerkeliumHost::addUpdateEvent(UpdateRef(new BerkeliumHostTabReadyFake(ret)), 1000);
 		return ret;
 	}
 
@@ -58,7 +79,20 @@ public:
 			}
 		}
 	}
+
+	virtual void sendOnReady() {
+		Berkelium::Ipc::MessageRef msg(Ipc::Message::create(logger));
+		msg->add_cmd(CommandId::onReady);
+		send->send(msg);
+	}
 };
+
+void BerkeliumHostTabReadyFake::update()
+{
+	if(tab) {
+		((BerkeliumHostTabImpl*)(tab.get()))->sendOnReady();
+	}
+}
 
 } // namespace impl
 

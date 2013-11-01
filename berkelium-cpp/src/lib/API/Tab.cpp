@@ -7,11 +7,14 @@
 #include <Berkelium/API/Tab.hpp>
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Logger.hpp>
+#include <Berkelium/API/TabDelegate.hpp>
 #include <Berkelium/IPC/Message.hpp>
 #include <Berkelium/IPC/LinkGroup.hpp>
 #include <Berkelium/IPC/Link.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Manager.hpp>
+
+#include <set>
 
 namespace Berkelium {
 
@@ -25,6 +28,9 @@ Tab::~Tab() {
 
 namespace impl {
 
+typedef std::set<TabDelegateRef> TabDelegateRefSet;
+typedef TabDelegateRefSet::iterator TabDelegateRefSetIt;
+
 class TabImpl : public Tab, public Berkelium::Ipc::ChannelCallback {
 BERKELIUM_IMPL_CLASS(Tab)
 
@@ -33,6 +39,7 @@ private:
 	Ipc::ChannelRef send;
 	Ipc::ChannelRef recv;
 	Berkelium::Ipc::ChannelCallbackRef cb;
+	TabDelegateRefSet delegates;
 	WindowRef parent;
 
 public:
@@ -42,6 +49,7 @@ public:
 		send(ipc),
 		recv(ipc->getReverseChannel()),
 		cb(),
+		delegates(),
 		parent(parent) {
 		TRACE_OBJECT_NEW("TabImpl");
 	}
@@ -58,11 +66,7 @@ public:
 				break;
 			}
 			case Ipc::CommandId::onReady: {
-				message->reset();
-				message->add_cmd(Ipc::CommandId::navigate);
-				message->add_str("http://heise.de/");
-				logger->debug() << "sending navigate to heise.de!" << std::endl;
-				send->send(message);
+				onReady();
 				break;
 			}
 		}
@@ -79,9 +83,11 @@ public:
 	}
 
 	virtual void addTabDelegate(TabDelegateRef delegate) {
+		delegates.insert(delegate);
 	}
 
 	virtual void removeTabDelegate(TabDelegateRef delegate) {
+		delegates.erase(delegate);
 	}
 
 	virtual WindowRef getWindow() {
@@ -94,6 +100,14 @@ public:
 	virtual void navigateTo(const std::string& url) {
 	}
 
+	void onReady() {
+		TabRef self(getSelf());
+		for(TabDelegateRefSetIt it(delegates.begin()); it != delegates.end(); it++) {
+			TabDelegateRef delegate(*it);
+			delegate->onReady(self);
+		}
+	}
+
 	TabRef getSelf() 	{
 		return self.lock();
 	}
@@ -103,7 +117,8 @@ public:
 		TabRef ret(impl);
 		impl->self = ret;
 		impl->cb.reset(new Berkelium::Ipc::ChannelCallbackDelegate<Tab, TabImpl>(ret));
-		ipc->registerCallback(impl->cb);
+		impl->send->registerCallback(impl->cb);
+		impl->recv->registerCallback(impl->cb);
 		impl->manager->registerTab(ret);
 		return ret;
 	}

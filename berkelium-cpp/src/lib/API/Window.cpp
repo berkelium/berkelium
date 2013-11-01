@@ -125,7 +125,8 @@ public:
 		WindowRef ret(impl);
 		impl->self = ret;
 		impl->cb.reset(new Berkelium::Ipc::ChannelCallbackDelegate<Window, WindowImpl>(ret));
-		channel->registerCallback(impl->cb);
+		impl->send->registerCallback(impl->cb);
+		impl->recv->registerCallback(impl->cb);
 		impl->manager->registerWindow(ret);
 		return ret;
 	}
