@@ -6,6 +6,7 @@
 
 #include "BerkeliumHost.hpp"
 #include "BerkeliumHostDelegate.hpp"
+#include "MemoryRenderViewHostFactory.hpp"
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_view_host.h"
 #include "base/message_loop.h"
 
 namespace Berkelium {
@@ -114,7 +116,7 @@ void BerkeliumHostDelegate::destroyWindow(void* browser)
 	fprintf(stderr, "window destroyed!\n");
 }
 
-void* BerkeliumHostDelegate::createTab(void* window)
+void* BerkeliumHostDelegate::createTab(void* window, BerkeliumHostTabRef tab)
 {
 	fprintf(stderr, "tab create!\n");
 	chrome::NavigateParams params((Browser*)window, GURL(chrome::kChromeUINewTabURL), content::PAGE_TRANSITION_TYPED);
@@ -122,6 +124,7 @@ void* BerkeliumHostDelegate::createTab(void* window)
 	params.tabstrip_index = -1;
 	chrome::Navigate(&params);
 	fprintf(stderr, "tab created!\n");
+	setBerkeliumHostTabRef(params.target_contents->GetRenderViewHost(), tab);
 	return params.target_contents;
 }
 

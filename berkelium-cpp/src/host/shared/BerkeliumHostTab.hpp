@@ -23,6 +23,8 @@ public:
 	static BerkeliumHostTabRef createBerkeliumHostTab(BerkeliumHostWindowRef window, LoggerRef logger, Ipc::ChannelRef ipc);
 
 	virtual ~BerkeliumHostTab() = 0;
+
+	virtual void sendOnReady() = 0;
 };
 
 } // namespace Berkelium

@@ -15,7 +15,11 @@ class RenderProcessHostFactory;
 class SessionStorageNamespace;
 }
 
+#include "BerkeliumHostTab.hpp"
+
 namespace Berkelium {
+
+void setBerkeliumHostTabRef(content::RenderViewHost*, BerkeliumHostTabRef tab);
 
 class MemoryRenderViewHostFactory : public content::RenderViewHostFactory {
 private:

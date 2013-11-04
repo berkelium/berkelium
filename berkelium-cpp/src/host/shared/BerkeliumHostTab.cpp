@@ -20,22 +20,6 @@ using Ipc::MessageRef;
 
 namespace impl {
 
-class BerkeliumHostTabReadyFake : public Update
-{
-private:
-	BerkeliumHostTabRef tab;
-
-public:
-	BerkeliumHostTabReadyFake(BerkeliumHostTabRef tab) :
-		tab(tab) {
-	}
-
-	virtual ~BerkeliumHostTabReadyFake() {
-	}
-
-	virtual void update();
-};
-
 class BerkeliumHostTabImpl : public BerkeliumHostTab {
 private:
 	BerkeliumHostWindowWRef window;
@@ -52,7 +36,7 @@ private:
 		recv(ipc),
 		send(ipc->getReverseChannel()),
 		nativeWindow(window->getNative()),
-		nativeTab(BerkeliumHostDelegate::createTab(nativeWindow)) {
+		nativeTab() {
 		fprintf(stderr, "new BerkeliumHostTabImpl\n");
 	}
 
@@ -66,7 +50,7 @@ public:
 		BerkeliumHostTabImpl* impl = new BerkeliumHostTabImpl(window, logger, ipc);
 		BerkeliumHostTabRef ret(impl);
 		ipc->registerCallback(ret);
-		BerkeliumHost::addUpdateEvent(UpdateRef(new BerkeliumHostTabReadyFake(ret)), 1000);
+		impl->nativeTab = BerkeliumHostDelegate::createTab(impl->nativeWindow, ret);
 		return ret;
 	}
 
@@ -86,13 +70,6 @@ public:
 		send->send(msg);
 	}
 };
-
-void BerkeliumHostTabReadyFake::update()
-{
-	if(tab) {
-		((BerkeliumHostTabImpl*)(tab.get()))->sendOnReady();
-	}
-}
 
 } // namespace impl
 

@@ -4,13 +4,35 @@
 
 #include "BerkeliumHost.hpp"
 #include "BerkeliumHostDelegate.hpp"
+#include "BerkeliumHostTab.hpp"
 
 #include <Berkelium/API/Profile.hpp>
 #include <Berkelium/API/Runtime.hpp>
 #include <Berkelium/API/Util.hpp>
+#include <Berkelium/API/Update.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 
 namespace Berkelium {
+
+class BerkeliumHostTabReadyFake : public Update
+{
+private:
+	BerkeliumHostTabRef tab;
+
+public:
+	BerkeliumHostTabReadyFake(BerkeliumHostTabRef tab) :
+		tab(tab) {
+	}
+
+	virtual ~BerkeliumHostTabReadyFake() {
+	}
+
+	virtual void update() {
+		if(tab) {
+			tab->sendOnReady();
+		}
+	}
+};
 
 void BerkeliumHostDelegate::updateLater()
 {
@@ -33,8 +55,9 @@ void BerkeliumHostDelegate::destroyWindow(void* window)
 {
 }
 
-void* BerkeliumHostDelegate::createTab(void* window)
+void* BerkeliumHostDelegate::createTab(void* window, BerkeliumHostTabRef tab)
 {
+	BerkeliumHost::addUpdateEvent(UpdateRef(new BerkeliumHostTabReadyFake(tab)), 1000);
 	return NULL;
 }
 

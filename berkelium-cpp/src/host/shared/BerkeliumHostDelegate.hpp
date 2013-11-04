@@ -6,8 +6,13 @@
 #define BERKELIUM_HOST_DELEGATE_HPP_
 #pragma once
 
+#include <memory>
 
 namespace Berkelium {
+
+class BerkeliumHostTab;
+typedef std::shared_ptr<BerkeliumHostTab> BerkeliumHostTabRef;
+typedef std::weak_ptr<BerkeliumHostTab> BerkeliumHostTabWRef;
 
 class BerkeliumHostDelegate {
 public:
@@ -21,7 +26,7 @@ public:
 
 	static void destroyWindow(void* window);
 
-	static void* createTab(void* window);
+	static void* createTab(void* window, BerkeliumHostTabRef tab);
 
 	static void destroyTab(void* window, void* tab);
 };

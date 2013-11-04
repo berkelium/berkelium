@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <Berkelium/API/Logger.hpp>
+
 #include "BerkeliumHost.hpp"
 #include "MemoryRenderViewHostFactory.hpp"
 
@@ -24,6 +26,8 @@ using Ipc::ChannelRef;
 using Ipc::Message;
 using Ipc::MessageRef;
 
+extern LoggerRef logger;
+
 class MemoryRenderViewHost : public content::RenderViewHostImpl {
 private:
 	content::SiteInstance* instance;
@@ -34,7 +38,7 @@ private:
 	content::SessionStorageNamespace* session_storage_namespace;
 	bool started;
 	ChannelRef ipc;
-	MessageRef msg;
+	BerkeliumHostTabRef tab;
 
 public:
 	MemoryRenderViewHost(
@@ -52,14 +56,13 @@ public:
 	swapped_out(swapped_out),
 	session_storage_namespace(session_storage_namespace),
 	started(false),
-	ipc(BerkeliumHost::addTab(this)),
-	msg(/*ipc->getMessage()*/)
+	tab()
 	{
-		printf("new MemoryRenderViewHost!\n");
+		fprintf(stderr, "new MemoryRenderViewHost!\n");
 	}
 
 	virtual ~MemoryRenderViewHost() {
-		printf("delete MemoryRenderViewHost!\n");
+		fprintf(stderr, "delete MemoryRenderViewHost!\n");
 		BerkeliumHost::removeTab(this);
 	}
 
@@ -109,6 +112,10 @@ public:
 		return content::RenderViewHostImpl::OnMessageReceived(msg);
 	}
 
+	void setBerkeliumHostTabRef(BerkeliumHostTabRef t) {
+		tab = t;
+	}
+
 private: // BerkeliumTab impl
 	virtual void CloseTab() {
 		content::RenderViewHostImpl::ClosePage();
@@ -141,6 +148,11 @@ private: // BerkeliumTab impl
 		ipc->send(msg);
 		*/
 		fprintf(stderr, "*** OnReady()\n");
+		if(tab) {
+			tab->sendOnReady();
+		} else {
+			logger->error("OnReady: no BerkeliumHostTabRef found!");
+		}
 	}
 
 	virtual void OnLoading(bool start) {
@@ -153,6 +165,11 @@ private: // BerkeliumTab impl
 		fprintf(stderr, "*** OnLoading(%s)\n", start ? "true" : "false");
 	}
 };
+
+void setBerkeliumHostTabRef(content::RenderViewHost* mrvh, BerkeliumHostTabRef tab)
+{
+	((MemoryRenderViewHost*)mrvh)->setBerkeliumHostTabRef(tab);
+}
 
 std::vector<std::string> split(std::string l, char delim) {
     std::replace(l.begin(), l.end(), delim, ' ');
