@@ -21,54 +21,84 @@ using Berkelium::impl::Filesystem;
 namespace {
 
 class LinkTest : public ::testing::Test {
-	DEFINE_LOGGER(LinkTest);
+    DEFINE_LOGGER(LinkTest);
 };
 
 TEST_F(LinkTest, create) {
-	USE_LOGGER(create);
-	ASSERT_NOT_NULL(Link::getLink(false, LinkGroupRef(), logger, Filesystem::getTemp(), randomId(), "testCreateLink"));
+    USE_LOGGER(create);
+    ASSERT_NOT_NULL(Link::getLink(false, LinkGroupRef(), logger, Filesystem::getTemp(), randomId(), "testCreateLink"));
 }
 
 TEST_F(LinkTest, remove) {
-	USE_LOGGER(remove);
-	std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
-	std::string name(randomId());
-	ASSERT_FALSE(Filesystem::exists(dir));
-	{
-		LinkRef pipe = Link::getLink(true, LinkGroupRef(), getLogger("remove"), dir, name, "testRemoveLink");
-		ASSERT_TRUE(Filesystem::exists(dir));
-		ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name + "1")));
-	}
-	ASSERT_FALSE(Filesystem::exists(Filesystem::append(dir, name)));
-	Filesystem::removeDir(dir);
+    USE_LOGGER(remove);
+    std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
+    std::string name(randomId());
+    ASSERT_FALSE(Filesystem::exists(dir));
+    {
+        LinkRef pipe = Link::getLink(true, LinkGroupRef(), getLogger("remove"), dir, name, "testRemoveLink");
+        ASSERT_TRUE(Filesystem::exists(dir));
+        ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name + "1")));
+    }
+    ASSERT_FALSE(Filesystem::exists(Filesystem::append(dir, name)));
+    Filesystem::removeDir(dir);
 }
 
 TEST_F(LinkTest, sendRecv) {
-	USE_LOGGER(sendRecv);
-	std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
-	std::string name(randomId());
-	ASSERT_FALSE(Filesystem::exists(dir));
-	{
-		LinkRef link1 = Link::getLink(true, LinkGroupRef(), getLogger("sendRecv"), dir, name, "testSendRecvLink");
-		ASSERT_TRUE(Filesystem::exists(dir));
-		ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name + "1")));
-		ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name + "2")));
-		LinkRef link2 = Link::getLink(false, LinkGroupRef(), getLogger("sendRecv"), dir, name, "testSendRecvLink");
-		ASSERT_TRUE(link1->isEmpty());
-		ASSERT_TRUE(link2->isEmpty());
-		MessageRef msg(Message::create(logger));
-		msg->add_str("hello");
-		link1->send(msg);
-		ASSERT_TRUE(link1->isEmpty());
-		ASSERT_FALSE(link2->isEmpty());
-		msg = link2->recv();
-		std::string recv = msg->get_str();
-		ASSERT_TRUE(link1->isEmpty());
-		ASSERT_TRUE(link2->isEmpty());
-		ASSERT_EQ(0, recv.compare("hello"));
-	}
-	ASSERT_FALSE(Filesystem::exists(Filesystem::append(dir, name)));
-	Filesystem::removeDir(dir);
+    USE_LOGGER(sendRecv);
+    std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
+    std::string name(randomId());
+    ASSERT_FALSE(Filesystem::exists(dir));
+    {
+        LinkRef link1 = Link::getLink(true, LinkGroupRef(), getLogger("sendRecv"), dir, name, "testSendRecvLink");
+        ASSERT_TRUE(Filesystem::exists(dir));
+        ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name + "1")));
+        ASSERT_TRUE(Filesystem::exists(Filesystem::append(dir, name + "2")));
+        LinkRef link2 = Link::getLink(false, LinkGroupRef(), getLogger("sendRecv"), dir, name, "testSendRecvLink");
+        ASSERT_TRUE(link1->isEmpty());
+        ASSERT_TRUE(link2->isEmpty());
+        MessageRef msg(Message::create(logger));
+        msg->add_str("hello");
+        link1->send(msg);
+        ASSERT_TRUE(link1->isEmpty());
+        ASSERT_FALSE(link2->isEmpty());
+        msg = link2->recv();
+        std::string recv = msg->get_str();
+        ASSERT_TRUE(link1->isEmpty());
+        ASSERT_TRUE(link2->isEmpty());
+        ASSERT_EQ(0, recv.compare("hello"));
+    }
+    ASSERT_FALSE(Filesystem::exists(Filesystem::append(dir, name)));
+    Filesystem::removeDir(dir);
 }
 
+#ifdef OS_WINDOWS
+
+// Temporary test to try the Windows Named pipes.
+// Both tests must be launched together the Server 
+// is waiting for the Client to connect.
+TEST_F(LinkTest, createServer) {
+    USE_LOGGER(sendRecv);
+    std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
+    std::string name("testPipe");
+    {
+        LinkRef link = Link::getLink(true, LinkGroupRef(), getLogger("sendRecv"), "", name, "testSendRecvLink");
+        ASSERT_TRUE(link->isEmpty());
+        MessageRef msg(Message::create(logger));
+        msg->add_str("hello");
+        link->send(msg);
+    }
+}
+TEST_F(LinkTest, createClient) {
+    USE_LOGGER(sendRecv);
+    std::string name("testPipe");
+    {
+        LinkRef link = Link::getLink(false, LinkGroupRef(), getLogger("sendRecv"), "", name, "testSendRecvLink");
+        ASSERT_TRUE(link->isEmpty());
+        MessageRef msg(Message::create(logger));
+        msg = link->recv();
+        std::string recv = msg->get_str();
+        ASSERT_EQ(0, recv.compare("hello"));
+    }
+}
+#endif
 } // namespace

@@ -19,14 +19,14 @@ namespace Berkelium {
 
 namespace impl {
 
-class ProcessImpl : public Process {
+class ProcessWindowsImpl : public Process {
 private:
 	STARTUPINFOW si;
 	PROCESS_INFORMATION pi;
 	bool started;
 
 public:
-	ProcessImpl(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
+	ProcessWindowsImpl(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
 		Process(runtime, logger, dir),
 		started(false) {
 		ZeroMemory(&si, sizeof(si));
@@ -35,7 +35,7 @@ public:
 		TRACE_OBJECT_NEW("ProcessWin32");
 	}
 
-	virtual ~ProcessImpl() {
+	virtual ~ProcessWindowsImpl() {
 		TRACE_OBJECT_DELETE("ProcessWin32");
 		if(!started) return;
 		// Wait until child process exits.
@@ -47,6 +47,11 @@ public:
 	}
 
 	virtual bool isRunning() {
+//#error "TODO"
+		return false;
+	}
+
+	virtual bool isCrashed() {
 //#error "TODO"
 		return false;
 	}
@@ -79,7 +84,7 @@ public:
 };
 
 ProcessRef Process::create(RuntimeRef runtime, LoggerRef logger, const std::string& dir) {
-	return ProcessRef(new ProcessImpl(runtime, logger, dir));
+	return ProcessRef(new ProcessWindowsImpl(runtime, logger, dir));
 }
 
 } // namespace impl
