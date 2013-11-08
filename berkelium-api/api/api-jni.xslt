@@ -26,9 +26,99 @@
 </xsl:text>
 	</xsl:for-each>
 
+	<xsl:text>
+</xsl:text>
+
+	<xsl:for-each select="/api/group[@delegate='true' or @type='enum']">
+		<xsl:text>#define JavaID_</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text> "org/berkelium/api/</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>"
+jclass </xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>_class;
+</xsl:text>
+
+		<xsl:if test="@type='enum'">
+			<xsl:text>#define JavaID_</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>_ordinal "()I"
+jmethodID </xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>_ordinal_Java;
+</xsl:text>
+		</xsl:if>
+		<xsl:if test="@delegate='true'">
+			<xsl:for-each select="entry">
+				<xsl:text>#define JavaID_</xsl:text>
+				<xsl:value-of select="../@name"/>
+				<xsl:text>_</xsl:text>
+				<xsl:value-of select="@name"/>
+				<xsl:text> "(</xsl:text>
+
+				<xsl:call-template name="arguments">
+					<xsl:with-param name="lang" select="'java-signature'"/>
+					<xsl:with-param name="name" select="'false'"/>
+				</xsl:call-template>
+
+				<xsl:text>)V"
+jmethodID </xsl:text>
+				<xsl:value-of select="../@name"/>
+				<xsl:text>_</xsl:text>
+				<xsl:value-of select="@name"/>
+				<xsl:text>_Java;
+</xsl:text>
+			</xsl:for-each>
+		</xsl:if>
+
+		<xsl:text>
+</xsl:text>
+	</xsl:for-each>
+
+<xsl:text>inline jint Berkelium_Java_Internal_Load(JNIEnv* env);
+
+</xsl:text>
+
 	<xsl:text>#include "org_berkelium_impl_BerkeliumJavaImpl.h"
 
 #include "berkelium-jni.hpp"
+
+jint Berkelium_Java_Internal_Load(JNIEnv* env)
+{
+	jclass c;
+	jmethodID m;
+
+</xsl:text>
+
+	<xsl:for-each select="/api/group[@delegate='true' or @type='enum']">
+		<xsl:text>	BERKELIUM_FIND_CLASS(</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>);
+</xsl:text>
+		<xsl:if test="@type='enum'">
+			<xsl:text>	BERKELIUM_GET_METHODID(</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>, ordinal</xsl:text>
+			<xsl:text>);
+</xsl:text>
+		</xsl:if>
+		<xsl:if test="@delegate='true'">
+			<xsl:for-each select="entry">
+				<xsl:text>	BERKELIUM_GET_METHODID(</xsl:text>
+				<xsl:value-of select="../@name"/>
+				<xsl:text>, </xsl:text>
+				<xsl:value-of select="@name"/>
+				<xsl:text>);
+</xsl:text>
+			</xsl:for-each>
+		</xsl:if>
+		<xsl:text>
+</xsl:text>
+	</xsl:for-each>
+
+<xsl:text>	return 0;
+}
 
 const char* BK_Java_Class_Names[] = {
 </xsl:text>

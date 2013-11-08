@@ -19,9 +19,91 @@
 #include "org_berkelium_impl_InstanceImpl.h"
 #include "org_berkelium_impl_WindowImpl.h"
 #include "org_berkelium_impl_TabImpl.h"
+
+#define JavaID_LogSource "org/berkelium/api/LogSource"
+jclass LogSource_class;
+#define JavaID_LogSource_ordinal "()I"
+jmethodID LogSource_ordinal_Java;
+
+#define JavaID_LogType "org/berkelium/api/LogType"
+jclass LogType_class;
+#define JavaID_LogType_ordinal "()I"
+jmethodID LogType_ordinal_Java;
+
+#define JavaID_LogDelegate "org/berkelium/api/LogDelegate"
+jclass LogDelegate_class;
+#define JavaID_LogDelegate_log "(Lorg/berkelium/api/Runtime;Lorg/berkelium/api/LogSource;Lorg/berkelium/api/LogType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V"
+jmethodID LogDelegate_log_Java;
+
+#define JavaID_HostDelegate "org/berkelium/api/HostDelegate"
+jclass HostDelegate_class;
+#define JavaID_HostDelegate_onCrashed "(Lorg/berkelium/api/Instance;)V"
+jmethodID HostDelegate_onCrashed_Java;
+#define JavaID_HostDelegate_onClosed "(Lorg/berkelium/api/Instance;)V"
+jmethodID HostDelegate_onClosed_Java;
+#define JavaID_HostDelegate_onPing "(Lorg/berkelium/api/Instance;)V"
+jmethodID HostDelegate_onPing_Java;
+
+#define JavaID_WindowDelegate "org/berkelium/api/WindowDelegate"
+jclass WindowDelegate_class;
+
+#define JavaID_TabDelegate "org/berkelium/api/TabDelegate"
+jclass TabDelegate_class;
+#define JavaID_TabDelegate_onClosed "(Lorg/berkelium/api/Tab;)V"
+jmethodID TabDelegate_onClosed_Java;
+#define JavaID_TabDelegate_onTitleChanged "(Lorg/berkelium/api/Tab;Ljava/lang/String;)V"
+jmethodID TabDelegate_onTitleChanged_Java;
+#define JavaID_TabDelegate_onPaint "(Lorg/berkelium/api/Tab;)V"
+jmethodID TabDelegate_onPaint_Java;
+#define JavaID_TabDelegate_onPaintDone "(Lorg/berkelium/api/Tab;Lorg/berkelium/api/Rect;)V"
+jmethodID TabDelegate_onPaintDone_Java;
+#define JavaID_TabDelegate_onReady "(Lorg/berkelium/api/Tab;)V"
+jmethodID TabDelegate_onReady_Java;
+
+#define JavaID_Update "org/berkelium/api/Update"
+jclass Update_class;
+#define JavaID_Update_update "()V"
+jmethodID Update_update_Java;
+
+inline jint Berkelium_Java_Internal_Load(JNIEnv* env);
+
 #include "org_berkelium_impl_BerkeliumJavaImpl.h"
 
 #include "berkelium-jni.hpp"
+
+jint Berkelium_Java_Internal_Load(JNIEnv* env)
+{
+	jclass c;
+	jmethodID m;
+
+	BERKELIUM_FIND_CLASS(LogSource);
+	BERKELIUM_GET_METHODID(LogSource, ordinal);
+
+	BERKELIUM_FIND_CLASS(LogType);
+	BERKELIUM_GET_METHODID(LogType, ordinal);
+
+	BERKELIUM_FIND_CLASS(LogDelegate);
+	BERKELIUM_GET_METHODID(LogDelegate, log);
+
+	BERKELIUM_FIND_CLASS(HostDelegate);
+	BERKELIUM_GET_METHODID(HostDelegate, onCrashed);
+	BERKELIUM_GET_METHODID(HostDelegate, onClosed);
+	BERKELIUM_GET_METHODID(HostDelegate, onPing);
+
+	BERKELIUM_FIND_CLASS(WindowDelegate);
+
+	BERKELIUM_FIND_CLASS(TabDelegate);
+	BERKELIUM_GET_METHODID(TabDelegate, onClosed);
+	BERKELIUM_GET_METHODID(TabDelegate, onTitleChanged);
+	BERKELIUM_GET_METHODID(TabDelegate, onPaint);
+	BERKELIUM_GET_METHODID(TabDelegate, onPaintDone);
+	BERKELIUM_GET_METHODID(TabDelegate, onReady);
+
+	BERKELIUM_FIND_CLASS(Update);
+	BERKELIUM_GET_METHODID(Update, update);
+
+	return 0;
+}
 
 const char* BK_Java_Class_Names[] = {
       "org/berkelium/impl/HostVersionImpl",

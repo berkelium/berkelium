@@ -34,28 +34,6 @@ jmethodID BerkeliumJavaImpl_mapNew_Java;
 #define JavaID_BerkeliumJavaImpl_free "(J)V"
 jmethodID BerkeliumJavaImpl_free_Java;
 
-#define JavaID_LogSource "org/berkelium/api/LogSource"
-jclass LogSource_class;
-#define JavaID_LogSource_ordinal "()I"
-jmethodID LogSource_ordinal_Java;
-
-#define JavaID_LogType "org/berkelium/api/LogType"
-jclass LogType_class;
-#define JavaID_LogType_ordinal "()I"
-jmethodID LogType_ordinal_Java;
-
-#define JavaID_LogDelegate "org/berkelium/api/LogDelegate"
-jclass LogDelegate_class;
-#define JavaID_LogDelegate_log "(Lorg/berkelium/api/Runtime;Lorg/berkelium/api/LogSource;Lorg/berkelium/api/LogType;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V"
-jmethodID LogDelegate_log_Java;
-
-#define JavaID_TabDelegate "org/berkelium/api/TabDelegate"
-jclass TabDelegate_class;
-#define JavaID_TabDelegate_onClosed "(Lorg/berkelium/api/Tab;)V"
-jmethodID TabDelegate_onClosed_Java;
-#define JavaID_TabDelegate_onReady "(Lorg/berkelium/api/Tab;)V"
-jmethodID TabDelegate_onReady_Java;
-
 #define BERKELIUM_FIND_CLASS(n) \
 	c = env->FindClass(JavaID_ ## n);					\
 	if(c == NULL) {								\
@@ -97,18 +75,9 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM* jvm, void* reserved)
 	BERKELIUM_GET_STATIC(BerkeliumJavaImpl, mapNew);
 	BERKELIUM_GET_STATIC(BerkeliumJavaImpl, free);
 
-	BERKELIUM_FIND_CLASS(LogSource);
-	BERKELIUM_GET_METHODID(LogSource, ordinal);
-
-	BERKELIUM_FIND_CLASS(LogType);
-	BERKELIUM_GET_METHODID(LogType, ordinal);
-
-	BERKELIUM_FIND_CLASS(LogDelegate);
-	BERKELIUM_GET_METHODID(LogDelegate, log);
-
-	BERKELIUM_FIND_CLASS(TabDelegate);
-	BERKELIUM_GET_METHODID(TabDelegate, onClosed);
-	BERKELIUM_GET_METHODID(TabDelegate, onReady);
+	if(Berkelium_Java_Internal_Load(env) == -1) {
+		return -1;
+	}
 
 	for(int i = 0; i < BK_Env_Enum_MAX; i++) {
 		if(BK_Java_Class_Names[i] == NULL) {

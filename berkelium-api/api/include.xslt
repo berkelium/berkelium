@@ -92,15 +92,18 @@
 <!-- ============================================================= -->
 <xsl:template name="arguments">
 	<xsl:param name="lang" select="$lang"/>
+	<xsl:param name="name" select="'true'"/>
 	<xsl:for-each select="arg">
 		<xsl:call-template name="type">
 			<xsl:with-param name="name" select="@type"/>
 			<xsl:with-param name="lang" select="$lang"/>
 		</xsl:call-template>
-		<xsl:text> </xsl:text>
-		<xsl:value-of select="@name"/>
-		<xsl:if test="position() != last()">
-			<xsl:text>, </xsl:text>
+		<xsl:if test="$name='true'">
+			<xsl:text> </xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:if test="position() != last()">
+				<xsl:text>, </xsl:text>
+			</xsl:if>
 		</xsl:if>
 	</xsl:for-each>
 </xsl:template>

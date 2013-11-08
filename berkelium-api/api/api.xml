@@ -25,6 +25,10 @@
 		<type name="TabList" value="java.util.List&lt;Tab&gt;"/>
 		<type name="Throwable" value="Throwable"/>
 	</mapping>
+	<mapping type="java-signature" prefix="Lorg/berkelium/api/" postfix=";">
+		<type name="Rect" value="Lorg/berkelium/api/Rect;"/>
+		<type name="string" value="Ljava/lang/String;"/>
+	</mapping>
 	<mapping type="jni" class="jobject">
 		<type name="string" value="jstring"/>
 		<type name="int32" value="jint"/>
