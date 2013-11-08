@@ -11,6 +11,7 @@ public class TabDelegateTest extends AbstractTabTest {
 		public String title;
 		public int onReadyCount;
 		public int onClosedCount;
+		public Tab tab;
 
 		@Override
 		public void onTitleChanged(Tab tab, String title) {
@@ -19,21 +20,25 @@ public class TabDelegateTest extends AbstractTabTest {
 
 		@Override
 		public void onReady(Tab tab) {
+			Assert.assertSame(this.tab, tab);
 			onReadyCount++;
 		}
 
 		@Override
 		public void onPaintDone(Tab tab, Rect rect) {
+			Assert.assertSame(this.tab, tab);
 			// TODO
 		}
 
 		@Override
 		public void onPaint(Tab tab) {
+			Assert.assertSame(this.tab, tab);
 			// TODO
 		}
 
 		@Override
 		public void onClosed(Tab tab) {
+			Assert.assertSame(this.tab, tab);
 			onClosedCount++;
 		}
 	};
@@ -43,7 +48,15 @@ public class TabDelegateTest extends AbstractTabTest {
 	@Override
 	public void before() {
 		super.before();
+		delegate.tab = tab;
 		tab.addTabDelegate(delegate);
+	}
+
+	@Override
+	public void after() {
+		delegate.tab = null;
+		tab.removeTabDelegate(delegate);
+		super.after();
 	}
 
 	@Test

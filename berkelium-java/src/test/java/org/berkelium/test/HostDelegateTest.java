@@ -1,33 +1,46 @@
 package org.berkelium.test;
 
 import org.berkelium.api.HostDelegate;
+import org.berkelium.api.Instance;
 import org.berkelium.api.Window;
 import org.junit.Assert;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
 
-@RunWith(MockitoJUnitRunner.class)
 public class HostDelegateTest extends AbstractInstanceTest {
-	@Mock
-	private HostDelegate delegate;
+	static public class TestHostDelegate implements HostDelegate {
+		public Instance instance;
+
+		@Override
+		public void onCrashed(Instance instance) {
+			Assert.assertSame(this.instance, instance);
+		}
+
+		@Override
+		public void onClosed(Instance instance) {
+			Assert.assertSame(this.instance, instance);
+		}
+
+		@Override
+		public void onPing(Instance instance) {
+			Assert.assertSame(this.instance, instance);
+		}
+	}
+
+	private TestHostDelegate delegate = new TestHostDelegate();
 
 	@Override
 	public void before() {
 		super.before();
+		delegate.instance = instance;
 		instance.addHostDelegate(delegate);
-		//assertChangedAndPush();
 	}
 
-/*
 	@Override
 	public void after() {
+		delegate.instance = null;
 		//instance.removeHostDelegate(delegate);
-		//popAndAssert();
 		super.after();
 	}
-*/
 
 	@Test
 	public void testCreateWindow() {
