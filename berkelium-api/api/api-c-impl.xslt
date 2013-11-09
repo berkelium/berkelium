@@ -30,27 +30,123 @@
 #include &lt;stdlib.h&gt;
 #include &lt;string.h&gt;
 
+using Berkelium::RectRef;
+</xsl:text>
+
+<xsl:for-each select="/api/group[@type='interface']">
+	<xsl:text>using Berkelium::</xsl:text>
+	<xsl:value-of select="@name"/>
+	<xsl:text>Ref;
+</xsl:text>
+</xsl:for-each>
+
+<xsl:for-each select="/api/group[@type='enum']">
+	<xsl:text>using Berkelium::</xsl:text>
+	<xsl:value-of select="@name"/>
+	<xsl:text>;
+</xsl:text>
+</xsl:for-each>
+
+	<xsl:for-each select="/api/group[@delegate]">
+		<xsl:text>
+class Bk</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>Mapper : public Berkelium::</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>
+{
+private:
+	BK_Env* env;
+	BK_</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text> delegate;
+public:
+	Bk</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>Mapper(BK_Env* env, BK_</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text> delegate)
+		: Berkelium::</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>(),
+		env(BK_Env_clone(env)),
+		delegate(delegate) {
+	}
+
+	virtual ~Bk</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>Mapper() {
+		free(delegate);
+		free(env);
+	}</xsl:text>
+
+	<xsl:for-each select="entry">
+		<xsl:text>
+
+	virtual </xsl:text>
+		<xsl:call-template name="type">
+			<xsl:with-param name="name" select="@ret"/>
+			<xsl:with-param name="ret" select="'true'"/>
+			<xsl:with-param name="lang" select="'cpp'"/>
+		</xsl:call-template>
+		<xsl:text> </xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>(</xsl:text>
+		<xsl:call-template name="arguments">
+			<xsl:with-param name="lang" select="'cpp'"/>
+		</xsl:call-template>
+		<xsl:text>);</xsl:text>
+	</xsl:for-each>
+	<xsl:text>
+};
+
+</xsl:text>
+	</xsl:for-each>
+<xsl:text>
+
 #include "BerkeliumC.hpp"
 
 // =========================================
 // C / C++ converter functions
 // =========================================
 
-inline char* newString(const std::string&amp; str)
-{
-	int len = str.length() + 1;
-	char* ret = (char*)malloc(len);
-	memcpy(ret, str.c_str(), len);
-	return ret;
-}
-
-inline Berkelium::RectRef mapInRectRef(BK_Env* env, BK_Rect&amp; rect)
-{
-	// TODO
-	return Berkelium::RectRef();
-}
-
 </xsl:text>
+
+	<xsl:for-each select="/api/group[@delegate]">
+		<xsl:text>
+
+inline Berkelium::</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>Ref mapIn</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>Ref(BK_Env* env, bk_ext_obj extId)
+{
+	BERKELIUM_C_TRACE_STATIC();
+
+	BK_</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text> delegate = (BK_</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>)env->mapIn(</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>, extId, env);
+	if(delegate == NULL) {
+		bk_error("error: '%s' returned NULL!", __FUNCTION__);
+		return Berkelium::</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>Ref();
+	}
+
+	BERKELIUM_C_TRACE_RETURN(delegate);
+
+	return Berkelium::</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>Ref(new Bk</xsl:text>
+		<xsl:value-of select="@name"/>
+		<xsl:text>Mapper(env, delegate));
+}
+</xsl:text>
+	</xsl:for-each>
 
 	<xsl:for-each select="/api/group[not(@delegate) and @type='interface']">
 		<xsl:call-template name="mapIn"/>
@@ -105,6 +201,71 @@ const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type)
 </xsl:text>
 
 	<xsl:apply-templates select="/api/group[not(@delegate) and @type!='enum']"/>
+
+	<xsl:for-each select="/api/group[@delegate]">
+		<xsl:variable name="name" select="@name"/>
+		<xsl:for-each select="entry">
+			<xsl:text>
+</xsl:text>
+			<xsl:call-template name="type">
+				<xsl:with-param name="name" select="@ret"/>
+				<xsl:with-param name="ret" select="'true'"/>
+				<xsl:with-param name="lang" select="'cpp'"/>
+			</xsl:call-template>
+			<xsl:text> Bk</xsl:text>
+			<xsl:value-of select="$name"/>
+			<xsl:text>Mapper::</xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>(</xsl:text>
+			<xsl:call-template name="arguments">
+				<xsl:with-param name="lang" select="'cpp'"/>
+			</xsl:call-template>
+			<xsl:text>)
+{
+	delegate-></xsl:text>
+			<xsl:value-of select="@name"/>
+			<xsl:text>(env, delegate</xsl:text>
+
+			<xsl:for-each select="arg">
+				<xsl:variable name="type" select="@type"/>
+				<xsl:text>, </xsl:text>
+				<xsl:choose>
+					<xsl:when test="@type='string'">
+						<xsl:text>newString(</xsl:text>
+						<xsl:value-of select="@name"/>
+						<xsl:text>)</xsl:text>
+					</xsl:when>
+					<xsl:when test="/api/group[@name = $type and @type='enum']">
+						<xsl:text>(BK_</xsl:text>
+						<xsl:value-of select="$type"/>
+						<xsl:text>)0/*TODO*/</xsl:text>
+<!--
+						<xsl:text>map</xsl:text>
+						<xsl:value-of select="$type"/>
+						<xsl:text>(</xsl:text>
+						<xsl:value-of select="@name"/>
+						<xsl:text>)</xsl:text>
+-->
+					</xsl:when>
+					<xsl:when test="/api/group[@name = $type] or @type='Rect'">
+						<xsl:text>mapOut</xsl:text>
+						<xsl:value-of select="$type"/>
+						<xsl:text>Ref(env, </xsl:text>
+						<xsl:value-of select="@name"/>
+						<xsl:text>)</xsl:text>
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:value-of select="@name"/>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:for-each>
+
+
+			<xsl:text>);
+}
+</xsl:text>
+		</xsl:for-each>
+	</xsl:for-each>
 </xsl:template>
 
 <!-- ============================================================= -->

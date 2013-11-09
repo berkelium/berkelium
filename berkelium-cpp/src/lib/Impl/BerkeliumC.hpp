@@ -4,127 +4,24 @@
 
 using Berkelium::impl::bk_error;
 
-inline char* malloc(const std::string& msg) {
+inline char* newString(const std::string& msg) {
 	int n = msg.length() + 1;
 	char* ret = (char*)malloc(n);
 	memcpy(ret, msg.c_str(), n);
 	return ret;
 }
 
-class BkUpdateMapper : public Berkelium::Update
+inline Berkelium::RectRef mapInRectRef(BK_Env* env, BK_Rect& rect)
 {
-private:
-	BK_Env* env;
-	BK_Update delegate;
-public:
-	BkUpdateMapper(BK_Env* env, BK_Update delegate)
-		: Berkelium::Update(),
-		env(env),
-		delegate(delegate) {
-	}
+	// TODO
+	return Berkelium::RectRef();
+}
 
-	virtual ~BkUpdateMapper() {
-		free(delegate);
-	}
-
-	virtual void update() {
-		delegate->update(env, delegate);
-	}
-};
-
-class BkLogDelegateMapper : public Berkelium::LogDelegate
+inline bk_ext_obj mapOutRectRef(BK_Env* env, RectRef rect)
 {
-private:
-	BK_Env* env;
-	BK_LogDelegate delegate;
-public:
-	BkLogDelegateMapper(BK_Env* env, BK_LogDelegate delegate)
-		: Berkelium::LogDelegate(),
-		env(env),
-		delegate(delegate) {
-	}
-
-	virtual ~BkLogDelegateMapper() {
-		free(delegate);
-	}
-
-	virtual void log(Berkelium::RuntimeRef runtime, Berkelium::LogSource source, Berkelium::LogType type,
-			 const std::string& clazz, const std::string& name, const std::string& message) {
-		delegate->log(env, delegate, NULL, Host, StdErr,
-			      malloc(clazz), malloc(name), malloc(message));
-	}
-};
-
-class BkHostDelegateMapper : public Berkelium::HostDelegate
-{
-private:
-	BK_Env* env;
-	BK_HostDelegate delegate;
-public:
-	BkHostDelegateMapper(BK_Env* env, BK_HostDelegate delegate)
-		: Berkelium::HostDelegate(),
-		env(env),
-		delegate(delegate) {
-	}
-
-	virtual ~BkHostDelegateMapper() {
-		free(delegate);
-	}
-
-	virtual void onCrashed(Berkelium::InstanceRef instance) {
-		bk_error("BkHostDelegateMapper::onCrashed not full implemented");
-		delegate->onCrashed(env, delegate, NULL);
-	}
-
-	virtual void onClosed(Berkelium::InstanceRef instance) {
-		bk_error("BkHostDelegateMapper::onClosed not full implemented");
-		delegate->onClosed(env, delegate, NULL);
-	}
-
-	virtual void onPing(Berkelium::InstanceRef instance) {
-		bk_error("BkHostDelegateMapper::onPing not full implemented");
-		delegate->onPing(env, delegate, NULL);
-	}
-};
-
-class BkTabDelegateMapper : public Berkelium::TabDelegate
-{
-private:
-	BK_Env* env;
-	BK_TabDelegate delegate;
-public:
-	BkTabDelegateMapper(BK_Env* env, BK_TabDelegate delegate)
-		: Berkelium::TabDelegate(),
-		env(env),
-		delegate(delegate) {
-	}
-
-	virtual ~BkTabDelegateMapper() {
-		free(delegate);
-	}
-
-	virtual void onClosed(Berkelium::TabRef tab) {
-		bk_error("BkTabDelegateMapper::onClosed not full implemented");
-		delegate->onClosed(env, delegate, NULL);
-	}
-
-	virtual void onTitleChanged(Berkelium::TabRef tab, const std::string& title) {
-		bk_error("BkTabDelegateMapper::onTitleChanged not implemented");
-	}
-
-	virtual void onPaint(Berkelium::TabRef tab) {
-		bk_error("BkTabDelegateMapper::onPaint not implemented");
-	}
-
-	virtual void onPaintDone(Berkelium::TabRef tab, Berkelium::RectRef rect) {
-		bk_error("BkTabDelegateMapper::onPaintDone not implemented");
-	}
-
-	virtual void onReady(Berkelium::TabRef tab) {
-		bk_error("BkTabDelegateMapper::onReady not full implemented");
-		delegate->onReady(env, delegate, NULL);
-	}
-};
+	// TODO
+	return NULL;
+}
 
 #if defined(BERKELIUM_TRACE_C_ENTER) || defined(BERKELIUM_TRACE_C_LEAVE)
 class BerkeliumCTracer {
@@ -160,66 +57,6 @@ public:
 #else
 #define BERKELIUM_C_TRACE_RETURN(ret)
 #endif
-
-inline Berkelium::LogDelegateRef mapInLogDelegateRef(BK_Env* env, bk_ext_obj extId)
-{
-	BERKELIUM_C_TRACE_STATIC();
-
-	BK_LogDelegate log = (BK_LogDelegate)env->mapIn(LogDelegate, extId, env);
-	if(log == NULL) {
-		bk_error("error: '%s' returned NULL!", __FUNCTION__);
-		return Berkelium::LogDelegateRef();
-	}
-
-	BERKELIUM_C_TRACE_RETURN(log);
-
-	return Berkelium::LogDelegateRef(new BkLogDelegateMapper(env, log));
-}
-
-inline Berkelium::UpdateRef mapInUpdateRef(BK_Env* env, bk_ext_obj extId)
-{
-	BERKELIUM_C_TRACE_STATIC();
-
-	BK_Update update = (BK_Update)env->mapIn(Update, extId, env);
-	if(update == NULL) {
-		bk_error("error: '%s' returned NULL!", __FUNCTION__);
-		return Berkelium::UpdateRef();
-	}
-
-	BERKELIUM_C_TRACE_RETURN(update);
-
-	return Berkelium::UpdateRef(new BkUpdateMapper(env, update));
-}
-
-inline Berkelium::HostDelegateRef mapInHostDelegateRef(BK_Env* env, bk_ext_obj extId)
-{
-	BERKELIUM_C_TRACE_STATIC();
-
-	BK_HostDelegate host = (BK_HostDelegate)env->mapIn(HostDelegate, extId, env);
-	if(host == NULL) {
-		bk_error("error: '%s' returned NULL!", __FUNCTION__);
-		return Berkelium::HostDelegateRef();
-	}
-
-	BERKELIUM_C_TRACE_RETURN(host);
-
-	return Berkelium::HostDelegateRef(new BkHostDelegateMapper(env, host));
-}
-
-inline Berkelium::TabDelegateRef mapInTabDelegateRef(BK_Env* env, bk_ext_obj extId)
-{
-	BERKELIUM_C_TRACE_STATIC();
-
-	BK_TabDelegate tab = (BK_TabDelegate)env->mapIn(TabDelegate, extId, env);
-	if(tab == NULL) {
-		bk_error("error: '%s' returned NULL!", __FUNCTION__);
-		return Berkelium::TabDelegateRef();
-	}
-
-	BERKELIUM_C_TRACE_RETURN(tab);
-
-	return Berkelium::TabDelegateRef(new BkTabDelegateMapper(env, tab));
-}
 
 namespace simpleBerkeliumEnv {
 

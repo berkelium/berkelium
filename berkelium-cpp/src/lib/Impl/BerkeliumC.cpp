@@ -33,26 +33,225 @@
 #include <stdlib.h>
 #include <string.h>
 
+using Berkelium::RectRef;
+using Berkelium::HostVersionRef;
+using Berkelium::RuntimeRef;
+using Berkelium::HostExecutableRef;
+using Berkelium::ProfileRef;
+using Berkelium::LoggerRef;
+using Berkelium::LogDelegateRef;
+using Berkelium::HostDelegateRef;
+using Berkelium::InstanceRef;
+using Berkelium::WindowRef;
+using Berkelium::WindowDelegateRef;
+using Berkelium::TabRef;
+using Berkelium::TabDelegateRef;
+using Berkelium::UpdateRef;
+using Berkelium::LogSource;
+using Berkelium::LogType;
+
+class BkLogDelegateMapper : public Berkelium::LogDelegate
+{
+private:
+	BK_Env* env;
+	BK_LogDelegate delegate;
+public:
+	BkLogDelegateMapper(BK_Env* env, BK_LogDelegate delegate)
+		: Berkelium::LogDelegate(),
+		env(BK_Env_clone(env)),
+		delegate(delegate) {
+	}
+
+	virtual ~BkLogDelegateMapper() {
+		free(delegate);
+		free(env);
+	}
+
+	virtual void log(RuntimeRef runtime, LogSource source, LogType type, const std::string& clazz, const std::string& name, const std::string& message);
+};
+
+
+class BkHostDelegateMapper : public Berkelium::HostDelegate
+{
+private:
+	BK_Env* env;
+	BK_HostDelegate delegate;
+public:
+	BkHostDelegateMapper(BK_Env* env, BK_HostDelegate delegate)
+		: Berkelium::HostDelegate(),
+		env(BK_Env_clone(env)),
+		delegate(delegate) {
+	}
+
+	virtual ~BkHostDelegateMapper() {
+		free(delegate);
+		free(env);
+	}
+
+	virtual void onCrashed(InstanceRef instance);
+
+	virtual void onClosed(InstanceRef instance);
+
+	virtual void onPing(InstanceRef instance);
+};
+
+
+class BkWindowDelegateMapper : public Berkelium::WindowDelegate
+{
+private:
+	BK_Env* env;
+	BK_WindowDelegate delegate;
+public:
+	BkWindowDelegateMapper(BK_Env* env, BK_WindowDelegate delegate)
+		: Berkelium::WindowDelegate(),
+		env(BK_Env_clone(env)),
+		delegate(delegate) {
+	}
+
+	virtual ~BkWindowDelegateMapper() {
+		free(delegate);
+		free(env);
+	}
+};
+
+
+class BkTabDelegateMapper : public Berkelium::TabDelegate
+{
+private:
+	BK_Env* env;
+	BK_TabDelegate delegate;
+public:
+	BkTabDelegateMapper(BK_Env* env, BK_TabDelegate delegate)
+		: Berkelium::TabDelegate(),
+		env(BK_Env_clone(env)),
+		delegate(delegate) {
+	}
+
+	virtual ~BkTabDelegateMapper() {
+		free(delegate);
+		free(env);
+	}
+
+	virtual void onClosed(TabRef tab);
+
+	virtual void onTitleChanged(TabRef tab, const std::string& title);
+
+	virtual void onPaint(TabRef tab);
+
+	virtual void onPaintDone(TabRef tab, RectRef rect);
+
+	virtual void onReady(TabRef tab);
+};
+
+
+class BkUpdateMapper : public Berkelium::Update
+{
+private:
+	BK_Env* env;
+	BK_Update delegate;
+public:
+	BkUpdateMapper(BK_Env* env, BK_Update delegate)
+		: Berkelium::Update(),
+		env(BK_Env_clone(env)),
+		delegate(delegate) {
+	}
+
+	virtual ~BkUpdateMapper() {
+		free(delegate);
+		free(env);
+	}
+
+	virtual void update();
+};
+
+
+
 #include "BerkeliumC.hpp"
 
 // =========================================
 // C / C++ converter functions
 // =========================================
 
-inline char* newString(const std::string& str)
+
+
+inline Berkelium::LogDelegateRef mapInLogDelegateRef(BK_Env* env, bk_ext_obj extId)
 {
-	int len = str.length() + 1;
-	char* ret = (char*)malloc(len);
-	memcpy(ret, str.c_str(), len);
-	return ret;
+	BERKELIUM_C_TRACE_STATIC();
+
+	BK_LogDelegate delegate = (BK_LogDelegate)env->mapIn(LogDelegate, extId, env);
+	if(delegate == NULL) {
+		bk_error("error: '%s' returned NULL!", __FUNCTION__);
+		return Berkelium::LogDelegateRef();
+	}
+
+	BERKELIUM_C_TRACE_RETURN(delegate);
+
+	return Berkelium::LogDelegateRef(new BkLogDelegateMapper(env, delegate));
 }
 
-inline Berkelium::RectRef mapInRectRef(BK_Env* env, BK_Rect& rect)
+
+inline Berkelium::HostDelegateRef mapInHostDelegateRef(BK_Env* env, bk_ext_obj extId)
 {
-	// TODO
-	return Berkelium::RectRef();
+	BERKELIUM_C_TRACE_STATIC();
+
+	BK_HostDelegate delegate = (BK_HostDelegate)env->mapIn(HostDelegate, extId, env);
+	if(delegate == NULL) {
+		bk_error("error: '%s' returned NULL!", __FUNCTION__);
+		return Berkelium::HostDelegateRef();
+	}
+
+	BERKELIUM_C_TRACE_RETURN(delegate);
+
+	return Berkelium::HostDelegateRef(new BkHostDelegateMapper(env, delegate));
 }
 
+
+inline Berkelium::WindowDelegateRef mapInWindowDelegateRef(BK_Env* env, bk_ext_obj extId)
+{
+	BERKELIUM_C_TRACE_STATIC();
+
+	BK_WindowDelegate delegate = (BK_WindowDelegate)env->mapIn(WindowDelegate, extId, env);
+	if(delegate == NULL) {
+		bk_error("error: '%s' returned NULL!", __FUNCTION__);
+		return Berkelium::WindowDelegateRef();
+	}
+
+	BERKELIUM_C_TRACE_RETURN(delegate);
+
+	return Berkelium::WindowDelegateRef(new BkWindowDelegateMapper(env, delegate));
+}
+
+
+inline Berkelium::TabDelegateRef mapInTabDelegateRef(BK_Env* env, bk_ext_obj extId)
+{
+	BERKELIUM_C_TRACE_STATIC();
+
+	BK_TabDelegate delegate = (BK_TabDelegate)env->mapIn(TabDelegate, extId, env);
+	if(delegate == NULL) {
+		bk_error("error: '%s' returned NULL!", __FUNCTION__);
+		return Berkelium::TabDelegateRef();
+	}
+
+	BERKELIUM_C_TRACE_RETURN(delegate);
+
+	return Berkelium::TabDelegateRef(new BkTabDelegateMapper(env, delegate));
+}
+
+
+inline Berkelium::UpdateRef mapInUpdateRef(BK_Env* env, bk_ext_obj extId)
+{
+	BERKELIUM_C_TRACE_STATIC();
+
+	BK_Update delegate = (BK_Update)env->mapIn(Update, extId, env);
+	if(delegate == NULL) {
+		bk_error("error: '%s' returned NULL!", __FUNCTION__);
+		return Berkelium::UpdateRef();
+	}
+
+	BERKELIUM_C_TRACE_RETURN(delegate);
+
+	return Berkelium::UpdateRef(new BkUpdateMapper(env, delegate));
+}
 
 inline Berkelium::HostVersionRef mapInHostVersionRef(BK_Env* env, bk_ext_obj extId)
 {
@@ -2061,4 +2260,54 @@ extern "C" void BK_Tab_free(BK_Env* env, BK_Tab self)
 		delete (Berkelium::TabRef*)result;
 	}
 
+}
+
+void BkLogDelegateMapper::log(RuntimeRef runtime, LogSource source, LogType type, const std::string& clazz, const std::string& name, const std::string& message)
+{
+	delegate->log(env, delegate, mapOutRuntimeRef(env, runtime), (BK_LogSource)0/*TODO*/, (BK_LogType)0/*TODO*/, newString(clazz), newString(name), newString(message));
+}
+
+void BkHostDelegateMapper::onCrashed(InstanceRef instance)
+{
+	delegate->onCrashed(env, delegate, mapOutInstanceRef(env, instance));
+}
+
+void BkHostDelegateMapper::onClosed(InstanceRef instance)
+{
+	delegate->onClosed(env, delegate, mapOutInstanceRef(env, instance));
+}
+
+void BkHostDelegateMapper::onPing(InstanceRef instance)
+{
+	delegate->onPing(env, delegate, mapOutInstanceRef(env, instance));
+}
+
+void BkTabDelegateMapper::onClosed(TabRef tab)
+{
+	delegate->onClosed(env, delegate, mapOutTabRef(env, tab));
+}
+
+void BkTabDelegateMapper::onTitleChanged(TabRef tab, const std::string& title)
+{
+	delegate->onTitleChanged(env, delegate, mapOutTabRef(env, tab), newString(title));
+}
+
+void BkTabDelegateMapper::onPaint(TabRef tab)
+{
+	delegate->onPaint(env, delegate, mapOutTabRef(env, tab));
+}
+
+void BkTabDelegateMapper::onPaintDone(TabRef tab, RectRef rect)
+{
+	delegate->onPaintDone(env, delegate, mapOutTabRef(env, tab), mapOutRectRef(env, rect));
+}
+
+void BkTabDelegateMapper::onReady(TabRef tab)
+{
+	delegate->onReady(env, delegate, mapOutTabRef(env, tab));
+}
+
+void BkUpdateMapper::update()
+{
+	delegate->update(env, delegate);
 }

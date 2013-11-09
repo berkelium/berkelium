@@ -96,6 +96,8 @@ typedef struct _BK_Env {
 	char cloned;
 } BK_Env;
 
+BK_Env* BK_Env_clone(BK_Env* env);
+
 typedef struct {
 	bk_int32 size;
 	BK_Window* entrys;

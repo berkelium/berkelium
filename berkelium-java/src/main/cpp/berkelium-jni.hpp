@@ -172,7 +172,7 @@ void Berkelium_Java_TabDelegate_onReady(BK_Env* bkenv, BK_TabDelegate self, BK_T
 {
 	JNIEnv* env = getBerkeliumJavaVMForCallback();
 	if(env != NULL) {
-		env->CallVoidMethod((jobject)self->self, TabDelegate_onReady_Java, NULL);
+		env->CallVoidMethod((jobject)self->self, TabDelegate_onReady_Java, tab);
 	}
 }
 

@@ -115,6 +115,8 @@ typedef struct _BK_Env {
 	char cloned;
 } BK_Env;
 
+BK_Env* BK_Env_clone(BK_Env* env);
+
 </xsl:text>
 
 	<xsl:for-each select="/api/mapping[@type='c']/type[@list]">
