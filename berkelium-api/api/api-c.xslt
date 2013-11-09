@@ -93,23 +93,26 @@ const char* BK_Env_Enum_To_String_Or_Err(BK_Env_Enum type);
 	<xsl:text>typedef void* bk_bk_obj;
 typedef void* bk_ext_obj;
 
-typedef bk_bk_obj BK_Env_mapIn(BK_Env_Enum type, bk_ext_obj id, void* data);
+struct _BK_Env;
 
-typedef bk_ext_obj BK_Env_mapOut(BK_Env_Enum type, bk_bk_obj id, void* data);
+typedef bk_bk_obj BK_Env_mapIn(BK_Env_Enum type, bk_ext_obj id, struct _BK_Env* env);
 
-typedef bk_ext_obj BK_Env_mapNew(BK_Env_Enum type, bk_bk_obj id, bk_ext_obj extId, void* data);
+typedef bk_ext_obj BK_Env_mapOut(BK_Env_Enum type, bk_bk_obj id, struct _BK_Env* env);
 
-typedef void BK_Env_free(bk_ext_obj extId, void* data);
+typedef bk_ext_obj BK_Env_mapNew(BK_Env_Enum type, bk_bk_obj id, bk_ext_obj extId, struct _BK_Env* env);
+
+typedef void BK_Env_free(bk_ext_obj extId, struct _BK_Env* env);
 
 typedef void BK_Env_NPE(bk_string clazz, bk_string arg);
 
-typedef struct {
+typedef struct _BK_Env {
 	BK_Env_mapIn* mapIn;
 	BK_Env_mapOut* mapOut;
 	BK_Env_mapNew* mapNew;
 	BK_Env_free* free;
 	BK_Env_NPE* NPE;
 	void* data;
+	char cloned;
 } BK_Env;
 
 </xsl:text>

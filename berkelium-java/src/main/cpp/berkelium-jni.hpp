@@ -176,10 +176,18 @@ void Berkelium_Java_TabDelegate_onReady(BK_Env* bkenv, BK_TabDelegate self, BK_T
 	}
 }
 
-bk_bk_obj Berkelium_Java_MapIn(BK_Env_Enum type, bk_ext_obj bkJavaId, void* data)
+inline JNIEnv* getBerkeliumJavaJNIEnv(BK_Env* bkenv)
+{
+	if(bkenv->cloned) {
+		return getBerkeliumJavaVMForCallback();
+	}
+	return (JNIEnv*)bkenv->data;
+}
+
+bk_bk_obj Berkelium_Java_MapIn(BK_Env_Enum type, bk_ext_obj bkJavaId, BK_Env* bkenv)
 {
 	//fprintf(stderr, "Berkelium_Java_MapIn\n");
-	JNIEnv* env = (JNIEnv*)data;
+	JNIEnv* env = getBerkeliumJavaJNIEnv(bkenv);
 	bk_bk_obj ret((bk_bk_obj)env->CallStaticLongMethod(BerkeliumJavaImpl_class, BerkeliumJavaImpl_mapIn_Java, type, bkJavaId));
 
 	if(!ret) {
@@ -207,17 +215,17 @@ bk_bk_obj Berkelium_Java_MapIn(BK_Env_Enum type, bk_ext_obj bkJavaId, void* data
 	return ret;
 }
 
-bk_ext_obj Berkelium_Java_MapOut(BK_Env_Enum type, bk_bk_obj bkNativeId, void* data)
+bk_ext_obj Berkelium_Java_MapOut(BK_Env_Enum type, bk_bk_obj bkNativeId, BK_Env* bkenv)
 {
 	//fprintf(stderr, "Berkelium_Java_MapOut\n");
-	JNIEnv* env = (JNIEnv*)data;
+	JNIEnv* env = getBerkeliumJavaJNIEnv(bkenv);
 	return env->CallStaticObjectMethod(BerkeliumJavaImpl_class, BerkeliumJavaImpl_mapOut_Java, type, bkNativeId);
 }
 
-bk_ext_obj Berkelium_Java_MapNew(BK_Env_Enum type, bk_bk_obj bkNativeId, bk_ext_obj bkJavaId, void* data)
+bk_ext_obj Berkelium_Java_MapNew(BK_Env_Enum type, bk_bk_obj bkNativeId, bk_ext_obj bkJavaId, BK_Env* bkenv)
 {
 	//fprintf(stderr, "Berkelium_Java_MapNew\n");
-	JNIEnv* env = (JNIEnv*)data;
+	JNIEnv* env = getBerkeliumJavaJNIEnv(bkenv);
 	if(type < 0 || type >= BK_Env_Enum_MAX) {
 		return NULL;
 	}
@@ -245,9 +253,9 @@ void Berkelium_Java_NPE(bk_string clazz, bk_string arg)
 	}
 }
 
-void Berkelium_Java_Free(bk_ext_obj extId, void* data)
+void Berkelium_Java_Free(bk_ext_obj extId, BK_Env* bkenv)
 {
-	JNIEnv* env = (JNIEnv*)data;
+	JNIEnv* env = getBerkeliumJavaJNIEnv(bkenv);
 	env->CallStaticVoidMethod(BerkeliumJavaImpl_class, BerkeliumJavaImpl_free_Java, extId);
 }
 
@@ -259,6 +267,7 @@ inline void setupBkEnv(BK_Env& bkenv, JNIEnv* env)
 	bkenv.free = Berkelium_Java_Free;
 	bkenv.NPE = Berkelium_Java_NPE;
 	bkenv.data = env;
+	bkenv.cloned = false;
 }
 
 inline BK_LogSource LogSource_TO_BK(JNIEnv* env, jobject instance)

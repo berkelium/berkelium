@@ -142,7 +142,7 @@ extern "C" void BK_</xsl:text>
 			<xsl:text> %p!", self);
 		return;
 	}
-	env->free(_this.get(), env->data);
+	env->free(_this.get(), env);
 
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(_this));
 	if(!manager) {
@@ -445,10 +445,10 @@ inline bk_ext_obj mapOut</xsl:text>
 
 	<xsl:text>);
 
-	bk_ext_obj ret = env-&gt;mapOut(type, bk.get(), env->data);
+	bk_ext_obj ret = env-&gt;mapOut(type, bk.get(), env);
 
 	if(ret == NULL) {
-		ret = env-&gt;mapNew(type, bk.get(), NULL, env->data);
+		ret = env-&gt;mapNew(type, bk.get(), NULL, env);
 	}
 
 	if(ret == NULL) {
@@ -487,7 +487,7 @@ inline Berkelium::</xsl:text>
 
 			<xsl:text>);
 
-	void* tmp = env->mapIn(type, extId, env->data);
+	void* tmp = env->mapIn(type, extId, env);
 
 	BERKELIUM_C_TRACE_RETURN(tmp);
 
@@ -517,7 +517,7 @@ inline Berkelium::</xsl:text>
 			<xsl:text>*)env->mapIn(</xsl:text>
 			<xsl:value-of select="@name"/>
 
-			<xsl:text>, extId, env->data);
+			<xsl:text>, extId, env);
 	Berkelium::impl::ManagerRef manager(Berkelium::impl::getManager(intId));
 
 	if(!manager) {

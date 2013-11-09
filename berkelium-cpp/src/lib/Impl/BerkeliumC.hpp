@@ -165,7 +165,7 @@ inline Berkelium::LogDelegateRef mapInLogDelegateRef(BK_Env* env, bk_ext_obj ext
 {
 	BERKELIUM_C_TRACE_STATIC();
 
-	BK_LogDelegate log = (BK_LogDelegate)env->mapIn(LogDelegate, extId, env->data);
+	BK_LogDelegate log = (BK_LogDelegate)env->mapIn(LogDelegate, extId, env);
 	if(log == NULL) {
 		bk_error("error: '%s' returned NULL!", __FUNCTION__);
 		return Berkelium::LogDelegateRef();
@@ -180,7 +180,7 @@ inline Berkelium::UpdateRef mapInUpdateRef(BK_Env* env, bk_ext_obj extId)
 {
 	BERKELIUM_C_TRACE_STATIC();
 
-	BK_Update update = (BK_Update)env->mapIn(Update, extId, env->data);
+	BK_Update update = (BK_Update)env->mapIn(Update, extId, env);
 	if(update == NULL) {
 		bk_error("error: '%s' returned NULL!", __FUNCTION__);
 		return Berkelium::UpdateRef();
@@ -195,7 +195,7 @@ inline Berkelium::HostDelegateRef mapInHostDelegateRef(BK_Env* env, bk_ext_obj e
 {
 	BERKELIUM_C_TRACE_STATIC();
 
-	BK_HostDelegate host = (BK_HostDelegate)env->mapIn(HostDelegate, extId, env->data);
+	BK_HostDelegate host = (BK_HostDelegate)env->mapIn(HostDelegate, extId, env);
 	if(host == NULL) {
 		bk_error("error: '%s' returned NULL!", __FUNCTION__);
 		return Berkelium::HostDelegateRef();
@@ -210,7 +210,7 @@ inline Berkelium::TabDelegateRef mapInTabDelegateRef(BK_Env* env, bk_ext_obj ext
 {
 	BERKELIUM_C_TRACE_STATIC();
 
-	BK_TabDelegate tab = (BK_TabDelegate)env->mapIn(TabDelegate, extId, env->data);
+	BK_TabDelegate tab = (BK_TabDelegate)env->mapIn(TabDelegate, extId, env);
 	if(tab == NULL) {
 		bk_error("error: '%s' returned NULL!", __FUNCTION__);
 		return Berkelium::TabDelegateRef();
@@ -223,19 +223,19 @@ inline Berkelium::TabDelegateRef mapInTabDelegateRef(BK_Env* env, bk_ext_obj ext
 
 namespace simpleBerkeliumEnv {
 
-bk_bk_obj mapIn(BK_Env_Enum type, bk_ext_obj id, void* data)
+bk_bk_obj mapIn(BK_Env_Enum type, bk_ext_obj id, BK_Env* env)
 {
 	BERKELIUM_C_TRACE_NOENV();
 	return (bk_bk_obj)id;
 }
 
-bk_ext_obj mapOut(BK_Env_Enum type, bk_bk_obj id, void* data)
+bk_ext_obj mapOut(BK_Env_Enum type, bk_bk_obj id, BK_Env* env)
 {
 	BERKELIUM_C_TRACE_NOENV();
 	return (bk_ext_obj)id;
 }
 
-bk_ext_obj mapNew(BK_Env_Enum type, bk_bk_obj id, bk_ext_obj extId,  void* data)
+bk_ext_obj mapNew(BK_Env_Enum type, bk_bk_obj id, bk_ext_obj extId,  BK_Env* env)
 {
 	BERKELIUM_C_TRACE_NOENV();
 	return (bk_ext_obj)id;
@@ -246,7 +246,7 @@ void NPE(bk_string clazz, bk_string arg)
 	bk_error("Null Pointer Exception: Class '%s' - Argument '%s'", clazz, arg);
 }
 
-void free(bk_ext_obj extId, void* data)
+void free(bk_ext_obj extId, BK_Env* env)
 {
 }
 
@@ -259,6 +259,7 @@ BK_Env create()
 	ret.mapNew = &mapNew;
 	ret.free= &free;
 	ret.NPE = &NPE;
+	ret.cloned = false;
 
 	return ret;
 }
@@ -266,3 +267,17 @@ BK_Env create()
 BK_Env env = create();
 
 } // namespace
+
+BK_Env* BK_Env_clone(BK_Env* env)
+{
+	BK_Env* ret = (BK_Env*)malloc(sizeof(BK_Env));
+
+	ret->mapIn = env->mapIn;
+	ret->mapOut = env->mapOut;
+	ret->mapNew = env->mapNew;
+	ret->free= env->free;
+	ret->NPE = env->NPE;
+	ret->cloned = true;
+
+	return ret;
+}
