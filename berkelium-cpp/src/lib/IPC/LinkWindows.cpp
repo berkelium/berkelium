@@ -82,8 +82,13 @@ public:
     }
 
     virtual bool isEmpty() {
-        // TODO
-        return true;
+        if (pipe == NULL || pipe == INVALID_HANDLE_VALUE) {
+            return true;
+        }
+
+        DWORD bytesAvail = 0;
+        PeekNamedPipe(pipe, NULL, NULL, NULL, &bytesAvail, NULL);
+        return bytesAvail == 0;
     }
 
     virtual void send(MessageRef msg) {
