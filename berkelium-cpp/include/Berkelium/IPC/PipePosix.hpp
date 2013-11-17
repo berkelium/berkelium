@@ -26,7 +26,7 @@ protected:
 public:
 	virtual ~PipePosix() = 0;
 
-	static PipePosixRef create(bool read, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias);
+	static PipePosixRef create(bool create, bool read, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias);
 };
 
 } // namespace Ipc

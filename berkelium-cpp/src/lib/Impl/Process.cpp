@@ -15,8 +15,8 @@ namespace impl {
 Process::Process(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
 	name(Berkelium::Util::randomId()),
 	group(getLinkGroup(runtime)),
-	channels(Ipc::ChannelGroup::createGroup(logger, dir, Util::randomId(), "process", group)),
-	ipc(channels->createChannel("process.ipc")),
+	channels(Ipc::ChannelGroup::createGroup(logger, dir, Util::randomId(), "process", group, true)),
+	ipc(channels ? channels->createChannel("process.ipc") : NULL),
 	logger(logger) {
 	TRACE_OBJECT_NEW("Process");
 }

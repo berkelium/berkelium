@@ -234,7 +234,11 @@ ProfileRef BerkeliumHost::init(const std::string& dir, const std::string& name) 
 	initialised = 1;
 	Berkelium::impl::enableBerkeliumHostMode();
 	BerkeliumHostDelegate::init();
-	channels = ChannelGroup::createGroup(logger, dir, name, "host", group);
+	channels = ChannelGroup::createGroup(logger, dir, name, "host", group, false);
+	if(!channels) {
+		fprintf(stderr, "failed to create berkelium channel group!\n");
+		return ProfileRef();
+	}
 	ipc = channels->getChannel(0, "berkelium-host-ipc");
 	ping = channels->createChannel("ping");
 

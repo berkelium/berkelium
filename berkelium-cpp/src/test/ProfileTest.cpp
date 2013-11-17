@@ -65,7 +65,6 @@ TEST_F(ProfileTest, extended) {
 	ASSERT_FALSE(profile->isInUse());
 	Berkelium::InstanceRef instance = runtime->open(executable, profile);
 	ASSERT_NOT_NULL(instance);
-	ASSERT_NOT_NULL(instance);
 	ASSERT_TRUE(Filesystem::exists(path));
 	ASSERT_TRUE(profile->isFound());
 	ASSERT_TRUE(profile->isInUse());
