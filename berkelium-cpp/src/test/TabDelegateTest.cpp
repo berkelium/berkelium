@@ -67,6 +67,7 @@ void createTab(Berkelium::LoggerRef logger, Berkelium::TabRef& ret) {
 
 	logger->debug() << "launching berkelium host executable..." << std::endl;
 	Berkelium::InstanceRef instance(runtime->open(host, profile));
+	ASSERT_NOT_NULL(instance);
 
 	Berkelium::WindowRef window(instance->createWindow(false));
 

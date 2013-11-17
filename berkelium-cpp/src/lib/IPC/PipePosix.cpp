@@ -44,7 +44,7 @@ private:
 	fd_set fds;
 
 public:
-	PipePosixImpl(bool read, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
+	PipePosixImpl(bool create, bool read, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
 		PipePosix(),
 		logger(logger),
 		name(name),
@@ -52,14 +52,24 @@ public:
 		full(Filesystem::append(dir, name)),
 		alias(alias),
 		read(read),
-		fd(-1) {
+		fd(-1),
+		fds() {
 		TRACE_OBJECT_NEW("PipePosixImpl");
 
 		Filesystem::createDirectories(dir);
 
 		const char* p = full.c_str();
-		if(::access(p, F_OK) != 0 && ::mkfifo(p, 0700) != 0) {
-			logger->systemError("mkfifo", full);
+		if(::access(p, F_OK) != 0) {
+			if(!create) {
+				logger->systemError("fifo not found", full);
+				return;
+			}
+			if(::mkfifo(p, 0700) != 0) {
+				logger->systemError("mkfifo", full);
+				return;
+			}
+		} else if(create) {
+			logger->systemError("fifo already exists", full);
 			return;
 		}
 		fd = ::open(p, O_RDWR);
@@ -80,7 +90,15 @@ public:
 		Filesystem::removeFile(full);
 	}
 
+	virtual bool isOk() {
+		return fd != -1;
+	}
+
 	virtual bool isEmpty() {
+		if(fd == -1) {
+			logger->systemError("bad pipe: isEmpty", full);
+			return true;
+		}
 		static struct timeval tv;
 		tv.tv_sec = 0;
 		tv.tv_usec = 0;
@@ -116,7 +134,10 @@ public:
 	}
 
 	virtual void send(MessageRef msg) {
-		if(fd == -1) return;
+		if(fd == -1) {
+			logger->systemError("bad pipe: send", full);
+			return;
+		}
 		int32_t size = msg->data_length();
 		//fprintf(stderr, "send: 4 bytes '%d'!\n", size);
 		::write(fd, &size, 4);
@@ -131,6 +152,10 @@ public:
 
 	virtual MessageRef recv() {
 		MessageRef msg(Message::create(logger));
+		if(fd == -1) {
+			logger->systemError("bad pipe: recv", full);
+			return msg;
+		}
 		int32_t size = 0;
 		recv((char*)&size, 4);
 		//fprintf(stderr, "recv: %d bytes!\n", size);
@@ -178,8 +203,13 @@ PipePosix::PipePosix() :
 PipePosix::~PipePosix() {
 }
 
-PipePosixRef PipePosix::create(bool read, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) {
-	return PipePosixRef(new impl::PipePosixImpl(read, logger, dir, name, alias));
+PipePosixRef PipePosix::create(bool create, bool read, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) {
+	impl::PipePosixImpl* impl(new impl::PipePosixImpl(create, read, logger, dir, name, alias));
+	PipePosixRef ret(impl);
+	if(!impl->isOk()) {
+		return PipePosixRef();
+	}
+	return ret;
 }
 
 } // namespace Ipc

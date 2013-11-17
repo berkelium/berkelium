@@ -116,6 +116,11 @@ public:
 		ChannelGroupImpl* impl = new ChannelGroupImpl(logger, dir, name, alias, group, server);
 		ChannelGroupRef ret(impl);
 
+		if(!impl->link) {
+			fprintf(stderr, "no link!\n");
+			return ChannelGroupRef();
+		}
+
 		impl->self = ret;
 
 		impl->cb.reset(new LinkCallbackDelegate<ChannelGroup, ChannelGroupImpl>(ret));
@@ -139,14 +144,10 @@ ChannelGroup::~ChannelGroup() {
 	TRACE_OBJECT_DELETE("ChannelGroup");
 }
 
-ChannelGroupRef ChannelGroup::createGroup(LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, LinkGroupRef group)
-{
-	return createGroup(logger, dir, name, alias, group, Berkelium::impl::isBerkeliumHostMode());
-}
-
 ChannelGroupRef ChannelGroup::createGroup(LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, LinkGroupRef group, bool server)
 {
 	if(!group) {
+		fprintf(stderr, "no group!\n");
 		return ChannelGroupRef();
 	}
 	return impl::ChannelGroupImpl::create(logger, dir, name, alias, group, server);

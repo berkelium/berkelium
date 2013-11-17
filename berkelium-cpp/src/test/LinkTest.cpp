@@ -24,9 +24,14 @@ class LinkTest : public ::testing::Test {
     DEFINE_LOGGER(LinkTest);
 };
 
+TEST_F(LinkTest, notCreateClient) {
+    USE_LOGGER(create);
+    ASSERT_NULL(Link::getLink(false, LinkGroupRef(), logger, Filesystem::getTemp(), randomId(), "testNotCreateClientLink"));
+}
+
 TEST_F(LinkTest, create) {
     USE_LOGGER(create);
-    ASSERT_NOT_NULL(Link::getLink(false, LinkGroupRef(), logger, Filesystem::getTemp(), randomId(), "testCreateLink"));
+    ASSERT_NOT_NULL(Link::getLink(true, LinkGroupRef(), logger, Filesystem::getTemp(), randomId(), "testCreateLink"));
 }
 
 TEST_F(LinkTest, remove) {

@@ -124,8 +124,8 @@ public:
 		Process(runtime, logger, dir),
 		out(new ConsoleRedirector(runtime, LogType::StdOut)),
 		err(new ConsoleRedirector(runtime, LogType::StdErr)),
-		pipeout(Ipc::Link::getLink(false, group, logger, dir, name + "1", "process.out")),
-		pipeerr(Ipc::Link::getLink(false, group, logger, dir, name + "2", "process.err")),
+		pipeout(Ipc::Link::getLink(true, group, logger, dir, name + "1", "process.out")),
+		pipeerr(Ipc::Link::getLink(true, group, logger, dir, name + "2", "process.err")),
 		pid(-1),
 		exit(-1) {
 		TRACE_OBJECT_NEW("ProcessLinux");
@@ -195,7 +195,13 @@ public:
 };
 
 ProcessRef Process::create(RuntimeRef runtime, LoggerRef logger, const std::string& dir) {
-	return ProcessRef(new ProcessLinuxImpl(runtime, logger, dir));
+	ProcessLinuxImpl* impl(new ProcessLinuxImpl(runtime, logger, dir));
+	ProcessRef ret(impl);
+	if(!impl->channels) {
+		fprintf(stderr, "create process failed\n");
+		return ProcessRef();
+	}
+	return ret;
 }
 
 } // namespace impl

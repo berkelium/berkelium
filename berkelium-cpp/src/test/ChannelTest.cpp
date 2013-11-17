@@ -41,7 +41,8 @@ TEST_F(ChannelTest, objectCount) {
     std::string dir = createTempPath(profile);
     std::string name(Berkelium::Util::randomId());
     LinkGroupRef pipeGroup(LinkGroup::create());
-    ChannelGroupRef channels(ChannelGroup::createGroup(logger, dir, name, "test client", pipeGroup, false));
+    ChannelGroupRef channels(ChannelGroup::createGroup(logger, dir, name, "test client", pipeGroup, true));
+    ASSERT_NOT_NULL(channels);
     ASSERT_STRNE(initial.c_str(), Berkelium::impl::getBerkeliumObjectCount().c_str());
     pipeGroup.reset();
     ASSERT_STRNE(initial.c_str(), Berkelium::impl::getBerkeliumObjectCount().c_str());
@@ -55,6 +56,22 @@ TEST_F(ChannelTest, objectCount) {
     ASSERT_STREQ(initial.c_str(), Berkelium::impl::getBerkeliumObjectCount().c_str());
 }
 
+TEST_F(ChannelTest, noClientWithoutServer) {
+    USE_LOGGER(noClientWithoutServer);
+    Berkelium::ProfileRef profile;
+    std::string dir = createTempPath(profile);
+    std::string name(Berkelium::Util::randomId());
+    LinkGroupRef pipeGroup(LinkGroup::create());
+    ChannelGroupRef clientGroup(ChannelGroup::createGroup(logger, dir, name, "test client", pipeGroup, false));
+    ASSERT_NULL(clientGroup);
+
+    ChannelGroupRef serverGroup(ChannelGroup::createGroup(logger, dir, name, "test server", pipeGroup, true));
+    ASSERT_NOT_NULL(serverGroup);
+
+    clientGroup = ChannelGroup::createGroup(logger, dir, name, "test client", pipeGroup, false);
+    ASSERT_NOT_NULL(clientGroup);
+}
+
 TEST_F(ChannelTest, simple) {
     USE_LOGGER(simple);
     Berkelium::ProfileRef profile;
@@ -63,7 +80,9 @@ TEST_F(ChannelTest, simple) {
     LinkGroupRef pipeGroup(LinkGroup::create());
     // Server must be created first for Windows.
     ChannelGroupRef serverGroup(ChannelGroup::createGroup(logger, dir, name, "test server", pipeGroup, true));
+    ASSERT_NOT_NULL(serverGroup);
     ChannelGroupRef clientGroup(ChannelGroup::createGroup(logger, dir, name, "test client", pipeGroup, false));
+    ASSERT_NOT_NULL(clientGroup);
 
     int32_t i = 1;
     //for(int32_t i = 0; i < 1024; i++) {
@@ -101,7 +120,9 @@ TEST_F(ChannelTest, dual) {
     LinkGroupRef pipeGroup(LinkGroup::create());
     // Server must be created first for Windows.
     ChannelGroupRef serverGroup(ChannelGroup::createGroup(logger, dir, name, "test server", pipeGroup, true));
+    ASSERT_NOT_NULL(serverGroup);
     ChannelGroupRef clientGroup(ChannelGroup::createGroup(logger, dir, name, "test clientGroup", pipeGroup, false));
+    ASSERT_NOT_NULL(clientGroup);
 
     ChannelRef s1 = clientGroup->createChannel("test");
     ASSERT_NOT_NULL(s1);
@@ -145,7 +166,8 @@ TEST_F(ChannelTest, free) {
     std::string dir = createTempPath(profile);
     LinkGroupRef pipeGroup(LinkGroup::create());
     std::string name(Berkelium::Util::randomId());
-    ChannelGroupRef group(ChannelGroup::createGroup(logger, dir, name, "test clientGroup", pipeGroup, false));
+    ChannelGroupRef group(ChannelGroup::createGroup(logger, dir, name, "test clientGroup", pipeGroup, true));
+    ASSERT_NOT_NULL(group);
 
     ChannelRef c1 = group->createChannel("test");
     ASSERT_TRUE(c1.unique());
