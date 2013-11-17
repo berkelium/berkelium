@@ -47,13 +47,15 @@ public:
 	}
 
 	virtual bool isRunning() {
-//#error "TODO"
-		return false;
+        DWORD exitCode;
+        GetExitCodeProcess(pi.hProcess, &exitCode);
+		return exitCode == STILL_ACTIVE;
 	}
 
 	virtual bool isCrashed() {
-//#error "TODO"
-		return false;
+        DWORD exitCode;
+        GetExitCodeProcess(pi.hProcess, &exitCode);
+		return exitCode > 0 && exitCode != STILL_ACTIVE;
 	}
 
 	virtual const bool start(const std::vector<std::string>& args) {
@@ -63,17 +65,7 @@ public:
 		std::wcerr << "wcmd:" << wcmd << std::endl;
 
 		// Start the child process. 
-		if( !CreateProcessW( NULL,   // No module name (use command line)
-			(LPWSTR)wcmd.c_str(),   // Command line
-			NULL,           // Process handle not inheritable
-			NULL,           // Thread handle not inheritable
-			FALSE,          // Set handle inheritance to FALSE
-			0,              // No creation flags
-			NULL,           // Use parent's environment block
-			NULL,           // Use parent's starting directory 
-			&si,            // Pointer to STARTUPINFO structure
-			&pi )           // Pointer to PROCESS_INFORMATION structure
-		) {
+		if(!CreateProcessW(NULL, (LPWSTR)wcmd.c_str(), NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi )) {
 			bk_error("CreateProcess failed (%d).\n", GetLastError());
 			return false;
 		}
