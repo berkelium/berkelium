@@ -11,6 +11,13 @@
 #endif
 
 #include <Berkelium/IPC/Ipc.hpp>
+#include <Berkelium/IPC/LinkGroup.hpp>
+
+#ifdef WINDOWS
+// Check if we could skip this include here
+// Only included here for the HANDLE type.
+#include <Windows.h>
+#endif
 
 namespace Berkelium {
 
@@ -19,64 +26,69 @@ namespace Ipc {
 class LinkCallback
 {
 public:
-	LinkCallback();
+    LinkCallback();
 
-	virtual ~LinkCallback() = 0;
+    virtual ~LinkCallback() = 0;
 
-	virtual void onLinkDataReady(LinkRef pipe) = 0;
+    virtual void onLinkDataReady(LinkRef pipe) = 0;
 };
 
 template<class T, class I>
 class LinkCallbackDelegate : public LinkCallback {
 private:
-	std::weak_ptr<T> wref;
+    std::weak_ptr<T> wref;
 
 public:
-	LinkCallbackDelegate(std::weak_ptr<T> wref) :
-		LinkCallback(),
-		wref(wref) {
-	}
+    LinkCallbackDelegate(std::weak_ptr<T> wref) :
+        LinkCallback(),
+        wref(wref) {
+    }
 
-	virtual ~LinkCallbackDelegate() {
-	}
+    virtual ~LinkCallbackDelegate() {
+    }
 
-	virtual void onLinkDataReady(LinkRef pipe) {
-		std::shared_ptr<T> ref(wref.lock());
-		if(ref) {
-			I* impl = (I*)ref.get();
-			impl->onLinkDataReady(pipe);
-		}
-	}
+    virtual void onLinkDataReady(LinkRef pipe) {
+        std::shared_ptr<T> ref(wref.lock());
+        if(ref) {
+            I* impl = (I*)ref.get();
+            impl->onLinkDataReady(pipe);
+        }
+    }
 };
 
 class Link {
 protected:
-	Link();
+    Link();
 
 public:
-	static LinkRef getLink(bool server, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias);
+    static LinkRef getLink(bool server, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias);
 
-	virtual ~Link() = 0;
+    virtual ~Link() = 0;
 
-	// Returns true if there are no pending messages to receive.
-	virtual bool isEmpty() = 0;
+    // Returns true if there are no pending messages to receive.
+    virtual bool isEmpty() = 0;
 
-	// Sends this message.
-	virtual void send(MessageRef msg) = 0;
+    // Sends this message.
+    virtual void send(MessageRef msg) = 0;
 
-	// Receives the next message.
-	virtual MessageRef recv() = 0;
+    // Receives the next message.
+    virtual MessageRef recv() = 0;
 
-	virtual const std::string getName() = 0;
+    virtual const std::string getName() = 0;
 
-	virtual const std::string getAlias() = 0;
+    virtual const std::string getAlias() = 0;
+
+#ifdef WINDOWS
+    // TODO : See how we can refactor it
+    virtual const HANDLE getPipeEvent() = 0;
+#endif
 };
 
 } // namespace Ipc
 
 namespace impl {
 
-int getLinkFd(Ipc::LinkRef pipe);
+Berkelium::Ipc::LinkFdType getLinkFd(Ipc::LinkRef pipe);
 
 } // namespace impl
 

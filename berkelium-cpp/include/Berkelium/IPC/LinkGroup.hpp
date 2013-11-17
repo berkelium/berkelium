@@ -16,6 +16,13 @@ namespace Berkelium {
 
 namespace Ipc {
 
+#ifdef WINDOWS
+typedef void* LinkFdType;
+#endif
+#ifdef LINUX
+typedef int LinkFdType;
+#endif
+
 class LinkGroup {
 protected:
 	LinkGroup();

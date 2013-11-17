@@ -72,31 +72,23 @@ TEST_F(LinkTest, sendRecv) {
 }
 
 #ifdef OS_WINDOWS
-
-// Temporary test to try the Windows Named pipes.
-// Both tests must be launched together the Server 
-// is waiting for the Client to connect.
-TEST_F(LinkTest, createServer) {
+TEST_F(LinkTest, createClientServer) {
     USE_LOGGER(sendRecv);
-    std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
     std::string name("testPipe");
     {
-        LinkRef link = Link::getLink(true, LinkGroupRef(), getLogger("sendRecv"), "", name, "testSendRecvLink");
-        ASSERT_TRUE(link->isEmpty());
+        LinkRef server = Link::getLink(true, LinkGroupRef(), getLogger("sendRecv"), "", name, "testSendRecvLink");
+        ASSERT_TRUE(server->isEmpty());
+        LinkRef client = Link::getLink(false, LinkGroupRef(), getLogger("sendRecv"), "", name, "testSendRecvLink");
+        ASSERT_TRUE(client->isEmpty());
         MessageRef msg(Message::create(logger));
         msg->add_str("hello");
-        link->send(msg);
-    }
-}
-TEST_F(LinkTest, createClient) {
-    USE_LOGGER(sendRecv);
-    std::string name("testPipe");
-    {
-        LinkRef link = Link::getLink(false, LinkGroupRef(), getLogger("sendRecv"), "", name, "testSendRecvLink");
-        ASSERT_TRUE(link->isEmpty());
-        MessageRef msg(Message::create(logger));
-        msg = link->recv();
+        server->send(msg);
+        ASSERT_TRUE(server->isEmpty());
+        ASSERT_FALSE(client->isEmpty());
+        msg = client->recv();
         std::string recv = msg->get_str();
+        ASSERT_TRUE(server->isEmpty());
+        ASSERT_TRUE(client->isEmpty());
         ASSERT_EQ(0, recv.compare("hello"));
     }
 }
