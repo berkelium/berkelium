@@ -32,7 +32,7 @@ int exec(const std::vector<std::string>& args) {
 		tmp[i] = (char*)args[i].c_str();
 	}
 	tmp[size] = NULL;
-    return execvp(args[0].c_str(), &tmp[0]);
+	return execvp(args[0].c_str(), &tmp[0]);
 }
 
 #define BUF_SIZE 1024
@@ -59,8 +59,9 @@ public:
 		TRACE_OBJECT_DELETE("ConsoleRedirector");
 	}
 
-	virtual void onLinkDataReady(Ipc::LinkRef pipe) {
-		int fd = getLinkFd(pipe);
+	virtual void onLinkDataReady(Ipc::MessageRef msg) {
+		// TODO
+		/*int fd = getLinkFd(pipe);
 
 		char buf[BUF_SIZE];
 
@@ -102,7 +103,7 @@ public:
 				log(lines.front());
 				lines.pop_front();
 			}
-		}
+		}*/
 	}
 
 	void log(std::string line) {

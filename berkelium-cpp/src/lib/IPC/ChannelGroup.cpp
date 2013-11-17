@@ -96,8 +96,7 @@ public:
 		}
 	}
 
-	virtual void onLinkDataReady(LinkRef pipe) {
-		Ipc::MessageRef msg(link->recv());
+	virtual void onLinkDataReady(Ipc::MessageRef msg) {
 		int32_t id(msg->getChannelId());
 		ChannelMap::iterator it(map.find(id));
 		if(it == map.end()) {

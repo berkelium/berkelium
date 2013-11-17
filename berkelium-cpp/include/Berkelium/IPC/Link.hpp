@@ -30,7 +30,7 @@ public:
 
     virtual ~LinkCallback() = 0;
 
-    virtual void onLinkDataReady(LinkRef pipe) = 0;
+    virtual void onLinkDataReady(Ipc::MessageRef msg) = 0;
 };
 
 template<class T, class I>
@@ -47,11 +47,11 @@ public:
     virtual ~LinkCallbackDelegate() {
     }
 
-    virtual void onLinkDataReady(LinkRef pipe) {
+    virtual void onLinkDataReady(Ipc::MessageRef msg) {
         std::shared_ptr<T> ref(wref.lock());
         if(ref) {
             I* impl = (I*)ref.get();
-            impl->onLinkDataReady(pipe);
+            impl->onLinkDataReady(msg);
         }
     }
 };
@@ -71,17 +71,17 @@ public:
     // Sends this message.
     virtual void send(MessageRef msg) = 0;
 
+#ifdef WINDOWS
+    // TODO maybe add it to linux too ?
+    virtual MessageRef recv(int32_t size) = 0;
+#endif
+
     // Receives the next message.
     virtual MessageRef recv() = 0;
 
     virtual const std::string getName() = 0;
 
     virtual const std::string getAlias() = 0;
-
-#ifdef WINDOWS
-    // TODO : See how we can refactor it
-    virtual const HANDLE getPipeEvent() = 0;
-#endif
 };
 
 } // namespace Ipc

@@ -47,14 +47,14 @@ public:
 	}
 
 	virtual bool isRunning() {
-        DWORD exitCode;
-        GetExitCodeProcess(pi.hProcess, &exitCode);
+		DWORD exitCode;
+		GetExitCodeProcess(pi.hProcess, &exitCode);
 		return exitCode == STILL_ACTIVE;
 	}
 
 	virtual bool isCrashed() {
-        DWORD exitCode;
-        GetExitCodeProcess(pi.hProcess, &exitCode);
+		DWORD exitCode;
+		GetExitCodeProcess(pi.hProcess, &exitCode);
 		return exitCode > 0 && exitCode != STILL_ACTIVE;
 	}
 

@@ -66,7 +66,7 @@ TEST_F(ChannelTest, simple) {
     ChannelGroupRef clientGroup(ChannelGroup::createGroup(logger, dir, name, "test client", pipeGroup, false));
 
     int32_t i = 1;
-    //for(int32_t i = 0; i < 1024; i++) {
+    for(int32_t i = 0; i < 1024; i++) {
         ChannelRef server = clientGroup->createChannel("test");
         ASSERT_NOT_NULL(server);
         ChannelRef client = serverGroup->getChannel(server->getId(), "test");
@@ -90,7 +90,7 @@ TEST_F(ChannelTest, simple) {
         ASSERT_EQ(r, recv->get_32());
         ASSERT_EQ(4u, recv->length());
         ASSERT_EQ(0u, recv->remaining());
-    //}
+    }
 }
 
 TEST_F(ChannelTest, dual) {
@@ -145,6 +145,7 @@ TEST_F(ChannelTest, free) {
     std::string dir = createTempPath(profile);
     LinkGroupRef pipeGroup(LinkGroup::create());
     std::string name(Berkelium::Util::randomId());
+    ChannelGroupRef serverGroup(ChannelGroup::createGroup(logger, dir, name, "test serverGroup", pipeGroup, true));
     ChannelGroupRef group(ChannelGroup::createGroup(logger, dir, name, "test clientGroup", pipeGroup, false));
 
     ChannelRef c1 = group->createChannel("test");

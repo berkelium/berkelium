@@ -32,116 +32,113 @@ namespace impl {
 
 class LinkWindowsImpl : public Link {
 private:
-    static const int pipeInstances = 1;
-    static const int pipeTimeout = 5000;
-    static const int bufferSize = 4096;
+	static const int pipeInstances = 1;
+	static const int pipeTimeout = 5000;
+	static const int bufferSize = 4096;
 
-    LoggerRef logger;
-    LinkGroupRef group;
-    const std::string name;
-    const std::string full;
-    const std::string alias;
-    bool server;
-    HANDLE pipe;
-    HANDLE connectEvent;
-    OVERLAPPED connectOverlap; 
+	LoggerRef logger;
+	LinkGroupRef group;
+	const std::string name;
+	const std::string full;
+	const std::string alias;
+	bool server;
+	HANDLE pipe;
 
 public:
-    LinkWindowsImpl(bool server, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
-        Link(),
-        logger(logger),
-        group(group),
-        name(name),
-        full("\\\\.\\pipe\\" + name),
-        alias(alias),
-        server(server),
-        pipe(INVALID_HANDLE_VALUE) {
-        TRACE_OBJECT_NEW("LinkWindowsImpl");
+	LinkWindowsImpl(bool server, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
+		Link(),
+		logger(logger),
+		group(group),
+		name(name),
+		full("\\\\.\\pipe\\" + name),
+		alias(alias),
+		server(server),
+		pipe(INVALID_HANDLE_VALUE) {
+		TRACE_OBJECT_NEW("LinkWindowsImpl");
 
-        if (server) {
-            pipe = CreateNamedPipe(full.c_str(), PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, PIPE_TYPE_BYTE | PIPE_WAIT, 
-                pipeInstances, bufferSize * sizeof(TCHAR), bufferSize * sizeof(TCHAR), pipeTimeout, NULL);
-            if (pipe == INVALID_HANDLE_VALUE) {
-                logger->systemError("CreateNamedPipe", full);
-                return;
-            }
-            
-            connectEvent = CreateEvent( NULL, TRUE, TRUE, NULL);
-            connectOverlap.hEvent = connectEvent;
-            BOOL error = ConnectNamedPipe(pipe, &connectOverlap);
-            if (error) {
-                logger->systemError("ConnectNamedPipe", full);
-                CloseHandle(pipe);
-                return;
-            }
-        } else {
-            pipe = CreateFile(full.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-            if (pipe == INVALID_HANDLE_VALUE) {
-                logger->systemError("CreateFile", full);
-                return;
-            }
-        }
-    }
+		if (server) {
+			pipe = CreateNamedPipe(full.c_str(), PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED, PIPE_TYPE_BYTE | PIPE_WAIT, 
+				pipeInstances, bufferSize * sizeof(TCHAR), bufferSize * sizeof(TCHAR), pipeTimeout, NULL);
+			if (pipe == INVALID_HANDLE_VALUE) {
+				logger->systemError("CreateNamedPipe", full);
+				return;
+			}
+			
+			OVERLAPPED connectOverlap;
+			connectOverlap.hEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
+			BOOL error = ConnectNamedPipe(pipe, &connectOverlap);
+			if (error) {
+				logger->systemError("ConnectNamedPipe", full);
+				CloseHandle(pipe);
+				return;
+			}
+		} else {
+			pipe = CreateFile(full.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 
+				FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
+			if (pipe == INVALID_HANDLE_VALUE) {
+				printf("CreateNamedPipe failed with %d.\n", GetLastError());
+				logger->systemError("CreateFile", full);
+				return;
+			}
+		}
+	}
 
-    virtual ~LinkWindowsImpl() {
-        TRACE_OBJECT_DELETE("LinkWindowsImpl");
-        if (pipe == INVALID_HANDLE_VALUE) {
-            CloseHandle(pipe);
-        }
-    }
+	virtual ~LinkWindowsImpl() {
+		TRACE_OBJECT_DELETE("LinkWindowsImpl");
+		if (pipe == INVALID_HANDLE_VALUE) {
+			CloseHandle(pipe);
+		}
+	}
 
-    virtual bool isEmpty() {
-        if (pipe == INVALID_HANDLE_VALUE) {
-            return true;
-        }
+	virtual bool isEmpty() {
+		if (pipe == INVALID_HANDLE_VALUE) {
+			return true;
+		}
 
-        DWORD bytesAvail = 0;
-        PeekNamedPipe(pipe, NULL, NULL, NULL, &bytesAvail, NULL);
-        return bytesAvail == 0;
-    }
+		DWORD bytesAvail = 0;
+		PeekNamedPipe(pipe, NULL, NULL, NULL, &bytesAvail, NULL);
+		return bytesAvail == 0;
+	}
 
-    virtual void send(MessageRef msg) {
-        if (pipe == INVALID_HANDLE_VALUE) {
-            return;
-        }
+	virtual void send(MessageRef msg) {
+		if (pipe == INVALID_HANDLE_VALUE) {
+			return;
+		}
 
-        int32_t size = msg->data_length();
-        WriteFile(pipe, &size, 4, NULL, NULL);
-        WriteFile(pipe, msg->data(), size, NULL, NULL);
-        msg->reset();
-    }
+		int32_t size = msg->data_length();
+		WriteFile(pipe, &size, 4, NULL, NULL);
+		WriteFile(pipe, msg->data(), size, NULL, NULL);
+		msg->reset();
+	}
 
-    virtual MessageRef recv() {
-        MessageRef msg(Message::create(logger));
-        int32_t size = 0;
-        recv((char*)&size, 4);
-        msg->setup(size - sizeof(int32_t));
-        recv((char*)msg->data(), size);
-        return msg;
-    }
+	virtual MessageRef recv() {
+		int32_t size = 0;
+		recv((char*)&size, 4);
+		return recv(size);
+	}
 
-    void recv(char* to, size_t size) {
-        ReadFile(pipe, to, size, NULL, NULL);
-    }
+	virtual MessageRef recv(int32_t size) {
+		MessageRef msg(Message::create(logger));
+		msg->setup(size - sizeof(int32_t));
+		recv((char*)msg->data(), size);
+		return msg;
+	}
 
-    virtual const std::string getName() {
-        return name;
-    }
+	void recv(char* to, size_t size) {
+		ReadFile(pipe, to, size, NULL, NULL);
+	}
 
-    virtual const std::string getAlias() {
-        return alias;
-    }
+	virtual const std::string getName() {
+		return name;
+	}
 
-    virtual const HANDLE getPipeEvent() {
-        return connectEvent;
-    }
+	virtual const std::string getAlias() {
+		return alias;
+	}
 
-    HANDLE getLinkFd() {
-        if(!server) {
-            return INVALID_HANDLE_VALUE;
-        }
-        return pipe;
-    }
+	HANDLE getLinkFd() {
+		return pipe;
+	}
 };
 
 } // namespace impl
@@ -153,11 +150,11 @@ Link::~Link() {
 }
 
 LinkRef Link::getLink(bool server, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) {
-    LinkRef ret(new impl::LinkWindowsImpl(server, group, logger, dir, name, alias));
-    if (server && group) {
-        group->registerLink(ret);
-    }
-    return ret;
+	LinkRef ret(new impl::LinkWindowsImpl(server, group, logger, dir, name, alias));
+	if (group) {
+		group->registerLink(ret);
+	}
+	return ret;
 }
 
 } // namespace Ipc
@@ -165,11 +162,11 @@ LinkRef Link::getLink(bool server, LinkGroupRef group, LoggerRef logger, const s
 namespace impl {
 
 Berkelium::Ipc::LinkFdType getLinkFd(Ipc::LinkRef pipe) {
-    if(!pipe) {
-        Berkelium::impl::bk_error("getLinkFd: pipe is NULL!");
-        return 0;
-    }
-    return ((Ipc::impl::LinkWindowsImpl*)pipe.get())->getLinkFd();
+	if (!pipe) {
+		Berkelium::impl::bk_error("getLinkFd: pipe is NULL!");
+		return 0;
+	}
+	return ((Ipc::impl::LinkWindowsImpl*)pipe.get())->getLinkFd();
 }
 
 } // namespace Ipc
