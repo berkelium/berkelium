@@ -11,6 +11,7 @@
 #include <map>
 
 #ifdef WINDOWS
+#include <set>
 #include <windows.h> 
 #endif
 
@@ -42,6 +43,7 @@ struct LinkGroupData {
 	LinkCallbackWRef cb;
 	Berkelium::Ipc::LinkFdType fd;
 #ifdef WINDOWS
+	bool pending;
 	int32_t size;
 	OVERLAPPED overlapped;
 #endif
@@ -54,8 +56,8 @@ private:
 	int64_t lastRecv;
 	LinkMap map;
 #ifdef WINDOWS
-	std::vector<HANDLE> events;
-	std::vector<LinkGroupData*> linkGroupDatas;
+	std::set<HANDLE> events;
+	std::set<LinkGroupData*> linkGroupDatas;
 #endif
 #ifdef LINUX
 	fd_set fds;
@@ -79,9 +81,12 @@ public:
 		data->fd = getLinkFd(link);
 #ifdef WINDOWS
 		data->size = 0;
+		data->pending = false;
 		data->overlapped.Offset = 0;
 		data->overlapped.OffsetHigh = 0;
-		data->overlapped.hEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
+		data->overlapped.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
+		events.insert(data->overlapped.hEvent);
+		linkGroupDatas.insert(data);
 #endif
 		map.insert(std::pair<Link*, LinkGroupData*>(link.get(), data));
 		//Berkelium::impl::bk_error("register link %p %s fd:%d", link.get(), link->getName().c_str(), data->fd);
@@ -92,6 +97,8 @@ public:
 		LinkMap::iterator it(map.find(link));
 		if(it != map.end()) {
 			LinkGroupData* data = it->second;
+			events.erase(data->overlapped.hEvent);
+			linkGroupDatas.erase(data);
 			delete data;
 			map.erase(it);
 		}
@@ -148,23 +155,28 @@ public:
 
 	void recv(int32_t timeout) {
 #ifdef WINDOWS
-		events.clear();
-
 		for(LinkMap::iterator it(map.begin()); it != map.end(); it++) {
 			LinkGroupData* data = it->second;
 			if (data->fd == INVALID_HANDLE_VALUE) {
 				continue;
 			}
-			LinkRef ref(data->ref.lock());
-			if (!ref) {
+			
+			if (data->pending) {
 				continue;
 			}
-			ReadFile(data->fd, &data->size, 4, NULL, &data->overlapped);
-			events.push_back(data->overlapped.hEvent);
-			linkGroupDatas.push_back(data);
+			if (!ReadFile(data->fd, &data->size, 4, NULL, &data->overlapped)) {
+				printf("ReadFile overlapped last error %d\n", GetLastError());
+			}
+			data->pending = true;
+		}
+		
+		int i = 0;
+		HANDLE* handles = new HANDLE[events.size()];
+		for (std::set<HANDLE>::iterator it(events.begin()); it != events.end(); it++) {
+			handles[i++] = *it;
 		}
 
-		DWORD result = WaitForMultipleObjects(events.size(), &events[0], FALSE, timeout == -1 ? INFINITE : timeout);
+		DWORD result = WaitForMultipleObjects(events.size(), handles, FALSE, timeout == -1 ? INFINITE : timeout);
 		int linkIndex = result - WAIT_OBJECT_0;
 		int numberOfLinks = events.size() - 1;
 		if (linkIndex < 0 || linkIndex > numberOfLinks) {
@@ -172,10 +184,26 @@ public:
 		}
 
 		lastRecv = Util::currentTimeMillis();
-		LinkGroupData* data = linkGroupDatas[linkIndex];
+		
+		std::set<LinkGroupData*>::iterator it = linkGroupDatas.begin();
+		std::advance(it, linkIndex);
+		LinkGroupData* data = *it;
+		data->pending = false;
+
+		DWORD cbRet;
+		if (!GetOverlappedResult(data->fd, &data->overlapped, &cbRet, FALSE)) {
+			printf("GetOverlappedResult last error %d\n", GetLastError());
+		}
+		if (!ResetEvent(data->overlapped.hEvent)) {
+			printf("ResetEvent last error %d\n", GetLastError());
+		}
+
 		LinkRef ref(data->ref.lock());
 		if(trace) {
 			bk_error("LinkGroup: selected %s %d %s", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
+		}
+		if (ref->isEmpty()) {
+			bk_error("Link is empty");
 		}
 		LinkCallbackRef cb(data->cb.lock());
 		if(cb) {
