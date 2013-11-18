@@ -100,7 +100,7 @@ public:
 			return false;
 		}
 		std::ofstream file(lock);
-		return !file.is_open();
+		return file.is_open();
 #elif defined(LINUX)
 		std::string s;
 		if(!Filesystem::readSymlink(getLockFile(), s)) {
@@ -108,7 +108,7 @@ public:
 			return false;
 		}
 
-	    std::replace(s.begin(), s.end(), '-', ' ');
+		std::replace(s.begin(), s.end(), '-', ' ');
 		std::istringstream is(s);
 		std::string host;
 		is >> host;
