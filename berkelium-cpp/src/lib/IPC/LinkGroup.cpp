@@ -168,7 +168,6 @@ public:
 		int linkIndex = result - WAIT_OBJECT_0;
 		int numberOfLinks = events.size() - 1;
 		if (linkIndex < 0 || linkIndex > numberOfLinks) {
-			printf("DisconnectNamedPipe failed with %d.\n", GetLastError());
 			return;
 		}
 

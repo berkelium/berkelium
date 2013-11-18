@@ -34,6 +34,7 @@ TEST_F(LinkTest, create) {
     ASSERT_NOT_NULL(Link::getLink(true, LinkGroupRef(), logger, Filesystem::getTemp(), randomId(), "testCreateLink"));
 }
 
+#ifdef LINUX
 TEST_F(LinkTest, remove) {
     USE_LOGGER(remove);
     std::string dir = Filesystem::append(Filesystem::getTemp(), randomId());
@@ -75,9 +76,10 @@ TEST_F(LinkTest, sendRecv) {
     ASSERT_FALSE(Filesystem::exists(Filesystem::append(dir, name)));
     Filesystem::removeDir(dir);
 }
+#endif
 
 #ifdef OS_WINDOWS
-TEST_F(LinkTest, createClientServer) {
+TEST_F(LinkTest, sendRecv) {
     USE_LOGGER(sendRecv);
     std::string name("testPipe");
     {

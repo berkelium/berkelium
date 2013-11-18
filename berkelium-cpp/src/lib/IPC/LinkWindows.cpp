@@ -76,7 +76,6 @@ public:
 			pipe = CreateFile(full.c_str(), GENERIC_READ | GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, OPEN_EXISTING, 
 				FILE_ATTRIBUTE_NORMAL | FILE_FLAG_OVERLAPPED, NULL);
 			if (pipe == INVALID_HANDLE_VALUE) {
-				printf("CreateNamedPipe failed with %d.\n", GetLastError());
 				logger->systemError("CreateFile", full);
 				return;
 			}
@@ -88,6 +87,10 @@ public:
 		if (pipe == INVALID_HANDLE_VALUE) {
 			CloseHandle(pipe);
 		}
+	}
+
+	bool isOk() {
+		return pipe != INVALID_HANDLE_VALUE;
 	}
 
 	virtual bool isEmpty() {
@@ -150,7 +153,11 @@ Link::~Link() {
 }
 
 LinkRef Link::getLink(bool server, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) {
-	LinkRef ret(new impl::LinkWindowsImpl(server, group, logger, dir, name, alias));
+	impl::LinkWindowsImpl* impl = new impl::LinkWindowsImpl(server, group, logger, dir, name, alias);
+	LinkRef ret(impl);
+	if(!impl->isOk()) {
+		return LinkRef();
+	}
 	if (group) {
 		group->registerLink(ret);
 	}
