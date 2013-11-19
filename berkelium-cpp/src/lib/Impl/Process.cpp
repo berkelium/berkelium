@@ -25,6 +25,10 @@ Process::~Process() {
 	TRACE_OBJECT_DELETE("Process");
 }
 
+void Process::waitForInit() {
+	group->waitForInit();
+}
+
 } // namespace impl
 
 } // namespace Berkelium

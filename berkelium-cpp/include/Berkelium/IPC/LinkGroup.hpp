@@ -30,6 +30,8 @@ protected:
 public:
 	virtual ~LinkGroup() = 0;
 
+	virtual void waitForInit() = 0;
+
 	virtual void registerLink(LinkRef pipe) = 0;
 
 	virtual void unregisterLink(Link* pipe) = 0;

@@ -75,6 +75,26 @@ public:
 		TRACE_OBJECT_DELETE("LinkGroupImpl");
 	}
 
+	virtual void waitForInit() {
+		for(LinkMap::iterator it(map.begin()); it != map.end(); it++) {
+			LinkGroupData* data = it->second;
+#ifdef WINDOWS
+			if(data->fd == INVALID_HANDLE_VALUE) {
+				continue;
+			}
+#elif LINUX
+			if(data->fd == -1) {
+				continue;
+			}
+#endif
+			LinkRef ref(data->ref.lock());
+			if(!ref) {
+				continue;
+			}
+			ref->waitForInit();
+		}
+	}
+
 	virtual void registerLink(LinkRef link) {
 		LinkGroupData* data = new LinkGroupData();
 		data->ref = link;
@@ -97,6 +117,9 @@ public:
 		LinkMap::iterator it(map.find(link));
 		if(it != map.end()) {
 			LinkGroupData* data = it->second;
+			if (data->pending) {
+				CancelIoEx(data->fd, &data->overlapped);
+			}
 			events.erase(data->overlapped.hEvent);
 			linkGroupDatas.erase(data);
 			delete data;
@@ -113,19 +136,16 @@ public:
 			if(data->fd == INVALID_HANDLE_VALUE) {
 				Berkelium::impl::bk_error("register callback %p failed: no fd!", link.get());
 			}
-#endif
-#ifdef LINUX
+#elif LINUX
 			if(data->fd == -1) {
 				Berkelium::impl::bk_error("register callback %p failed: no fd!", link.get());
 			}
 #endif
 			data->cb = callback;
 		}
-#ifndef WINDOWS
 		else {
 			Berkelium::impl::bk_error("register callback %p failed!", link.get());
 		}
-#endif
 	}
 
 	virtual void registerCallback(ChannelGroupRef group, LinkCallbackRef callback) {
@@ -143,7 +163,6 @@ public:
 		}
 		int64_t end = Util::currentTimeMillis() + timeout;
 		while(true) {
-			//fprintf(stderr, "timeout %d\n", timeout);
 			int64_t now = Util::currentTimeMillis();
 			int64_t left = end - now;
 			if(left < 1) {
@@ -160,13 +179,10 @@ public:
 			if (data->fd == INVALID_HANDLE_VALUE) {
 				continue;
 			}
-			
 			if (data->pending) {
 				continue;
 			}
-			if (!ReadFile(data->fd, &data->size, 4, NULL, &data->overlapped)) {
-				printf("ReadFile overlapped last error %d\n", GetLastError());
-			}
+			ReadFile(data->fd, &data->size, 4, NULL, &data->overlapped);
 			data->pending = true;
 		}
 		
@@ -178,25 +194,16 @@ public:
 
 		DWORD result = WaitForMultipleObjects(events.size(), handles, FALSE, timeout == -1 ? INFINITE : timeout);
 		int linkIndex = result - WAIT_OBJECT_0;
-		int numberOfLinks = events.size() - 1;
-		if (linkIndex < 0 || linkIndex > numberOfLinks) {
+		if (linkIndex < 0 || linkIndex > (events.size() - 1)) {
 			return;
 		}
-
 		lastRecv = Util::currentTimeMillis();
 		
 		std::set<LinkGroupData*>::iterator it = linkGroupDatas.begin();
 		std::advance(it, linkIndex);
 		LinkGroupData* data = *it;
 		data->pending = false;
-
-		DWORD cbRet;
-		if (!GetOverlappedResult(data->fd, &data->overlapped, &cbRet, FALSE)) {
-			printf("GetOverlappedResult last error %d\n", GetLastError());
-		}
-		if (!ResetEvent(data->overlapped.hEvent)) {
-			printf("ResetEvent last error %d\n", GetLastError());
-		}
+		ResetEvent(data->overlapped.hEvent);
 
 		LinkRef ref(data->ref.lock());
 		if(trace) {
@@ -204,6 +211,7 @@ public:
 		}
 		if (ref->isEmpty()) {
 			bk_error("Link is empty");
+			return;
 		}
 		LinkCallbackRef cb(data->cb.lock());
 		if(cb) {
@@ -211,8 +219,7 @@ public:
 		} else {
 			bk_error("LinkGroup: no callback!");
 		}
-#endif
-#ifdef LINUX
+#elif LINUX
 		FD_ZERO(&fds);
 		int nfds = 0;
 		if(trace) {

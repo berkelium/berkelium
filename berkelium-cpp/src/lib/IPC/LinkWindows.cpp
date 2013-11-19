@@ -43,6 +43,7 @@ private:
 	const std::string alias;
 	bool server;
 	HANDLE pipe;
+	OVERLAPPED connectOverlap;
 
 public:
 	LinkWindowsImpl(bool server, LinkGroupRef group, LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias) :
@@ -64,8 +65,7 @@ public:
 				return;
 			}
 			
-			OVERLAPPED connectOverlap;
-			connectOverlap.hEvent = CreateEvent(NULL, TRUE, TRUE, NULL);
+			connectOverlap.hEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 			BOOL error = ConnectNamedPipe(pipe, &connectOverlap);
 			if (error) {
 				logger->systemError("ConnectNamedPipe", full);
@@ -101,6 +101,12 @@ public:
 		DWORD bytesAvail = 0;
 		PeekNamedPipe(pipe, NULL, NULL, NULL, &bytesAvail, NULL);
 		return bytesAvail == 0;
+	}
+
+	virtual void waitForInit() {
+		if (server) {
+			WaitForSingleObject(connectOverlap.hEvent, INFINITE);
+		}
 	}
 
 	virtual void send(MessageRef msg) {

@@ -52,6 +52,10 @@ public:
 		TRACE_OBJECT_DELETE("ChannelGroupImpl");
 	}
 
+	virtual void waitForInit() {
+		group->waitForInit();
+	}
+
 	virtual std::string getName() {
 		return name;
 	}

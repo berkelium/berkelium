@@ -68,6 +68,8 @@ public:
     // Returns true if there are no pending messages to receive.
     virtual bool isEmpty() = 0;
 
+    virtual void waitForInit() = 0;
+
     // Sends this message.
     virtual void send(MessageRef msg) = 0;
 

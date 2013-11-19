@@ -25,6 +25,8 @@ public:
 
 	virtual std::string getName() = 0;
 
+	virtual void waitForInit() = 0;
+
 	virtual void send(int32_t id, Ipc::MessageRef msg) = 0;
 
 	virtual void update(int32_t timeout) = 0;

@@ -65,6 +65,9 @@ public:
 		return pin->isEmpty();
 	}
 
+	virtual void waitForInit() {
+	}
+
 	virtual void send(MessageRef msg) {
 		pout->send(msg);
 	}
