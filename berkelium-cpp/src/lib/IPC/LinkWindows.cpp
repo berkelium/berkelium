@@ -84,7 +84,7 @@ public:
 
 	virtual ~LinkWindowsImpl() {
 		TRACE_OBJECT_DELETE("LinkWindowsImpl");
-		if (pipe == INVALID_HANDLE_VALUE) {
+		if (pipe != INVALID_HANDLE_VALUE) {
 			CloseHandle(pipe);
 		}
 	}

@@ -197,6 +197,7 @@ public:
 		if (linkIndex < 0 || linkIndex > (events.size() - 1)) {
 			return;
 		}
+
 		lastRecv = Util::currentTimeMillis();
 		
 		std::set<LinkGroupData*>::iterator it = linkGroupDatas.begin();
@@ -205,13 +206,18 @@ public:
 		data->pending = false;
 		ResetEvent(data->overlapped.hEvent);
 
+		DWORD transferred = 0;
+		if (!GetOverlappedResult(data->fd, &data->overlapped, &transferred, TRUE)) {
+			printf("OverlappedResult %d\n", GetLastError());
+			return;
+		}
+		if (transferred == 0) {
+			return;
+		}
+
 		LinkRef ref(data->ref.lock());
 		if(trace) {
 			bk_error("LinkGroup: selected %s %d %s", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
-		}
-		if (ref->isEmpty()) {
-			bk_error("Link is empty");
-			return;
 		}
 		LinkCallbackRef cb(data->cb.lock());
 		if(cb) {
