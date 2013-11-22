@@ -184,6 +184,10 @@ public:
 			}
 			ReadFile(data->fd, &data->size, 4, NULL, &data->overlapped);
 			data->pending = true;
+			if(trace) {
+		        LinkRef ref(data->ref.lock());
+				bk_error("LinkGroup: waiting for %d", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
+			}
 		}
 		
 		int i = 0;
@@ -192,6 +196,9 @@ public:
 			handles[i++] = *it;
 		}
 
+		if(trace) {
+			bk_error("LinkGroup: waiting for %d events...", events.size());
+		}
 		DWORD result = WaitForMultipleObjects(events.size(), handles, FALSE, timeout == -1 ? INFINITE : timeout);
 		int linkIndex = result - WAIT_OBJECT_0;
 		if (linkIndex < 0 || linkIndex > (events.size() - 1)) {
