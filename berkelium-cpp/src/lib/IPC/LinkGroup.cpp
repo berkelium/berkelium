@@ -117,11 +117,13 @@ public:
 		LinkMap::iterator it(map.find(link));
 		if(it != map.end()) {
 			LinkGroupData* data = it->second;
+#ifdef WINDOWS
 			if (data->pending) {
 				CancelIoEx(data->fd, &data->overlapped);
 			}
 			events.erase(data->overlapped.hEvent);
 			linkGroupDatas.erase(data);
+#endif
 			delete data;
 			map.erase(it);
 		}
