@@ -26,6 +26,7 @@ typedef std::shared_ptr<int32_t> Int32Ref;
 
 class Process;
 typedef std::shared_ptr<Process> ProcessRef;
+typedef std::weak_ptr<Process> ProcessWRef;
 
 class Manager;
 typedef std::shared_ptr<Manager> ManagerRef;

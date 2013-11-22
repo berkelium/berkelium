@@ -10,12 +10,73 @@
 #include <Berkelium/API/Util.hpp>
 
 #include <map>
+#include <cstring>
 
 namespace Berkelium {
 
 namespace Ipc {
 
 namespace impl {
+
+class MessageCreator
+{
+private:
+	uint32_t size;
+	uint8_t* buffer;
+	LoggerRef logger;
+
+public:
+	MessageCreator(LoggerRef logger) :
+		size(0),
+		buffer(NULL),
+		logger(logger) {
+	}
+
+	~MessageCreator() {
+		if(buffer != NULL) {
+			::free(buffer);
+		}
+	}
+
+	MessageRef read() {
+		if(buffer == NULL || size < 4) {
+			return MessageRef();
+		}
+		uint32_t msg_length = *buffer;
+		if(msg_length > size) {
+			return MessageRef();
+		}
+		MessageRef msg(Message::create(logger));
+		msg->setup(msg_length - sizeof(int32_t));
+		::memcpy(msg->data(), buffer + sizeof(int32_t), msg_length);
+
+		if(msg_length < size) {
+			uint32_t diff = size - msg_length;
+			uint8_t* tmp = (uint8_t*)::malloc(diff);
+			::memcpy(tmp, buffer + diff, diff);
+			this->size = diff;
+			::free(buffer);
+			buffer = tmp;
+		}
+
+		return msg;
+	}
+
+	void update(uint32_t size, uint8_t* data) {
+		if(this->size == 0) {
+			this->size = size;
+			buffer = (uint8_t*)::malloc(size);
+			::memcpy(buffer, data, size);
+		} else {
+			uint8_t* tmp = (uint8_t*)::malloc(this->size + size);
+			::memcpy(tmp, buffer, this->size);
+			::memcpy(tmp + this->size, data, size);
+			this->size += size;
+			::free(buffer);
+			buffer = tmp;
+		}
+	}
+};
 
 typedef std::map<int32_t, ChannelWRef> ChannelMap;
 typedef std::pair<int32_t, ChannelWRef> ChannelMapPair;
@@ -27,6 +88,7 @@ private:
 	const std::string dir;
 	const std::string name;
 	LinkGroupRef group;
+	MessageCreator creator;
 	int32_t nextId;
 	ChannelMap map;
 	Berkelium::Ipc::LinkCallbackRef cb;
@@ -39,6 +101,7 @@ private:
 		dir(dir),
 		name(name),
 		group(group),
+		creator(logger),
 		nextId(0),
 		map(),
 		cb(),
@@ -100,19 +163,26 @@ public:
 		}
 	}
 
-	virtual void onLinkDataReady(Ipc::MessageRef msg) {
-		int32_t id(msg->getChannelId());
-		ChannelMap::iterator it(map.find(id));
-		if(it == map.end()) {
-			logger->error() << "Received invalid Channel ID " << id << std::endl;
-			return;
+	virtual void onLinkDataReady(LinkRef link, uint32_t size, uint8_t* data) {
+		creator.update(size, data);
+		while(true) {
+			MessageRef msg(creator.read());
+			if(!msg) {
+				break;
+			}
+			int32_t id(msg->getChannelId());
+			ChannelMap::iterator it(map.find(id));
+			if(it == map.end()) {
+				logger->error() << "Received invalid Channel ID " << id << std::endl;
+				return;
+			}
+			ChannelRef ch(it->second);
+			if(!ch) {
+				logger->error("Channel already closed!");
+				return;
+			}
+			ch->queue(msg);
 		}
-		ChannelRef ch(it->second);
-		if(!ch) {
-			logger->error("Channel already closed!");
-			return;
-		}
-		ch->queue(msg);
 	}
 
 	static ChannelGroupRef create(LoggerRef logger, const std::string& dir, const std::string& name, const std::string& alias, LinkGroupRef group, bool server) {

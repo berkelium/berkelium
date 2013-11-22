@@ -30,7 +30,8 @@ public:
 
     virtual ~LinkCallback() = 0;
 
-    virtual void onLinkDataReady(Ipc::MessageRef msg) = 0;
+    // The caller must ensure that 'data' is freed
+    virtual void onLinkDataReady(LinkRef link, uint32_t size, uint8_t* data) = 0;
 };
 
 template<class T, class I>
@@ -47,11 +48,11 @@ public:
     virtual ~LinkCallbackDelegate() {
     }
 
-    virtual void onLinkDataReady(Ipc::MessageRef msg) {
+    virtual void onLinkDataReady(LinkRef link, uint32_t size, uint8_t* data) {
         std::shared_ptr<T> ref(wref.lock());
         if(ref) {
             I* impl = (I*)ref.get();
-            impl->onLinkDataReady(msg);
+            impl->onLinkDataReady(link, size, data);
         }
     }
 };

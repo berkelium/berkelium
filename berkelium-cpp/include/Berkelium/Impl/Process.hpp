@@ -8,6 +8,7 @@
 
 #include <Berkelium/API/Logger.hpp>
 #include <Berkelium/IPC/Channel.hpp>
+#include <Berkelium/Impl/ConsoleRedirector.hpp>
 
 #ifndef BERKELIUM_CPP_IMPL
 # error "This file is intended for internal use only!"
@@ -25,6 +26,10 @@ protected:
 	Ipc::LinkGroupRef group;
 	Ipc::ChannelGroupRef channels;
 	Ipc::ChannelRef ipc;
+	ConsoleRedirector out;
+	ConsoleRedirector err;
+	std::string bufout;
+	std::string buferr;
 
 	const LoggerRef logger;
 

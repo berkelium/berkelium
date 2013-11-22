@@ -13,7 +13,6 @@
 
 #include <sys/wait.h>
 #include <unistd.h>
-#include <sstream>
 
 #ifdef BERKELIUM_NO_HOST_REDIRECT
 #define redirect 0
@@ -40,81 +39,11 @@ int exec(const std::vector<std::string>& args) {
 using Berkelium::Ipc::LinkCallback;
 using Berkelium::Ipc::LinkCallbackRef;
 
-class ConsoleRedirector : public LinkCallback
-{
+class ProcessLinuxImpl;
+typedef std::shared_ptr<ProcessLinuxImpl> ProcessLinuxImplRef;
+
+class ProcessLinuxImpl : public Process, public LinkCallback {
 private:
-	RuntimeRef runtime;
-	LogType type;
-	std::string buffer;
-
-public:
-	ConsoleRedirector(RuntimeRef runtime, LogType type) :
-		Berkelium::Ipc::LinkCallback(),
-		runtime(runtime),
-		type(type) {
-		TRACE_OBJECT_NEW("ConsoleRedirector");
-	}
-
-	virtual ~ConsoleRedirector() {
-		TRACE_OBJECT_DELETE("ConsoleRedirector");
-	}
-
-	virtual void onLinkDataReady(Ipc::MessageRef msg) {
-		// TODO
-		/*int fd = getLinkFd(pipe);
-
-		char buf[BUF_SIZE];
-
-		// read everything available into buffer
-		while(!pipe->isEmpty()) {
-			int r = ::read(fd, &buf, BUF_SIZE);
-			if(r == 0) {
-				break;
-			} else if(r == -1) {
-				bk_error("ConsoleWriter: read error!");
-				return;
-			}
-			buffer += std::string(buf, 0, r);
-		}
-
-		// split into lines
-		std::string line;
-		std::istringstream is(buffer);
-
-		if(buffer[buffer.length() - 1] == 10) {
-			// buffer end == line end
-			while(std::getline(is, line)) {
-				log(line);
-			}
-			buffer = "";
-		} else {
-			// buffer end != line end
-			std::list<std::string> lines;
-			while(std::getline(is, line)) {
-				lines.push_back(line);
-			}
-			if(lines.empty()) {
-				return;
-			}
-			// store incomplete line
-			buffer = lines.back();
-			lines.pop_back();
-			while(!lines.empty()) {
-				log(lines.front());
-				lines.pop_front();
-			}
-		}*/
-	}
-
-	void log(std::string line) {
-		runtime->log(LogSource::Host, type, type == LogType::StdOut ? "STDOUT" : "STDERR", "", line);
-	}
-};
-
-class ProcessLinuxImpl : public Process {
-private:
-	LinkCallbackRef out;
-	LinkCallbackRef err;
 	Ipc::LinkRef pipeout;
 	Ipc::LinkRef pipeerr;
 	pid_t pid;
@@ -123,15 +52,16 @@ private:
 public:
 	ProcessLinuxImpl(RuntimeRef runtime, LoggerRef logger, const std::string& dir) :
 		Process(runtime, logger, dir),
-		out(new ConsoleRedirector(runtime, LogType::StdOut)),
-		err(new ConsoleRedirector(runtime, LogType::StdErr)),
 		pipeout(Ipc::Link::getLink(true, group, logger, dir, name + "1", "process.out")),
 		pipeerr(Ipc::Link::getLink(true, group, logger, dir, name + "2", "process.err")),
 		pid(-1),
 		exit(-1) {
 		TRACE_OBJECT_NEW("ProcessLinux");
-		group->registerCallback(pipeout, out);
-		group->registerCallback(pipeerr, err);
+	}
+
+	void registerCallbacks(ProcessLinuxImplRef self) {
+		group->registerCallback(pipeout, self);
+		group->registerCallback(pipeerr, self);
 	}
 
 	virtual ~ProcessLinuxImpl() {
@@ -166,6 +96,34 @@ public:
 		return wait(WNOHANG);
 	}
 
+	void update(std::string& buffer, Ipc::LinkRef link, ConsoleRedirector& cr) {
+		int fd = getLinkFd(link);
+		char buf[BUF_SIZE];
+
+		// read everything available into buffer
+		while(!link->isEmpty()) {
+			int r = ::read(fd, &buf, BUF_SIZE);
+			if(r == 0) {
+				break;
+			} else if(r == -1) {
+				bk_error("ConsoleWriter: read error!");
+				return;
+			}
+			buffer += std::string(buf, 0, r);
+		}
+		cr.update(buffer);
+	}
+
+	virtual void onLinkDataReady(Berkelium::Ipc::LinkRef link, uint32_t size, uint8_t* data) {
+		if(link == pipeout) {
+			bufout += std::string((const char*)data, 0, size);
+			out.update(bufout);
+		} else if(link == pipeerr) {
+			buferr += std::string((const char*)data, 0, size);
+			err.update(buferr);
+		}
+	}
+
 	virtual bool isCrashed() {
 		return exit > 0;
 	}
@@ -197,11 +155,12 @@ public:
 
 ProcessRef Process::create(RuntimeRef runtime, LoggerRef logger, const std::string& dir) {
 	ProcessLinuxImpl* impl(new ProcessLinuxImpl(runtime, logger, dir));
-	ProcessRef ret(impl);
+	ProcessLinuxImplRef ret(impl);
 	if(!impl->channels) {
 		fprintf(stderr, "create process failed\n");
 		return ProcessRef();
 	}
+	impl->registerCallbacks(ret);
 	return ret;
 }
 

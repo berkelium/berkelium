@@ -38,13 +38,16 @@ LinkCallback::~LinkCallback() {
 
 namespace impl {
 
+#define BUFFER_SIZE 4096
+
 struct LinkGroupData {
 	LinkWRef ref;
 	LinkCallbackWRef cb;
 	Berkelium::Ipc::LinkFdType fd;
+	int32_t size;
+	uint8_t buffer[BUFFER_SIZE];
 #ifdef WINDOWS
 	bool pending;
-	int32_t size;
 	OVERLAPPED overlapped;
 #endif
 };
@@ -129,7 +132,7 @@ public:
 		}
 	}
 
-	virtual void registerCallback(LinkRef link, LinkCallbackRef callback) {
+	virtual void registerCallback(LinkRef link, LinkCallbackWRef callback) {
 		//Berkelium::impl::bk_error("register callback %p", link.get());
 		LinkMap::iterator it(map.find(link.get()));
 		if(it != map.end()) {
@@ -150,7 +153,7 @@ public:
 		}
 	}
 
-	virtual void registerCallback(ChannelGroupRef group, LinkCallbackRef callback) {
+	virtual void registerCallback(ChannelGroupRef group, LinkCallbackWRef callback) {
 		registerCallback(Berkelium::impl::getInputLink(group), callback);
 	}
 
@@ -281,7 +284,14 @@ public:
 				}
 				LinkCallbackRef cb(data->cb.lock());
 				if(cb) {
-					cb->onLinkDataReady(ref->recv());
+					ssize_t size = ::read(data->fd, &data->buffer, BUFFER_SIZE);
+					if(size == -1) {
+						bk_error("read failed: %d", size);
+					} else {
+						// size can not be larger then BUFFER_SIZE,
+						// because of this size can be cast to 32 bit even on 64 bit systems
+						cb->onLinkDataReady(ref, (uint32_t)size, data->buffer);
+					}
 				} else {
 					bk_error("LinkGroup: no callback!");
 				}

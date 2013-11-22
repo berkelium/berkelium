@@ -36,9 +36,9 @@ public:
 
 	virtual void unregisterLink(Link* pipe) = 0;
 
-	virtual void registerCallback(ChannelGroupRef group, LinkCallbackRef callback) = 0;
+	virtual void registerCallback(ChannelGroupRef group, LinkCallbackWRef callback) = 0;
 
-	virtual void registerCallback(LinkRef pipe, LinkCallbackRef callback) = 0;
+	virtual void registerCallback(LinkRef pipe, LinkCallbackWRef callback) = 0;
 
 	virtual void update(int32_t timeout) = 0;
 
