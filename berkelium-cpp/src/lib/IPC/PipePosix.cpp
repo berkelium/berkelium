@@ -90,6 +90,9 @@ public:
 		Filesystem::removeFile(full);
 	}
 
+	virtual void waitForInit() {
+	}
+
 	virtual bool isOk() {
 		return fd != -1;
 	}
