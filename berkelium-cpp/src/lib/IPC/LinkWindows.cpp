@@ -84,6 +84,9 @@ public:
 
 	virtual ~LinkWindowsImpl() {
 		TRACE_OBJECT_DELETE("LinkWindowsImpl");
+		if (group) {
+			group->unregisterLink(this);
+		}
 		if (pipe != INVALID_HANDLE_VALUE) {
 			CloseHandle(pipe);
 		}
