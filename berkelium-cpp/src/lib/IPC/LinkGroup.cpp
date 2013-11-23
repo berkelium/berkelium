@@ -187,6 +187,7 @@ public:
 				continue;
 			}
 			if (data->pending) {
+				handles.push_back(data->overlapped.hEvent);
 				continue;
 			}
 
@@ -197,19 +198,24 @@ public:
 
 			BOOL success = ReadFile(data->fd, &data->buffer, BUFFER_SIZE, &data->size, &data->overlapped);
 			if (success && data->size != 0) {
-			   data->pending = false;
-			   readyData = data;
-			   continue;
+				data->pending = false;
+				readyData = data;
+				continue;
 			}
 
 			if (!success && (GetLastError() == ERROR_IO_PENDING)) {
-			   data->pending = true;
-			   handles.push_back(data->overlapped.hEvent);
-			   continue;
+				data->pending = true;
+				handles.push_back(data->overlapped.hEvent);
+				continue;
 			}
 		}
 
 		if (readyData == NULL) {
+			if (handles.empty()) {
+				bk_error("LinkGroup: cannot wait for events, list is empty...");
+				return;
+			}
+
 			if(trace) {
 				bk_error("LinkGroup: waiting for %d events...", handles.size());
 			}
@@ -224,12 +230,12 @@ public:
 			readyData = *it;
 
 			if (!GetOverlappedResult(readyData->fd, &readyData->overlapped, &readyData->size, TRUE)) {
-				bk_error("LinkGRoup: overlapped error %d", GetLastError());
+				// TODO maybe handle Broken Pipe ?
 				return;
 			}
 			
 			ResetEvent(readyData->overlapped.hEvent);
-		    readyData->pending = false;
+			readyData->pending = false;
 		}
 
 		if (readyData->size == 0) {
