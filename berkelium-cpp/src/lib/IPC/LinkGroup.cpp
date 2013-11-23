@@ -123,9 +123,7 @@ public:
 		if(it != map.end()) {
 			LinkGroupData* data = it->second;
 #ifdef WINDOWS
-			if (data->pending) {
-				CancelIoEx(data->fd, &data->overlapped);
-			}
+			CancelIoEx(data->fd, &data->overlapped);
 			events.erase(data->overlapped.hEvent);
 			linkGroupDatas.erase(data);
 #endif
@@ -181,6 +179,8 @@ public:
 
 	void recv(int32_t timeout) {
 #ifdef WINDOWS
+		LinkGroupData* readyData = NULL;
+		std::vector<HANDLE> handles;
 		for(LinkMap::iterator it(map.begin()); it != map.end(); it++) {
 			LinkGroupData* data = it->second;
 			if (data->fd == INVALID_HANDLE_VALUE) {
@@ -189,57 +189,63 @@ public:
 			if (data->pending) {
 				continue;
 			}
-			ResetEvent(data->overlapped.hEvent);
-			if (!ReadFile(data->fd, &data->buffer, BUFFER_SIZE, NULL, &data->overlapped)) {
-				bk_error("LinkGroup: error while ReadFile %d", GetLastError());
-			}
 
-			data->pending = true;
 			if(trace) {
 				LinkRef ref(data->ref.lock());
-				bk_error("LinkGroup: reading %d", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
+				bk_error("LinkGroup: reading %d for %d - %d", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
+			}
+
+			BOOL success = ReadFile(data->fd, &data->buffer, BUFFER_SIZE, &data->size, &data->overlapped);
+			if (success && data->size != 0) {
+			   data->pending = false;
+			   readyData = data;
+			   continue;
+			}
+
+			if (!success && (GetLastError() == ERROR_IO_PENDING)) {
+			   data->pending = true;
+			   handles.push_back(data->overlapped.hEvent);
+			   continue;
 			}
 		}
+
+		if (readyData == NULL) {
+			if(trace) {
+				bk_error("LinkGroup: waiting for %d events...", handles.size());
+			}
+			DWORD result = WaitForMultipleObjects(handles.size(), &handles[0], FALSE, timeout == -1 ? INFINITE : timeout);
+			int linkIndex = result - WAIT_OBJECT_0;
+			if (linkIndex < 0 || linkIndex > (events.size() - 1)) {
+				return;
+			}
 		
-		int i = 0;
-		HANDLE* handles = new HANDLE[events.size()];
-		for (std::set<HANDLE>::iterator it(events.begin()); it != events.end(); it++) {
-			handles[i++] = *it;
+			std::set<LinkGroupData*>::iterator it = linkGroupDatas.begin();
+			std::advance(it, linkIndex);
+			readyData = *it;
+
+			if (!GetOverlappedResult(readyData->fd, &readyData->overlapped, &readyData->size, TRUE)) {
+				bk_error("LinkGRoup: overlapped error %d", GetLastError());
+				return;
+			}
+			
+			ResetEvent(readyData->overlapped.hEvent);
+		    readyData->pending = false;
 		}
 
-		if(trace) {
-			bk_error("LinkGroup: waiting for %d events...", events.size());
-		}
-		DWORD result = WaitForMultipleObjects(events.size(), handles, FALSE, timeout == -1 ? INFINITE : timeout);
-		int linkIndex = result - WAIT_OBJECT_0;
-		if (linkIndex < 0 || linkIndex > (events.size() - 1)) {
+		if (readyData->size == 0) {
+			bk_error("LinkGroup: no data ready!");
 			return;
 		}
 
 		lastRecv = Util::currentTimeMillis();
-		
-		std::set<LinkGroupData*>::iterator it = linkGroupDatas.begin();
-		std::advance(it, linkIndex);
-		LinkGroupData* data = *it;
-		data->pending = false;
-		
-		bk_error("lastRecv %d | %d", data->size, GetLastError());
-		if (!GetOverlappedResult(data->fd, &data->overlapped, &data->size, TRUE)) {
-			bk_error("OverlappedResult %d", GetLastError());
-			return;
-		}
-		bk_error("lastRecv %d | %d", data->size, GetLastError());
-		if (data->size == 0) {
-			return;
-		}
 
-		LinkRef ref(data->ref.lock());
+		LinkRef ref(readyData->ref.lock());
 		if(trace) {
-			bk_error("LinkGroup: selected %s %d %s", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
+			bk_error("LinkGroup: selected %s %d %s", ref->getAlias().c_str(), readyData->fd, ref->getName().c_str());
 		}
-		LinkCallbackRef cb(data->cb.lock());
+		LinkCallbackRef cb(readyData->cb.lock());
 		if(cb) {
-			cb->onLinkDataReady(ref, (uint32_t)data->size, data->buffer);
+			cb->onLinkDataReady(ref, (uint32_t)readyData->size, readyData->buffer);
 		} else {
 			bk_error("LinkGroup: no callback!");
 		}

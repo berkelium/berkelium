@@ -84,6 +84,8 @@ TEST_F(ChannelTest, simple) {
     ChannelGroupRef clientGroup(ChannelGroup::createGroup(logger, dir, name, "test client", pipeGroup, false));
     ASSERT_NOT_NULL(clientGroup);
 
+    serverGroup->waitForInit();
+    
     int32_t i = 1;
     for(int32_t i = 0; i < 1024; i++) {
         ChannelRef server = clientGroup->createChannel("test");
