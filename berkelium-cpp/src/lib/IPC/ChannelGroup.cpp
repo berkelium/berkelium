@@ -43,18 +43,18 @@ public:
 			return MessageRef();
 		}
 		uint32_t msg_length = *buffer;
-		if(msg_length > size) {
+		uint32_t packet_length = msg_length + sizeof(int32_t);
+		if(packet_length > size) {
 			return MessageRef();
 		}
 		MessageRef msg(Message::create(logger));
 		msg->setup(msg_length - sizeof(int32_t));
 		::memcpy(msg->data(), buffer + sizeof(int32_t), msg_length);
-
-		if(msg_length < size) {
-			uint32_t diff = size - msg_length;
-			uint8_t* tmp = (uint8_t*)::malloc(diff);
-			::memcpy(tmp, buffer + diff, diff);
-			this->size = diff;
+		
+		this->size = size - packet_length;
+		if(size > 0) {
+			uint8_t* tmp = (uint8_t*)::malloc(this->size);
+			::memcpy(tmp, buffer + packet_length, this->size);
 			::free(buffer);
 			buffer = tmp;
 		}

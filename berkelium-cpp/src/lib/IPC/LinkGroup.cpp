@@ -44,11 +44,13 @@ struct LinkGroupData {
 	LinkWRef ref;
 	LinkCallbackWRef cb;
 	Berkelium::Ipc::LinkFdType fd;
-	int32_t size;
 	uint8_t buffer[BUFFER_SIZE];
 #ifdef WINDOWS
+	DWORD size;
 	bool pending;
 	OVERLAPPED overlapped;
+#elif LINUX
+	int32_t size;
 #endif
 };
 
@@ -187,11 +189,15 @@ public:
 			if (data->pending) {
 				continue;
 			}
-			ReadFile(data->fd, &data->size, 4, NULL, &data->overlapped);
+			ResetEvent(data->overlapped.hEvent);
+			if (!ReadFile(data->fd, &data->buffer, BUFFER_SIZE, NULL, &data->overlapped)) {
+				bk_error("LinkGroup: error while ReadFile %d", GetLastError());
+			}
+
 			data->pending = true;
 			if(trace) {
-		        LinkRef ref(data->ref.lock());
-				bk_error("LinkGroup: waiting for %d", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
+				LinkRef ref(data->ref.lock());
+				bk_error("LinkGroup: reading %d", ref->getAlias().c_str(), data->fd, ref->getName().c_str());
 			}
 		}
 		
@@ -216,14 +222,14 @@ public:
 		std::advance(it, linkIndex);
 		LinkGroupData* data = *it;
 		data->pending = false;
-		ResetEvent(data->overlapped.hEvent);
-
-		DWORD transferred = 0;
-		if (!GetOverlappedResult(data->fd, &data->overlapped, &transferred, TRUE)) {
-			printf("OverlappedResult %d\n", GetLastError());
+		
+		bk_error("lastRecv %d | %d", data->size, GetLastError());
+		if (!GetOverlappedResult(data->fd, &data->overlapped, &data->size, TRUE)) {
+			bk_error("OverlappedResult %d", GetLastError());
 			return;
 		}
-		if (transferred == 0) {
+		bk_error("lastRecv %d | %d", data->size, GetLastError());
+		if (data->size == 0) {
 			return;
 		}
 
@@ -233,7 +239,7 @@ public:
 		}
 		LinkCallbackRef cb(data->cb.lock());
 		if(cb) {
-			cb->onLinkDataReady(ref->recv(data->size));
+			cb->onLinkDataReady(ref, (uint32_t)data->size, data->buffer);
 		} else {
 			bk_error("LinkGroup: no callback!");
 		}
