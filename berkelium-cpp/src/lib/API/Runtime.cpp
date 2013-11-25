@@ -147,10 +147,12 @@ public:
 	virtual HostExecutableRef forSystemInstalled() {
 		std::string path;
 
-#ifdef WIN32
-		path = Berkelium::Util::getEnv("PROGRAMFILES(X86)", "C:\\Program Files") + "\\Google\\Chrome\\Application\\chrome.exe";
-#elif defined(LINUX)
 		if(!defaultExecutable.empty() && checkPath(defaultExecutable.c_str(), path)) {
+#ifdef WIN32
+		} else {
+			path = Berkelium::Util::getEnv("PROGRAMFILES(X86)", "C:\\Program Files") + "\\Google\\Chrome\\Application\\chrome.exe";
+		}
+#elif defined(LINUX)
 		} else if(checkPath("berkelium", path)) {
 		} else if(checkPath("../berkelium", path)) {
 		} else if(checkPath("../berkelium-host/berkelium", path)) {
