@@ -1,8 +1,8 @@
 Index: src/chrome/browser/ui/gtk/browser_window_gtk.cc
 ===================================================================
---- src/chrome/browser/ui/gtk/browser_window_gtk.cc	(revision 202711)
+--- src/chrome/browser/ui/gtk/browser_window_gtk.cc	(revision 235101)
 +++ src/chrome/browser/ui/gtk/browser_window_gtk.cc	(working copy)
-@@ -2376,7 +2376,11 @@
+@@ -2416,7 +2416,11 @@
  }
  
  // static
@@ -16,9 +16,9 @@ Index: src/chrome/browser/ui/gtk/browser_window_gtk.cc
    return browser_window_gtk;
 Index: src/chrome/app/chrome_main.cc
 ===================================================================
---- src/chrome/app/chrome_main.cc	(revision 202711)
+--- src/chrome/app/chrome_main.cc	(revision 235101)
 +++ src/chrome/app/chrome_main.cc	(working copy)
-@@ -32,3 +32,13 @@
+@@ -39,3 +39,13 @@
    return content::ContentMain(argc, argv, &chrome_main_delegate);
  #endif
  }
