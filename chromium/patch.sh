@@ -1,5 +1,5 @@
 #!/bin/bash
-FILES="src/chrome/browser/ui/gtk/browser_window_gtk.cc src/chrome/app/chrome_main.cc"
+FILES="src/chrome/browser/ui/gtk/browser_window_gtk.cc src/chrome/app/chrome_main.cc src/chrome/chrome_exe.gypi"
 if [ "$1" = "apply" ]; then
 	patch -p0 < chromium-berkelium.patch
 elif [ "$1" = "revert" ]; then

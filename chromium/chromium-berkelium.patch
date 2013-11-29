@@ -32,3 +32,17 @@ Index: src/chrome/app/chrome_main.cc
 +  return BerkeliumCreateBrowserWindow(browser);
 +}
 +#endif // berkelium patch: end
+Index: src/chrome/chrome_exe.gypi
+===================================================================
+--- src/chrome/chrome_exe.gypi	(revision 235101)
++++ src/chrome/chrome_exe.gypi	(working copy)
+@@ -30,6 +30,9 @@
+         'app/metro_driver_win.h',
+         '../content/app/startup_helper_win.cc',
+       ],
++      'dependencies': [
++            '../skia/skia.gyp:skia',
++      ],
+       'mac_bundle_resources': [
+         'app/app-Info.plist',
+       ],
