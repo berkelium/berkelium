@@ -4,6 +4,7 @@
 
 #include "BerkeliumHost.hpp"
 
+#include "chrome/common/instant_types.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"

@@ -19,7 +19,7 @@
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_view_host.h"
-#include "base/message_loop.h"
+#include "base/message_loop/message_loop.h"
 
 namespace Berkelium {
 

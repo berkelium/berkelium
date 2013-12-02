@@ -8,14 +8,14 @@
 #include "MemoryRenderViewHostFactory.hpp"
 
 #include "base/command_line.h"
-#include "base/utf_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "content/common/view_messages.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 
 #include <Berkelium/IPC/Channel.hpp>
 #include <Berkelium/IPC/Message.hpp>
 
-#include "googleurl/src/gurl.h"
+#include "gurl.h"
 
 #include <stdio.h>
 

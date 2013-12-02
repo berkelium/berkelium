@@ -34,8 +34,8 @@ public:
 		content::RenderViewHostDelegate* delegate,
 		content::RenderWidgetHostDelegate* widget_delegate,
 		int routing_id,
-		bool swapped_out,
-		content::SessionStorageNamespace* session_storage_namespace);
+		int main_frame_routing_id,
+		bool swapped_out);
 
 private:
 	DISALLOW_COPY_AND_ASSIGN(MemoryRenderViewHostFactory);
