@@ -101,9 +101,6 @@ public:
 	virtual void ShowFirstRunBubble() {
 	}
 
-	virtual void SetInstantSuggestion(const InstantSuggestion& suggestion) {
-	}
-
 	virtual string16 GetInputString() const {
 		return string16();
 	}
@@ -135,6 +132,9 @@ public:
 	}
 
 	virtual void UpdateOpenPDFInReaderPrompt() {
+	}
+
+	virtual void UpdateGeneratedCreditCardView() {
 	}
 
 	virtual void SaveStateToContents(content::WebContents* contents) {
@@ -177,10 +177,6 @@ public:
 		delete locationBar;
 	}
 
-	virtual void Close() {
-		browser->tab_strip_model()->CloseAllTabs();
-	}
-
 	virtual void TabInsertedAt(content::WebContents* contents, int index, bool foreground) {
 		fprintf(stderr, "TabInsertedAt %d fg:%d\n", index, foreground);
 	}
@@ -198,12 +194,14 @@ private:
 	}
 */
 
+	// ui::BaseWindow
 	virtual bool IsActive() const {X;return true;}
 	virtual bool IsMaximized() const {X;return false;}
 	virtual bool IsMinimized() const {X;return false;}
 	virtual bool IsFullscreen() const {X;return false;}
 	virtual gfx::NativeWindow GetNativeWindow() {X;fprintf(stderr, "GetNativeBrowser\n");return NULL;}
 	virtual gfx::Rect GetRestoredBounds() const {X;return gfx::Rect(640, 480);}
+	virtual ui::WindowShowState GetRestoredState() const {X;return ui::WindowShowState::SHOW_STATE_DEFAULT;}
 	virtual gfx::Rect GetBounds() const {X;return gfx::Rect(640, 480);}
 	virtual void Show() {X;
 	BrowserList::SetLastActive(browser);
@@ -212,6 +210,9 @@ private:
 	}
 	virtual void Hide() {X;}
 	virtual void ShowInactive() {X;}
+	virtual void Close() {
+		browser->tab_strip_model()->CloseAllTabs();
+	}
 	virtual void Activate() {X;}
 	virtual void Deactivate() {X;}
 	virtual void Maximize() {X;}
@@ -220,6 +221,8 @@ private:
 	virtual void SetBounds(const gfx::Rect&) {X;}
 	virtual void FlashFrame(bool) {X;}
 	virtual bool IsAlwaysOnTop() const {X;return false;}
+
+	// BrowserWindow
 	virtual BrowserWindowTesting* GetBrowserWindowTesting() {X;return NULL;}
 	virtual StatusBubble* GetStatusBubble() {X;return NULL;}
 	virtual void UpdateTitleBar() {X;}
@@ -238,10 +241,11 @@ private:
 	}
 	virtual void SetFocusToLocationBar(bool) {X;}
 	virtual void UpdateReloadStopState(bool, bool) {X;}
-	virtual void UpdateToolbar(content::WebContents*, bool) {X;}
+	virtual void UpdateToolbar(content::WebContents*) {X;}
 	virtual void FocusToolbar() {X;}
 	virtual void FocusAppMenu() {X;}
 	virtual void FocusBookmarksToolbar() {X;}
+	virtual void FocusInfobars() {X;}
 	virtual void RotatePaneFocus(bool) {X;}
 	virtual bool IsBookmarkBarVisible() const {X;return false;}
 	virtual bool IsBookmarkBarAnimating() const {X;return false;}
@@ -252,19 +256,15 @@ private:
 	virtual void ConfirmAddSearchProvider(TemplateURL*, Profile*) {X;}
 	virtual void ToggleBookmarkBar() {X;}
 	virtual void ShowUpdateChromeDialog() {X;}
-	virtual void ShowTaskManager() {X;}
-	virtual void ShowBackgroundPages() {X;}
 	virtual void ShowBookmarkBubble(const GURL&, bool) {X;}
-	virtual void ShowChromeToMobileBubble() {X;}
+	virtual void ShowOneClickSigninBubble(BrowserWindow::OneClickSigninBubbleType type, const string16& email, const string16& error_message, const BrowserWindow::StartSyncCallback& start_sync_callback) {X;}
 	virtual bool IsDownloadShelfVisible() const {X;return false;}
 	virtual DownloadShelf* GetDownloadShelf() {X;return NULL;}
-	virtual void ConfirmBrowserCloseWithPendingDownloads() {X;}
+	virtual void ConfirmBrowserCloseWithPendingDownloads(int download_count, Browser::DownloadClosePreventionType dialog_type, bool app_modal, const base::Callback<void(bool)>& callback) {X;}
 	virtual void UserChangedTheme() {X;}
 	virtual int GetExtraRenderViewHeight() const {X;return 0;}
 	virtual void WebContentsFocused(content::WebContents*) {X;}
-	virtual void ShowPageInfo(content::WebContents*, const GURL&, const content::SSLStatus&, bool) {X;}
-	virtual void ShowPasswordGenerationBubble(const gfx::Rect&, const content::PasswordForm&, autofill::PasswordGenerator*) {X;}
-	virtual void ShowWebsiteSettings(Profile*, content::WebContents*, const GURL&, const content::SSLStatus&, bool) {X;}
+	virtual void ShowWebsiteSettings(Profile*, content::WebContents*, const GURL&, const content::SSLStatus&) {X;}
 	virtual void ShowAppMenu() {X;}
 	virtual bool PreHandleKeyboardEvent(const content::NativeWebKeyboardEvent&, bool*) {X;return false;}
 	virtual void HandleKeyboardEvent(const content::NativeWebKeyboardEvent&) {X;}
@@ -272,13 +272,15 @@ private:
 	virtual void Cut() {X;}
 	virtual void Copy() {X;}
 	virtual void Paste() {X;}
-	virtual gfx::Rect GetInstantBounds() {X;return gfx::Rect(640, 480);}
-	virtual bool IsInstantTabShowing() {X;return false;}
+
 	virtual WindowOpenDisposition GetDispositionForPopupBounds(const gfx::Rect&) {X;return WindowOpenDisposition();}
 	virtual FindBar* CreateFindBar() {X;return NULL;}
+	virtual web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost() {X;return NULL;}
 	virtual bool GetConstrainedWindowTopY(int*) {X;return false;}
 	virtual void ShowAvatarBubble(content::WebContents*, const gfx::Rect&) {X;}
 	virtual void ShowAvatarBubbleFromAvatarButton() {X;}
+	virtual void ShowPasswordGenerationBubble(const gfx::Rect&, const autofill::PasswordForm&, autofill::PasswordGenerator*) {X;}
+	virtual int GetRenderViewHeightInsetWithDetachedBookmarkBar() {X;return 0;}
 	virtual void DestroyBrowser() {X;}
 };
 
