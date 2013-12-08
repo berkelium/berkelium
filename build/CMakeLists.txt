@@ -35,7 +35,8 @@ IF(CMAKE_COMPILER_IS_GNUCXX)
 	IF(GCC_VERSION VERSION_LESS 4.7)
 		SET(ENABLE_CXX11 "-std=c++0x")
 	ENDIF()
-	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ENABLE_CXX11} -fPIC")
+	SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${ENABLE_CXX11} -fPIC -fno-threadsafe-statics -fstack-protector --param=ssp-buffer-size=4 -fno-strict-aliasing -fvisibility=hidden -fno-rtti -fvisibility-inlines-hidden")
+
 	ADD_DEFINITIONS(-D__GXX_EXPERIMENTAL_CXX0X__)
 ENDIF()
 

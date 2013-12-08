@@ -48,6 +48,7 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 	std::vector<std::string> args;
 	args.push_back(enclose(executable->getPath()));
 	args.push_back("--berkelium=" + process->getChannelGroup()->getName());
+	args.push_back("--no-sandbox"); // TODO check why this is needed...
 	args.push_back("--no-first-run");
 	//args.push_back("--crash-test");
 	args.push_back("--user-data-dir=" + enclose(profile->getProfilePath()));

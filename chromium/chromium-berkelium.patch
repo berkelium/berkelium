@@ -32,49 +32,25 @@ Index: src/chrome/app/chrome_main.cc
 +  return BerkeliumCreateBrowserWindow(browser);
 +}
 +#endif // berkelium patch: end
+Index: src/chrome/chrome.gyp
+===================================================================
+--- src/chrome/chrome.gyp	(revision 235101)
++++ src/chrome/chrome.gyp	(working copy)
+@@ -112,6 +112,9 @@
+   'conditions': [
+     ['OS!="ios"', {
+       'includes': [
++# BERKELIUM PATCH: added
++        '../../berkelium.gypi',
++# BERKELIUM PATCH: end
+         'app/policy/policy_templates.gypi',
+         'chrome_browser_extensions.gypi',
+         'chrome_dll.gypi',
 Index: src/chrome/chrome_exe.gypi
 ===================================================================
 --- src/chrome/chrome_exe.gypi	(revision 235101)
 +++ src/chrome/chrome_exe.gypi	(working copy)
-@@ -5,6 +5,37 @@
- {
-   'targets': [
-     {
-+# BERKELIUM PATCH: added
-+      # this is the target used to build berkelium host
-+      'target_name': 'berkelium',
-+      'type': 'executable',
-+      'sources': [
-+        '../../../berkelium-host/src/berkelium/BerkeliumChromiumDelegate.cpp',
-+        '../../../berkelium-host/src/berkelium/BerkeliumMain.cpp',
-+        '../../../berkelium-host/src/berkelium/BrowserWindow.cpp',
-+        '../../../berkelium-host/src/berkelium/MemoryRenderViewHostFactory.cpp',
-+        '../../../berkelium-host/src/berkelium/MemoryRenderViewHostFactory.hpp',
-+        '../../../berkelium-host/src/berkelium/Rect.hpp',
-+      ],
-+      'cflags': [
-+        '-std=c++0x',
-+      ],
-+      'defines': [
-+        'BERKELIUM_CPP_IMPL',
-+      ],
-+      'include_dirs': [
-+        '../../../berkelium-cpp/src/host/shared',
-+        '../../../berkelium-cpp/include',
-+        '../url',
-+      ],
-+      'dependencies': [
-+        '../skia/skia.gyp:skia',
-+        #'../url/url.gyp:url_lib',
-+        'chrome',
-+      ],
-+    },
-+    {
-+# BERKELIUM PATCH: end
-       'target_name': 'chrome',
-       'type': 'executable',
-       'mac_bundle': 1,
-@@ -30,6 +61,12 @@
+@@ -30,6 +30,12 @@
          'app/metro_driver_win.h',
          '../content/app/startup_helper_win.cc',
        ],
