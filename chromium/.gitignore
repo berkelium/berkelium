@@ -4,3 +4,4 @@ build
 commit-queue/
 depot_tools
 src
+win_toolchain
