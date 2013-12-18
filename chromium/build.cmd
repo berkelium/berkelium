@@ -51,8 +51,11 @@ echo 1) build debug berkelium
 echo 2) build release berklium
 echo 3) build debug chromium
 echo 4) build release chromium
-set ask=Select (0-4
+echo.
+echo q) Quit
+set ask=Select (0-4, q
 if exist win_toolchain goto skip_download
+echo.
 echo d) Download Windows Toolchain (recommended!)
 set ask=%ask%, d
 :skip_download
@@ -60,37 +63,51 @@ set ask=%ask%):
 echo.
 set /p action="%ask%" %=%
 
+:repeat_action
+
 if "%action%"=="0" (
 	rem set GYP_DEFINES=component=shared_library
 	set GYP_GENERATORS=ninja,msvs
 	cd src
 	..\depot_tools\python.bat build/gyp_chromium -D component=shared_library
 	cd ..
-	goto end
 ) else if "%action%"=="1" (
 	cd src
 	..\depot_tools\ninja -C out/Debug berkelium
 	cd ..
-	goto end
 ) else if "%action%"=="2" (
 	cd src
 	..\depot_tools\ninja -C out/Release berkelium
 	cd ..
-	goto end
 ) else if "%action%"=="3" (
 	cd src
-	..\depot_tools\ninja -C out/Debug chromium
+	..\depot_tools\ninja -C out/Debug chrome
 	cd ..
-	goto end
 ) else if "%action%"=="4" (
 	cd src
-	..\depot_tools\ninja -C out/Release chromium
+	..\depot_tools\ninja -C out/Release chrome
 	cd ..
-	goto end
+) else if "%action%"=="q" (
+	goto exit
 ) else if "%action%"=="d" (
 	if not exist win_toolchain goto download_toolchain
+	goto error
+) else (
+	goto error
 )
 
+:repeat_loop
+set /p repeat="Repeat? [y/n] " %=%
+
+if "%repeat%"=="y" (
+	goto repeat_action
+) else if "%repeat%"=="n" (
+	goto start
+) else (
+	goto repeat_loop
+)
+
+:error
 echo Error.. Please Select %ask%
 goto start
 
@@ -98,7 +115,9 @@ goto start
 rem http://www.chromium.org/developers/how-tos/build-instructions-windows#TOC-Automatic-simplified-toolchain-setup
 call python src\tools\win\toolchain\toolchain.py
 
-goto start
+goto load_toolchain
 
 :end
 pause
+
+:exit
