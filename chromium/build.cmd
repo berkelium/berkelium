@@ -52,8 +52,9 @@ echo 2) build release berklium
 echo 3) build debug chromium
 echo 4) build release chromium
 echo.
+echo p) Patch Chromium Source
 echo q) Quit
-set ask=Select (0-4, q
+set ask=Select (0-4, p, q
 if exist win_toolchain goto skip_download
 echo.
 echo d) Download Windows Toolchain (recommended!)
@@ -69,7 +70,7 @@ if "%action%"=="0" (
 	rem set GYP_DEFINES=component=shared_library
 	set GYP_GENERATORS=ninja,msvs
 	cd src
-	..\depot_tools\python.bat build/gyp_chromium -D component=shared_library
+	call ..\depot_tools\python.bat build/gyp_chromium -D component=shared_library
 	cd ..
 ) else if "%action%"=="1" (
 	cd src
@@ -87,6 +88,8 @@ if "%action%"=="0" (
 	cd src
 	..\depot_tools\ninja -C out/Release chrome
 	cd ..
+) else if "%action%"=="p" (
+	goto patch
 ) else if "%action%"=="q" (
 	goto exit
 ) else if "%action%"=="d" (
@@ -116,6 +119,67 @@ rem http://www.chromium.org/developers/how-tos/build-instructions-windows#TOC-Au
 call python src\tools\win\toolchain\toolchain.py
 
 goto load_toolchain
+
+:patch
+
+echo.
+echo.
+echo Chromium Berkelium Patch
+echo ========================
+echo.
+echo a) apply patch to chromium sources
+echo r) remove (revert) patch from chromium sources
+echo c) create new patch from chromium sources
+echo s) show current patch
+echo.
+echo q) back to main menu
+echo.
+
+set /p action="Select (a, r, c, s, q): " %=%
+
+if "%action%"=="c" (
+	call goto patch_create
+) else if "%action%"=="a" (
+	echo TODO...
+	call depot_tools\python.bat depot_tools\patch.py -p0 < chromium-berkelium.patch
+) else if "%action%"=="r" (
+	echo TODO...
+	call depot_tools\python.bat depot_tools\patch.py -R -p0 < chromium-berkelium.patch
+) else if "%action%"=="s" (
+	goto patch_show
+) else if "%action%"=="q" (
+	goto start
+) else (
+	goto patch
+)
+
+goto patch
+
+:patch_create
+
+rem join all lines into one line
+(for /f %%f in (patchfiles.txt) do echo | set /p=%%f ) > tmp.txt
+rem read into %files%
+set /p files=< tmp.txt
+del tmp.txt
+call svn diff %files% > tmp.txt
+
+rem evil hack to normalise line endings...
+del chromium-berkelium.patch
+for /f "delims=" %%l in (tmp.txt) do (
+	echo.%%l>> chromium-berkelium.patch
+)
+del tmp.txt
+
+goto patch
+
+:patch_show
+
+for /f %%f in (patchfiles.txt) do (
+	call svn diff %%f
+) | more
+
+goto patch
 
 :end
 pause
