@@ -14,6 +14,22 @@ Index: src/chrome/browser/ui/gtk/browser_window_gtk.cc
    BrowserWindowGtk* browser_window_gtk = new BrowserWindowGtk(browser);
    browser_window_gtk->Init();
    return browser_window_gtk;
+Index: src/chrome/browser/ui/views/frame/browser_view.cc
+===================================================================
+--- src/chrome/browser/ui/views/frame/browser_view.cc	(revision 235101)
++++ src/chrome/browser/ui/views/frame/browser_view.cc	(working copy)
+@@ -2522,7 +2522,11 @@
+ }
+ 
+ // static
++#if 0 // berkelium patch: remove
+ BrowserWindow* BrowserWindow::CreateBrowserWindow(Browser* browser) {
++#else // berkelium patch: added
++BrowserWindow* BerkeliumCreateBrowserWindow(Browser* browser) {
++#endif // berkelium patch: end
+   // Create the view and the frame. The frame will attach itself via the view
+   // so we don't need to do anything with the pointer.
+   BrowserView* view = new BrowserView();
 Index: src/chrome/app/chrome_main.cc
 ===================================================================
 --- src/chrome/app/chrome_main.cc	(revision 235101)
