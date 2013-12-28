@@ -201,7 +201,7 @@ private:
 	virtual bool IsFullscreen() const {X;return false;}
 	virtual gfx::NativeWindow GetNativeWindow() {X;fprintf(stderr, "GetNativeBrowser\n");return NULL;}
 	virtual gfx::Rect GetRestoredBounds() const {X;return gfx::Rect(640, 480);}
-	virtual ui::WindowShowState GetRestoredState() const {X;return ui::WindowShowState::SHOW_STATE_DEFAULT;}
+	virtual ui::WindowShowState GetRestoredState() const {X;return ui::SHOW_STATE_DEFAULT;}
 	virtual gfx::Rect GetBounds() const {X;return gfx::Rect(640, 480);}
 	virtual void Show() {X;
 	BrowserList::SetLastActive(browser);
@@ -236,6 +236,12 @@ private:
 	virtual void UpdateFullscreenExitBubbleContent(const GURL&, FullscreenExitBubbleType) {X;}
 	virtual bool ShouldHideUIForFullscreen() const {X;return true;}
 	virtual bool IsFullscreenBubbleVisible() const {X;return false;}
+
+#if defined(OS_WIN)
+	virtual void SetMetroSnapMode(bool enable) {X;}
+	virtual bool IsInMetroSnapMode() const {X;return false;}
+#endif
+
 	virtual LocationBar* GetLocationBar() const {
 		return locationBar;
 	}

@@ -103,7 +103,7 @@ void* BerkeliumHostDelegate::createWindow(bool incognito)
 	} else {
 		profile = any->profile()->GetOriginalProfile();
 	}
-	Browser* browser = new Browser(Browser::CreateParams(Browser::TYPE_TABBED, profile, chrome::HostDesktopType::HOST_DESKTOP_TYPE_FIRST));
+	Browser* browser = new Browser(Browser::CreateParams(Browser::TYPE_TABBED, profile, chrome::HOST_DESKTOP_TYPE_FIRST));
 	browser->window()->Show();
 	fprintf(stderr, "window created!\n");
 	return browser;

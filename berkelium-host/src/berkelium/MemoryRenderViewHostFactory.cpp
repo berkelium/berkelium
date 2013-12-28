@@ -19,6 +19,10 @@
 
 #include <stdio.h>
 
+#if defined(OS_WIN)
+#pragma warning(disable : 4250)
+#endif
+
 namespace Berkelium {
 
 using Ipc::Channel;

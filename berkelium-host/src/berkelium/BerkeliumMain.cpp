@@ -89,8 +89,10 @@ int ChromeMain(int argc, const char** argv) {
 
 namespace {
 
+#if 0 // BERKELIUM PATCH: removed
 base::LazyInstance<chrome::ChromeBreakpadClient>::Leaky
     g_chrome_breakpad_client = LAZY_INSTANCE_INITIALIZER;
+#endif // BERKELIUM PATCH: end
 
 int RunChrome(HINSTANCE instance) {
 #if 0 // BERKELIUM PATCH: removed
