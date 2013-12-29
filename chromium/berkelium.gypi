@@ -29,9 +29,9 @@
       '../berkelium-host/src/berkelium/MemoryRenderViewHostFactory.cpp',
       '../berkelium-host/src/berkelium/MemoryRenderViewHostFactory.hpp',
       '../berkelium-host/src/berkelium/Rect.hpp',
-    ],
-    'cflags': [
-      '-std=c++0x',
+      'src/chrome/app/chrome_dll_resource.h',
+      'src/chrome/app/chrome_main_delegate.cc',
+      'src/chrome/app/chrome_main_delegate.h',
     ],
     'defines': [
       'BERKELIUM_CPP_IMPL',
@@ -49,26 +49,43 @@
       '<@(chromium_child_dependencies)',
       '../content/content.gyp:content_app_both',
     ],
+    'msvs_settings': {
+      'VCLinkerTool': {
+        'SubSystem': '2',         # Set /SUBSYSTEM:WINDOWS
+        'AdditionalLibraryDirectories': [
+		  '<(DEPTH)/../../build/out/Debug',
+		],
+        'AdditionalDependencies': [
+		  'berkelium-cpp.lib',
+		  'host-shared.lib',
+		],
+      },
+    },
     'conditions': [
       ['OS=="linux"', {
         'dependencies': [
           '../build/linux/system.gyp:gtk',
         ],
+        'cflags': [
+          '-std=c++0x',
+        ],
         'sources': [
           'src/chrome/app/chrome_exe_main_gtk.cc',
-          'src/chrome/app/chrome_dll_resource.h',
-          'src/chrome/app/chrome_main_delegate.cc',
-          'src/chrome/app/chrome_main_delegate.h',
         ],
       }, {
       }],
-      ['linux_use_tcmalloc==1', {
+      ['OS=="linux" and linux_use_tcmalloc==1', {
         'dependencies': [
           '<(allocator_target)',
         ],
       }, {
       }],
       ['OS=="win"', {
+        'sources': [
+          'src/content/app/startup_helper_win.cc',
+          'src/chrome/app/chrome_dll.rc',
+          '<(SHARED_INTERMEDIATE_DIR)/chrome_version/chrome_exe_version.rc',
+        ],
         'dependencies': [
           'chrome_dll',
           'chrome_nacl_win64',

@@ -40,75 +40,73 @@ if exist win_toolchain\env.bat (
 	call win_toolchain\env.bat
 )
 
+goto debug
+
+:release
+set build=Release
+set d= 
+set r=x
+goto start
+
+:debug
+set build=Debug
+set d=x
+set r= 
+goto start
+
 :start
 echo.
 echo.
 echo Berkelium Windows Build Script
 echo ==============================
 echo.
-echo 0) setup ninja and msvc project files
-echo 1) build debug berkelium
-echo 2) build release berklium
-echo 3) build debug chromium
-echo 4) build release chromium
+echo s) setup ninja and msvc project files
+echo.
+echo d) (%d%) Debug Version
+echo r) (%r%) Release Version
+echo.
+echo c) build chromium
+echo b) build berkelium
 echo.
 echo p) Patch Chromium Source
 echo q) Quit
-set ask=Select (0-4, p, q
 if exist win_toolchain goto skip_download
 echo.
-echo d) Download Windows Toolchain (recommended!)
-set ask=%ask%, d
+echo t) Download Windows Toolchain (recommended!)
 :skip_download
-set ask=%ask%): 
 echo.
-set /p action="%ask%" %=%
+set /p action="Select: " %=%
 
-:repeat_action
-
-if "%action%"=="0" (
+if "%action%"=="s" (
 	rem set GYP_DEFINES=component=shared_library
 	set GYP_GENERATORS=ninja,msvs
 	cd src
 	call ..\depot_tools\python.bat build/gyp_chromium -D component=shared_library
 	cd ..
-) else if "%action%"=="1" (
+) else if "%action%"=="d" (
+	goto debug
+) else if "%action%"=="r" (
+	goto release
+) else if "%action%"=="c" (
 	cd src
-	..\depot_tools\ninja -C out/Debug berkelium
+	..\depot_tools\ninja -C out/%build% chrome
 	cd ..
-) else if "%action%"=="2" (
+) else if "%action%"=="b" (
 	cd src
-	..\depot_tools\ninja -C out/Release berkelium
-	cd ..
-) else if "%action%"=="3" (
-	cd src
-	..\depot_tools\ninja -C out/Debug chrome
-	cd ..
-) else if "%action%"=="4" (
-	cd src
-	..\depot_tools\ninja -C out/Release chrome
+	..\depot_tools\ninja -C out/%build% berkelium
 	cd ..
 ) else if "%action%"=="p" (
 	goto patch
 ) else if "%action%"=="q" (
 	goto exit
-) else if "%action%"=="d" (
+) else if "%action%"=="t" (
 	if not exist win_toolchain goto download_toolchain
 	goto error
 ) else (
 	goto error
 )
 
-:repeat_loop
-set /p repeat="Repeat? [y/n] " %=%
-
-if "%repeat%"=="y" (
-	goto repeat_action
-) else if "%repeat%"=="n" (
-	goto start
-) else (
-	goto repeat_loop
-)
+goto start
 
 :error
 echo Error.. Please Select %ask%
