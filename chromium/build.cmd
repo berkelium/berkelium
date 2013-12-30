@@ -5,7 +5,7 @@ if not exist depot_tools (
 	echo.
 	echo https://src.chromium.org/svn/trunk/tools/depot_tools.zip
 	echo.
-	echo and extract is to directory %CD%
+	echo and extract it to directory %CD%
 	echo.
 	echo  *****************************************************************
 	echo  * IMPORTANT                                                     *
@@ -121,6 +121,17 @@ goto load_toolchain
 :patch
 
 echo.
+echo  *****************************************************************
+echo  * IMPORTANT                                                     *
+echo  * ---------                                                     *
+echo  * A Windows User Account Control (UAC) Dialog may be popup      *
+echo  * when patch.exe is called to apply or reverse                  *
+echo  * chromium-berkelium.patch to/from the chromium source.         *
+echo  *                                                               *
+echo  * You need to click "yes",                                      *
+echo  * otherwise the selected command can not be executed.           *
+echo  *****************************************************************
+echo.
 echo.
 echo Chromium Berkelium Patch
 echo ========================
@@ -138,11 +149,9 @@ set /p action="Select (a, r, c, s, q): " %=%
 if "%action%"=="c" (
 	call goto patch_create
 ) else if "%action%"=="a" (
-	echo TODO...
-	call depot_tools\python.bat depot_tools\patch.py -p0 < chromium-berkelium.patch
+	tools\win32patch\bin\patch -p0 -i chromium-berkelium.patch
 ) else if "%action%"=="r" (
-	echo TODO...
-	call depot_tools\python.bat depot_tools\patch.py -R -p0 < chromium-berkelium.patch
+	tools\win32patch\bin\patch -R -p0 -i chromium-berkelium.patch
 ) else if "%action%"=="s" (
 	goto patch_show
 ) else if "%action%"=="q" (
