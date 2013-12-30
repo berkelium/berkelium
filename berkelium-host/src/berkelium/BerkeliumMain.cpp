@@ -42,6 +42,9 @@ DLLEXPORT int __cdecl ChromeMain(HINSTANCE instance,
   base::win::SetShouldCrashOnProcessDetach(true);
   base::win::SetAbortBehaviorForCrashReporting();
   ChromeMainDelegate chrome_main_delegate;
+#if 1 // BERKELIUM PATCH: added
+  Berkelium::MemoryRenderViewHostFactory factory;
+#endif // BERKELIUM PATCH: end
   int rv = content::ContentMain(instance, sandbox_info, &chrome_main_delegate);
   base::win::SetShouldCrashOnProcessDetach(false);
   return rv;
