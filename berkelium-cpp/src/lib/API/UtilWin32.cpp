@@ -29,7 +29,7 @@ int64_t currentTimeMillis() {
 	int64_t ret = (int64_t)wt.dwHighDateTime << 32;
 	ret += wt.dwLowDateTime;
 	ret -= 116444736000000000;
-	ret /= 1000;
+	ret /= 10000;
 	return ret;
 }
 
