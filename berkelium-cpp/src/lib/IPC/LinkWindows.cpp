@@ -117,9 +117,10 @@ public:
 			return;
 		}
 
+		DWORD written = 0;
 		int32_t size = msg->data_length();
-		WriteFile(pipe, &size, 4, NULL, NULL);
-		WriteFile(pipe, msg->data(), size, NULL, NULL);
+		WriteFile(pipe, &size, 4, &written, NULL);
+		WriteFile(pipe, msg->data(), size, &written, NULL);
 		msg->reset();
 	}
 
