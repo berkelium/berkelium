@@ -100,7 +100,12 @@ public:
 			return false;
 		}
 		std::ofstream file(lock);
-		return !file.is_open();
+		if(file.is_open()) {
+			file.close();
+			Filesystem::removeFile(lock);
+			return false;
+		}
+		return true;
 #elif defined(LINUX)
 		std::string s;
 		if(!Filesystem::readSymlink(getLockFile(), s)) {
@@ -156,7 +161,7 @@ public:
 				Filesystem::createDirectories(path);
 			}
 #ifdef OS_WINDOWS
-			lockfile.open(getLockFile());
+			lockfile.rdbuf()->open(getLockFile(), std::ios_base::app, _SH_DENYWR);
 			this->locked = lockfile.is_open();
 #elif defined(LINUX)
 			std::ostringstream os;
