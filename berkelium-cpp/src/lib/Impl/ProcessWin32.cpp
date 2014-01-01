@@ -7,6 +7,7 @@
 #include <Berkelium/API/Util.hpp>
 #include <Berkelium/Impl/Impl.hpp>
 #include <Berkelium/Impl/Process.hpp>
+#include <Berkelium/IPC/LinkGroup.hpp>
 
 #include <Windows.h>
 
@@ -135,6 +136,8 @@ public:
 			bk_error("CreateProcess failed (%d).\n", GetLastError());
 			return false;
 		}
+
+		group->waitForInit();
 
 		started = true;
 		return true;

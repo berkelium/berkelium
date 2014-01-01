@@ -57,7 +57,6 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 	if(!process->start(args)) {
 		return InstanceRef();
 	}
-	process->waitForInit();
 
 	logger->debug() << "awaiting berkelium host process ipc startup message!" << std::endl;
 	Ipc::MessageRef msg;

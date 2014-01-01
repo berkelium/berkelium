@@ -40,8 +40,6 @@ public:
 
 	virtual ~Process() = 0;
 
-	virtual void waitForInit();
-
 	virtual bool isRunning() = 0;
 
 	virtual bool isCrashed() = 0;
