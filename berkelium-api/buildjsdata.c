@@ -50,7 +50,7 @@ int main(int argc, char** argv)
 		fprintf(stderr, "syntax: '%s' <output> <input...>\n", argv[0]);
 		exit(1);
 	}
-	out = fopen(argv[1], "w");
+	out = fopen(argv[1], "wb");
 	if(out == NULL) {
 		fprintf(stderr, "can not write into file '%s'!\n", argv[1]);
 		exit(1);
