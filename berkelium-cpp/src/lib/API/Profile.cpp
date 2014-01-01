@@ -100,7 +100,7 @@ public:
 			return false;
 		}
 		std::ofstream file(lock);
-		return file.is_open();
+		return !file.is_open();
 #elif defined(LINUX)
 		std::string s;
 		if(!Filesystem::readSymlink(getLockFile(), s)) {
@@ -233,7 +233,7 @@ void cleanup(RuntimeRef runtime, const std::string& tmp) {
 			// create temporary profile object
 			// this will remove old profile directory
 			// if they are not used
-			ProfileImpl(runtime, *it, "berkelium", true);
+			ProfileImpl(runtime, Filesystem::append(tmp, *it), "berkelium", true);
 		}
 	}
 }
