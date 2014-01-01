@@ -148,7 +148,7 @@ public:
 		}
 		// reverse channel id: see ChannelImpl::create
 		// -> id + 1
-		fprintf(stderr, "allocated channel id %d\n", id);
+		//fprintf(stderr, "allocated channel id %d\n", id);
 		return getChannel(id, alias);
 	}
 
