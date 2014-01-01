@@ -29,6 +29,12 @@
 #include <iostream>
 #include <fstream>
 
+#ifdef BERKELIUM_NO_LIBRARY_TIMEOUT
+#define USE_TIMEOUT 0
+#else
+#define USE_TIMEOUT 1
+#endif
+
 namespace Berkelium {
 
 using Ipc::CommandId;
@@ -164,7 +170,9 @@ bool BerkeliumHost::update(int32_t timeout) {
 		if(!timeout) {
 			timeout = true;
 			logger->error("berkelium library timeout!");
-			exit(1);
+			if(USE_TIMEOUT) {
+				exit(1);
+			}
 		}
 	}
 
