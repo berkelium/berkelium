@@ -39,6 +39,17 @@ bool checkPath(const char* p, std::string& path) {
 	return true;
 }
 
+bool checkPathWithParents(const char* p, std::string& path) {
+	std::string tmp(p);
+	for(int i = 0; i < 10; i++) {
+		if(checkPath(tmp.c_str(), path)) {
+			return true;
+		}
+		tmp = "../" + tmp;
+	}
+	return false;
+}
+
 } // namespace
 
 namespace impl {
@@ -149,21 +160,19 @@ public:
 
 		if(!defaultExecutable.empty() && checkPath(defaultExecutable.c_str(), path)) {
 #ifdef WIN32
-		} else {
-			path = Berkelium::Util::getEnv("PROGRAMFILES(X86)", "C:\\Program Files") + "\\Google\\Chrome\\Application\\chrome.exe";
-		}
-#elif defined(LINUX)
-		} else if(checkPath("berkelium", path)) {
-		} else if(checkPath("../berkelium", path)) {
-		} else if(checkPath("../berkelium-host/berkelium", path)) {
-		} else if(checkPath("../../berkelium-host/berkelium", path)) {
-		} else if(checkPath("../../berkelium", path)) {
+		} else if(checkPathWithParents("berkelium.exe", path)) {
+#ifdef _DEBUG
+		} else if(checkPathWithParents("chromium/src/out/Debug/berkelium.exe", path)) {
+#else
+		} else if(checkPathWithParents("chromium/src/out/Release/berkelium.exe", path)) {
+#endif
+#else
+		} else if(checkPathWithParents("berkelium", path)) {
+		} else if(checkPathWithParents("berkelium-host/berkelium", path)) {
+#endif
 		} else {
 			return HostExecutableRef();
 		}
-#else
-#error "please add path to chrome here"
-#endif
 
 		logger->debug() << "using berkelium host executable " << path << std::endl;
 
