@@ -139,8 +139,9 @@ public:
 			bk_error("not locked %p!\n", id);
 			return NULL;
 		}
+		void* ret = it->second;
 		lockedMap.erase(it);
-		return it->second;
+		return ret;
 	}
 
 	virtual std::string toString() {
