@@ -120,7 +120,9 @@ public:
 		DWORD written = 0;
 		int32_t size = msg->data_length();
 		WriteFile(pipe, &size, 4, &written, NULL);
+		// TODO check written == 4
 		WriteFile(pipe, msg->data(), size, &written, NULL);
+		// TODO check written == size
 		msg->reset();
 	}
 
@@ -138,7 +140,9 @@ public:
 	}
 
 	void recv(char* to, size_t size) {
-		ReadFile(pipe, to, size, NULL, NULL);
+		DWORD read = 0;
+		ReadFile(pipe, to, size, &read, NULL);
+		// TODO check read == size
 	}
 
 	virtual const std::string getName() {
