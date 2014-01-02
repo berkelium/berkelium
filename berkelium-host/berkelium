@@ -1,24 +1,25 @@
 #!/bin/sh
-dir=`dirname $(readlink -f "$0")`
+
+base=`dirname $(readlink -f "$0")`
+base=`readlink -f "$base/../chromium/src/out/"`
+
+[ -e ~/.berkeliumrc ] && . ~/.berkeliumrc
+
+if [ -z "$BERKELIUM_TYPE" ]; then
+	if [ -e $dir/Debug -a -e $dir/Release ]; then
+		echo "Error: berkelium debug and release found!"
+		echo "Add BERKELIUM_TYPE=Debug or BERKELIUM_TYPE=Release to ~/.berkeliumrc"
+		exit 1
+	fi
+fi
+
+base="$base/$BERKELIUM_TYPE"
+
+cd $base
 
 function update_ld_path()
 {
-if [ ! -e $dir/run ]; then
-	echo "Error: berkelium host not found!"
-	exit 1
-fi
-cd "$dir/run"
-base="$dir/../chromium/src/out"
-if [ -e "$base/Debug" ]; then
-	base="$base/Debug"
-elif [ -e "$base/Release" ]; then
-	base="$base/Release"
-else
-	echo "$base/Debug or $base/Release not found!"
-	exit 1
-fi
-
-export LD_LIBRARY_PATH="`readlink -f $base/lib.target`"
+export LD_LIBRARY_PATH="$base/lib.target"
 }
 
 function berkelium_default()
@@ -59,7 +60,6 @@ gdb --args $dir/../build/run/host-fake $*
 #  Pass --berkelium-debug=<home>/.berkelium-debug to berkelium-host
 #
 
-[ -e ~/.berkeliumrc ] && . ~/.berkeliumrc
 
 if [ "$1" = "debug" ]; then
 	berkelium_debug_gdb `cat ~/.berkelium-debug`

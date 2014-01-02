@@ -167,8 +167,8 @@ public:
 		} else if(checkPathWithParents("chromium/src/out/Release/berkelium.exe", path)) {
 #endif
 #else
-		} else if(checkPathWithParents("berkelium", path)) {
 		} else if(checkPathWithParents("berkelium-host/berkelium", path)) {
+		} else if(checkPathWithParents("berkelium", path)) {
 #endif
 		} else {
 			return HostExecutableRef();
