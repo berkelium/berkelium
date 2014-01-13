@@ -2,14 +2,19 @@ Index: src/chrome/browser/ui/gtk/browser_window_gtk.cc
 ===================================================================
 --- src/chrome/browser/ui/gtk/browser_window_gtk.cc	(revision 235101)
 +++ src/chrome/browser/ui/gtk/browser_window_gtk.cc	(working copy)
-@@ -2416,7 +2416,11 @@
+@@ -2415,8 +2415,16 @@
+           wm_type == ui::WM_XFWM4);
  }
  
++#if 1 // berkelium patch: added
++BrowserWindow* (*BerkeliumHook_CreateBrowserWindow)(Browser*) = NULL;
++#endif // berkelium patch: end
++
  // static
-+#if 0 // berkelium patch: remove
  BrowserWindow* BrowserWindow::CreateBrowserWindow(Browser* browser) {
-+#else // berkelium patch: added
-+BrowserWindow* BerkeliumCreateBrowserWindow(Browser* browser) {
++#if 1 // berkelium patch: added
++  if(BerkeliumHook_CreateBrowserWindow != NULL)
++    return BerkeliumHook_CreateBrowserWindow(browser);
 +#endif // berkelium patch: end
    BrowserWindowGtk* browser_window_gtk = new BrowserWindowGtk(browser);
    browser_window_gtk->Init();
@@ -18,36 +23,69 @@ Index: src/chrome/browser/ui/views/frame/browser_view.cc
 ===================================================================
 --- src/chrome/browser/ui/views/frame/browser_view.cc	(revision 235101)
 +++ src/chrome/browser/ui/views/frame/browser_view.cc	(working copy)
-@@ -2522,7 +2522,11 @@
+@@ -2521,8 +2521,16 @@
+ #endif
  }
  
++#if 1 // berkelium patch: added
++BrowserWindow* (*BerkeliumHook_CreateBrowserWindow)(Browser*) = NULL;
++#endif // berkelium patch: end
++
  // static
-+#if 0 // berkelium patch: remove
  BrowserWindow* BrowserWindow::CreateBrowserWindow(Browser* browser) {
-+#else // berkelium patch: added
-+BrowserWindow* BerkeliumCreateBrowserWindow(Browser* browser) {
++#if 1 // berkelium patch: added
++  if(BerkeliumHook_CreateBrowserWindow != NULL)
++    return BerkeliumHook_CreateBrowserWindow(browser);
 +#endif // berkelium patch: end
    // Create the view and the frame. The frame will attach itself via the view
    // so we don't need to do anything with the pointer.
    BrowserView* view = new BrowserView();
-Index: src/chrome/app/chrome_main.cc
+Index: src/content/browser/web_contents/web_contents_view_gtk.cc
 ===================================================================
---- src/chrome/app/chrome_main.cc	(revision 235101)
-+++ src/chrome/app/chrome_main.cc	(working copy)
-@@ -39,3 +39,13 @@
-   return content::ContentMain(argc, argv, &chrome_main_delegate);
- #endif
- }
-+
+--- src/content/browser/web_contents/web_contents_view_gtk.cc	(revision 235101)
++++ src/content/browser/web_contents/web_contents_view_gtk.cc	(working copy)
+@@ -76,10 +76,18 @@
+ 
+ }  // namespace
+ 
 +#if 1 // berkelium patch: added
-+#include "chrome/browser/ui/browser_window.h"
-+
-+BrowserWindow* BerkeliumCreateBrowserWindow(Browser*);
-+
-+BrowserWindow* BrowserWindow::CreateBrowserWindow(Browser* browser) {
-+  return BerkeliumCreateBrowserWindow(browser);
-+}
++CONTENT_EXPORT WebContentsViewPort* (*BerkeliumHook_CreateWebContentsView)(WebContentsImpl*, WebContentsViewDelegate*, RenderViewHostDelegateView**);
 +#endif // berkelium patch: end
++
+ WebContentsViewPort* CreateWebContentsView(
+     WebContentsImpl* web_contents,
+     WebContentsViewDelegate* delegate,
+     RenderViewHostDelegateView** render_view_host_delegate_view) {
++#if 1 // berkelium patch: added
++  if(BerkeliumHook_CreateWebContentsView != NULL)
++    return BerkeliumHook_CreateWebContentsView(web_contents, delegate, render_view_host_delegate_view);
++#endif // berkelium patch: end
+   WebContentsViewGtk* rv = new WebContentsViewGtk(web_contents, delegate);
+   *render_view_host_delegate_view = rv;
+   return rv;
+Index: src/content/browser/web_contents/web_contents_view_win.cc
+===================================================================
+--- src/content/browser/web_contents/web_contents_view_win.cc	(revision 235101)
++++ src/content/browser/web_contents/web_contents_view_win.cc	(working copy)
+@@ -20,10 +20,18 @@
+ #include "ui/gfx/screen.h"
+ 
+ namespace content {
++#if 1 // berkelium patch: added
++CONTENT_EXPORT WebContentsViewPort* (*BerkeliumHook_CreateWebContentsView)(WebContentsImpl*, WebContentsViewDelegate*, RenderViewHostDelegateView**);
++#endif // berkelium patch: end
++
+ WebContentsViewPort* CreateWebContentsView(
+     WebContentsImpl* web_contents,
+     WebContentsViewDelegate* delegate,
+     RenderViewHostDelegateView** render_view_host_delegate_view) {
++#if 1 // berkelium patch: added
++  if(BerkeliumHook_CreateWebContentsView != NULL)
++    return BerkeliumHook_CreateWebContentsView(web_contents, delegate, render_view_host_delegate_view);
++#endif // berkelium patch: end
+   WebContentsViewWin* rv = new WebContentsViewWin(web_contents, delegate);
+   *render_view_host_delegate_view = rv;
+   return rv;
 Index: src/chrome/chrome.gyp
 ===================================================================
 --- src/chrome/chrome.gyp	(revision 235101)
@@ -62,20 +100,3 @@ Index: src/chrome/chrome.gyp
          'app/policy/policy_templates.gypi',
          'chrome_browser_extensions.gypi',
          'chrome_dll.gypi',
-Index: src/chrome/chrome_exe.gypi
-===================================================================
---- src/chrome/chrome_exe.gypi	(revision 235101)
-+++ src/chrome/chrome_exe.gypi	(working copy)
-@@ -30,6 +30,12 @@
-         'app/metro_driver_win.h',
-         '../content/app/startup_helper_win.cc',
-       ],
-+# BERKELIUM PATCH: added
-+      # when berkelium patch is added, this dependency is needed to normaly link chromium
-+      'dependencies': [
-+        '../skia/skia.gyp:skia',
-+      ],
-+# BERKELIUM PATCH: end
-       'mac_bundle_resources': [
-         'app/app-Info.plist',
-       ],
