@@ -31,7 +31,7 @@
 			<type>21</type>
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-true-.*\.(c|cc|cpp|h)</arguments>
+				<arguments>1.0-name-matches-false-true-.*(?&lt;!(unit)?tests?)\.(c|cc|cpp|h)</arguments>
 			</matcher>
 		</filter>
 		<filter>
@@ -41,6 +41,24 @@
 			<matcher>
 				<id>org.eclipse.ui.ide.multiFilter</id>
 				<arguments>1.0-name-matches-false-true-out_.*|\.git|\.svn|LayoutTests|WebKit</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1388701654910</id>
+			<name>src</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-false-.svn</arguments>
+			</matcher>
+		</filter>
+		<filter>
+			<id>1388701654912</id>
+			<name>src</name>
+			<type>10</type>
+			<matcher>
+				<id>org.eclipse.ui.ide.multiFilter</id>
+				<arguments>1.0-name-matches-false-true-chrome_frame|apps|testing|tools|printing|remoting|extensions|courgette|net|google_apis|jingle|gpu|crypto|chromeos|components|third_party|breakpad|mojo|build|v8|dbus|webkit|native_client_sdk|url|google_update|rlz|sandbox|sdch|ash|ios|sql|android_webview|cc|media|device|win8|cloud_print|native_client|sync||ppapi|skia|out</arguments>
 			</matcher>
 		</filter>
 	</filteredResources>

@@ -3,6 +3,14 @@
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.toolchain.gnu.base.634576703">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.toolchain.gnu.base.634576703" moduleId="org.eclipse.cdt.core.settings" name="Default">
+				<macros>
+					<stringMacro name="USE_X11" type="VALUE_TEXT" value=""/>
+					<stringMacro name="OS_POSIX" type="VALUE_TEXT" value=""/>
+					<stringMacro name="TOOLKIT_GTK" type="VALUE_TEXT" value=""/>
+					<stringMacro name="OS_LINUX" type="VALUE_TEXT" value=""/>
+					<stringMacro name="DEBUG" type="VALUE_TEXT" value=""/>
+					<stringMacro name="_DEBUG" type="VALUE_TEXT" value=""/>
+				</macros>
 				<externalSettings/>
 				<extensions>
 					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>

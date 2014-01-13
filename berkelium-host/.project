@@ -26,6 +26,13 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.managedbuilder.core.ScannerConfigNature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>berkelium-cpp</name>
+			<type>2</type>
+			<locationURI>BERKELIUM/berkelium-cpp</locationURI>
+		</link>
+	</linkedResources>
 	<filteredResources>
 		<filter>
 			<id>1345932646043</id>
@@ -37,4 +44,10 @@
 			</matcher>
 		</filter>
 	</filteredResources>
+	<variableList>
+		<variable>
+			<name>BERKELIUM</name>
+			<value>$%7BPARENT-1-PROJECT_LOC%7D</value>
+		</variable>
+	</variableList>
 </projectDescription>
