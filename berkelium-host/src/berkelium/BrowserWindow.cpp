@@ -20,7 +20,7 @@
 
 #include "ui/gfx/rect.h"
 
-#define X //fprintf(stderr, "BerkeliumBrowserWindow::%s\n", __func__)
+#define X fprintf(stderr, "BerkeliumBrowserWindow::%s\n", __func__)
 
 namespace Berkelium {
 
@@ -163,12 +163,13 @@ class BerkeliumBrowserWindow : public BrowserWindow, public TabStripModelObserve
 public:
 	BerkeliumBrowserWindow(Browser* browser) :
 		locationBar(new BerkeliumChromiumLocationBar()),
+		bounds(640, 480),
 		browser(browser) {
-		fprintf(stderr, "this: %p\n", this);
-		fprintf(stderr, "browser: %p\n", browser);
-		fprintf(stderr, "tab_strip_model: %p\n", browser->tab_strip_model());
+		//fprintf(stderr, "this: %p\n", this);
+		//fprintf(stderr, "browser: %p\n", browser);
+		//fprintf(stderr, "tab_strip_model: %p\n", browser->tab_strip_model());
 
-		//browser->tab_strip_model()->AddObserver(this);
+		browser->tab_strip_model()->AddObserver(this);
 	}
 
 	virtual ~BerkeliumBrowserWindow() {
@@ -181,18 +182,21 @@ public:
 		fprintf(stderr, "TabInsertedAt %d fg:%d\n", index, foreground);
 	}
 
-private:
-	BerkeliumChromiumLocationBar* locationBar;
-	Browser* browser;
-
-/*
-	virtual void ActiveTabChanged(TabContents* old_contents, TabContents* new_contents, int index, bool user_gesture) {
-		fprintf(stderr, "BerkeliumBrowserWindow::%s %p %p %d %s\n", __func__, (void*)old_contents, (void*)new_contents, index, user_gesture ? "true" : "false");
+	virtual void ActiveTabChanged(content::WebContents* old_contents, content::WebContents* new_contents, int index, int reason) {
+		fprintf(stderr, "ActiveTabChanged %p %p %d %d\n", old_contents, new_contents, index, reason);
+		if(old_contents != NULL) {
+			old_contents->WasHidden();
+		}
 		if(new_contents != NULL) {
-			new_contents->web_contents()->GetView()->SizeContents(gfx::Size(800, 600));
+			new_contents->WasShown();
+			new_contents->GetView()->SizeContents(gfx::Size(801, 601));
 		}
 	}
-*/
+
+private:
+	BerkeliumChromiumLocationBar* locationBar;
+	gfx::Rect bounds;
+	Browser* browser;
 
 	// ui::BaseWindow
 	virtual bool IsActive() const {X;return true;}
@@ -202,7 +206,7 @@ private:
 	virtual gfx::NativeWindow GetNativeWindow() {X;fprintf(stderr, "GetNativeBrowser\n");return NULL;}
 	virtual gfx::Rect GetRestoredBounds() const {X;return gfx::Rect(640, 480);}
 	virtual ui::WindowShowState GetRestoredState() const {X;return ui::SHOW_STATE_DEFAULT;}
-	virtual gfx::Rect GetBounds() const {X;return gfx::Rect(640, 480);}
+	virtual gfx::Rect GetBounds() const {X;return bounds;}
 	virtual void Show() {X;
 	BrowserList::SetLastActive(browser);
 	browser->OnWindowDidShow();
@@ -218,7 +222,14 @@ private:
 	virtual void Maximize() {X;}
 	virtual void Minimize() {X;}
 	virtual void Restore() {X;}
-	virtual void SetBounds(const gfx::Rect&) {X;}
+	virtual void SetBounds(const gfx::Rect& r) {
+		X;
+		bounds = r;
+		//fprintf(stderr, "SetBounds(%d %d %d %d)\n", r.x(), r.y(), r.width(), r.height());
+		//content::WebContents* wc(GetActiveWebContents());
+		//wc->SendScreenRects();
+		//wc->WasResized();
+	}
 	virtual void FlashFrame(bool) {X;}
 	virtual bool IsAlwaysOnTop() const {X;return false;}
 
@@ -290,18 +301,6 @@ private:
 	virtual void DestroyBrowser() {X;}
 };
 
-BrowserWindow* BerkeliumCreateBrowserWindow(Browser* browser);
-
-// static
-BrowserWindow* BrowserWindow::CreateBrowserWindow(Browser* browser) {
-	BrowserWindow* ret;
-
-	//fprintf(stderr, "CreateBrowserWindow start\n");
-	if(Berkelium::BerkeliumHost::isActive()) {
-		ret = new BerkeliumBrowserWindow(browser);
-	} else {
-		ret = BerkeliumCreateBrowserWindow(browser);
-	}
-	//fprintf(stderr, "CreateBrowserWindow done\n");
-	return ret;
+BrowserWindow* BerkeliumCreateBrowserWindow(Browser* browser) {
+	return new BerkeliumBrowserWindow(browser);
 }

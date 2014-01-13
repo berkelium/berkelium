@@ -25,6 +25,8 @@
     'sources': [
       '../berkelium-host/src/berkelium/BerkeliumChromiumDelegate.cpp',
       '../berkelium-host/src/berkelium/BerkeliumMain.cpp',
+      '../berkelium-host/src/berkelium/BerkeliumRenderWidgetHostView.cpp',
+      '../berkelium-host/src/berkelium/BerkeliumWebContentsView.cpp',
       '../berkelium-host/src/berkelium/BrowserWindow.cpp',
       '../berkelium-host/src/berkelium/MemoryRenderViewHostFactory.cpp',
       '../berkelium-host/src/berkelium/MemoryRenderViewHostFactory.hpp',

@@ -63,7 +63,7 @@ public:
 	started(false),
 	tab()
 	{
-		fprintf(stderr, "new MemoryRenderViewHost!\n");
+		fprintf(stderr, "new MemoryRenderViewHost! %p\n", this);
 	}
 
 	virtual ~MemoryRenderViewHost() {
@@ -71,32 +71,101 @@ public:
 		BerkeliumHost::removeTab(this);
 	}
 
-	virtual bool OnMessageReceived(const IPC::Message& msg) {
-		// pass all events to berkelium
+	void dump(const char* text, const IPC::Message& msg) {
+		return;
 		uint32 type = msg.type();
 
+#define dump_all_events 1
 		/*
 		Debug Code...
 
-#define CHECK_EVENT(X) case X::ID: fprintf(stderr, "Event: " #X "\n"); break
+		use this line to show all events:
+		*/
+#define CHECK_EVENT(X) case X::ID: fprintf(stderr, "MemoryRenderViewHost::%s: " #X "\n", text); return
+		/*
+		and this line if want to only show other events:
+#define CHECK_EVENT(X) case X::ID: break
+		*/
 
+		if(dump_all_events)
 		switch(type) {
-			//CHECK_EVENT(ViewHostMsg_DocumentOnLoadCompletedInMainFrame);
-			CHECK_EVENT(ViewHostMsg_UpdateEncoding);
-			CHECK_EVENT(ViewHostMsg_DocumentLoadedInFrame);
-			CHECK_EVENT(ViewHostMsg_FrameNavigate);
-			CHECK_EVENT(ViewHostMsg_UpdateZoomLimits);
-			CHECK_EVENT(ViewHostMsg_DidStartProvisionalLoadForFrame);
-			//CHECK_EVENT(ViewHostMsg_DidStartLoading);
-			//CHECK_EVENT(ViewHostMsg_DidStopLoading);
-			CHECK_EVENT(ViewHostMsg_DidFinishLoad);
-			CHECK_EVENT(ViewHostMsg_DidZoomURL);
-			CHECK_EVENT(ViewHostMsg_HasTouchEventHandlers);
-			//CHECK_EVENT(ViewHostMsg_RenderViewReady);
-			CHECK_EVENT(ViewHostMsg_DidChangeNumWheelEvents);
+		CHECK_EVENT(ViewHostMsg_DocumentOnLoadCompletedInMainFrame);
+		CHECK_EVENT(ViewHostMsg_UpdateEncoding);
+		CHECK_EVENT(ViewHostMsg_DocumentLoadedInFrame);
+		CHECK_EVENT(ViewHostMsg_FrameNavigate);
+		CHECK_EVENT(ViewHostMsg_UpdateZoomLimits);
+		CHECK_EVENT(ViewHostMsg_DidStartProvisionalLoadForFrame);
+		CHECK_EVENT(ViewHostMsg_DidStartLoading);
+		CHECK_EVENT(ViewHostMsg_DidStopLoading);
+		CHECK_EVENT(ViewHostMsg_DidFinishLoad);
+		CHECK_EVENT(ViewHostMsg_DidZoomURL);
+		CHECK_EVENT(ViewHostMsg_HasTouchEventHandlers);
+		CHECK_EVENT(ViewHostMsg_RenderViewReady);
+		CHECK_EVENT(ViewHostMsg_DidChangeNumWheelEvents);
+		CHECK_EVENT(ViewHostMsg_WillInsertBody);
+		CHECK_EVENT(ViewHostMsg_DidChangeLoadProgress);
+		CHECK_EVENT(ViewHostMsg_DocumentAvailableInMainFrame);
+		CHECK_EVENT(ViewHostMsg_WebUISend);
+		CHECK_EVENT(ViewHostMsg_UpdateState);
+		CHECK_EVENT(ViewHostMsg_UpdateScreenRects_ACK);
+		CHECK_EVENT(ViewHostMsg_UpdateTitle);
+		CHECK_EVENT(ViewHostMsg_RenderProcessGone);
+		CHECK_EVENT(ViewHostMsg_SetTooltipText);
+		CHECK_EVENT(ViewHostMsg_UpdateRect);
+		CHECK_EVENT(ViewHostMsg_DidFirstVisuallyNonEmptyPaint);
+		CHECK_EVENT(ViewMsg_UpdateRect_ACK);
+		CHECK_EVENT(ViewMsg_MoveOrResizeStarted);
+		CHECK_EVENT(ViewMsg_Resize);
+		CHECK_EVENT(ViewMsg_ChangeResizeRect);
+		CHECK_EVENT(ViewMsg_New);
+		CHECK_EVENT(ViewMsg_AllowBindings);
+		CHECK_EVENT(ViewMsg_SetAltErrorPageURL);
+		CHECK_EVENT(ViewMsg_Navigate);
+		CHECK_EVENT(ViewMsg_SetWebUIProperty);
+		CHECK_EVENT(ViewMsg_UpdateWebPreferences);
+		CHECK_EVENT(ViewMsg_UpdateScreenRects);
+		CHECK_EVENT(ViewMsg_WasShown);
+		CHECK_EVENT(ViewMsg_WasHidden);
+		CHECK_EVENT(ViewMsg_Close);
+		CHECK_EVENT(ViewMsg_ScriptEvalRequest);
 
 		default:
-			fprintf(stderr, "WindowSender::OnMessageReceived: %d\n", msg.type() - (1 << 16));
+			uint32 group = type >> 16;
+			uint32 code = type & 0xFFFF;
+			const char* groupstr;
+			if(group == ViewMsgStart) {
+				groupstr = "ViewMsg";
+			} else if(group == InputMsgStart) {
+				groupstr = "InputMsg";
+			} else if(group == AutofillMsgStart) {
+				groupstr = "AutofillMsg";
+			} else if(group == ChromeMsgStart) {
+				groupstr = "ChromeMsg";
+			} else if(group == ExtensionMsgStart) {
+				groupstr = "ExtensionMsg";
+			} else if(group == ImageMsgStart) {
+				groupstr = "ImageMsg";
+			} else if(group == PrintMsgStart) {
+				groupstr = "PrintMsg";
+			} else {
+				groupstr = NULL;
+			}
+			if(groupstr == NULL) {
+				fprintf(stderr, "MemoryRenderViewHost::%s: %d %d\n", text, group, code);
+			} else {
+				fprintf(stderr, "MemoryRenderViewHost::%s: %s %d\n", text, groupstr, code);
+			}
+		}
+	}
+
+	virtual bool OnMessageReceived(const IPC::Message& msg) {
+		dump("Recv2", msg);
+		uint32 type = msg.type();
+		/*
+		if(type == 0x010000 + 2272) {
+			fprintf(stderr, "**** test!!!!\n");
+			OnRenderViewReady();
+			//fprintf(stderr, "**** view: \n", view_);
 		}
 		*/
 
@@ -109,6 +178,8 @@ public:
 			IPC_BEGIN_MESSAGE_MAP(MemoryRenderViewHost, msg)
 			IPC_MESSAGE_HANDLER_GENERIC(ViewHostMsg_DidStartLoading, OnLoading(true))
 			IPC_MESSAGE_HANDLER_GENERIC(ViewHostMsg_DidStopLoading, OnLoading(false))
+			//IPC_MESSAGE_HANDLER(ViewHostMsg_DidFirstVisuallyNonEmptyPaint, OnUpdateRect)
+			IPC_MESSAGE_HANDLER(ViewHostMsg_UpdateRect, OnUpdateRect)
 			IPC_END_MESSAGE_MAP()
 		}
 
@@ -117,11 +188,51 @@ public:
 		return content::RenderViewHostImpl::OnMessageReceived(msg);
 	}
 
+	virtual bool Send(IPC::Message* msg) {
+		if(msg == NULL) {
+			fprintf(stderr, "Send NULL Message!\n");
+		} else {
+			dump("Send2", *msg);
+		}
+		return content::RenderViewHostImpl::Send(msg);
+	}
+
 	void setBerkeliumHostTabRef(BerkeliumHostTabRef t) {
 		tab = t;
 	}
 
-private: // BerkeliumTab impl
+	virtual void OnUpdateRect(const ViewHostMsg_UpdateRect_Params& params) {
+		/*
+		IPC_STRUCT_MEMBER(std::vector<gfx::Rect>, copy_rects)
+		IPC_STRUCT_MEMBER(std::vector<content::WebPluginGeometry>, plugin_window_moves)
+		IPC_STRUCT_MEMBER(ui::LatencyInfo, latency_info)
+		*/
+		fprintf(stderr, "*** OnPaint()\n");
+#if defined(TOOLKIT_GTK)
+		fprintf(stderr, "Bitmap %d\n", params.bitmap.shmkey);
+#else
+#error TODO
+#endif
+		if(tab) {
+			tab->sendOnPaint();
+		} else {
+			logger->error("OnReady: no BerkeliumHostTabRef found!");
+		}
+		fprintf(stderr, "Flags %d\n", params.flags);
+		fprintf(stderr, "NeedsAck %d\n", params.needs_ack);
+		fprintf(stderr, "ScaleFactor %f\n", params.scale_factor);
+		fprintf(stderr, "ScrollDelta %d %d\n", params.scroll_delta.x(), params.scroll_delta.y());
+		fprintf(stderr, "ScrollOffset %d %d\n", params.scroll_offset.x(), params.scroll_offset.y());
+		fprintf(stderr, "ViewSize %d %d\n", params.view_size.width(), params.view_size.height());
+		fprintf(stderr, "BitmapRect(%d %d %d %d)\n", params.bitmap_rect.x(),params.bitmap_rect.y(),params.bitmap_rect.width(),params.bitmap_rect.height());
+		fprintf(stderr, "ScrollRect(%d %d %d %d)\n", params.scroll_rect.x(),params.scroll_rect.y(),params.scroll_rect.width(),params.scroll_rect.height());
+		if(tab) {
+			tab->sendOnPaint();
+		} else {
+			logger->error("OnPaint: no BerkeliumHostTabRef found!");
+		}
+	}
+
 	virtual void CloseTab() {
 		content::RenderViewHostImpl::ClosePage();
 	}
@@ -171,9 +282,11 @@ private: // BerkeliumTab impl
 	}
 };
 
-void setBerkeliumHostTabRef(content::RenderViewHost* mrvh, BerkeliumHostTabRef tab)
+void setBerkeliumHostTabRef(content::RenderViewHost* rvh, BerkeliumHostTabRef tab)
 {
-	((MemoryRenderViewHost*)mrvh)->setBerkeliumHostTabRef(tab);
+	MemoryRenderViewHost* mrvh((MemoryRenderViewHost*)rvh);
+	mrvh->setBerkeliumHostTabRef(tab);
+	//mrvh->WasShown();
 }
 
 std::vector<std::string> split(std::string l, char delim) {

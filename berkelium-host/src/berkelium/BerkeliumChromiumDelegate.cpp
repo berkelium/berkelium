@@ -15,16 +15,28 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_view_host.h"
 #include "base/message_loop/message_loop.h"
 
+BrowserWindow* BerkeliumCreateBrowserWindow(Browser*);
+//content::RenderWidgetHostView* BerkeliumCreateViewForWidget(content::RenderWidgetHost*);
+content::WebContentsViewPort* BerkeliumCreateWebContentsView(content::WebContentsImpl*, content::WebContentsViewDelegate*, content::RenderViewHostDelegateView**);
+
+extern BrowserWindow* (*BerkeliumHook_CreateBrowserWindow)(Browser*);
+namespace content {
+//extern content::RenderWidgetHostView* (*BerkeliumHook_CreateViewForWidget)(content::RenderWidgetHost*);
+extern WebContentsViewPort* (*BerkeliumHook_CreateWebContentsView)(WebContentsImpl*, WebContentsViewDelegate*, RenderViewHostDelegateView**);
+}
+
 namespace Berkelium {
 
 extern LoggerRef logger;
 
+/*
 ::Browser* any;
 std::set<Browser*> browsers;
 
@@ -64,6 +76,7 @@ public:
 };
 
 BerkeliumBrowserListObserver observer;
+*/
 
 void invoke_update()
 {
@@ -77,55 +90,94 @@ void BerkeliumHostDelegate::updateLater()
 
 void BerkeliumHostDelegate::init()
 {
+	/*
 	BrowserList::GetInstance(chrome::HOST_DESKTOP_TYPE_NATIVE)->AddObserver(&observer);
+	*/
+	BerkeliumHook_CreateBrowserWindow = BerkeliumCreateBrowserWindow;
+	//content::BerkeliumHook_CreateViewForWidget = BerkeliumCreateViewForWidget;
+	content::BerkeliumHook_CreateWebContentsView = BerkeliumCreateWebContentsView;
 }
 
 void BerkeliumHostDelegate::exit()
 {
+	/*
 	BrowserList::GetInstance(chrome::HOST_DESKTOP_TYPE_NATIVE)->RemoveObserver(&observer);
 	for(std::set<Browser*>::iterator it(browsers.begin()); it != browsers.end(); it++) {
 		Browser* browser(*it);
 		browser->tab_strip_model()->CloseAllTabs();
 		delete browser;
 	}
+	*/
 	chrome::Exit();
 }
 
 void* BerkeliumHostDelegate::createWindow(bool incognito)
 {
+	/*
+	static bool first_closed = false;
 	if(!any) {
 		fprintf(stderr, "no browser found!\n");
 	}
-	fprintf(stderr, "window create!\n");
-	::Profile* profile;
+	*/
+	fprintf(stderr, "window create step 1!\n");
+	static ::Profile* profile(ProfileManager::GetLastUsedProfile());
+	fprintf(stderr, "window create step 2!\n");
+	/*
+	if(!first_closed && any->profile()->IsOffTheRecord() == incognito) {
+		profile = any->profile();
+		fprintf(stderr, "reusing first window!\n");
+		first_closed = true;
+		any->tab_strip_model()->CloseAllTabs();
+		return any;
+	} else */
 	if(incognito) {
-		profile = any->profile()->GetOffTheRecordProfile();
+		profile = profile->GetOffTheRecordProfile();
 	} else {
-		profile = any->profile()->GetOriginalProfile();
+		profile = profile->GetOriginalProfile();
 	}
-	Browser* browser = new Browser(Browser::CreateParams(Browser::TYPE_TABBED, profile, chrome::HOST_DESKTOP_TYPE_FIRST));
+	fprintf(stderr, "window create step 3!\n");
+	Browser::CreateParams params(Browser::TYPE_TABBED, profile, chrome::HOST_DESKTOP_TYPE_FIRST);
+	params.initial_bounds = gfx::Rect(10, 10, 1024, 768);
+	params.initial_show_state = ui::SHOW_STATE_NORMAL;
+	Browser* browser = new Browser(params);
+	gfx::Rect rect(browser->window()->GetBounds());
+	fprintf(stderr, "window rect: %d %d %d %d!\n", rect.x(), rect.y(), rect.width(), rect.height());
+	//browser->window()->SetBounds(gfx::Rect(10, 10, 1024, 768));
 	browser->window()->Show();
 	fprintf(stderr, "window created!\n");
+	/*
+	if(!first_closed) {
+		first_closed = true;
+		fprintf(stderr, "destory first window start!\n");
+		destroyWindow(any);
+		fprintf(stderr, "destory first window end!\n");
+	}
+	*/
 	return browser;
 }
 
 void BerkeliumHostDelegate::destroyWindow(void* browser)
 {
+	Browser* b((Browser*)browser);
+	fprintf(stderr, "window destroy all tabs!\n");
+	b->tab_strip_model()->CloseAllTabs();
 	fprintf(stderr, "window destroy!\n");
-	delete (Browser*)browser;
+	delete b;
 	fprintf(stderr, "window destroyed!\n");
 }
 
 void* BerkeliumHostDelegate::createTab(void* window, BerkeliumHostTabRef tab)
 {
+	Browser* browser((Browser*)window);
+	fprintf(stderr, "=============================\n");
 	fprintf(stderr, "tab create!\n");
-	chrome::NavigateParams params((Browser*)window, GURL(chrome::kChromeUINewTabURL), content::PAGE_TRANSITION_TYPED);
-	params.disposition = NEW_FOREGROUND_TAB;
-	params.tabstrip_index = -1;
-	chrome::Navigate(&params);
+	content::Referrer referrer;
+	GURL url("http://www.google.com"/*chrome::kChromeUINewTabURL*/);
+	content::OpenURLParams params(url, referrer, NEW_FOREGROUND_TAB, content::PAGE_TRANSITION_TYPED, false);
+	content::WebContents* ret(browser->OpenURL(params));
+	setBerkeliumHostTabRef(ret->GetRenderViewHost(), tab);
 	fprintf(stderr, "tab created!\n");
-	setBerkeliumHostTabRef(params.target_contents->GetRenderViewHost(), tab);
-	return params.target_contents;
+	return ret;
 }
 
 void BerkeliumHostDelegate::destroyTab(void* window, void* tab)

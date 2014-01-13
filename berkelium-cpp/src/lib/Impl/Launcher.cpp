@@ -50,6 +50,7 @@ InstanceRef newInstance(RuntimeRef runtime, HostExecutableRef executable, Profil
 	args.push_back("--berkelium=" + process->getChannelGroup()->getName());
 	args.push_back("--no-sandbox"); // TODO check why this is needed...
 	args.push_back("--no-first-run");
+	args.push_back("--silent-launch");
 	//args.push_back("--crash-test");
 	args.push_back("--user-data-dir=" + enclose(profile->getProfilePath()));
 	args.push_back("about:blank");
