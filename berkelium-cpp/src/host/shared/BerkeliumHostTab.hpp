@@ -25,6 +25,8 @@ public:
 	virtual ~BerkeliumHostTab() = 0;
 
 	virtual void sendOnReady() = 0;
+
+	virtual void sendOnPaint() = 0;
 };
 
 } // namespace Berkelium

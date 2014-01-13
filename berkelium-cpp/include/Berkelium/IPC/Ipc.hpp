@@ -58,6 +58,7 @@ typedef enum {
 	createTab,
 	onReady,
 	navigate,
+	onPaint,
 } CommandId;
 
 } // namespace Ipc

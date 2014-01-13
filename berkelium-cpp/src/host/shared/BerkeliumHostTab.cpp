@@ -69,6 +69,12 @@ public:
 		msg->add_cmd(CommandId::onReady);
 		send->send(msg);
 	}
+
+	virtual void sendOnPaint() {
+		Berkelium::Ipc::MessageRef msg(Ipc::Message::create(logger));
+		msg->add_cmd(CommandId::onPaint);
+		send->send(msg);
+	}
 };
 
 } // namespace impl

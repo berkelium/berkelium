@@ -69,6 +69,10 @@ public:
 				onReady();
 				break;
 			}
+			case Ipc::CommandId::onPaint: {
+				onPaint();
+				break;
+			}
 		}
 	}
 
@@ -101,6 +105,14 @@ public:
 		for(TabDelegateRefSetIt it(delegates.begin()); it != delegates.end(); it++) {
 			TabDelegateRef delegate(*it);
 			delegate->onReady(self);
+		}
+	}
+
+	void onPaint() {
+		TabRef self(getSelf());
+		for(TabDelegateRefSetIt it(delegates.begin()); it != delegates.end(); it++) {
+			TabDelegateRef delegate(*it);
+			delegate->onPaint(self);
 		}
 	}
 

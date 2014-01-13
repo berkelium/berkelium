@@ -22,11 +22,13 @@ using Berkelium::TabRef;
 class TestTabDelegate : public Berkelium::TabDelegate {
 public:
 	int onClosedCount;
+	int onPaintCount;
 	int onReadyCount;
 
 	TestTabDelegate() :
 		Berkelium::TabDelegate(),
 		onClosedCount(0),
+		onPaintCount(0),
 		onReadyCount(0) {
 	}
 
@@ -41,6 +43,7 @@ public:
 	}
 
 	virtual void onPaint(TabRef tab) {
+		onPaintCount++;
 	}
 
 	virtual void onPaintDone(TabRef tab, Berkelium::RectRef rect) {
@@ -86,7 +89,7 @@ TEST_F(TabDelegateTest, create) {
 }
 
 TEST_F(TabDelegateTest, onReady) {
-	USE_LOGGER(crash);
+	USE_LOGGER(onReady);
 
 	TabRef subject;
 	createTab(logger, subject);
@@ -107,6 +110,31 @@ TEST_F(TabDelegateTest, onReady) {
 		}
 	}
 	logger->info() << "tab not ready within 30s, test failed!" << std::endl;
+	ASSERT_TRUE(false);
+}
+
+TEST_F(TabDelegateTest, onPaint) {
+	USE_LOGGER(onPaint);
+
+	TabRef subject;
+	createTab(logger, subject);
+	ASSERT_NOT_NULL(subject);
+
+	std::shared_ptr<TestTabDelegate> ttd(new TestTabDelegate());
+	subject->addTabDelegate(ttd);
+
+	Berkelium::RuntimeRef runtime(subject->getRuntime());
+
+	logger->info() << "waiting up to 30s..." << std::endl;
+	for(int i = 0; i < 30000; i += 100) {
+		runtime->update(100);
+		ASSERT_EQ(0, ttd->onClosedCount);
+		if(ttd->onPaintCount != 0) {
+			logger->info() << "tab painted, test ok!" << std::endl;
+			return;
+		}
+	}
+	logger->info() << "tab not painted within 30s, test failed!" << std::endl;
 	ASSERT_TRUE(false);
 }
 
